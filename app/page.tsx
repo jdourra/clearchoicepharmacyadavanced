@@ -10,30 +10,60 @@ import { MedicationAutocomplete } from "@/components/medication-autocomplete"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
-import { medications, getMedicationsByName, type Medication } from "@/lib/medications-database"
+import { useEffect, useState } from "react"
+import {
+  fetchHomeMedicationStrengths,
+  mapDbToHomeMedication,
+  type HomeMedication,
+  type MedicationSearchResult,
+  type PharmacyMedication,
+} from "@/lib/pharmacy-medication"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
 export default function HomePage() {
   const router = useRouter()
 
-  const popularMeds = [
-    medications.find((m) => m.id === "med_003"), // Amlodipine 10mg
-    medications.find((m) => m.id === "med_011"), // Lisinopril 20mg
-    medications.find((m) => m.id === "med_020"), // Metformin 500mg
-    medications.find((m) => m.id === "med_007"), // Atorvastatin 20mg
-    medications.find((m) => m.id === "med_023"), // Omeprazole 20mg
-    medications.find((m) => m.id === "med_025"), // Levothyroxine 100mcg
-    medications.find((m) => m.id === "med_027"), // Albuterol Inhaler
-    medications.find((m) => m.id === "med_028"), // Gabapentin 300mg
-  ].filter(Boolean) as Medication[]
+  const POPULAR_QUERIES = [
+    "Amlodipine",
+    "Lisinopril",
+    "Metformin",
+    "Atorvastatin",
+    "Omeprazole",
+    "Levothyroxine",
+    "Albuterol",
+    "Gabapentin",
+  ]
 
+  const [popularMeds, setPopularMeds] = useState<HomeMedication[]>([])
   const [selectedMedicationName, setSelectedMedicationName] = useState<string>("")
-  const [availableStrengths, setAvailableStrengths] = useState<Medication[]>([])
-  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null)
+  const [availableStrengths, setAvailableStrengths] = useState<HomeMedication[]>([])
+  const [selectedMedication, setSelectedMedication] = useState<HomeMedication | null>(null)
   const [quantity, setQuantity] = useState<number>(30)
   const [showPricing, setShowPricing] = useState(false)
+  const [loadingStrengths, setLoadingStrengths] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadPopular() {
+      const results = await Promise.all(
+        POPULAR_QUERIES.map(async (query) => {
+          const response = await fetch(`/api/drugs?q=${encodeURIComponent(query)}&limit=1`)
+          if (!response.ok) return null
+          const data = await response.json()
+          const med = data.medications?.[0] as PharmacyMedication | undefined
+          return med ? mapDbToHomeMedication(med) : null
+        })
+      )
+      if (!cancelled) setPopularMeds(results.filter(Boolean) as HomeMedication[])
+    }
+
+    loadPopular()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Forms that are dispensed as a single unit (not multiplied by quantity)
   const UNIT_BASED_FORMS = ["INHALER", "SOLUTION", "CREAM", "OINTMENT", "LOTION", "GEL", "SPRAY", "SYRINGE", "DROPS", "SUSPENSION", "PATCH", "VIAL", "PEN", "NEBULIZER"]
@@ -45,20 +75,26 @@ export default function HomePage() {
     return (perUnitCost * effectiveQty * 1.15 + 5).toFixed(2)
   }
 
-  const handleMedicationSelect = (medication: Medication) => {
-    const allStrengths = getMedicationsByName(medication.name)
-
-    setSelectedMedicationName(medication.name)
-    setAvailableStrengths(allStrengths)
-    setSelectedMedication(allStrengths.length === 1 ? allStrengths[0] : null)
+  const handleMedicationSelect = async (medication: MedicationSearchResult) => {
+    setLoadingStrengths(true)
     setShowPricing(true)
+    setSelectedMedicationName(medication.name)
+
+    try {
+      const allStrengths = await fetchHomeMedicationStrengths(medication.name)
+      setAvailableStrengths(allStrengths)
+      setSelectedMedication(allStrengths.length === 1 ? allStrengths[0] : null)
+      setQuantity(30)
+    } finally {
+      setLoadingStrengths(false)
+    }
 
     setTimeout(() => {
       document.getElementById("pricing-calculator")?.scrollIntoView({ behavior: "smooth" })
     }, 100)
   }
 
-  const handleStrengthSelect = (medication: Medication) => {
+  const handleStrengthSelect = (medication: HomeMedication) => {
     setSelectedMedication(medication)
 
     if (medication.form === "INHALER" || medication.days_supply) {
@@ -270,7 +306,9 @@ export default function HomePage() {
                   </Card>
                 ) : (
                   <Card className="p-6 flex items-center justify-center min-h-[400px]">
-                    <p className="text-muted-foreground text-center">Please select a strength to see pricing</p>
+                    <p className="text-muted-foreground text-center">
+                      {loadingStrengths ? "Loading medication strengths..." : "Please select a strength to see pricing"}
+                    </p>
                   </Card>
                 )}
               </div>

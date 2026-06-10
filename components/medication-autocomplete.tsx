@@ -8,18 +8,23 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Search, Loader2 } from "lucide-react"
-import { searchMedications, type Medication } from "@/lib/medications-database"
 import { Badge } from "@/components/ui/badge"
+import {
+  fetchMedicationSuggestions,
+  type MedicationSearchResult,
+} from "@/lib/pharmacy-medication"
+
+const MIN_QUERY_LENGTH = 2
 
 export function MedicationAutocomplete({
   placeholder,
   onSelect,
 }: {
   placeholder?: string
-  onSelect?: (medication: Medication) => void
+  onSelect?: (medication: MedicationSearchResult) => void
 }) {
   const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState<Medication[]>([])
+  const [suggestions, setSuggestions] = useState<MedicationSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const router = useRouter()
@@ -35,28 +40,32 @@ export function MedicationAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Fetch suggestions as user types
   useEffect(() => {
-    const fetchSuggestions = () => {
-      if (query.length < 3) {
+    const loadSuggestions = async () => {
+      if (query.trim().length < MIN_QUERY_LENGTH) {
         setSuggestions([])
         setShowSuggestions(false)
         return
       }
 
       setIsLoading(true)
-
-      const results = searchMedications(query)
-      setSuggestions(results)
       setShowSuggestions(true)
-      setIsLoading(false)
+
+      try {
+        const results = await fetchMedicationSuggestions(query)
+        setSuggestions(results)
+      } catch {
+        setSuggestions([])
+      } finally {
+        setIsLoading(false)
+      }
     }
 
-    const debounce = setTimeout(fetchSuggestions, 200)
+    const debounce = setTimeout(loadSuggestions, 150)
     return () => clearTimeout(debounce)
   }, [query])
 
-  const handleSelect = (med: Medication) => {
+  const handleSelect = (med: MedicationSearchResult) => {
     setQuery("")
     setSuggestions([])
     setShowSuggestions(false)
@@ -72,6 +81,8 @@ export function MedicationAutocomplete({
     e.preventDefault()
     if (suggestions.length > 0) {
       handleSelect(suggestions[0])
+    } else if (query.trim().length >= MIN_QUERY_LENGTH) {
+      router.push(`/medications?q=${encodeURIComponent(query.trim())}`)
     }
   }
 
@@ -85,8 +96,9 @@ export function MedicationAutocomplete({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder || "Search for your medication (e.g., Lisinopril, Metformin)"}
           className="h-14 text-lg pl-12 pr-32 rounded-xl border-2 border-border focus:border-primary"
+          autoComplete="off"
           onFocus={() => {
-            if (suggestions.length > 0) setShowSuggestions(true)
+            if (query.trim().length >= MIN_QUERY_LENGTH) setShowSuggestions(true)
           }}
         />
         {isLoading && (
@@ -97,7 +109,7 @@ export function MedicationAutocomplete({
         </Button>
       </form>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && query.trim().length >= MIN_QUERY_LENGTH && suggestions.length > 0 && (
         <Card className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-xl border-2">
           <div className="divide-y">
             {suggestions.map((med, index) => (
@@ -127,12 +139,14 @@ export function MedicationAutocomplete({
         </Card>
       )}
 
-      {showSuggestions && query.length >= 3 && suggestions.length === 0 && !isLoading && (
+      {showSuggestions && query.trim().length >= MIN_QUERY_LENGTH && suggestions.length === 0 && !isLoading && (
         <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg">
-          <p className="text-sm text-muted-foreground">No medications found starting with "{query}"</p>
-          <p className="text-xs text-muted-foreground mt-1">Try a different spelling or generic name</p>
+          <p className="text-sm text-muted-foreground">No medications found for "{query}"</p>
+          <p className="text-xs text-muted-foreground mt-1">Press Search to browse the full catalog</p>
         </Card>
       )}
     </div>
   )
 }
+
+export type { MedicationSearchResult }
