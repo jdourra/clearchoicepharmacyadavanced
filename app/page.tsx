@@ -10,93 +10,58 @@ import { MedicationAutocomplete } from "@/components/medication-autocomplete"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { useEffect, useState } from "react"
-import {
-  calculateTransparentPrice,
-  fetchMedicationStrengths,
-  getPerUnitCost,
-  isUnitBasedForm,
-  medicationForm,
-  type MedicationSearchResult,
-  type PharmacyMedication,
-} from "@/lib/pharmacy-medication"
+import { useState } from "react"
+import { medications, getMedicationsByName, type Medication } from "@/lib/medications-database"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
 export default function HomePage() {
   const router = useRouter()
 
-  const POPULAR_DRUG_QUERIES = [
-    "Amlodipine",
-    "Lisinopril",
-    "Metformin",
-    "Atorvastatin",
-    "Omeprazole",
-    "Levothyroxine",
-    "Albuterol",
-    "Gabapentin",
-  ]
+  const popularMeds = [
+    medications.find((m) => m.id === "med_003"), // Amlodipine 10mg
+    medications.find((m) => m.id === "med_011"), // Lisinopril 20mg
+    medications.find((m) => m.id === "med_020"), // Metformin 500mg
+    medications.find((m) => m.id === "med_007"), // Atorvastatin 20mg
+    medications.find((m) => m.id === "med_023"), // Omeprazole 20mg
+    medications.find((m) => m.id === "med_025"), // Levothyroxine 100mcg
+    medications.find((m) => m.id === "med_027"), // Albuterol Inhaler
+    medications.find((m) => m.id === "med_028"), // Gabapentin 300mg
+  ].filter(Boolean) as Medication[]
 
-  const [popularMeds, setPopularMeds] = useState<PharmacyMedication[]>([])
   const [selectedMedicationName, setSelectedMedicationName] = useState<string>("")
-  const [availableStrengths, setAvailableStrengths] = useState<PharmacyMedication[]>([])
-  const [selectedMedication, setSelectedMedication] = useState<PharmacyMedication | null>(null)
+  const [availableStrengths, setAvailableStrengths] = useState<Medication[]>([])
+  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null)
   const [quantity, setQuantity] = useState<number>(30)
   const [showPricing, setShowPricing] = useState(false)
-  const [loadingStrengths, setLoadingStrengths] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
+  // Forms that are dispensed as a single unit (not multiplied by quantity)
+  const UNIT_BASED_FORMS = ["INHALER", "SOLUTION", "CREAM", "OINTMENT", "LOTION", "GEL", "SPRAY", "SYRINGE", "DROPS", "SUSPENSION", "PATCH", "VIAL", "PEN", "NEBULIZER"]
 
-    async function loadPopularMedications() {
-      const results = await Promise.all(
-        POPULAR_DRUG_QUERIES.map(async (query) => {
-          const response = await fetch(`/api/drugs?q=${encodeURIComponent(query)}&limit=1`)
-          if (!response.ok) return null
-          const data = await response.json()
-          return data.medications?.[0] ?? null
-        })
-      )
+  const isUnitBasedForm = (form: string) => UNIT_BASED_FORMS.includes(form.toUpperCase())
 
-      if (!cancelled) {
-        setPopularMeds(results.filter(Boolean) as PharmacyMedication[])
-      }
-    }
+  const calculatePrice = (perUnitCost: number, qty: number, form?: string) => {
+    const effectiveQty = form && isUnitBasedForm(form) ? 1 : qty
+    return (perUnitCost * effectiveQty * 1.15 + 5).toFixed(2)
+  }
 
-    loadPopularMedications()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const handleMedicationSelect = (medication: Medication) => {
+    const allStrengths = getMedicationsByName(medication.name)
 
-
-  const calculatePrice = (med: PharmacyMedication, qty: number) =>
-    calculateTransparentPrice(med, qty).toFixed(2)
-
-  const handleMedicationSelect = async (medication: MedicationSearchResult) => {
-    setLoadingStrengths(true)
-    setShowPricing(true)
     setSelectedMedicationName(medication.name)
-
-    try {
-      const allStrengths = await fetchMedicationStrengths(medication.name)
-      setAvailableStrengths(allStrengths)
-      setSelectedMedication(allStrengths.length === 1 ? allStrengths[0] : null)
-      setQuantity(30)
-    } finally {
-      setLoadingStrengths(false)
-    }
+    setAvailableStrengths(allStrengths)
+    setSelectedMedication(allStrengths.length === 1 ? allStrengths[0] : null)
+    setShowPricing(true)
 
     setTimeout(() => {
       document.getElementById("pricing-calculator")?.scrollIntoView({ behavior: "smooth" })
     }, 100)
   }
 
-  const handleStrengthSelect = (medication: PharmacyMedication) => {
+  const handleStrengthSelect = (medication: Medication) => {
     setSelectedMedication(medication)
-    const form = medicationForm(medication)
 
-    if (isUnitBasedForm(form) || medication.days_supply) {
+    if (medication.form === "INHALER" || medication.days_supply) {
       setQuantity(1)
     } else {
       setQuantity(30)
@@ -109,7 +74,7 @@ export default function HomePage() {
       return
     }
 
-    const totalPrice = Number.parseFloat(calculatePrice(selectedMedication, quantity))
+    const totalPrice = Number.parseFloat(calculatePrice(selectedMedication.per_unit_cost, quantity, selectedMedication.form))
 
     const cart = JSON.parse(sessionStorage.getItem("cart") || "[]")
 
@@ -126,20 +91,13 @@ export default function HomePage() {
     router.push("/cart")
   }
 
-  const selectedForm = selectedMedication ? medicationForm(selectedMedication) : ""
-  const effectiveQty =
-    selectedMedication && isUnitBasedForm(selectedForm) ? 1 : quantity
-  const perUnitCost = selectedMedication ? getPerUnitCost(selectedMedication) : 0
-  const drugCost = perUnitCost * effectiveQty
+  const effectiveQty = selectedMedication && isUnitBasedForm(selectedMedication.form) ? 1 : quantity
+  const drugCost = selectedMedication ? selectedMedication.per_unit_cost * effectiveQty : 0
   const markup = drugCost * 0.15
   const dispensingFee = 5.0
   const totalPrice = drugCost + markup + dispensingFee
   const daysSupply = selectedMedication?.days_supply ? quantity * selectedMedication.days_supply : quantity
-  const retailBase =
-    selectedMedication?.typical_retail_price && Number(selectedMedication.typical_retail_price) > 0
-      ? Number(selectedMedication.typical_retail_price)
-      : totalPrice * 3.5
-  const retailPrice = retailBase
+  const retailPrice = totalPrice * 3.5
   const savings = retailPrice - totalPrice
 
   return (
@@ -203,7 +161,7 @@ export default function HomePage() {
                             className="h-auto py-3 flex-col items-start"
                           >
                             <div className="font-semibold">{med.strength}</div>
-                            <div className="text-xs opacity-80">{medicationForm(med)}</div>
+                            <div className="text-xs opacity-80">{med.form}</div>
                           </Button>
                         ))}
                       </div>
@@ -213,7 +171,7 @@ export default function HomePage() {
                   {selectedMedication && (
                     <div className="space-y-2">
                       <p className="text-xl text-muted-foreground">
-                        {selectedMedication.strength} {medicationForm(selectedMedication)}
+                        {selectedMedication.strength} {selectedMedication.form}
                       </p>
                       {selectedMedication.is_generic && <Badge variant="secondary">Generic</Badge>}
                       <p className="text-sm text-muted-foreground font-mono">NDC: {selectedMedication.ndc}</p>
@@ -228,7 +186,7 @@ export default function HomePage() {
                         <div className="text-5xl font-bold text-primary mb-1">${totalPrice.toFixed(2)}</div>
                         <p className="text-sm text-muted-foreground">
                           ${(totalPrice / quantity).toFixed(2)} per{" "}
-                          {isUnitBasedForm(selectedForm) ? "unit" : "pill"}
+                          {selectedMedication.form === "INHALER" ? "inhaler" : "pill"}
                         </p>
                       </div>
 
@@ -278,7 +236,7 @@ export default function HomePage() {
                         <div className="font-semibold mb-3">Price Breakdown:</div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">
-                            Drug Cost ({quantity} {medicationForm(selectedMedication).toLowerCase()}s - {daysSupply} days):
+                            Drug Cost ({quantity} {selectedMedication.form.toLowerCase()}s - {daysSupply} days):
                           </span>
                           <span className="font-medium">${drugCost.toFixed(2)}</span>
                         </div>
@@ -312,9 +270,7 @@ export default function HomePage() {
                   </Card>
                 ) : (
                   <Card className="p-6 flex items-center justify-center min-h-[400px]">
-                    <p className="text-muted-foreground text-center">
-                      {loadingStrengths ? "Loading medication strengths..." : "Please select a strength to see pricing"}
-                    </p>
+                    <p className="text-muted-foreground text-center">Please select a strength to see pricing</p>
                   </Card>
                 )}
               </div>
@@ -328,16 +284,11 @@ export default function HomePage() {
             <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Popular Medications</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
               {popularMeds.map((med) => {
-                const form = medicationForm(med)
-                const isUnit = isUnitBasedForm(form)
-                const price = calculatePrice(med, 30)
-                const retailNum =
-                  med.typical_retail_price && Number(med.typical_retail_price) > 0
-                    ? Number(med.typical_retail_price)
-                    : Number.parseFloat(price) * 3.5
-                const retail = retailNum.toFixed(2)
-                const save = (retailNum - Number.parseFloat(price)).toFixed(2)
-                const supplyLabel = isUnit ? `per ${form.toLowerCase()}` : "for 30-day supply"
+                const isUnit = isUnitBasedForm(med.form)
+                const price = calculatePrice(med.per_unit_cost, 30, med.form)
+                const retail = (Number.parseFloat(price) * 3.5).toFixed(2)
+                const save = (Number.parseFloat(retail) - Number.parseFloat(price)).toFixed(2)
+                const supplyLabel = isUnit ? `per ${med.form.toLowerCase()}` : "for 30-day supply"
 
                 return (
                   <Link key={med.id} href={`/medications/${med.id}`}>
@@ -346,7 +297,7 @@ export default function HomePage() {
                         <div>
                           <h3 className="font-semibold text-lg leading-tight">{med.name}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {med.strength} {form}
+                            {med.strength} {med.form}
                           </p>
                         </div>
                         <div>

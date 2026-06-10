@@ -8,22 +8,18 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Search, Loader2 } from "lucide-react"
+import { searchMedications, type Medication } from "@/lib/medications-database"
 import { Badge } from "@/components/ui/badge"
-import {
-  fetchMedicationSuggestions,
-  type MedicationSearchResult,
-  type PharmacyMedication,
-} from "@/lib/pharmacy-medication"
 
 export function MedicationAutocomplete({
   placeholder,
   onSelect,
 }: {
   placeholder?: string
-  onSelect?: (medication: MedicationSearchResult) => void
+  onSelect?: (medication: Medication) => void
 }) {
   const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState<MedicationSearchResult[]>([])
+  const [suggestions, setSuggestions] = useState<Medication[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const router = useRouter()
@@ -39,8 +35,9 @@ export function MedicationAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Fetch suggestions as user types
   useEffect(() => {
-    const fetchSuggestions = async () => {
+    const fetchSuggestions = () => {
       if (query.length < 3) {
         setSuggestions([])
         setShowSuggestions(false)
@@ -49,22 +46,17 @@ export function MedicationAutocomplete({
 
       setIsLoading(true)
 
-      try {
-        const results = await fetchMedicationSuggestions(query)
-        setSuggestions(results)
-        setShowSuggestions(true)
-      } catch {
-        setSuggestions([])
-      } finally {
-        setIsLoading(false)
-      }
+      const results = searchMedications(query)
+      setSuggestions(results)
+      setShowSuggestions(true)
+      setIsLoading(false)
     }
 
     const debounce = setTimeout(fetchSuggestions, 200)
     return () => clearTimeout(debounce)
   }, [query])
 
-  const handleSelect = (med: MedicationSearchResult) => {
+  const handleSelect = (med: Medication) => {
     setQuery("")
     setSuggestions([])
     setShowSuggestions(false)
@@ -72,7 +64,7 @@ export function MedicationAutocomplete({
     if (onSelect) {
       onSelect(med)
     } else {
-      router.push(`/medications?q=${encodeURIComponent(med.name)}`)
+      router.push(`/medications/${med.id}`)
     }
   }
 
@@ -80,8 +72,6 @@ export function MedicationAutocomplete({
     e.preventDefault()
     if (suggestions.length > 0) {
       handleSelect(suggestions[0])
-    } else if (query.trim().length >= 3) {
-      router.push(`/medications?q=${encodeURIComponent(query.trim())}`)
     }
   }
 
@@ -146,5 +136,3 @@ export function MedicationAutocomplete({
     </div>
   )
 }
-
-export type { PharmacyMedication, MedicationSearchResult }

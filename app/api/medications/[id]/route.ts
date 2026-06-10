@@ -17,7 +17,7 @@ export async function GET(
     const result = await sql`
       SELECT id, name, generic_name, brand_name, strength, dosage_form, 
              ndc, acquisition_cost, our_price, typical_retail_price, 
-             per_unit_cost, package_quantity, is_generic, days_supply, description, category
+             per_unit_cost, package_quantity, is_generic, description, category
       FROM medications 
       WHERE id = ${id}
       LIMIT 1
