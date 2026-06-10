@@ -27,17 +27,23 @@ export async function GET(request: NextRequest) {
                ndc, acquisition_cost, our_price, typical_retail_price,
                per_unit_cost, package_quantity, is_generic, days_supply, category
         FROM medications
-        WHERE LOWER(name) LIKE ${searchPattern}
-           OR LOWER(COALESCE(generic_name, '')) LIKE ${searchPattern}
-           OR LOWER(COALESCE(ndc, '')) LIKE ${searchPattern}
-        ORDER BY name ASC
+        WHERE COALESCE(is_active, true) = true
+          AND (
+            LOWER(name) LIKE ${searchPattern}
+            OR LOWER(COALESCE(generic_name, '')) LIKE ${searchPattern}
+            OR LOWER(COALESCE(ndc, '')) LIKE ${searchPattern}
+          )
+        ORDER BY name ASC, strength ASC
         LIMIT ${limit} OFFSET ${offset}
       `
       const countResult = await db`
         SELECT COUNT(*)::int as total FROM medications
-        WHERE LOWER(name) LIKE ${searchPattern}
-           OR LOWER(COALESCE(generic_name, '')) LIKE ${searchPattern}
-           OR LOWER(COALESCE(ndc, '')) LIKE ${searchPattern}
+        WHERE COALESCE(is_active, true) = true
+          AND (
+            LOWER(name) LIKE ${searchPattern}
+            OR LOWER(COALESCE(generic_name, '')) LIKE ${searchPattern}
+            OR LOWER(COALESCE(ndc, '')) LIKE ${searchPattern}
+          )
       `
       total = countResult[0]?.total || 0
     } else {
@@ -46,10 +52,14 @@ export async function GET(request: NextRequest) {
                ndc, acquisition_cost, our_price, typical_retail_price,
                per_unit_cost, package_quantity, is_generic, days_supply, category
         FROM medications
-        ORDER BY name ASC
+        WHERE COALESCE(is_active, true) = true
+        ORDER BY name ASC, strength ASC
         LIMIT ${limit} OFFSET ${offset}
       `
-      const countResult = await db`SELECT COUNT(*)::int as total FROM medications`
+      const countResult = await db`
+        SELECT COUNT(*)::int as total FROM medications
+        WHERE COALESCE(is_active, true) = true
+      `
       total = countResult[0]?.total || 0
     }
 

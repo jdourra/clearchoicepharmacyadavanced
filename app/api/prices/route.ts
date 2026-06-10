@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const medication = meds[0]
     if (!medication) return NextResponse.json({ error: "Medication not found" }, { status: 404 })
 
-    const form = (medication.form || "").toUpperCase()
+    const form = (medication.dosage_form || medication.form || "").toUpperCase()
     const isUnitBased = UNIT_BASED_FORMS.includes(form)
     const effectiveQty = isUnitBased ? 1 : quantity
 

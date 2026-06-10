@@ -13,7 +13,7 @@ import { Search, ChevronLeft, ChevronRight, Pill, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
 interface Medication {
-  id: number
+  id: string
   name: string
   generic_name: string | null
   brand_name: string | null

@@ -36,7 +36,7 @@ export default function MedicationDetailPage() {
 
   // Fetch related medications by name for strength variants
   const { data: relatedData } = useSWR(
-    medication?.name ? `/api/medications?q=${encodeURIComponent(medication.name)}&limit=20` : null,
+    medication?.name ? `/api/drugs?q=${encodeURIComponent(medication.name)}&limit=20` : null,
     fetcher
   )
 
