@@ -16,7 +16,6 @@ export interface PharmacyMedication {
   category?: string | null
 }
 
-/** Shape used by the homepage pricing calculator (original UI) */
 export interface HomeMedication {
   id: string
   name: string
@@ -52,6 +51,8 @@ export const UNIT_BASED_FORMS = [
   "PEN",
   "NEBULIZER",
 ]
+
+export const MIN_SEARCH_LENGTH = 3
 
 export function getPerUnitCost(med: PharmacyMedication): number {
   const perUnit = med.per_unit_cost != null ? Number(med.per_unit_cost) : 0
@@ -89,28 +90,28 @@ export function dedupeMedicationNames(medications: PharmacyMedication[]): Medica
 
 export async function fetchMedicationSuggestions(query: string): Promise<MedicationSearchResult[]> {
   const trimmed = query.trim()
-  if (trimmed.length < 2) return []
+  if (trimmed.length < MIN_SEARCH_LENGTH) return []
 
-  const response = await fetch(`/api/drugs?q=${encodeURIComponent(trimmed)}&limit=40`)
+  const response = await fetch(
+    `/api/drugs?q=${encodeURIComponent(trimmed)}&limit=40&prefix=1`
+  )
   if (!response.ok) return []
 
   const data = await response.json()
-  const q = trimmed.toLowerCase()
-  return dedupeMedicationNames(data.medications || [])
-    .sort((a, b) => {
-      const aStarts = a.name.toLowerCase().startsWith(q) ? 0 : 1
-      const bStarts = b.name.toLowerCase().startsWith(q) ? 0 : 1
-      return aStarts - bStarts || a.name.localeCompare(b.name)
-    })
-    .slice(0, 10)
+  return dedupeMedicationNames(data.medications || []).slice(0, 10)
 }
 
-export async function fetchHomeMedicationStrengths(name: string): Promise<HomeMedication[]> {
-  const response = await fetch(`/api/drugs?q=${encodeURIComponent(name)}&limit=100`)
-  if (!response.ok) return []
+export async function findTopMedicationMatch(query: string): Promise<MedicationSearchResult | null> {
+  const trimmed = query.trim()
+  if (trimmed.length < MIN_SEARCH_LENGTH) return null
 
-  const data = await response.json()
-  return (data.medications || [])
-    .filter((med: PharmacyMedication) => med.name === name)
-    .map(mapDbToHomeMedication)
+  const suggestions = await fetchMedicationSuggestions(trimmed)
+  if (suggestions.length === 0) return null
+
+  const q = trimmed.toLowerCase()
+  return (
+    suggestions.find((med) => med.name.toLowerCase() === q) ||
+    suggestions.find((med) => med.name.toLowerCase().startsWith(q)) ||
+    suggestions[0]
+  )
 }

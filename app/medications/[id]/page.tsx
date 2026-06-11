@@ -52,6 +52,14 @@ export default function MedicationDetailPage() {
   }, [])
 
   useEffect(() => {
+    if (medication?.id) {
+      setSelectedStrength(String(medication.id))
+      setQuantity(30)
+      setPriceData(null)
+    }
+  }, [medication?.id])
+
+  useEffect(() => {
     if (medication && selectedStrength && quantity >= 30) {
       const selectedMed =
         selectedStrength === String(medication.id)
@@ -162,9 +170,9 @@ export default function MedicationDetailPage() {
         <div className="container max-w-7xl mx-auto px-4">
           <div className="mx-auto max-w-6xl">
             <Button asChild variant="ghost" className="mb-6">
-              <Link href="/medications">
+              <Link href="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to medications
+                Back to search
               </Link>
             </Button>
 
@@ -273,8 +281,11 @@ export default function MedicationDetailPage() {
 
                     <div>
                       <Label htmlFor="quantity" className="text-sm font-medium mb-2 block">
-                        Quantity (pills): <span className="text-red-500">*</span>
+                        Quantity (tablets): <span className="text-red-500">*</span>
                       </Label>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Default: 30 tablets for a 30-day supply. Choose 60 or 90 for a 60- or 90-day supply.
+                      </p>
                       <Input
                         id="quantity"
                         type="number"
@@ -297,9 +308,9 @@ export default function MedicationDetailPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => setQuantity(q)}
-                            className={quantity === q ? "border-primary" : ""}
+                            className={quantity === q ? "border-primary bg-primary/5" : ""}
                           >
-                            {q}
+                            {q} ({q}-day)
                           </Button>
                         ))}
                       </div>
@@ -310,7 +321,9 @@ export default function MedicationDetailPage() {
                         <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
                           <div className="font-semibold mb-3">Price Breakdown:</div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">Drug Cost ({quantity} pills):</span>
+                            <span className="text-muted-foreground">
+                              Drug Cost ({quantity} tablets / {quantity}-day supply):
+                            </span>
                             <span className="font-medium">${drugCost.toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between">

@@ -11,17 +11,15 @@ import { Search, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
   fetchMedicationSuggestions,
+  findTopMedicationMatch,
+  MIN_SEARCH_LENGTH,
   type MedicationSearchResult,
 } from "@/lib/pharmacy-medication"
 
-const MIN_QUERY_LENGTH = 2
-
 export function MedicationAutocomplete({
   placeholder,
-  onSelect,
 }: {
   placeholder?: string
-  onSelect?: (medication: MedicationSearchResult) => void
 }) {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<MedicationSearchResult[]>([])
@@ -42,7 +40,7 @@ export function MedicationAutocomplete({
 
   useEffect(() => {
     const loadSuggestions = async () => {
-      if (query.trim().length < MIN_QUERY_LENGTH) {
+      if (query.trim().length < MIN_SEARCH_LENGTH) {
         setSuggestions([])
         setShowSuggestions(false)
         return
@@ -61,28 +59,40 @@ export function MedicationAutocomplete({
       }
     }
 
-    const debounce = setTimeout(loadSuggestions, 150)
+    const debounce = setTimeout(loadSuggestions, 200)
     return () => clearTimeout(debounce)
   }, [query])
 
-  const handleSelect = (med: MedicationSearchResult) => {
+  const goToPricingPage = (med: MedicationSearchResult) => {
     setQuery("")
     setSuggestions([])
     setShowSuggestions(false)
-
-    if (onSelect) {
-      onSelect(med)
-    } else {
-      router.push(`/medications/${med.id}`)
-    }
+    router.push(`/medications/${med.id}`)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const trimmed = query.trim()
+    if (trimmed.length < MIN_SEARCH_LENGTH) return
+
+    setShowSuggestions(false)
+
     if (suggestions.length > 0) {
-      handleSelect(suggestions[0])
-    } else if (query.trim().length >= MIN_QUERY_LENGTH) {
-      router.push(`/medications?q=${encodeURIComponent(query.trim())}`)
+      goToPricingPage(suggestions[0])
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const match = await findTopMedicationMatch(trimmed)
+      if (match) {
+        goToPricingPage(match)
+      } else {
+        router.push(`/medications?q=${encodeURIComponent(trimmed)}`)
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -98,7 +108,7 @@ export function MedicationAutocomplete({
           className="h-14 text-lg pl-12 pr-32 rounded-xl border-2 border-border focus:border-primary"
           autoComplete="off"
           onFocus={() => {
-            if (query.trim().length >= MIN_QUERY_LENGTH) setShowSuggestions(true)
+            if (query.trim().length >= MIN_SEARCH_LENGTH) setShowSuggestions(true)
           }}
         />
         {isLoading && (
@@ -109,14 +119,14 @@ export function MedicationAutocomplete({
         </Button>
       </form>
 
-      {showSuggestions && query.trim().length >= MIN_QUERY_LENGTH && suggestions.length > 0 && (
+      {showSuggestions && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length > 0 && (
         <Card className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-xl border-2">
           <div className="divide-y">
             {suggestions.map((med, index) => (
               <button
                 key={med.id}
                 type="button"
-                onClick={() => handleSelect(med)}
+                onClick={() => goToPricingPage(med)}
                 className="w-full text-left p-4 hover:bg-primary/10 transition-colors focus:outline-none focus:bg-primary/10 first:rounded-t-lg last:rounded-b-lg"
               >
                 <div className="flex items-start justify-between gap-2">
@@ -139,10 +149,10 @@ export function MedicationAutocomplete({
         </Card>
       )}
 
-      {showSuggestions && query.trim().length >= MIN_QUERY_LENGTH && suggestions.length === 0 && !isLoading && (
+      {showSuggestions && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length === 0 && !isLoading && (
         <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg">
-          <p className="text-sm text-muted-foreground">No medications found for "{query}"</p>
-          <p className="text-xs text-muted-foreground mt-1">Press Search to browse the full catalog</p>
+          <p className="text-sm text-muted-foreground">No medications found starting with "{query}"</p>
+          <p className="text-xs text-muted-foreground mt-1">Press Search to browse the catalog</p>
         </Card>
       )}
     </div>

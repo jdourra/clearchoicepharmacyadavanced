@@ -1,28 +1,20 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, DollarSign, Shield, Clock, ShoppingCart } from "lucide-react"
+import { ArrowRight, DollarSign, Shield, Clock } from "lucide-react"
 import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
 import { MedicationAutocomplete } from "@/components/medication-autocomplete"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import {
-  fetchHomeMedicationStrengths,
   mapDbToHomeMedication,
   type HomeMedication,
-  type MedicationSearchResult,
   type PharmacyMedication,
 } from "@/lib/pharmacy-medication"
-import { useRouter } from "next/navigation"
-import { toast } from "react-hot-toast"
 
 export default function HomePage() {
-  const router = useRouter()
 
   const POPULAR_QUERIES = [
     "Amlodipine",
@@ -36,12 +28,6 @@ export default function HomePage() {
   ]
 
   const [popularMeds, setPopularMeds] = useState<HomeMedication[]>([])
-  const [selectedMedicationName, setSelectedMedicationName] = useState<string>("")
-  const [availableStrengths, setAvailableStrengths] = useState<HomeMedication[]>([])
-  const [selectedMedication, setSelectedMedication] = useState<HomeMedication | null>(null)
-  const [quantity, setQuantity] = useState<number>(30)
-  const [showPricing, setShowPricing] = useState(false)
-  const [loadingStrengths, setLoadingStrengths] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -75,67 +61,6 @@ export default function HomePage() {
     return (perUnitCost * effectiveQty * 1.15 + 5).toFixed(2)
   }
 
-  const handleMedicationSelect = async (medication: MedicationSearchResult) => {
-    setLoadingStrengths(true)
-    setShowPricing(true)
-    setSelectedMedicationName(medication.name)
-
-    try {
-      const allStrengths = await fetchHomeMedicationStrengths(medication.name)
-      setAvailableStrengths(allStrengths)
-      setSelectedMedication(allStrengths.length === 1 ? allStrengths[0] : null)
-      setQuantity(30)
-    } finally {
-      setLoadingStrengths(false)
-    }
-
-    setTimeout(() => {
-      document.getElementById("pricing-calculator")?.scrollIntoView({ behavior: "smooth" })
-    }, 100)
-  }
-
-  const handleStrengthSelect = (medication: HomeMedication) => {
-    setSelectedMedication(medication)
-
-    if (medication.form === "INHALER" || medication.days_supply) {
-      setQuantity(1)
-    } else {
-      setQuantity(30)
-    }
-  }
-
-  const addToCart = () => {
-    if (!selectedMedication) {
-      toast.error("Please select a medication")
-      return
-    }
-
-    const totalPrice = Number.parseFloat(calculatePrice(selectedMedication.per_unit_cost, quantity, selectedMedication.form))
-
-    const cart = JSON.parse(sessionStorage.getItem("cart") || "[]")
-
-    cart.push({
-      id: `${selectedMedication.id}-${Date.now()}`,
-      medication_id: selectedMedication.id,
-      quantity,
-      price: totalPrice,
-      medication: selectedMedication,
-    })
-
-    sessionStorage.setItem("cart", JSON.stringify(cart))
-    toast.success("Added to cart!")
-    router.push("/cart")
-  }
-
-  const effectiveQty = selectedMedication && isUnitBasedForm(selectedMedication.form) ? 1 : quantity
-  const drugCost = selectedMedication ? selectedMedication.per_unit_cost * effectiveQty : 0
-  const markup = drugCost * 0.15
-  const dispensingFee = 5.0
-  const totalPrice = drugCost + markup + dispensingFee
-  const daysSupply = selectedMedication?.days_supply ? quantity * selectedMedication.days_supply : quantity
-  const retailPrice = totalPrice * 3.5
-  const savings = retailPrice - totalPrice
-
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -157,7 +82,7 @@ export default function HomePage() {
             </div>
 
             <div className="max-w-2xl mx-auto mb-8">
-              <MedicationAutocomplete onSelect={handleMedicationSelect} />
+              <MedicationAutocomplete />
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
@@ -176,145 +101,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* Pricing calculator */}
-        {showPricing && (
-          <section id="pricing-calculator" className="py-12 bg-muted/30 border-y">
-            <div className="container max-w-6xl mx-auto px-4">
-              <div className="grid lg:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-bold">{selectedMedicationName}</h2>
-
-                  {availableStrengths.length > 1 && (
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Select Strength:</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {availableStrengths.map((med) => (
-                          <Button
-                            key={med.id}
-                            variant={selectedMedication?.id === med.id ? "default" : "outline"}
-                            onClick={() => handleStrengthSelect(med)}
-                            className="h-auto py-3 flex-col items-start"
-                          >
-                            <div className="font-semibold">{med.strength}</div>
-                            <div className="text-xs opacity-80">{med.form}</div>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedMedication && (
-                    <div className="space-y-2">
-                      <p className="text-xl text-muted-foreground">
-                        {selectedMedication.strength} {selectedMedication.form}
-                      </p>
-                      {selectedMedication.is_generic && <Badge variant="secondary">Generic</Badge>}
-                      <p className="text-sm text-muted-foreground font-mono">NDC: {selectedMedication.ndc}</p>
-                    </div>
-                  )}
-                </div>
-
-                {selectedMedication ? (
-                  <Card className="p-6">
-                    <div className="space-y-6">
-                      <div>
-                        <div className="text-5xl font-bold text-primary mb-1">${totalPrice.toFixed(2)}</div>
-                        <p className="text-sm text-muted-foreground">
-                          ${(totalPrice / quantity).toFixed(2)} per{" "}
-                          {selectedMedication.form === "INHALER" ? "inhaler" : "pill"}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="quantity" className="text-sm font-medium mb-2 block">
-                          Quantity:
-                        </Label>
-                        <Input
-                          id="quantity"
-                          type="number"
-                          min={selectedMedication.days_supply ? 1 : 30}
-                          max={selectedMedication.days_supply ? 3 : 90}
-                          value={quantity}
-                          onChange={(e) => setQuantity(Number.parseInt(e.target.value) || quantity)}
-                          className="text-lg"
-                        />
-                        <div className="flex gap-2 mt-2">
-                          {selectedMedication.days_supply ? (
-                            <>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(1)}>
-                                1 (30 days)
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(2)}>
-                                2 (60 days)
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(3)}>
-                                3 (90 days)
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(30)}>
-                                30
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(60)}>
-                                60
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => setQuantity(90)}>
-                                90
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
-                        <div className="font-semibold mb-3">Price Breakdown:</div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Drug Cost ({quantity} {selectedMedication.form.toLowerCase()}s - {daysSupply} days):
-                          </span>
-                          <span className="font-medium">${drugCost.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">15% Markup:</span>
-                          <span className="font-medium">${markup.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Dispensing Fee:</span>
-                          <span className="font-medium">${dispensingFee.toFixed(2)}</span>
-                        </div>
-                        <div className="border-t pt-2 mt-2 flex justify-between font-bold">
-                          <span>Your Total:</span>
-                          <span className="text-primary">${totalPrice.toFixed(2)}</span>
-                        </div>
-                      </div>
-
-                      <div className="bg-accent/10 rounded-lg p-4">
-                        <div className="text-sm text-muted-foreground mb-1">Typical Retail:</div>
-                        <div className="text-lg line-through">${retailPrice.toFixed(2)}</div>
-                        <div className="text-xl font-bold mt-1 text-green-600">
-                          YOU SAVE ${savings.toFixed(2)} ({Math.round((savings / retailPrice) * 100)}%)
-                        </div>
-                      </div>
-
-                      <Button size="lg" className="w-full" onClick={addToCart}>
-                        <ShoppingCart className="mr-2 h-5 w-5" />
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </Card>
-                ) : (
-                  <Card className="p-6 flex items-center justify-center min-h-[400px]">
-                    <p className="text-muted-foreground text-center">
-                      {loadingStrengths ? "Loading medication strengths..." : "Please select a strength to see pricing"}
-                    </p>
-                  </Card>
-                )}
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Popular medications */}
         <section className="py-16 bg-muted/30">
