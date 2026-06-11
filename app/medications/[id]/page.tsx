@@ -97,7 +97,7 @@ export default function MedicationDetailPage() {
   }, [medication?.id])
 
   useEffect(() => {
-    if (!medication?.id || !selectedStrength || quantity < 30) {
+    if (!medication?.id || !selectedStrength || quantity < 1) {
       setPriceData(null)
       return
     }
@@ -182,7 +182,7 @@ export default function MedicationDetailPage() {
   const savings = retailPrice - totalPrice
   const savingsPercent = totalPrice > 0 ? Math.round((savings / retailPrice) * 100) : 0
 
-  const canShowPrice = selectedStrength && quantity >= 30
+  const canShowPrice = selectedStrength && quantity >= 1
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -304,26 +304,23 @@ export default function MedicationDetailPage() {
                       <Label htmlFor="quantity" className="text-sm font-medium mb-2 block">
                         Quantity (tablets): <span className="text-red-500">*</span>
                       </Label>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Default: 30 tablets for a 30-day supply. Choose 60 or 90 for a 60- or 90-day supply.
-                      </p>
                       <Input
                         id="quantity"
                         type="number"
-                        min="30"
-                        max="90"
-                        step="30"
+                        min="1"
+                        max="999"
+                        step="1"
                         value={quantity}
                         onChange={(e) => {
-                          const val = Number.parseInt(e.target.value)
-                          if (val >= 30 && val <= 90) {
+                          const val = Number.parseInt(e.target.value, 10)
+                          if (!Number.isNaN(val) && val >= 1 && val <= 999) {
                             setQuantity(val)
                           }
                         }}
                         className="text-lg"
                       />
-                      <div className="flex gap-2 mt-2">
-                        {[30, 60, 90].map((q) => (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {[30, 60, 90, 120].map((q) => (
                           <Button
                             key={q}
                             variant="outline"
@@ -331,7 +328,7 @@ export default function MedicationDetailPage() {
                             onClick={() => setQuantity(q)}
                             className={quantity === q ? "border-primary bg-primary/5" : ""}
                           >
-                            {q} ({q}-day)
+                            {q}
                           </Button>
                         ))}
                       </div>
@@ -343,7 +340,7 @@ export default function MedicationDetailPage() {
                           <div className="font-semibold mb-3">Price Breakdown:</div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">
-                              Drug Cost ({quantity} tablets / {quantity}-day supply):
+                              Drug Cost ({quantity} tablets):
                             </span>
                             <span className="font-medium">${drugCost.toFixed(2)}</span>
                           </div>

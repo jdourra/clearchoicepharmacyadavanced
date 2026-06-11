@@ -17,14 +17,18 @@ import {
 export default function HomePage() {
 
   const POPULAR_QUERIES = [
-    "Amlodipine",
+    // Blood pressure
     "Lisinopril",
-    "Metformin",
+    "Amlodipine",
+    "Losartan",
+    "Metoprolol",
+    // Cholesterol
     "Atorvastatin",
-    "Omeprazole",
+    "Rosuvastatin",
+    // Diabetes
+    "Metformin",
+    // Thyroid
     "Levothyroxine",
-    "Albuterol",
-    "Gabapentin",
   ]
 
   const [popularMeds, setPopularMeds] = useState<HomeMedication[]>([])
@@ -35,7 +39,7 @@ export default function HomePage() {
     async function loadPopular() {
       const results = await Promise.all(
         POPULAR_QUERIES.map(async (query) => {
-          const response = await fetch(`/api/drugs?q=${encodeURIComponent(query)}&limit=1`)
+          const response = await fetch(`/api/drugs?q=${encodeURIComponent(query)}&limit=1&prefix=1`)
           if (!response.ok) return null
           const data = await response.json()
           const med = data.medications?.[0] as PharmacyMedication | undefined
@@ -105,14 +109,17 @@ export default function HomePage() {
         {/* Popular medications */}
         <section className="py-16 bg-muted/30">
           <div className="container max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Popular Medications</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">Popular Medications</h2>
+            <p className="text-center text-muted-foreground mb-8">
+              Blood pressure, cholesterol, diabetes, and thyroid medications
+            </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
               {popularMeds.map((med) => {
                 const isUnit = isUnitBasedForm(med.form)
                 const price = calculatePrice(med.per_unit_cost, 30, med.form)
                 const retail = (Number.parseFloat(price) * 3.5).toFixed(2)
                 const save = (Number.parseFloat(retail) - Number.parseFloat(price)).toFixed(2)
-                const supplyLabel = isUnit ? `per ${med.form.toLowerCase()}` : "for 30-day supply"
+                const supplyLabel = isUnit ? `per ${med.form.toLowerCase()}` : "for 30 tablets"
 
                 return (
                   <Link key={med.id} href={`/medications/${med.id}`}>
