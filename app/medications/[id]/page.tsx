@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { ArrowLeft, ShoppingCart, AlertCircle, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { authFetch } from "@/lib/session"
@@ -40,9 +40,46 @@ export default function MedicationDetailPage() {
     fetcher
   )
 
-  const relatedStrengths = (relatedData?.medications || []).filter(
-    (m: any) => m.id !== medication?.id && m.name === medication?.name
+  const relatedStrengths = useMemo(
+    () =>
+      (relatedData?.medications || []).filter(
+        (m: { id: string; name: string }) => m.id !== medication?.id && m.name === medication?.name
+      ),
+    [relatedData?.medications, medication?.id, medication?.name]
   )
+
+  const fetchPrice = useCallback(async (medId: string, qty: number, signal: AbortSignal) => {
+    setLoadingPrice(true)
+    try {
+      const response = await fetch("/api/prices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          medicationId: medId,
+          quantity: qty,
+        }),
+        signal,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Price request failed (${response.status})`)
+      }
+
+      const data = await response.json()
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      setPriceData(data)
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        console.error("Error fetching price:", error)
+        toast.error("Unable to calculate price. Please try again.")
+      }
+    } finally {
+      setLoadingPrice(false)
+    }
+  }, [])
 
   useEffect(() => {
     authFetch("/api/auth/me")
@@ -60,37 +97,21 @@ export default function MedicationDetailPage() {
   }, [medication?.id])
 
   useEffect(() => {
-    if (medication && selectedStrength && quantity >= 30) {
-      const selectedMed =
-        selectedStrength === String(medication.id)
-          ? medication
-          : relatedStrengths.find((m: any) => String(m.id) === selectedStrength) || medication
-      fetchPrice(String(selectedMed.id), selectedMed.strength, quantity)
-    } else {
+    if (!medication?.id || !selectedStrength || quantity < 30) {
       setPriceData(null)
+      return
     }
-  }, [medication, selectedStrength, quantity, relatedStrengths])
 
-  const fetchPrice = async (medId: string, strength: string, qty: number) => {
-    setLoadingPrice(true)
-    try {
-      const response = await fetch("/api/prices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          medicationId: medId,
-          strength,
-          quantity: qty,
-        }),
-      })
-      const data = await response.json()
-      setPriceData(data)
-    } catch (error) {
-      console.error("Error fetching price:", error)
-    } finally {
-      setLoadingPrice(false)
-    }
-  }
+    const selectedMed =
+      selectedStrength === String(medication.id)
+        ? medication
+        : relatedStrengths.find((m: { id: string }) => String(m.id) === selectedStrength) || medication
+
+    const controller = new AbortController()
+    fetchPrice(String(selectedMed.id), quantity, controller.signal)
+
+    return () => controller.abort()
+  }, [medication, selectedStrength, quantity, relatedStrengths, fetchPrice])
 
   const addToCart = () => {
     if (!canShowPrice || !priceData || !selectedStrength) {
