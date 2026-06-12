@@ -52,8 +52,14 @@ export const metadata: Metadata = {
     "clinical prior authorization",
     "manufacturer copay cards",
     "specialty drug pharmacy Michigan",
+    "GLP-1 weight loss Michigan",
+    "Semaglutide Novi MI",
+    "ED troches Michigan",
+    "mobile IV therapy Metro Detroit",
+    "medical weight loss Novi",
+    "men's health pharmacy Michigan",
   ],
-  generator: "v0.app",
+  generator: "Clear Choice Pharmacy",
   applicationName: "Clear Choice Pharmacy",
   referrer: "origin-when-cross-origin",
   authors: [{ name: "Clear Choice Pharmacy" }],
@@ -106,19 +112,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
         url: "/icon.svg",
         type: "image/svg+xml",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/apple-icon.svg",
+    shortcut: "/icon.svg",
   },
   category: "health",
   ...(process.env.GOOGLE_SITE_VERIFICATION

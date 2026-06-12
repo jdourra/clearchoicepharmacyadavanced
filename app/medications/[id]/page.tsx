@@ -13,6 +13,7 @@ import { useEffect, useState, useMemo, useCallback } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { authFetch } from "@/lib/session"
+import { buildCartItem } from "@/lib/cart"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -113,29 +114,6 @@ export default function MedicationDetailPage() {
     return () => controller.abort()
   }, [medication, selectedStrength, quantity, relatedStrengths, fetchPrice])
 
-  const addToCart = () => {
-    if (!canShowPrice || !priceData || !selectedStrength) {
-      toast.error("Please select strength and quantity to add to cart.")
-      return
-    }
-
-    const existingCart = sessionStorage.getItem("cart")
-    const cart = existingCart ? JSON.parse(existingCart) : []
-
-    const cartItem = {
-      id: `${selectedMed.id}-${Date.now()}`,
-      medication_id: selectedMed.id,
-      quantity: quantity,
-      strength: selectedMed.strength,
-      price: totalPrice,
-    }
-
-    cart.push(cartItem)
-    sessionStorage.setItem("cart", JSON.stringify(cart))
-    router.push("/cart")
-    toast.success("Medication added to cart successfully!")
-  }
-
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col">
@@ -183,6 +161,28 @@ export default function MedicationDetailPage() {
   const savingsPercent = totalPrice > 0 ? Math.round((savings / retailPrice) * 100) : 0
 
   const canShowPrice = selectedStrength && quantity >= 1
+
+  const addToCart = () => {
+    if (!canShowPrice || !priceData || !selectedStrength) {
+      toast.error("Please select strength and quantity to add to cart.")
+      return
+    }
+
+    const existingCart = sessionStorage.getItem("cart")
+    const cart = existingCart ? JSON.parse(existingCart) : []
+
+    const cartItem = buildCartItem({
+      medication: selectedMed,
+      quantity,
+      price: totalPrice,
+      perUnitCost: priceData?.breakdown?.acquisitionCostPerUnit,
+    })
+
+    cart.push(cartItem)
+    sessionStorage.setItem("cart", JSON.stringify(cart))
+    router.push("/cart")
+    toast.success("Medication added to cart successfully!")
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

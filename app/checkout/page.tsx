@@ -12,11 +12,12 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Upload, Check, Stethoscope } from "lucide-react"
 import Link from "next/link"
 import { authFetch } from "@/lib/session"
+import { hydrateCartItems, type CartItem } from "@/lib/cart"
 
 export default function CheckoutPage() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [cartItems, setCartItems] = useState<any[]>([])
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [deliveryMethod, setDeliveryMethod] = useState("pickup")
   const [prescriptionMethod, setPrescriptionMethod] = useState("upload")
   const [prescriptionFile, setPrescriptionFile] = useState<File | null>(null)
@@ -62,14 +63,23 @@ export default function CheckoutPage() {
       .catch(() => {})
   }, [])
 
-  const loadCart = () => {
+  const loadCart = async () => {
     try {
       const cart = window.sessionStorage.getItem("cart")
-      if (cart) {
-        setCartItems(JSON.parse(cart))
-      } else {
+      if (!cart) {
         router.push("/cart")
+        return
       }
+
+      const rawItems = JSON.parse(cart)
+      const items = await hydrateCartItems(Array.isArray(rawItems) ? rawItems : [])
+      if (items.length === 0) {
+        router.push("/cart")
+        return
+      }
+
+      setCartItems(items)
+      window.sessionStorage.setItem("cart", JSON.stringify(items))
     } catch {
       router.push("/cart")
     }

@@ -34,37 +34,50 @@ export function SiteFooter() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Quick Links</h3>
-            <div className="flex flex-col gap-2 text-sm">
-              <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
-              </Link>
-              <Link href="/medications" className="text-muted-foreground hover:text-foreground transition-colors">
-                Medications
-              </Link>
-              <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
-                Men&apos;s Health
-              </Link>
-              <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
-                Weight Loss
-              </Link>
-              <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
-                IV Rejuvenation
-              </Link>
-              <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                Specialty Care
+            <h3 className="font-semibold text-foreground">Patient portal</h3>
+            <div className="flex flex-col gap-2 text-sm mb-4">
+              <Link href="/account" className="text-muted-foreground hover:text-foreground transition-colors">
+                Sign in / My account
               </Link>
               <Link href="/auth/sign-up" className="text-muted-foreground hover:text-foreground transition-colors">
-                Sign Up
+                Create account
+              </Link>
+            </div>
+            <h3 className="font-semibold text-foreground">Prescription prices</h3>
+            <div className="flex flex-col gap-2 text-sm">
+              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                Search medications
+              </Link>
+              <Link href="/medications" className="text-muted-foreground hover:text-foreground transition-colors">
+                Browse catalog
+              </Link>
+              <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                Pricing formula
               </Link>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">About</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Clear Choice Pharmacy is your transparent, cash-pay pharmacy. No insurance middlemen, no hidden fees
-              — just honest pricing on the medications you need.
+          <div className="space-y-3 md:col-span-1">
+            <h3 className="font-semibold text-foreground">Clinical programs</h3>
+            <div className="flex flex-col gap-2 text-sm">
+              <Link href="/services" className="text-muted-foreground hover:text-foreground transition-colors">
+                All programs
+              </Link>
+              <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
+                GLP-1 weight loss
+              </Link>
+              <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
+                Men&apos;s health &amp; ED
+              </Link>
+              <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
+                IV rejuvenation
+              </Link>
+              <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Specialty medications
+              </Link>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed pt-2">
+              Transparent pharmacy for everyday prescriptions and specialized clinical care in Novi and Metro Detroit.
             </p>
           </div>
         </div>

@@ -11,8 +11,8 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
+import { SITE_URL, AREA_SERVED, PHARMACY_ADDRESS, PHARMACY_PHONE } from "@/lib/clinical-seo"
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
   title: "Specialty Pharmacy Care | All Insurances Accepted - Prior Auth & Copay Support",
@@ -88,15 +88,9 @@ export default function SpecialtyPharmacyPage() {
     "@type": "MedicalBusiness",
     name: "Clear Choice Pharmacy - Specialty Pharmacy Services",
     url: `${SITE_URL}/specialty-pharmacy`,
-    telephone: "+1-248-987-6182",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "40890 Grand River Ave",
-      addressLocality: "Novi",
-      addressRegion: "MI",
-      postalCode: "48375",
-      addressCountry: "US",
-    },
+    telephone: PHARMACY_PHONE,
+    address: PHARMACY_ADDRESS,
+    areaServed: AREA_SERVED,
     description:
       "Specialty pharmacy care with all major insurances accepted, expedited in-house prior authorizations, and manufacturer copay assistance support.",
     medicalSpecialty: "Pharmacy",

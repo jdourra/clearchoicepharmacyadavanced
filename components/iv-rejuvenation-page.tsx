@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { IV_BOOSTERS, IV_PACKAGES, type IvPackage } from "@/lib/iv-catalog"
+import { IV_REJUVENATION_FAQS } from "@/lib/clinical-seo"
 
 const BOOSTERS = IV_BOOSTERS
 
@@ -81,24 +82,6 @@ const STEPS = [
     step: 4,
     title: "RN Dispatch",
     description: "After pharmacy preparation, a licensed RN is dispatched to your home, office, or hotel.",
-  },
-]
-
-const FAQS = [
-  {
-    question: "Does it hurt?",
-    answer:
-      "Most patients experience minimal discomfort. Our licensed RNs use a micro-needle technique for a smooth, professional insertion.",
-  },
-  {
-    question: "How long does it take?",
-    answer:
-      "Most IV drips take 45–60 minutes. NAD+ therapy requires a longer, monitored infusion of approximately 2 hours.",
-  },
-  {
-    question: "Is it safe?",
-    answer:
-      "Yes. A licensed telehealth provider reviews each request before treatment. IV bags are prepared at Clear Choice Pharmacy pursuant to a patient-specific prescription, then administered by registered nurses.",
   },
 ]
 
@@ -354,7 +337,7 @@ export function IvRejuvenationPage() {
               <p className="text-slate-600">Everything you need to know before your mobile IV appointment</p>
             </div>
             <Accordion type="single" collapsible className="rounded-xl border bg-white px-6">
-              {FAQS.map((faq) => (
+              {IV_REJUVENATION_FAQS.map((faq) => (
                 <AccordionItem key={faq.question} value={faq.question}>
                   <AccordionTrigger className="text-base font-semibold text-slate-900 hover:no-underline">
                     {faq.question}

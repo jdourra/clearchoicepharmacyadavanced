@@ -63,12 +63,23 @@ export function getPerUnitCost(med: PharmacyMedication): number {
   return acquisitionCost > 0 ? acquisitionCost / packageQty : 0.5
 }
 
+function inferDosageForm(med: PharmacyMedication): string {
+  const form = (med.dosage_form || "").toUpperCase()
+  if (form && form !== "EA") return form
+
+  const text = `${med.name} ${med.strength || ""}`.toLowerCase()
+  if (/\bcapsule\b|\bcap\b/.test(text)) return "CAPSULE"
+  if (/\btablet\b|\btb\b/.test(text)) return "TABLET"
+  if (/\bsolution\b|\bsoln\b/.test(text)) return "SOLUTION"
+  return form || "TABLET"
+}
+
 export function mapDbToHomeMedication(med: PharmacyMedication): HomeMedication {
   return {
     id: med.id,
     name: med.name,
     strength: med.strength,
-    form: (med.dosage_form || "TABLET").toUpperCase(),
+    form: inferDosageForm(med),
     ndc: med.ndc || "",
     quantity: med.package_quantity != null ? Number(med.package_quantity) : 30,
     acquisition_cost: med.acquisition_cost != null ? Number(med.acquisition_cost) : 0,
@@ -114,4 +125,65 @@ export async function findTopMedicationMatch(query: string): Promise<MedicationS
     suggestions.find((med) => med.name.toLowerCase().startsWith(q)) ||
     suggestions[0]
   )
+}
+
+function medicationSearchText(med: PharmacyMedication): string {
+  return `${med.name} ${med.strength || ""} ${med.dosage_form || ""}`.toLowerCase()
+}
+
+function isExtendedRelease(text: string): boolean {
+  return /\ber\b|extended|osmotic|gastrc|osm-tab|gastr-tb/.test(text)
+}
+
+function isCapsule(text: string): boolean {
+  return /\bcapsule\b|\bcap\b/.test(text)
+}
+
+function isTablet(text: string): boolean {
+  return /\btablet\b|\btb\b/.test(text)
+}
+
+/** Pick the best catalog row for homepage popular cards (cheaper generic forms). */
+export function pickPopularMedication(
+  medications: PharmacyMedication[],
+  query: string
+): PharmacyMedication | null {
+  if (medications.length === 0) return null
+
+  const q = query.toLowerCase()
+  let pool = medications
+
+  if (q === "metformin") {
+    const tablets = medications.filter((med) => {
+      const text = medicationSearchText(med)
+      if (isExtendedRelease(text)) return false
+      if (!/500/.test(text)) return false
+      return isTablet(text) || text.includes("500 mg")
+    })
+    pool = tablets.length > 0 ? tablets : medications
+  } else if (q === "levothyroxine") {
+    const tablets = medications.filter((med) => {
+      const text = medicationSearchText(med)
+      if (isCapsule(text)) return false
+      return isTablet(text)
+    })
+    pool = tablets.length > 0 ? tablets : medications
+
+    const commonStrength = pool.filter((med) => /50\s*mcg|100\s*mcg/.test(medicationSearchText(med)))
+    if (commonStrength.length > 0) pool = commonStrength
+  }
+
+  return [...pool].sort((a, b) => getPerUnitCost(a) - getPerUnitCost(b))[0]
+}
+
+export async function fetchPopularMedication(query: string): Promise<HomeMedication | null> {
+  const response = await fetch(
+    `/api/drugs?q=${encodeURIComponent(query)}&limit=40&prefix=1`
+  )
+  if (!response.ok) return null
+
+  const data = await response.json()
+  const medications = (data.medications || []) as PharmacyMedication[]
+  const picked = pickPopularMedication(medications, query)
+  return picked ? mapDbToHomeMedication(picked) : null
 }

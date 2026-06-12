@@ -1,10 +1,8 @@
 import type { MetadataRoute } from "next"
-import { allMedications } from "@/lib/all-medications"
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
-  // Core pages
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -23,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/services`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
     },
     {
       url: `${baseUrl}/specialty-pharmacy`,
@@ -80,13 +84,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Dynamic medication pages
-  const medicationPages: MetadataRoute.Sitemap = allMedications.slice(0, 500).map((med) => ({
-    url: `${baseUrl}/medications/${med.id}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }))
+  let medicationPages: MetadataRoute.Sitemap = []
+
+  try {
+    if (!process.env.DATABASE_URL) {
+      return staticPages
+    }
+
+    const { sql } = await import("@/lib/db")
+    const medications = await sql(
+      "SELECT id, updated_at FROM medications WHERE is_active IS NOT FALSE ORDER BY name ASC LIMIT 2500",
+      []
+    )
+    medicationPages = medications.map((med: { id: string; updated_at?: string }) => ({
+      url: `${baseUrl}/medications/${med.id}`,
+      lastModified: med.updated_at ? new Date(med.updated_at) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }))
+  } catch (error) {
+    console.error("[sitemap] Failed to load medications from database:", error)
+  }
 
   return [...staticPages, ...medicationPages]
 }

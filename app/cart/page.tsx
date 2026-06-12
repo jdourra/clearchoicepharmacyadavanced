@@ -8,15 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Trash2, Plus, Minus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import type { Medication } from "@/lib/medications-database"
-
-interface CartItem {
-  id: string
-  medication_id: string
-  quantity: number
-  price: number
-  medication: Medication
-}
+import { hydrateCartItems, type CartItem } from "@/lib/cart"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -24,20 +16,41 @@ export default function CartPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const cart = sessionStorage.getItem("cart")
-    if (cart) {
-      const items = JSON.parse(cart)
-      setCartItems(items)
+    let cancelled = false
+
+    async function loadCart() {
+      try {
+        const cart = sessionStorage.getItem("cart")
+        if (!cart) {
+          if (!cancelled) setCartItems([])
+          return
+        }
+
+        const rawItems = JSON.parse(cart)
+        const items = await hydrateCartItems(Array.isArray(rawItems) ? rawItems : [])
+        if (cancelled) return
+
+        setCartItems(items)
+        sessionStorage.setItem("cart", JSON.stringify(items))
+      } catch {
+        if (!cancelled) setCartItems([])
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
-    setLoading(false)
+
+    loadCart()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const updateQuantity = (itemId: string, newQty: number) => {
     const item = cartItems.find((i) => i.id === itemId)
-    if (!item || !item.medication) return
+    if (!item?.medication) return
 
-    const minQty = item.medication.days_supply ? 1 : 30
-    const maxQty = item.medication.days_supply ? 3 : 90
+    const minQty = item.medication.days_supply ? 1 : 1
+    const maxQty = item.medication.days_supply ? 3 : 999
 
     if (newQty < minQty || newQty > maxQty) return
 
@@ -98,77 +111,74 @@ export default function CartPage() {
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => (
-                <Card key={item.id} className="p-5">
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-1">{item.medication.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {item.medication.strength} {item.medication.form}
-                      </p>
+              {cartItems.map((item) => {
+                const med = item.medication
+                const step = med.days_supply ? 1 : 30
+                const minQty = med.days_supply ? 1 : 1
+                const maxQty = med.days_supply ? 3 : 999
 
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center border rounded-lg">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              updateQuantity(
-                                item.id,
-                                item.medication.days_supply ? item.quantity - 1 : item.quantity - 30,
-                              )
-                            }
-                            disabled={item.quantity <= (item.medication.days_supply ? 1 : 30)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const val = Number.parseInt(e.target.value) || item.quantity
-                              updateQuantity(item.id, val)
-                            }}
-                            className="w-16 h-8 text-center border-0 focus-visible:ring-0"
-                          />
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              updateQuantity(
-                                item.id,
-                                item.medication.days_supply ? item.quantity + 1 : item.quantity + 30,
-                              )
-                            }
-                            disabled={item.quantity >= (item.medication.days_supply ? 3 : 90)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
+                return (
+                  <Card key={item.id} className="p-5">
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">{med.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {med.strength} {med.form}
+                        </p>
+
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center border rounded-lg">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateQuantity(item.id, item.quantity - step)}
+                              disabled={item.quantity <= minQty}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) => {
+                                const val = Number.parseInt(e.target.value) || item.quantity
+                                updateQuantity(item.id, val)
+                              }}
+                              className="w-16 h-8 text-center border-0 focus-visible:ring-0"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateQuantity(item.id, item.quantity + step)}
+                              disabled={item.quantity >= maxQty}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {item.quantity} {med.form.toLowerCase()}
+                            {item.quantity !== 1 ? "s" : ""}
+                          </span>
                         </div>
-                        <span className="text-sm text-muted-foreground">
-                          {item.quantity} {item.medication.form.toLowerCase()}
-                          {item.quantity !== 1 ? "s" : ""}
-                        </span>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-primary mb-2">${item.price.toFixed(2)}</div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(item.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Remove
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-primary mb-2">${item.price.toFixed(2)}</div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeItem(item.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                )
+              })}
             </div>
 
             <div>

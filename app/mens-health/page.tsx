@@ -11,8 +11,13 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
+import {
+  SITE_URL,
+  MENS_HEALTH_FAQS,
+  buildFaqJsonLd,
+  pharmacyProviderSchema,
+} from "@/lib/clinical-seo"
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 const CONSULTATION_URL = "/mens-health/start"
 
 export const metadata: Metadata = {
@@ -56,23 +61,11 @@ export default function MensHealthPage() {
     description:
       "Custom sublingual ED troches compounded at Clear Choice Pharmacy in Novi, MI. Sildenafil and Tadalafil sublingual formulations.",
     about: [{ "@type": "MedicalTherapy", name: "Sublingual ED Troches" }],
-    provider: {
-      "@type": "Pharmacy",
-      name: "Clear Choice Pharmacy",
-      telephone: "+1-248-987-6182",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "40890 Grand River Ave",
-        addressLocality: "Novi",
-        addressRegion: "MI",
-        postalCode: "48375",
-        addressCountry: "US",
-      },
-    },
+    provider: pharmacyProviderSchema(),
   }
 
   return (
-    <ClinicalLandingShell jsonLd={pageJsonLd}>
+    <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(MENS_HEALTH_FAQS)]}>
       <PremiumHero
         badge="Clear Choice Men's Health"
         headline="Custom Compounded ED Troches in Novi, MI"
@@ -145,23 +138,7 @@ export default function MensHealthPage() {
       <FaqSection
         title="Frequently Asked Questions"
         subtitle="Common questions about custom ED troches"
-        items={[
-          {
-            question: "Why choose sublingual troches over regular ED pills?",
-            answer:
-              "Troches absorb through the oral mucosa, often working in half the time of swallowed tablets. Because they bypass the digestive tract, they are not affected by food or heavy meals.",
-          },
-          {
-            question: "Can you combine Sildenafil and Tadalafil?",
-            answer:
-              "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available at retail chains.",
-          },
-          {
-            question: "Is the consultation private?",
-            answer:
-              "Absolutely. The online consultation is confidential, and your medication is prepared and delivered discreetly through Clear Choice Pharmacy.",
-          },
-        ]}
+        items={MENS_HEALTH_FAQS}
       />
 
       <PremiumDisclaimer>

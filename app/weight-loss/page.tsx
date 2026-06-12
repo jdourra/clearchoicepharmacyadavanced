@@ -12,8 +12,13 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
+import {
+  SITE_URL,
+  WEIGHT_LOSS_FAQS,
+  buildFaqJsonLd,
+  pharmacyProviderSchema,
+} from "@/lib/clinical-seo"
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 const CONSULTATION_URL = "/weight-loss/start"
 
 export const metadata: Metadata = {
@@ -61,23 +66,11 @@ export default function WeightLossPage() {
       { "@type": "MedicalTherapy", name: "Semaglutide Weight Management" },
       { "@type": "MedicalTherapy", name: "Tirzepatide Weight Management" },
     ],
-    provider: {
-      "@type": "Pharmacy",
-      name: "Clear Choice Pharmacy",
-      telephone: "+1-248-987-6182",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "40890 Grand River Ave",
-        addressLocality: "Novi",
-        addressRegion: "MI",
-        postalCode: "48375",
-        addressCountry: "US",
-      },
-    },
+    provider: pharmacyProviderSchema(),
   }
 
   return (
-    <ClinicalLandingShell jsonLd={pageJsonLd}>
+    <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(WEIGHT_LOSS_FAQS)]}>
       <PremiumHero
         badge="Clear Choice Weight Management"
         headline="Medical Weight Loss & GLP Therapy in Novi, MI"
@@ -177,23 +170,7 @@ export default function WeightLossPage() {
       <FaqSection
         title="Frequently Asked Questions"
         subtitle="What to know before starting GLP-1 therapy"
-        items={[
-          {
-            question: "What is the difference between Semaglutide and Tirzepatide?",
-            answer:
-              "Semaglutide is a GLP-1 receptor agonist, while Tirzepatide activates both GLP-1 and GIP pathways. Your provider will recommend the option best suited to your clinical profile and goals.",
-          },
-          {
-            question: "Do I need a prescription?",
-            answer:
-              "Yes. GLP-1 therapies require a valid prescription and clinical evaluation. Complete our online intake to begin the provider review process.",
-          },
-          {
-            question: "Is pricing transparent?",
-            answer:
-              "Yes. Clear Choice Pharmacy offers upfront cash-pay pricing on compounded GLP formulations—no insurance middlemen or hidden fees.",
-          },
-        ]}
+        items={WEIGHT_LOSS_FAQS}
       />
 
       <PremiumDisclaimer>
