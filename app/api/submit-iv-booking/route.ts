@@ -95,7 +95,7 @@ Time Window:      ${payload.dispatch.preferredTimeWindow}
 ───────────────────────────────────────────────────────────────────────────────
 Package:  ${payload.treatment.selectedPackageTitle || payload.treatment.selectedPackage}
 Boosters: ${b.length > 0 ? b.join(", ") : "None"}
-Estimated Total: $${payload.treatment.estimatedTotal ?? "—"}
+Estimated Total: $${payload.treatment.estimatedTotal ?? "—"} (includes $50 mobile travel & dispatch)
 
 ───────────────────────────────────────────────────────────────────────────────
                            CLINICAL SCREENING

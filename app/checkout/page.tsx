@@ -9,10 +9,40 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Upload, Check, Stethoscope } from "lucide-react"
+import { ArrowLeft, Upload, Check, Stethoscope, ArrowRightLeft } from "lucide-react"
 import Link from "next/link"
 import { authFetch } from "@/lib/session"
 import { hydrateCartItems, type CartItem } from "@/lib/cart"
+
+function buildPrescriptionNotes(
+  prescriptionMethod: string,
+  options: {
+    doctorName: string
+    doctorPhone: string
+    transferRxNumbers: string
+    transferPharmacyName: string
+    transferPharmacyPhone: string
+    deliveryMethod: string
+  }
+) {
+  const { doctorName, doctorPhone, transferRxNumbers, transferPharmacyName, transferPharmacyPhone, deliveryMethod } =
+    options
+
+  if (prescriptionMethod === "eprescribe") {
+    return `Delivery: ${deliveryMethod}, Prescription: E-Prescribe, Doctor: ${doctorName}, Doctor Phone: ${doctorPhone}`
+  }
+
+  if (prescriptionMethod === "transfer") {
+    const rxNumbers = transferRxNumbers
+      .split(/[\n,]+/)
+      .map((n) => n.trim())
+      .filter(Boolean)
+      .join(", ")
+    return `Delivery: ${deliveryMethod}, Prescription: Transfer, RX Numbers: ${rxNumbers}, Pharmacy: ${transferPharmacyName}, Pharmacy Phone: ${transferPharmacyPhone}`
+  }
+
+  return `Delivery: ${deliveryMethod}, Prescription: Upload`
+}
 
 export default function CheckoutPage() {
   const [step, setStep] = useState(1)
@@ -23,6 +53,9 @@ export default function CheckoutPage() {
   const [prescriptionFile, setPrescriptionFile] = useState<File | null>(null)
   const [doctorName, setDoctorName] = useState("")
   const [doctorPhone, setDoctorPhone] = useState("")
+  const [transferRxNumbers, setTransferRxNumbers] = useState("")
+  const [transferPharmacyName, setTransferPharmacyName] = useState("")
+  const [transferPharmacyPhone, setTransferPharmacyPhone] = useState("")
   const router = useRouter()
   const [formData, setFormData] = useState({
     firstName: "",
@@ -106,10 +139,14 @@ export default function CheckoutPage() {
           items: orderItems,
           total_amount: total,
           delivery_method: deliveryMethod,
-          notes:
-            prescriptionMethod === "eprescribe"
-              ? `Delivery: ${deliveryMethod}, Prescription: E-Prescribe, Doctor: ${doctorName}, Doctor Phone: ${doctorPhone}`
-              : `Delivery: ${deliveryMethod}, Prescription: Upload`,
+          notes: buildPrescriptionNotes(prescriptionMethod, {
+            doctorName,
+            doctorPhone,
+            transferRxNumbers,
+            transferPharmacyName,
+            transferPharmacyPhone,
+            deliveryMethod,
+          }),
         }),
       })
 
@@ -142,6 +179,19 @@ export default function CheckoutPage() {
       setPrescriptionFile(file)
     }
   }
+
+  const transferRxList = transferRxNumbers
+    .split(/[\n,]+/)
+    .map((n) => n.trim())
+    .filter(Boolean)
+
+  const canContinuePrescriptionStep =
+    (prescriptionMethod === "upload" && !!prescriptionFile) ||
+    (prescriptionMethod === "eprescribe" && !!doctorName.trim() && !!doctorPhone.trim()) ||
+    (prescriptionMethod === "transfer" &&
+      transferRxList.length > 0 &&
+      !!transferPharmacyName.trim() &&
+      !!transferPharmacyPhone.trim())
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -287,7 +337,7 @@ export default function CheckoutPage() {
               {step === 2 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Prescription Upload</CardTitle>
+                    <CardTitle>How will we get your prescription?</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <RadioGroup value={prescriptionMethod} onValueChange={setPrescriptionMethod}>
@@ -390,6 +440,66 @@ export default function CheckoutPage() {
                           )}
                         </div>
                       </div>
+
+                      <div className="flex items-start space-x-3 border rounded-lg p-4">
+                        <RadioGroupItem value="transfer" id="transfer" className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor="transfer" className="font-semibold cursor-pointer">
+                            Transfer Prescriptions
+                          </Label>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            We will contact your current pharmacy to transfer your prescriptions to us
+                          </p>
+                          {prescriptionMethod === "transfer" && (
+                            <div className="mt-4 space-y-4">
+                              <div className="border rounded-lg p-4 space-y-4">
+                                <div className="flex items-center gap-2 text-sm font-semibold">
+                                  <ArrowRightLeft className="h-4 w-4" />
+                                  <span>Transfer details</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  Enter your prescription numbers and the pharmacy where they are currently filled.
+                                </p>
+                                <div>
+                                  <Label htmlFor="transferRxNumbers">Prescription numbers</Label>
+                                  <textarea
+                                    id="transferRxNumbers"
+                                    placeholder="Enter one prescription number per line"
+                                    value={transferRxNumbers}
+                                    onChange={(e) => setTransferRxNumbers(e.target.value)}
+                                    rows={3}
+                                    className="mt-1.5 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    required
+                                  />
+                                </div>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="transferPharmacyName">Pharmacy name</Label>
+                                    <Input
+                                      id="transferPharmacyName"
+                                      placeholder="e.g. CVS Pharmacy"
+                                      value={transferPharmacyName}
+                                      onChange={(e) => setTransferPharmacyName(e.target.value)}
+                                      required
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="transferPharmacyPhone">Pharmacy phone number</Label>
+                                    <Input
+                                      id="transferPharmacyPhone"
+                                      type="tel"
+                                      placeholder="(248) 555-0100"
+                                      value={transferPharmacyPhone}
+                                      onChange={(e) => setTransferPharmacyPhone(e.target.value)}
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </RadioGroup>
 
                     <div className="flex gap-3">
@@ -399,10 +509,7 @@ export default function CheckoutPage() {
                       <Button
                         onClick={() => setStep(3)}
                         className="flex-1"
-                        disabled={
-                          (prescriptionMethod === "upload" && !prescriptionFile) ||
-                          (prescriptionMethod === "eprescribe" && (!doctorName.trim() || !doctorPhone.trim()))
-                        }
+                        disabled={!canContinuePrescriptionStep}
                       >
                         Continue to Delivery
                       </Button>
@@ -492,6 +599,19 @@ export default function CheckoutPage() {
                             ? `Uploaded: ${prescriptionFile.name}`
                             : "Upload provided"}
                         </p>
+                      ) : prescriptionMethod === "transfer" ? (
+                        <div className="text-sm space-y-1">
+                          <p>Transfer from current pharmacy</p>
+                          <p className="text-muted-foreground">
+                            {"RX Numbers: "}{transferRxList.join(", ")}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {"Pharmacy: "}{transferPharmacyName}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {"Pharmacy Phone: "}{transferPharmacyPhone}
+                          </p>
+                        </div>
                       ) : (
                         <div className="text-sm space-y-1">
                           <p>Doctor will e-prescribe</p>

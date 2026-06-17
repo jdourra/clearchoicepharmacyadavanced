@@ -13,48 +13,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { calculateIvSubtotal, calculateIvTotal, getIvBoosters, getIvPackage, IV_TRAVEL_FEE, type IvBooster } from "@/lib/iv-catalog"
-
-const TIME_WINDOWS = [
-  { value: "asap", label: "ASAP — dispatch when available" },
-  { value: "morning", label: "Morning (8am – 12pm)" },
-  { value: "afternoon", label: "Afternoon (12pm – 5pm)" },
-  { value: "evening", label: "Evening (5pm – 8pm)" },
-]
+import { getRejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
 
 const states = [
-  "Michigan",
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
   "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
-  "Louisiana", "Maine", "Maryland", "Massachusetts", "Minnesota", "Mississippi",
+  "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
   "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
   "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
   "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
   "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
 ]
 
-type IvBookingFormProps = {
-  packageId: string
-  boosterIds: string[]
+type RejuvenationVialIntakeFormProps = {
+  vialId: string
 }
 
-export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
+export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFormProps) {
   const router = useRouter()
-  const selectedPackage = getIvPackage(packageId)
-  const selectedBoosters = getIvBoosters(boosterIds)
-  const subtotal = calculateIvSubtotal(packageId, boosterIds)
-  const estimatedTotal = calculateIvTotal(packageId, boosterIds)
+  const selectedVial = getRejuvenationVial(vialId)
 
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
-  const [serviceAddress, setServiceAddress] = useState("")
-  const [serviceCity, setServiceCity] = useState("")
-  const [serviceState, setServiceState] = useState("Michigan")
-  const [serviceZip, setServiceZip] = useState("")
-  const [preferredDate, setPreferredDate] = useState("")
-  const [preferredTimeWindow, setPreferredTimeWindow] = useState("")
+  const [shippingAddress, setShippingAddress] = useState("")
+  const [shippingCity, setShippingCity] = useState("")
+  const [shippingState, setShippingState] = useState("Michigan")
+  const [shippingZip, setShippingZip] = useState("")
   const [allergies, setAllergies] = useState("")
   const [currentMedications, setCurrentMedications] = useState("")
   const [kidneyDisease, setKidneyDisease] = useState("")
@@ -77,11 +63,10 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
     if (!lastName) invalid.add("lastName")
     if (!email) invalid.add("email")
     if (!phone) invalid.add("phone")
-    if (!serviceAddress) invalid.add("serviceAddress")
-    if (!serviceCity) invalid.add("serviceCity")
-    if (!serviceState) invalid.add("serviceState")
-    if (!serviceZip) invalid.add("serviceZip")
-    if (!preferredTimeWindow) invalid.add("preferredTimeWindow")
+    if (!shippingAddress) invalid.add("shippingAddress")
+    if (!shippingCity) invalid.add("shippingCity")
+    if (!shippingState) invalid.add("shippingState")
+    if (!shippingZip) invalid.add("shippingZip")
     if (!kidneyDisease) invalid.add("kidneyDisease")
     if (!heartCondition) invalid.add("heartCondition")
     if (!agreeToTerms) invalid.add("agreeToTerms")
@@ -110,14 +95,14 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
   }
 
   const handleSubmit = async () => {
-    if (!selectedPackage) return
+    if (!selectedVial) return
     if (!validate()) return
 
     setIsSubmitting(true)
     setError("")
 
     try {
-      const response = await fetch("/api/submit-iv-booking", {
+      const response = await fetch("/api/submit-rejuvenation-vial-intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -125,16 +110,13 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           lastName,
           email,
           phone,
-          serviceAddress,
-          serviceCity,
-          serviceState,
-          serviceZip,
-          preferredDate,
-          preferredTimeWindow,
-          selectedPackage: packageId,
-          selectedPackageTitle: selectedPackage.title,
-          selectedBoosters: selectedBoosters.map((b) => b.name),
-          estimatedTotal,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingZip,
+          selectedVial: vialId,
+          selectedVialTitle: selectedVial.title,
+          kitPrice: selectedVial.price,
           allergies,
           currentMedications,
           kidneyDisease,
@@ -142,7 +124,6 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           pregnantOrBreastfeeding,
           additionalNotes,
           agreeToTerms,
-          agreeToTelehealth: agreeToTerms,
         }),
       })
 
@@ -159,19 +140,19 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
       setSubmissionId(result.submissionId || "")
       setSuccess(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit booking. Please try again.")
+      setError(err instanceof Error ? err.message : "Failed to submit intake. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  if (!selectedPackage) {
+  if (!selectedVial) {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground mb-4">No IV package selected. Please choose a drip first.</p>
+          <p className="text-muted-foreground mb-4">No vial kit selected. Please choose a rejuvenation vial first.</p>
           <Button asChild>
-            <Link href="/iv-rejuvenation#iv-menu">View IV Menu</Link>
+            <Link href="/iv-rejuvenation#vial-menu">View Vial Menu</Link>
           </Button>
         </CardContent>
       </Card>
@@ -192,25 +173,19 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         </CardHeader>
         <CardContent className="space-y-4 text-muted-foreground">
           <p>
-            Thank you! A licensed telehealth provider will review your screening. If approved, your prescription
-            will be sent to <strong className="text-slate-900">Clear Choice Pharmacy</strong> in Novi, MI to prepare
-            your IV. Our team will then contact you to schedule mobile RN dispatch.
+            Thank you! A licensed telehealth provider will review your screening. If approved, your{" "}
+            <strong className="text-slate-900">{selectedVial.title}</strong> will be compounded at{" "}
+            <strong className="text-slate-900">Clear Choice Pharmacy</strong> and shipped to your address.
           </p>
           <ol className="text-sm space-y-2 list-decimal list-inside">
             <li>Provider review (typically 2–4 business hours)</li>
             <li>Prescription received at Clear Choice Pharmacy</li>
-            <li>IV prepared and RN dispatch scheduled</li>
+            <li>Homekit shipped with supplies and injection instructions</li>
           </ol>
-          <p className="text-sm">
-            Need immediate assistance? Call{" "}
-            <a href="tel:+12489876182" className="text-sky-600 font-medium hover:underline">
-              1-248-987-6182
-            </a>
-          </p>
         </CardContent>
         <CardFooter>
           <Button className="w-full" onClick={() => router.push("/iv-rejuvenation")}>
-            Back to IV Menu
+            Back to IV &amp; Rejuvenation
           </Button>
         </CardFooter>
       </Card>
@@ -232,7 +207,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           <ol className="list-decimal list-inside space-y-1">
             <li>Licensed telehealth provider reviews your intake</li>
             <li>If approved, eRx is routed to Clear Choice Pharmacy (Michigan)</li>
-            <li>Pharmacy prepares your IV → RN dispatched to your location</li>
+            <li>Your 30-day home injection kit is shipped to your door</li>
           </ol>
         </CardContent>
       </Card>
@@ -243,27 +218,18 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between gap-4">
-            <span className="font-medium text-slate-900">{selectedPackage.title}</span>
-            <span className="font-bold text-sky-600">${selectedPackage.price}</span>
+            <span className="font-medium text-slate-900">{selectedVial.title}</span>
+            <span className="font-bold text-sky-600">${selectedVial.price}</span>
           </div>
-          {selectedBoosters.map((b: IvBooster) => (
-            <div key={b.id} className="space-y-0.5">
-              <div className="flex justify-between gap-4 text-slate-600">
-                <span>+ {b.name}</span>
-                <span className="shrink-0">${b.price}</span>
-              </div>
-              <p className="text-xs text-slate-500 pl-3 border-l-2 border-sky-200">{b.benefit}</p>
-            </div>
-          ))}
-          <div className="flex justify-between gap-4 text-slate-600">
-            <span>Mobile travel &amp; dispatch</span>
-            <span>${IV_TRAVEL_FEE}</span>
-          </div>
-          <div className="flex justify-between gap-4 border-t border-sky-200 pt-2 font-semibold">
-            <span>Estimated Total</span>
-            <span className="text-sky-600">${estimatedTotal}</span>
-          </div>
-          <p className="text-xs text-slate-500">Drip subtotal: ${subtotal}</p>
+          <p className="text-slate-600">{selectedVial.supply} · {selectedVial.route}</p>
+          {selectedVial.shippingNote && (
+            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+              {selectedVial.shippingNote}
+            </p>
+          )}
+          <p className="text-xs text-slate-500 pt-1">
+            Includes syringes, alcohol pads, and physician telehealth review. Shipping included.
+          </p>
         </CardContent>
       </Card>
 
@@ -293,56 +259,33 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Mobile Dispatch Address</CardTitle>
-          <CardDescription>Where should our licensed RN meet you?</CardDescription>
+          <CardTitle>Shipping Address</CardTitle>
+          <CardDescription>Where should we ship your home injection kit?</CardDescription>
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2 sm:col-span-2" data-field="serviceAddress">
-            <Label className={cn(isInvalid("serviceAddress") && "text-destructive")}>Street address *</Label>
-            <Input className={cn(isInvalid("serviceAddress") && "border-destructive ring-2 ring-destructive")} value={serviceAddress} onChange={(e) => { setServiceAddress(e.target.value); clearError("serviceAddress") }} />
+          <div className="space-y-2 sm:col-span-2" data-field="shippingAddress">
+            <Label className={cn(isInvalid("shippingAddress") && "text-destructive")}>Street address *</Label>
+            <Input className={cn(isInvalid("shippingAddress") && "border-destructive ring-2 ring-destructive")} value={shippingAddress} onChange={(e) => { setShippingAddress(e.target.value); clearError("shippingAddress") }} />
           </div>
-          <div className="space-y-2" data-field="serviceCity">
-            <Label className={cn(isInvalid("serviceCity") && "text-destructive")}>City *</Label>
-            <Input className={cn(isInvalid("serviceCity") && "border-destructive ring-2 ring-destructive")} value={serviceCity} onChange={(e) => { setServiceCity(e.target.value); clearError("serviceCity") }} />
+          <div className="space-y-2" data-field="shippingCity">
+            <Label className={cn(isInvalid("shippingCity") && "text-destructive")}>City *</Label>
+            <Input className={cn(isInvalid("shippingCity") && "border-destructive ring-2 ring-destructive")} value={shippingCity} onChange={(e) => { setShippingCity(e.target.value); clearError("shippingCity") }} />
           </div>
-          <div className="space-y-2" data-field="serviceState">
-            <Label className={cn(isInvalid("serviceState") && "text-destructive")}>State *</Label>
+          <div className="space-y-2" data-field="shippingState">
+            <Label className={cn(isInvalid("shippingState") && "text-destructive")}>State *</Label>
             <select
-              className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("serviceState") && "border-destructive ring-2 ring-destructive")}
-              value={serviceState}
-              onChange={(e) => { setServiceState(e.target.value); clearError("serviceState") }}
+              className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("shippingState") && "border-destructive ring-2 ring-destructive")}
+              value={shippingState}
+              onChange={(e) => { setShippingState(e.target.value); clearError("shippingState") }}
             >
               {states.map((s) => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
-          <div className="space-y-2" data-field="serviceZip">
-            <Label className={cn(isInvalid("serviceZip") && "text-destructive")}>ZIP code *</Label>
-            <Input className={cn(isInvalid("serviceZip") && "border-destructive ring-2 ring-destructive")} value={serviceZip} onChange={(e) => { setServiceZip(e.target.value); clearError("serviceZip") }} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Preferred Appointment Time</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="preferredDate">Preferred date (optional)</Label>
-            <Input id="preferredDate" type="date" value={preferredDate} onChange={(e) => setPreferredDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
-          </div>
-          <div className="space-y-2" data-field="preferredTimeWindow">
-            <Label className={cn(isInvalid("preferredTimeWindow") && "text-destructive")}>Time window *</Label>
-            <RadioGroup value={preferredTimeWindow} onValueChange={(v) => { setPreferredTimeWindow(v); clearError("preferredTimeWindow") }}>
-              {TIME_WINDOWS.map((tw) => (
-                <div key={tw.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={tw.value} id={tw.value} />
-                  <Label htmlFor={tw.value} className="font-normal cursor-pointer">{tw.label}</Label>
-                </div>
-              ))}
-            </RadioGroup>
+          <div className="space-y-2" data-field="shippingZip">
+            <Label className={cn(isInvalid("shippingZip") && "text-destructive")}>ZIP code *</Label>
+            <Input className={cn(isInvalid("shippingZip") && "border-destructive ring-2 ring-destructive")} value={shippingZip} onChange={(e) => { setShippingZip(e.target.value); clearError("shippingZip") }} />
           </div>
         </CardContent>
       </Card>
@@ -350,7 +293,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
       <Card>
         <CardHeader>
           <CardTitle>Brief Health Screening</CardTitle>
-          <CardDescription>Required before RN dispatch</CardDescription>
+          <CardDescription>Required before your kit can be shipped</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2" data-field="kidneyDisease">
@@ -380,8 +323,8 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
             <Textarea value={currentMedications} onChange={(e) => setCurrentMedications(e.target.value)} placeholder="List medications and supplements" />
           </div>
           <div className="space-y-2">
-            <Label>Special instructions for the RN</Label>
-            <Textarea value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} placeholder="Gate code, parking, symptoms, etc." />
+            <Label>Questions for the provider</Label>
+            <Textarea value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} placeholder="Prior injection experience, concerns, etc." />
           </div>
           <div
             data-field="agreeToTerms"
@@ -389,7 +332,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           >
             <Checkbox id="agree" checked={agreeToTerms} onCheckedChange={(c) => { setAgreeToTerms(c === true); clearError("agreeToTerms") }} />
             <Label htmlFor="agree" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTerms") && "text-destructive")}>
-              I agree to the Terms of Service and consent to telehealth screening before IV administration *
+              I agree to the Terms of Service and consent to telehealth screening before my kit is shipped *
             </Label>
           </div>
         </CardContent>

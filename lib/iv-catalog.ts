@@ -13,13 +13,18 @@ export type IvBooster = {
   id: string
   name: string
   price: number
+  benefit: string
+  bestFor: string
 }
+
+/** Flat mobile RN dispatch & travel fee added at checkout (not included in drip list prices). */
+export const IV_TRAVEL_FEE = 50
 
 export const IV_PACKAGES: IvPackage[] = [
   {
     id: "myers",
     title: "The Standard (Myers' Cocktail)",
-    price: 249,
+    price: 199,
     badge: "Best Seller",
     badgeClass: "bg-sky-500/10 text-sky-700 border-sky-200",
     ingredients: ["Vitamin C", "B-Complex", "Vitamin B12", "Magnesium", "Calcium"],
@@ -29,7 +34,7 @@ export const IV_PACKAGES: IvPackage[] = [
   {
     id: "symptom-relief",
     title: "Symptom Relief & Recovery",
-    price: 299,
+    price: 249,
     badge: "Fast Acting",
     badgeClass: "bg-cyan-500/10 text-cyan-800 border-cyan-200",
     ingredients: [
@@ -42,7 +47,7 @@ export const IV_PACKAGES: IvPackage[] = [
   {
     id: "immunity-glow",
     title: "Immunity Max & Glow",
-    price: 280,
+    price: 249,
     ingredients: ["High-dose Vitamin C", "Zinc", "Multi-trace elements", "Glutathione Push"],
     description:
       "Boost your immune defense, enhance skin radiance, and detoxify cells from the inside out.",
@@ -50,7 +55,7 @@ export const IV_PACKAGES: IvPackage[] = [
   {
     id: "nad",
     title: "Premium Anti-Aging (NAD+ Therapy)",
-    price: 450,
+    price: 379,
     badge: "Longevity",
     badgeClass: "bg-slate-800/10 text-slate-800 border-slate-300",
     ingredients: ["250mg pure NAD+ (Nicotinamide Adenine Dinucleotide) in Normal Saline"],
@@ -68,11 +73,41 @@ export const IV_PACKAGES: IvPackage[] = [
 ]
 
 export const IV_BOOSTERS: IvBooster[] = [
-  { id: "glutathione", name: "Glutathione Push", price: 30 },
-  { id: "b12", name: "Vitamin B12 Shot", price: 25 },
-  { id: "d3", name: "Vitamin D3 Boost", price: 35 },
-  { id: "zinc", name: "Zinc Supplement", price: 25 },
-  { id: "toradol", name: "Toradol Pain Relief", price: 35 },
+  {
+    id: "glutathione",
+    name: "Glutathione Push",
+    price: 30,
+    benefit: "Master antioxidant for detox, brighter skin, and immune support.",
+    bestFor: "Detox & glow",
+  },
+  {
+    id: "b12",
+    name: "Vitamin B12 Shot",
+    price: 25,
+    benefit: "Supports energy, metabolism, mood, and mental clarity — ideal for fatigue.",
+    bestFor: "Energy",
+  },
+  {
+    id: "d3",
+    name: "Vitamin D3 Boost",
+    price: 35,
+    benefit: "Promotes bone health, immunity, and mood — especially helpful in low-sun seasons.",
+    bestFor: "Immunity",
+  },
+  {
+    id: "zinc",
+    name: "Zinc Supplement",
+    price: 25,
+    benefit: "Strengthens immune defense, wound healing, and post-illness recovery.",
+    bestFor: "Recovery",
+  },
+  {
+    id: "toradol",
+    name: "Toradol Pain Relief",
+    price: 35,
+    benefit: "Fast anti-inflammatory relief for headaches, body aches, and soreness.",
+    bestFor: "Pain relief",
+  },
 ]
 
 export function getIvPackage(id: string) {
@@ -83,8 +118,12 @@ export function getIvBoosters(ids: string[]) {
   return ids.map((id) => IV_BOOSTERS.find((b) => b.id === id)).filter(Boolean) as IvBooster[]
 }
 
-export function calculateIvTotal(packageId: string, boosterIds: string[]) {
+export function calculateIvSubtotal(packageId: string, boosterIds: string[]) {
   const pkg = getIvPackage(packageId)
   const boosters = getIvBoosters(boosterIds)
   return (pkg?.price ?? 0) + boosters.reduce((sum, b) => sum + b.price, 0)
+}
+
+export function calculateIvTotal(packageId: string, boosterIds: string[]) {
+  return calculateIvSubtotal(packageId, boosterIds) + IV_TRAVEL_FEE
 }

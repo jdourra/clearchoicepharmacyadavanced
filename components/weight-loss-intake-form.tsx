@@ -139,8 +139,8 @@ const programs: ProgramOption[] = [
       "Physician-guided compounded semaglutide with a structured titration schedule tailored to your metabolic goals.",
     features: ["Weekly dosing protocol", "Structured titration", "Ongoing provider oversight", "Pharmacy fulfillment"],
     pricing: [
-      { plan: "monthly", pricePerMonth: 249, totalBilled: 249 },
-      { plan: "quarterly", pricePerMonth: 219, totalBilled: 657, badge: "Best Value" },
+      { plan: "monthly", pricePerMonth: 189, totalBilled: 189 },
+      { plan: "quarterly", pricePerMonth: 169, totalBilled: 507, badge: "Best Value" },
     ],
   },
   {
@@ -151,8 +151,8 @@ const programs: ProgramOption[] = [
       "Advanced dual-pathway therapy for patients who may benefit from combined GLP-1 and GIP receptor activation.",
     features: ["Weekly dosing protocol", "Dual-action support", "Provider-guided titration", "Pharmacy fulfillment"],
     pricing: [
-      { plan: "monthly", pricePerMonth: 349, totalBilled: 349 },
-      { plan: "quarterly", pricePerMonth: 319, totalBilled: 957, badge: "Best Value" },
+      { plan: "monthly", pricePerMonth: 255, totalBilled: 255 },
+      { plan: "quarterly", pricePerMonth: 229, totalBilled: 687, badge: "Best Value" },
     ],
   },
 ]

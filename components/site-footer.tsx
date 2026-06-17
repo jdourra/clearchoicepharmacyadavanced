@@ -49,7 +49,7 @@ export function SiteFooter() {
                 Search medications
               </Link>
               <Link href="/medications" className="text-muted-foreground hover:text-foreground transition-colors">
-                Browse catalog
+                See medication costs
               </Link>
               <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
                 Pricing formula

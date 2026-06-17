@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
     const email = String(patients[0].email).toLowerCase()
 
-    const [userOrders, prescriptionRows, mensHealthRows, weightLossRows, ivRows] = await Promise.all([
+    const [userOrders, prescriptionRows, mensHealthRows, weightLossRows, ivRows, vialRows] = await Promise.all([
       orders.getOrdersForPatient(userId),
       sql(
         `SELECT rx.id, rx.status, rx.quantity_prescribed, rx.refills_remaining, rx.prescriber_name, rx.created_at,
@@ -49,6 +49,13 @@ export async function GET(request: Request) {
       sql(
         `SELECT id, status, selected_package, selected_package_title, preferred_date, preferred_time_window, created_at
          FROM iv_booking_requests
+         WHERE LOWER(email) = $1
+         ORDER BY created_at DESC`,
+        [email]
+      ).catch(() => []),
+      sql(
+        `SELECT id, status, selected_vial, selected_vial_title, created_at
+         FROM rejuvenation_vial_intakes
          WHERE LOWER(email) = $1
          ORDER BY created_at DESC`,
         [email]
@@ -98,6 +105,19 @@ export async function GET(request: Request) {
             : undefined,
         submittedAt: String(row.created_at),
         href: "/iv-rejuvenation",
+      })),
+      ...vialRows.map((row: Record<string, unknown>) => ({
+        type: "rejuvenation_vial" as const,
+        id: String(row.id),
+        status: String(row.status),
+        title: "Rejuvenation Vial Kit",
+        subtitle: row.selected_vial_title
+          ? String(row.selected_vial_title)
+          : row.selected_vial
+            ? String(row.selected_vial)
+            : undefined,
+        submittedAt: String(row.created_at),
+        href: "/iv-rejuvenation#vial-menu",
       })),
     ].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
 

@@ -12,6 +12,7 @@ import {
   Syringe,
   ArrowRight,
   Stethoscope,
+  FlaskConical,
 } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -63,6 +64,8 @@ function programIcon(type: ClinicalProgramSubmission["type"]) {
       return Scale
     case "iv_rejuvenation":
       return Syringe
+    case "rejuvenation_vial":
+      return FlaskConical
   }
 }
 

@@ -96,6 +96,11 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
 
 export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
+    question: "What is the difference between mobile IV and rejuvenation vials?",
+    answer:
+      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits shipped to your door for self-injection after telehealth approval.",
+  },
+  {
     question: "Does mobile IV therapy hurt?",
     answer:
       "Most patients experience minimal discomfort. Our licensed RNs use a micro-needle technique for a smooth, professional insertion.",
@@ -113,6 +118,11 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "What areas do you serve for mobile IV therapy?",
     answer:
-      "Clear Choice IV & Rejuvenation dispatches licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, and South Lyon.",
+      "Clear Choice IV & Rejuvenation dispatches licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, and South Lyon. Rejuvenation vial homekits ship nationwide after physician approval.",
+  },
+  {
+    question: "Is there a travel fee for mobile IV?",
+    answer:
+      "Yes. IV drip prices are listed separately from a flat $50 mobile travel and dispatch fee, shown at checkout before you complete your intake.",
   },
 ]

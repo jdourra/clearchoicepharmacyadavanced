@@ -247,13 +247,13 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="rounded-xl bg-primary-foreground/10 border border-primary-foreground/20 p-6 text-center">
                 <p className="text-xs font-semibold uppercase tracking-wide opacity-80 mb-2">Prescription prices</p>
-                <h3 className="text-xl font-bold mb-2">Look up a medication</h3>
+                <h3 className="text-xl font-bold mb-2">See what your meds cost</h3>
                 <p className="text-sm opacity-90 mb-5">
-                  Cash-pay generics at true cost. Drug Cost + 15% + $5—no insurance required.
+                  Build your list and see a running total. Drug Cost + 15% + $5—no insurance required.
                 </p>
                 <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
                   <Link href="/medications">
-                    Browse medications
+                    Calculate medication costs
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>

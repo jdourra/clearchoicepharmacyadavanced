@@ -58,7 +58,7 @@ export function SiteHeader() {
 
   const medicationLinks = [
     { href: "/", label: "Search medications" },
-    { href: "/medications", label: "Browse all medications" },
+    { href: "/medications", label: "See how much your medications cost" },
     { href: "/pricing", label: "How pricing works" },
   ]
 

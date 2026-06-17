@@ -18,8 +18,16 @@ import {
 
 export function MedicationAutocomplete({
   placeholder,
+  onSelect,
+  fallbackSearchHref = "/medications",
+  submitLabel = "Search",
 }: {
   placeholder?: string
+  /** When set, selecting a medication calls this instead of navigating away. */
+  onSelect?: (med: MedicationSearchResult) => void
+  /** Used when no exact match is found on submit (navigate mode only). */
+  fallbackSearchHref?: string
+  submitLabel?: string
 }) {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<MedicationSearchResult[]>([])
@@ -63,10 +71,14 @@ export function MedicationAutocomplete({
     return () => clearTimeout(debounce)
   }, [query])
 
-  const goToPricingPage = (med: MedicationSearchResult) => {
+  const handleMedicationPick = (med: MedicationSearchResult) => {
     setQuery("")
     setSuggestions([])
     setShowSuggestions(false)
+    if (onSelect) {
+      onSelect(med)
+      return
+    }
     router.push(`/medications/${med.id}`)
   }
 
@@ -79,7 +91,7 @@ export function MedicationAutocomplete({
     setShowSuggestions(false)
 
     if (suggestions.length > 0) {
-      goToPricingPage(suggestions[0])
+      handleMedicationPick(suggestions[0])
       return
     }
 
@@ -87,9 +99,9 @@ export function MedicationAutocomplete({
     try {
       const match = await findTopMedicationMatch(trimmed)
       if (match) {
-        goToPricingPage(match)
-      } else {
-        router.push(`/medications?q=${encodeURIComponent(trimmed)}`)
+        handleMedicationPick(match)
+      } else if (!onSelect) {
+        router.push(fallbackSearchHref)
       }
     } finally {
       setIsLoading(false)
@@ -115,7 +127,7 @@ export function MedicationAutocomplete({
           <Loader2 className="absolute right-36 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
         )}
         <Button type="submit" size="lg" className="absolute right-2 top-2 h-10">
-          Search
+          {submitLabel}
         </Button>
       </form>
 
@@ -126,7 +138,7 @@ export function MedicationAutocomplete({
               <button
                 key={med.id}
                 type="button"
-                onClick={() => goToPricingPage(med)}
+                onClick={() => handleMedicationPick(med)}
                 className="w-full text-left p-4 hover:bg-primary/10 transition-colors focus:outline-none focus:bg-primary/10 first:rounded-t-lg last:rounded-b-lg"
               >
                 <div className="flex items-start justify-between gap-2">
