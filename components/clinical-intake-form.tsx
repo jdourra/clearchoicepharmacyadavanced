@@ -17,37 +17,27 @@ import {
   AlertTriangle,
   Shield,
   Zap,
-  Clock,
   Upload,
   CreditCard,
   FileText,
   Activity,
-  XCircle
+  XCircle,
 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import {
+  ED_FORMULATIONS,
+  calculateEdMonthlyPrice,
+  calculateEdTotalBilled,
+  getEdTrocheProduct,
+  type EdBillingPlan,
+} from "@/lib/ed-troche-catalog"
 
 // ============================================
 // TYPE DEFINITIONS
 // ============================================
 
-type BillingPlan = "monthly" | "quarterly" | "annual"
-
-type PricingTier = {
-  plan: BillingPlan
-  pricePerMonth: number
-  totalBilled: number
-  badge?: "Best Seller" | "Best Value"
-}
-
-type ProductOption = {
-  id: string
-  name: string
-  subtitle: string
-  description: string
-  dosage: string
-  frequency: string
-  features: string[]
-  pricing: PricingTier[]
-}
+type BillingPlan = EdBillingPlan
 
 type FormData = {
   // Step 1: Product Selection
@@ -169,70 +159,6 @@ const initialFormData: FormData = {
   agreeToPrivacy: false,
   authorizeHold: false,
 }
-
-// ============================================
-// PRODUCT DATA
-// ============================================
-
-const products: ProductOption[] = [
-  {
-    id: "sildenafil-fast",
-    name: "Sildenafil Troches",
-    subtitle: "Fast-Acting",
-    description: "Rapid onset sublingual troches for on-demand use. Dissolves under the tongue for faster absorption.",
-    dosage: "50mg or 100mg",
-    frequency: "As needed, 30-60 min before activity",
-    features: [
-      "Fast-acting sublingual delivery",
-      "Works in 15-30 minutes",
-      "Lasts 4-6 hours",
-      "Take as needed"
-    ],
-    pricing: [
-      { plan: "monthly", pricePerMonth: 69, totalBilled: 69 },
-      { plan: "quarterly", pricePerMonth: 39, totalBilled: 117, badge: "Best Seller" },
-      { plan: "annual", pricePerMonth: 29, totalBilled: 348 }
-    ]
-  },
-  {
-    id: "tadalafil-daily",
-    name: "Tadalafil Troches",
-    subtitle: "36-Hour Continuous Support",
-    description: "Extended duration troches for continuous readiness. No planning required with up to 36 hours of support.",
-    dosage: "5mg or 10mg",
-    frequency: "As needed or daily",
-    features: [
-      "Up to 36-hour window",
-      "No timing pressure",
-      "Great for spontaneity",
-      "Can take daily"
-    ],
-    pricing: [
-      { plan: "monthly", pricePerMonth: 79, totalBilled: 79 },
-      { plan: "quarterly", pricePerMonth: 49, totalBilled: 147 },
-      { plan: "annual", pricePerMonth: 34, totalBilled: 408 }
-    ]
-  },
-  {
-    id: "combination-troche",
-    name: "Combination Troches",
-    subtitle: "Sildenafil + Tadalafil Synergy",
-    description: "Dual-action formula combining the fast onset of Sildenafil with the extended duration of Tadalafil.",
-    dosage: "Custom compounded",
-    frequency: "As directed by physician",
-    features: [
-      "Dual-action formula",
-      "Fast onset + long duration",
-      "Enhanced efficacy",
-      "Physician-customized"
-    ],
-    pricing: [
-      { plan: "monthly", pricePerMonth: 89, totalBilled: 89 },
-      { plan: "quarterly", pricePerMonth: 65, totalBilled: 195 },
-      { plan: "annual", pricePerMonth: 49, totalBilled: 588, badge: "Best Value" }
-    ]
-  }
-]
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
@@ -602,8 +528,8 @@ export function ClinicalIntakeForm() {
   // ============================================
   
   if (step === 4 && submissionStatus === "success") {
-    const selectedProduct = products.find(p => p.id === formData.selectedProduct)
-    const currentPricing = selectedProduct?.pricing.find(p => p.plan === formData.selectedBillingPlan)
+    const selectedProduct = getEdTrocheProduct(formData.selectedProduct)
+    const monthlyTotal = calculateEdMonthlyPrice(formData.selectedProduct, formData.selectedBillingPlan)
     const billingLabel = formData.selectedBillingPlan === "monthly" ? "Monthly" : formData.selectedBillingPlan === "quarterly" ? "Quarterly" : "Annual"
     
     return (
@@ -630,7 +556,8 @@ export function ClinicalIntakeForm() {
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">Selected Treatment</p>
                 <p className="font-medium">{selectedProduct?.name}</p>
-                <p className="text-xs text-muted-foreground">{billingLabel} plan - ${currentPricing?.pricePerMonth}/mo</p>
+                <p className="text-xs text-muted-foreground">{billingLabel} plan — ${monthlyTotal}/mo</p>
+                <p className="text-xs text-muted-foreground">{selectedProduct?.subtitle}</p>
               </div>
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">Submission ID</p>
@@ -708,122 +635,84 @@ export function ClinicalIntakeForm() {
   const renderStep1 = () => {
     const billingPlans: { plan: BillingPlan; label: string }[] = [
       { plan: "monthly", label: "Monthly" },
-      { plan: "quarterly", label: "Quarterly" },
-      { plan: "annual", label: "Annual" }
+      { plan: "quarterly", label: "Quarterly (save more)" },
+      { plan: "annual", label: "Annual" },
     ]
-    
+
     return (
       <div className="space-y-6">
-        <div className="text-center mb-8">
-          <h2 className="text-xl font-semibold mb-2">Choose Your Treatment</h2>
-          <p className="text-muted-foreground">Select the ED troche that best fits your lifestyle and needs</p>
+        <p className="text-sm text-muted-foreground">
+          Select one compounded troche formulation. Pricing includes physician review, medication, and shipping.
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {billingPlans.map((bp) => (
+            <Button
+              key={bp.plan}
+              type="button"
+              size="sm"
+              variant={formData.selectedBillingPlan === bp.plan ? "default" : "outline"}
+              onClick={() => updateFormData("selectedBillingPlan", bp.plan)}
+            >
+              {bp.label}
+            </Button>
+          ))}
         </div>
-        
-        {/* Billing Plan Toggle */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center rounded-lg border bg-muted p-1">
-            {billingPlans.map((bp) => (
-              <button
-                key={bp.plan}
-                type="button"
-                onClick={() => updateFormData("selectedBillingPlan", bp.plan)}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                  formData.selectedBillingPlan === bp.plan
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {bp.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        {/* Product Cards */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {products.map((product) => {
-            const isSelected = formData.selectedProduct === product.id
-            const currentPricing = product.pricing.find(p => p.plan === formData.selectedBillingPlan)!
-            
+
+        <div className="space-y-4">
+          {ED_FORMULATIONS.map((formulation) => {
+            const pricing = formulation.pricing.find((p) => p.plan === formData.selectedBillingPlan)!
+            const selected = formData.selectedProduct === formulation.id
+
             return (
-              <Card 
-                key={product.id}
-                className={`cursor-pointer transition-all relative ${
-                  isSelected 
-                    ? "border-primary ring-2 ring-primary/20" 
-                    : "border-border hover:border-primary/50"
-                }`}
-                onClick={() => updateFormData("selectedProduct", product.id)}
-              >
-                {/* Badge */}
-                {currentPricing.badge && (
-                  <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full ${
-                    currentPricing.badge === "Best Seller" 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-green-600 text-white"
-                  }`}>
-                    {currentPricing.badge}
-                  </div>
+              <button
+                key={formulation.id}
+                type="button"
+                onClick={() => updateFormData("selectedProduct", formulation.id)}
+                className={cn(
+                  "w-full text-left rounded-xl border p-5 transition-all",
+                  selected ? "border-primary ring-2 ring-primary/20 bg-primary/5" : "hover:border-primary/50"
                 )}
-                
-                <CardContent className="p-6 pt-8">
-                  <div className="text-center mb-4">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
-                        isSelected ? "border-primary bg-primary" : "border-muted-foreground"
-                      }`}>
-                        {isSelected && <CheckCircle2 className="h-3 w-3 text-white" />}
-                      </div>
-                      <h3 className="font-semibold text-lg">{product.name}</h3>
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="font-semibold text-lg">{formulation.name}</h3>
+                      {formulation.highlight && <Badge variant="secondary">{formulation.highlight}</Badge>}
+                      {pricing.badge && <Badge>{pricing.badge}</Badge>}
                     </div>
-                    <p className="text-sm text-muted-foreground">{product.subtitle}</p>
+                    <p className="text-sm text-primary font-medium">{formulation.subtitle}</p>
+                    <p className="text-sm text-muted-foreground mt-2">{formulation.description}</p>
+                    <ul className="mt-3 space-y-1">
+                      {formulation.features.slice(0, 3).map((feature) => (
+                        <li key={feature} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  
-                  {/* Pricing Display */}
-                  <div className="text-center mb-4 py-4 border-y">
-                    <div className="text-4xl font-bold text-primary">
-                      ${currentPricing.pricePerMonth}
-                    </div>
-                    <p className="text-sm text-muted-foreground">per month</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-3xl font-bold text-primary">${pricing.pricePerMonth}</p>
+                    <p className="text-xs text-muted-foreground">/mo</p>
                     {formData.selectedBillingPlan !== "monthly" && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Billed ${currentPricing.totalBilled} {formData.selectedBillingPlan === "quarterly" ? "every 3 months" : "annually"}
+                        ${pricing.totalBilled}{" "}
+                        {formData.selectedBillingPlan === "quarterly" ? "billed quarterly" : "billed annually"}
                       </p>
                     )}
                   </div>
-                  
-                  <p className="text-sm text-muted-foreground mb-4 text-center">{product.description}</p>
-                  
-                  <div className="flex flex-wrap justify-center gap-2 mb-4">
-                    <span className="inline-flex items-center gap-1 text-xs bg-muted px-2 py-1 rounded">
-                      <Zap className="h-3 w-3" />
-                      {product.dosage}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-xs bg-muted px-2 py-1 rounded">
-                      <Clock className="h-3 w-3" />
-                      {product.frequency}
-                    </span>
-                  </div>
-                  
-                  <ul className="space-y-2">
-                    {product.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+                </div>
+              </button>
             )
           })}
         </div>
-        
+
         <Alert>
           <Shield className="h-4 w-4" />
           <AlertTitle>Physician-Supervised Treatment</AlertTitle>
           <AlertDescription>
-            All treatments are prescribed by Dr. Dourra after a thorough medical review. Your safety is our priority.
+            Every formulation—including PE combinations and low libido troches—is prescribed only after medical review.
           </AlertDescription>
         </Alert>
       </div>
@@ -1303,9 +1192,12 @@ export function ClinicalIntakeForm() {
   // ============================================
   
   const renderStep3 = () => {
-    const selectedProduct = products.find(p => p.id === formData.selectedProduct)
-    const currentPricing = selectedProduct?.pricing.find(p => p.plan === formData.selectedBillingPlan)
+    const selectedProduct = getEdTrocheProduct(formData.selectedProduct)
+    const monthlyTotal = calculateEdMonthlyPrice(formData.selectedProduct, formData.selectedBillingPlan)
     const billingLabel = formData.selectedBillingPlan === "monthly" ? "Monthly" : formData.selectedBillingPlan === "quarterly" ? "Quarterly" : "Annual"
+    
+    const currentPricing = selectedProduct?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
+    const totalBilled = calculateEdTotalBilled(formData.selectedProduct, formData.selectedBillingPlan)
     
     return (
       <div className="space-y-8">
@@ -1320,7 +1212,7 @@ export function ClinicalIntakeForm() {
                   <p className="text-sm text-muted-foreground">{selectedProduct.subtitle}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-bold text-primary">${currentPricing.pricePerMonth}/mo</span>
+                  <span className="text-lg font-bold text-primary">${monthlyTotal}/mo</span>
                   {currentPricing.badge && (
                     <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
                       currentPricing.badge === "Best Seller" 
@@ -1339,7 +1231,7 @@ export function ClinicalIntakeForm() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Total Due Today</span>
-                  <span className="font-semibold">${currentPricing.totalBilled}</span>
+                  <span className="font-semibold">${totalBilled}</span>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">Includes medication and shipping</p>
@@ -1589,7 +1481,7 @@ export function ClinicalIntakeForm() {
                 onCheckedChange={(checked) => updateFormData("authorizeHold", checked as boolean)}
               />
               <Label htmlFor="authorizeHold" className="font-normal text-sm cursor-pointer">
-                I authorize a payment hold of <strong>${currentPricing?.totalBilled}</strong> to be charged only upon prescription approval *
+                I authorize a payment hold of <strong>${totalBilled}</strong> to be charged only upon prescription approval *
               </Label>
             </div>
           </div>
@@ -1623,13 +1515,13 @@ export function ClinicalIntakeForm() {
         </div>
         
         <CardTitle>
-          {step === 1 && "Select Your Treatment"}
+          {step === 1 && "Choose your troche formulation"}
           {step === 2 && "Medical Intake Questionnaire"}
           {step === 3 && "Identity & Payment"}
           {step === 4 && "Confirmation"}
         </CardTitle>
         <CardDescription>
-          {step === 1 && "Choose the ED troche that fits your needs"}
+          {step === 1 && "Pick Sildenafil, Tadalafil, combination, PE, or low libido troches—same layout as our TRT programs"}
           {step === 2 && "Help us understand your health profile for safe treatment"}
           {step === 3 && "Verify your identity and authorize payment hold"}
           {step === 4 && "Review your submission status"}

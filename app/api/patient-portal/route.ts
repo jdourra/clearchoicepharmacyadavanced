@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
     const email = String(patients[0].email).toLowerCase()
 
-    const [userOrders, prescriptionRows, mensHealthRows, weightLossRows, ivRows, vialRows] = await Promise.all([
+    const [userOrders, prescriptionRows, mensHealthRows, trtRows, weightLossRows, ivRows, vialRows] = await Promise.all([
       orders.getOrdersForPatient(userId),
       sql(
         `SELECT rx.id, rx.status, rx.quantity_prescribed, rx.refills_remaining, rx.prescriber_name, rx.created_at,
@@ -35,6 +35,13 @@ export async function GET(request: Request) {
       sql(
         `SELECT id, status, selected_product, selected_billing_plan, created_at
          FROM patient_intake
+         WHERE LOWER(email) = $1
+         ORDER BY created_at DESC`,
+        [email]
+      ).catch(() => []),
+      sql(
+        `SELECT id, status, selected_program, selected_billing_plan, created_at
+         FROM trt_intake
          WHERE LOWER(email) = $1
          ORDER BY created_at DESC`,
         [email]
@@ -83,6 +90,15 @@ export async function GET(request: Request) {
         subtitle: row.selected_product ? String(row.selected_product) : undefined,
         submittedAt: String(row.created_at),
         href: "/mens-health",
+      })),
+      ...trtRows.map((row: Record<string, unknown>) => ({
+        type: "trt" as const,
+        id: String(row.id),
+        status: String(row.status),
+        title: "Testosterone Replacement Therapy",
+        subtitle: row.selected_program ? String(row.selected_program) : undefined,
+        submittedAt: String(row.created_at),
+        href: "/mens-health/trt/start",
       })),
       ...weightLossRows.map((row: Record<string, unknown>) => ({
         type: "weight_loss" as const,

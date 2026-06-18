@@ -65,7 +65,7 @@ export function SiteHeader() {
   const clinicalLinks = [
     { href: "/services", label: "All clinical programs" },
     { href: "/weight-loss", label: "GLP-1 weight loss" },
-    { href: "/mens-health", label: "Men's health & ED" },
+    { href: "/mens-health", label: "Men's health, ED & TRT" },
     { href: "/iv-rejuvenation", label: "IV rejuvenation" },
     { href: "/specialty-pharmacy", label: "Specialty medications" },
   ]

@@ -1,6 +1,6 @@
 import type { Order } from "@/lib/auth-types"
 
-export type ClinicalProgramType = "mens_health" | "weight_loss" | "iv_rejuvenation" | "rejuvenation_vial"
+export type ClinicalProgramType = "mens_health" | "trt" | "weight_loss" | "iv_rejuvenation" | "rejuvenation_vial"
 
 export interface ClinicalProgramSubmission {
   type: ClinicalProgramType

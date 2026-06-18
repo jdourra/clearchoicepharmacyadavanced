@@ -26,9 +26,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/mens-health",
-    title: "Men's Health & ED Troches",
+    title: "Men's Health, ED & TRT",
     description:
-      "Custom sublingual Sildenafil and Tadalafil troches—faster absorption, unaffected by food.",
+      "Custom sublingual ED troches and physician-supervised TRT with transparent cash-pay pricing in Novi, MI.",
     pathType: "consultation",
     pathLabel: "Consultation required",
     cta: "Start consultation",

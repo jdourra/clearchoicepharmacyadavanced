@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Stethoscope,
   FlaskConical,
+  Activity,
 } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -60,6 +61,8 @@ function programIcon(type: ClinicalProgramSubmission["type"]) {
   switch (type) {
     case "mens_health":
       return Heart
+    case "trt":
+      return Activity
     case "weight_loss":
       return Scale
     case "iv_rejuvenation":

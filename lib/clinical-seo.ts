@@ -55,6 +55,31 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
       "Troches absorb through the oral mucosa, often working in half the time of swallowed tablets. Because they bypass the digestive tract, they are not affected by food or heavy meals.",
   },
   {
+    question: "Does Clear Choice Pharmacy offer TRT in Michigan?",
+    answer:
+      "Yes. We offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene options. Programs include telehealth review, pharmacy fulfillment, and transparent cash-pay pricing from $109/mo on quarterly billing.",
+  },
+  {
+    question: "How much does TRT cost at Clear Choice Pharmacy?",
+    answer:
+      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene oral therapy starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and shipping.",
+  },
+  {
+    question: "Do you offer combination troches for premature ejaculation?",
+    answer:
+      "Yes. Clear Choice Pharmacy compounds combination troches for premature ejaculation—pairing PDE5 support with PE-focused adjunct ingredients tailored by your physician. Select the PE combination option during your online intake.",
+  },
+  {
+    question: "Which ED troche formulations do you offer?",
+    answer:
+      "You can select from six compounded troche options during intake: Sildenafil, Tadalafil, Sildenafil + Tadalafil combination, premature ejaculation combination, Apomorphine for low libido, and Oxytocin for low libido and connection support.",
+  },
+  {
+    question: "Which Apomorphine or Oxytocin troche should I choose?",
+    answer:
+      "Yes. Apomorphine and Oxytocin are available as their own troche formulation cards during intake—choose the one that matches your goals. Your provider will confirm the appropriate protocol after review.",
+  },
+  {
     question: "Can you combine Sildenafil and Tadalafil?",
     answer:
       "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available at retail chains.",

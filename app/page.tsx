@@ -8,55 +8,10 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SiteHeader } from "@/components/site-header"
 import { MedicationAutocomplete } from "@/components/medication-autocomplete"
+import { PopularMedicationsMarquee } from "@/components/popular-medications-marquee"
 import { ClinicalServicesGrid } from "@/components/clinical-services-grid"
-import { useEffect, useState } from "react"
-import { fetchPopularMedication, type HomeMedication } from "@/lib/pharmacy-medication"
 
 export default function HomePage() {
-
-  const POPULAR_QUERIES = [
-    // Blood pressure
-    "Lisinopril",
-    "Amlodipine",
-    "Losartan",
-    "Metoprolol",
-    // Cholesterol
-    "Atorvastatin",
-    "Rosuvastatin",
-    // Diabetes
-    "Metformin",
-    // Thyroid
-    "Levothyroxine",
-  ]
-
-  const [popularMeds, setPopularMeds] = useState<HomeMedication[]>([])
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadPopular() {
-      const results = await Promise.all(
-        POPULAR_QUERIES.map((query) => fetchPopularMedication(query))
-      )
-      if (!cancelled) setPopularMeds(results.filter(Boolean) as HomeMedication[])
-    }
-
-    loadPopular()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  // Forms that are dispensed as a single unit (not multiplied by quantity)
-  const UNIT_BASED_FORMS = ["INHALER", "SOLUTION", "CREAM", "OINTMENT", "LOTION", "GEL", "SPRAY", "SYRINGE", "DROPS", "SUSPENSION", "PATCH", "VIAL", "PEN", "NEBULIZER"]
-
-  const isUnitBasedForm = (form: string) => UNIT_BASED_FORMS.includes(form.toUpperCase())
-
-  const calculatePrice = (perUnitCost: number, qty: number, form?: string) => {
-    const effectiveQty = form && isUnitBasedForm(form) ? 1 : qty
-    return (perUnitCost * effectiveQty * 1.15 + 5).toFixed(2)
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -91,7 +46,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-12">
+            <PopularMedicationsMarquee />
+
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-12 mt-8">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 <span>No insurance needed</span>
@@ -118,53 +75,6 @@ export default function HomePage() {
                 </p>
               </div>
               <ClinicalServicesGrid />
-            </div>
-          </div>
-        </section>
-
-        {/* Popular medications */}
-        <section className="py-16 bg-muted/30">
-          <div className="container max-w-7xl mx-auto px-4">
-            <div className="text-center mb-8">
-              <Badge variant="secondary" className="mb-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
-                Cash pay
-              </Badge>
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Popular Medications</h2>
-              <p className="text-muted-foreground">
-                Blood pressure, cholesterol, diabetes, and thyroid medications
-              </p>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-              {popularMeds.map((med) => {
-                const isUnit = isUnitBasedForm(med.form)
-                const price = calculatePrice(med.per_unit_cost, 30, med.form)
-                const retail = (Number.parseFloat(price) * 3.5).toFixed(2)
-                const save = (Number.parseFloat(retail) - Number.parseFloat(price)).toFixed(2)
-                const supplyLabel = isUnit ? `per ${med.form.toLowerCase()}` : "for 30 tablets"
-
-                return (
-                  <Link key={med.id} href={`/medications/${med.id}`}>
-                    <Card className="p-5 hover:border-primary hover:shadow-lg transition-all cursor-pointer h-full">
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="font-semibold text-lg leading-tight">{med.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {med.strength} {med.form}
-                          </p>
-                        </div>
-                        <div>
-                          <div className="text-3xl font-bold text-primary">${price}</div>
-                          <p className="text-xs text-muted-foreground">{supplyLabel}</p>
-                        </div>
-                        <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground line-through">Retail: ${retail}</p>
-                          <p className="text-sm font-semibold text-green-600">You save ${save}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                )
-              })}
             </div>
           </div>
         </section>

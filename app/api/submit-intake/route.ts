@@ -78,13 +78,9 @@ type ClinicalIntakePayload = {
   }
 }
 
-function formatClinicalSummary(data: ClinicalIntakePayload): string {
-  const productMap: Record<string, string> = {
-    "sildenafil-fast": "Sildenafil Fast-Acting Troches (50mg/100mg)",
-    "tadalafil-daily": "Tadalafil Daily Troches (5mg/10mg)",
-    "combination-troche": "Combination ED Troche (Multi-ingredient)",
-  }
+import { ED_PRODUCT_LABELS } from "@/lib/ed-troche-catalog"
 
+function formatClinicalSummary(data: ClinicalIntakePayload): string {
   const riskFlags: string[] = []
 
   if (data.medicalHistory.diabetes === "yes") riskFlags.push("Diabetes")
@@ -150,7 +146,7 @@ ${data.medicalHistory.allergies || "None reported"}
 ───────────────────────────────────────────────────────────────────────────────
                            TREATMENT INFORMATION
 ───────────────────────────────────────────────────────────────────────────────
-Selected Product:       ${productMap[data.treatmentInfo.selectedProduct] || data.treatmentInfo.selectedProduct}
+Selected Product:       ${ED_PRODUCT_LABELS[data.treatmentInfo.selectedProduct] || data.treatmentInfo.selectedProduct}
 ED Duration:            ${data.treatmentInfo.edDuration}
 ED Severity:            ${data.treatmentInfo.edSeverity}
 Preferred Frequency:    ${data.treatmentInfo.preferredFrequency}
