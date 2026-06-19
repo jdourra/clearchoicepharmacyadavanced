@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { sql } from "@/lib/db"
-
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
+import {
+  formatPaymentSummary,
+  requireIntakePaymentSubmission,
+  type IntakeConsents,
+  type IntakePaymentMetadata,
+} from "@/lib/intake-payment"
+import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import {
+  formatInjectionConsentsSummary,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 type WeightLossIntakePayload = {
   patientInfo: {
@@ -57,11 +62,14 @@ type WeightLossIntakePayload = {
     comorbidities: string[]
     additionalConcerns: string
   }
-  identity: {
+  identity: IntakePaymentMetadata & {
     shippingAddress: string
     shippingCity: string
     shippingState: string
     shippingZip: string
+  }
+  consents?: IntakeConsents & {
+    injection?: InjectionTelehealthConsentValues
   }
 }
 
@@ -154,48 +162,18 @@ ${data.treatmentInfo.additionalConcerns || "None"}
 ───────────────────────────────────────────────────────────────────────────────
 ${data.identity.shippingAddress}, ${data.identity.shippingCity}, ${data.identity.shippingState} ${data.identity.shippingZip}
 
+───────────────────────────────────────────────────────────────────────────────
+                           IDENTITY & PAYMENT
+───────────────────────────────────────────────────────────────────────────────
+${formatPaymentSummary(data.identity, data.consents)}
+
+───────────────────────────────────────────────────────────────────────────────
+                        TELEMEDICINE CONSENTS
+───────────────────────────────────────────────────────────────────────────────
+${data.consents?.injection ? formatInjectionConsentsSummary(data.consents.injection) : "Not provided"}
+
 ═══════════════════════════════════════════════════════════════════════════════
 `
-}
-
-async function sendEmailViaSES(
-  to: string,
-  subject: string,
-  body: string,
-  from: string
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-    console.log("AWS SES credentials not configured - logging email instead:")
-    console.log(`To: ${to}`)
-    console.log(`Subject: ${subject}`)
-    console.log(body)
-    return { success: true, messageId: "local-dev-mode" }
-  }
-
-  if (!to) {
-    console.log("No clinician email configured - logging intake summary instead:")
-    console.log(body)
-    return { success: true, messageId: "no-recipient-configured" }
-  }
-
-  try {
-    const command = new SendEmailCommand({
-      Source: from,
-      Destination: { ToAddresses: [to] },
-      Message: {
-        Subject: { Data: subject, Charset: "UTF-8" },
-        Body: { Text: { Data: body, Charset: "UTF-8" } },
-      },
-    })
-    const response = await sesClient.send(command)
-    return { success: true, messageId: response.MessageId }
-  } catch (error) {
-    console.error("SES Email Error:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    }
-  }
 }
 
 function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload {
@@ -204,7 +182,8 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
   const contraindications = (rawData.contraindications || {}) as Record<string, boolean>
   const medicalHistory = (rawData.medicalHistory || {}) as Record<string, string>
   const treatment = (rawData.treatment || {}) as Record<string, unknown>
-  const identity = (rawData.identity || {}) as Record<string, string>
+  const identity = (rawData.identity || {}) as Record<string, string | boolean | null>
+  const consents = (rawData.consents || {}) as IntakeConsents & { injection?: InjectionTelehealthConsentValues }
 
   const heightInches = Number(vitals.heightInches) || 0
   const weightLbs = Number(vitals.weightLbs) || 0
@@ -261,11 +240,18 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
       additionalConcerns: String(treatment.additionalConcerns || ""),
     },
     identity: {
-      shippingAddress: identity.shippingAddress || patient.address || "",
-      shippingCity: identity.shippingCity || patient.city || "",
-      shippingState: identity.shippingState || patient.state || "",
-      shippingZip: identity.shippingZip || patient.zipCode || "",
+      shippingAddress: String(identity.shippingAddress || patient.address || ""),
+      shippingCity: String(identity.shippingCity || patient.city || ""),
+      shippingState: String(identity.shippingState || patient.state || ""),
+      shippingZip: String(identity.shippingZip || patient.zipCode || ""),
+      idFrontUploaded: Boolean(identity.idFrontUploaded),
+      idBackUploaded: Boolean(identity.idBackUploaded),
+      paymentOnFile: Boolean(identity.paymentOnFile),
+      idFrontKey: identity.idFrontKey ? String(identity.idFrontKey) : null,
+      idBackKey: identity.idBackKey ? String(identity.idBackKey) : null,
+      stripePaymentIntentId: identity.stripePaymentIntentId ? String(identity.stripePaymentIntentId) : null,
     },
+    consents,
   }
 }
 
@@ -335,6 +321,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
+    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
+    if (paymentError) {
+      return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
+    if (!stripeCheck.ok) {
+      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
+    }
+
+    if (!data.consents?.injection) {
+      return NextResponse.json({ error: "Telemedicine consents are required before submission." }, { status: 400 })
+    }
+
+    const consentError = validateInjectionTelehealthConsents(data.consents.injection, {
+      variant: "weight-loss",
+      programId: data.treatmentInfo.selectedProgram,
+    })
+    if (!consentError.valid) {
+      return NextResponse.json({ error: consentError.message }, { status: 400 })
+    }
+
     const eligibility = checkEligibility(data)
     if (eligibility.hardStop) {
       return NextResponse.json({ error: eligibility.error, hardStop: true }, { status: 422 })
@@ -342,6 +350,22 @@ export async function POST(request: NextRequest) {
 
     const submissionId = `CCR-WL-${Date.now().toString(36).toUpperCase()}`
     const clinicalSummary = formatClinicalSummary(data, submissionId)
+
+    const partnerResult = await submitClinicalIntakeToPartner({
+      serviceType: "weight_loss",
+      submissionId,
+      patient: {
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        email: data.patientInfo.email,
+        phone: data.patientInfo.phone,
+      },
+      clinicalSummary,
+    })
+
+    if (!partnerResult.success) {
+      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
+    }
 
     try {
       await sql(
@@ -354,14 +378,15 @@ export async function POST(request: NextRequest) {
           sleep_apnea, cardiovascular_disease, current_medications, allergies,
           selected_program, selected_billing_plan, prior_glp_experience,
           weight_loss_goals, comorbidities, additional_concerns,
-          shipping_address, shipping_city, shipping_state, shipping_zip, status
+          shipping_address, shipping_city, shipping_state, shipping_zip,
+          status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
           $11, $12, $13, $14, $15, $16,
           $17, $18, $19, $20, $21, $22,
           $23, $24, $25, $26, $27, $28, $29, $30, $31,
           $32, $33, $34, $35::jsonb, $36::jsonb, $37,
-          $38, $39, $40, $41, $42
+          $38, $39, $40, $41, $42, $43, $44, $45, $46, $47
         )`,
         [
           submissionId,
@@ -405,7 +430,12 @@ export async function POST(request: NextRequest) {
           data.identity.shippingCity,
           data.identity.shippingState,
           data.identity.shippingZip,
-          "pending_review",
+          STANDARD_INTAKE_STATUS.pending,
+          data.identity.stripePaymentIntentId,
+          data.identity.idFrontKey,
+          data.identity.idBackKey,
+          partnerResult.partnerName,
+          partnerResult.partnerStatus || "queued_for_manual_review",
         ]
       )
     } catch (dbError) {
@@ -415,16 +445,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-
-    const clinicianEmail = process.env.DR_DOURRA_EMAIL || process.env.ADMIN_EMAIL || ""
-    const senderEmail = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
-
-    await sendEmailViaSES(
-      clinicianEmail,
-      `[GLP INTAKE ${submissionId}] ${data.patientInfo.firstName} ${data.patientInfo.lastName} - Pending Review`,
-      clinicalSummary,
-      senderEmail
-    )
 
     return NextResponse.json(
       {

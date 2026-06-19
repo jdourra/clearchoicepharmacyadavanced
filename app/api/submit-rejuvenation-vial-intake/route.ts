@@ -1,44 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { sql } from "@/lib/db"
 import { CLEAR_CHOICE_PHARMACY } from "@/lib/telehealth/types"
-
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
-
-async function sendEmailViaSES(to: string, subject: string, body: string, from: string) {
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-    console.log("AWS SES not configured - logging vial intake email:")
-    console.log(`To: ${to}\nSubject: ${subject}\n${body}`)
-    return { success: true }
-  }
-  if (!to) {
-    console.log("No clinician email configured - logging vial intake:")
-    console.log(body)
-    return { success: true }
-  }
-  try {
-    await sesClient.send(
-      new SendEmailCommand({
-        Source: from,
-        Destination: { ToAddresses: [to] },
-        Message: {
-          Subject: { Data: subject, Charset: "UTF-8" },
-          Body: { Text: { Data: body, Charset: "UTF-8" } },
-        },
-      })
-    )
-    return { success: true }
-  } catch (error) {
-    console.error("SES error:", error)
-    return { success: false }
-  }
-}
+import { formatPaymentSummary, requireIntakePaymentSubmission, type IntakePaymentMetadata } from "@/lib/intake-payment"
+import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import {
+  formatInjectionConsentsSummary,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 function formatClinicianSummary(data: Record<string, unknown>, submissionId: string): string {
   return `
@@ -83,6 +54,18 @@ Current Meds:       ${data.currentMedications || "None reported"}
 Notes:
 ${data.additionalNotes || "None"}
 
+───────────────────────────────────────────────────────────────────────────────
+                           IDENTITY & PAYMENT
+───────────────────────────────────────────────────────────────────────────────
+${formatPaymentSummary(data.payment as IntakePaymentMetadata, {
+  authorizeHold: data.authorizeHold,
+})}
+
+───────────────────────────────────────────────────────────────────────────────
+                        TELEMEDICINE CONSENTS
+───────────────────────────────────────────────────────────────────────────────
+${data.injectionConsents ? formatInjectionConsentsSummary(data.injectionConsents as InjectionTelehealthConsentValues) : "Not provided"}
+
 ═══════════════════════════════════════════════════════════════════════════════
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth
@@ -108,6 +91,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Complete shipping address is required" }, { status: 400 })
     }
 
+    const paymentError = requireIntakePaymentSubmission(
+      { authorizeHold: data.authorizeHold },
+      data.payment
+    )
+    if (paymentError) {
+      return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    const stripeCheck = await verifyPaymentHoldReady(data.payment?.stripePaymentIntentId || "")
+    if (!stripeCheck.ok) {
+      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
+    }
+
+    if (!data.injectionConsents) {
+      return NextResponse.json({ error: "Telemedicine consents are required before submission." }, { status: 400 })
+    }
+
+    const consentError = validateInjectionTelehealthConsents(
+      data.injectionConsents as InjectionTelehealthConsentValues,
+      { variant: "rejuvenation-vial" }
+    )
+    if (!consentError.valid) {
+      return NextResponse.json({ error: consentError.message }, { status: 400 })
+    }
+
     if (data.pregnantOrBreastfeeding) {
       return NextResponse.json(
         {
@@ -119,6 +127,23 @@ export async function POST(request: NextRequest) {
     }
 
     const submissionId = `CCR-VIAL-${Date.now().toString(36).toUpperCase()}`
+    const clinicalSummary = formatClinicianSummary(data, submissionId)
+
+    const partnerResult = await submitClinicalIntakeToPartner({
+      serviceType: "rejuvenation_vial",
+      submissionId,
+      patient: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+      },
+      clinicalSummary,
+    })
+
+    if (!partnerResult.success) {
+      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
+    }
 
     try {
       await sql(
@@ -127,10 +152,11 @@ export async function POST(request: NextRequest) {
           shipping_address, shipping_city, shipping_state, shipping_zip,
           selected_vial, selected_vial_title, kit_price,
           allergies, current_medications, pregnant_or_breastfeeding,
-          kidney_disease, heart_condition, additional_notes, status
+          kidney_disease, heart_condition, additional_notes,
+          status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
-          $13, $14, $15, $16, $17, $18, $19
+          $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
         )`,
         [
           submissionId,
@@ -151,7 +177,12 @@ export async function POST(request: NextRequest) {
           data.kidneyDisease || null,
           data.heartCondition || null,
           data.additionalNotes || null,
-          "pending_provider_review",
+          STANDARD_INTAKE_STATUS.pending,
+          data.payment?.stripePaymentIntentId || null,
+          data.payment?.idFrontKey || null,
+          data.payment?.idBackKey || null,
+          partnerResult.partnerName,
+          partnerResult.partnerStatus || "queued_for_manual_review",
         ]
       )
     } catch (dbError) {
@@ -159,26 +190,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
 
-    const clinicianEmail =
-      process.env.TELEHEALTH_CLINICIAN_EMAIL ||
-      process.env.DR_DOURRA_EMAIL ||
-      process.env.ADMIN_EMAIL ||
-      ""
-    const senderEmail = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
-
-    await sendEmailViaSES(
-      clinicianEmail,
-      `[VIAL INTAKE ${submissionId}] ${data.firstName} ${data.lastName} - Pending Provider Review`,
-      formatClinicianSummary(data, submissionId),
-      senderEmail
-    )
-
     return NextResponse.json({
       success: true,
       message:
         "Your intake has been securely submitted. A licensed telehealth provider will review your request. If approved, your home injection kit will be compounded and shipped from Clear Choice Pharmacy.",
       submissionId,
-      status: "pending_provider_review",
+      status: STANDARD_INTAKE_STATUS.pending,
       estimatedReviewTime: "2-4 business hours",
       fulfillmentPharmacy: CLEAR_CHOICE_PHARMACY.name,
     })

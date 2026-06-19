@@ -3,20 +3,21 @@ import { ClinicalIntakeForm } from "@/components/clinical-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { getEdTrocheProduct, type EdBillingPlan } from "@/lib/ed-troche-catalog"
+import { parseEdAddOns } from "@/lib/ed-add-ons"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Start Your ED Consultation | Clear Choice Pharmacy",
+  title: "Buy ED Troches | Clear Choice Pharmacy",
   description:
-    "Complete a secure online intake for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
+    "Complete secure checkout for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/start`,
   },
   openGraph: {
-    title: "Start Your ED Consultation | Clear Choice Pharmacy",
-    description:
-      "Secure 4-step intake for custom compounded ED troches. Transparent pricing and discreet delivery.",
+    title: "Buy ED Troches | Clear Choice Pharmacy",
+    description: "Secure intake for custom compounded ED troches. Transparent pricing and discreet delivery.",
     url: `${SITE_URL}/mens-health/start`,
     type: "website",
   },
@@ -41,14 +42,26 @@ const trustFeatures = [
 ]
 
 const processSteps = [
-  "Select your preferred ED troche treatment",
+  "Review your selected troche formulation",
   "Complete the secure medical questionnaire",
   "Upload ID and authorize payment hold",
   "Licensed physician reviews your information",
   "If approved, Clear Choice Pharmacy compounds and ships discreetly",
 ]
 
-export default function MensHealthStartPage() {
+type PageProps = {
+  searchParams: Promise<{ product?: string; addons?: string; plan?: string }>
+}
+
+export default async function MensHealthStartPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const productId = params.product?.trim() || ""
+  const initialProduct = productId && getEdTrocheProduct(productId) ? productId : undefined
+  const initialAddOns = parseEdAddOns(params.addons)
+  const planParam = params.plan as EdBillingPlan | undefined
+  const initialBillingPlan =
+    planParam === "monthly" || planParam === "quarterly" || planParam === "annual" ? planParam : "quarterly"
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -59,15 +72,19 @@ export default function MensHealthStartPage() {
               <div className="mb-8">
                 <p className="text-sm font-medium text-primary mb-2">Clear Choice Men&apos;s Health</p>
                 <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  Start Your Private Online Consultation
+                  Complete Your ED Troche Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Complete our secure 4-step intake to connect with a licensed provider. Custom compounded ED
-                  troches are prepared at Clear Choice Pharmacy with transparent cash-pay pricing.
+                  Finish your secure intake for custom compounded ED troches. A licensed provider reviews your
+                  information before Clear Choice Pharmacy prepares your prescription.
                 </p>
               </div>
 
-              <ClinicalIntakeForm />
+              <ClinicalIntakeForm
+                initialProduct={initialProduct}
+                initialAddOns={initialAddOns}
+                initialBillingPlan={initialBillingPlan}
+              />
             </div>
 
             <div className="lg:col-span-2">
@@ -106,7 +123,7 @@ export default function MensHealthStartPage() {
                 <div className="rounded-xl border border-border bg-muted p-6">
                   <h3 className="font-semibold text-foreground mb-2">Need Help?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Our team is available to answer questions about the intake process.
+                    Our team is available to answer questions about the checkout process.
                   </p>
                   <div className="space-y-3">
                     <a

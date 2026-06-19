@@ -15,6 +15,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { EdBuyButton } from "@/components/ed-buy-button"
+import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   SITE_URL,
   MENS_HEALTH_FAQS,
@@ -23,14 +25,15 @@ import {
 } from "@/lib/clinical-seo"
 import { TRT_PROGRAMS } from "@/lib/trt-catalog"
 import { ED_FORMULATIONS } from "@/lib/ed-troche-catalog"
+import { buildTrtIntakeUrl } from "@/lib/intake-prefill"
 
-const ED_CONSULTATION_URL = "/mens-health/start"
-const TRT_CONSULTATION_URL = "/mens-health/trt/start"
+const ED_LANDING_URL = "/mens-health#ed-troches"
+const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
   title: "Men's Health | ED Troches & TRT | Clear Choice Pharmacy",
   description:
-    "Custom sublingual ED troches and physician-supervised TRT in Novi, MI. Transparent cash-pay pricing for testosterone therapy starting at $109/mo. Start your private consultation online.",
+    "Custom sublingual ED troches and physician-supervised TRT in Novi, MI. Transparent cash-pay pricing for testosterone therapy starting at $109/mo. Buy online with provider review.",
   keywords: [
     "TRT Novi MI",
     "testosterone replacement therapy Michigan",
@@ -77,13 +80,14 @@ export default function MensHealthPage() {
         badge="Clear Choice Men's Health"
         headline="ED Troches & TRT in Novi, MI"
         subheadline="Custom compounded ED troches and physician-supervised testosterone therapy—with transparent cash-pay pricing."
-        description="Whether you need fast-acting sublingual ED troches or testosterone replacement therapy, Clear Choice Pharmacy delivers discreet consultations, pharmacy compounding, and upfront pricing—no insurance middlemen."
-        highlight="🔒 Private online consultation · Pharmacy-formulated · Discreet delivery"
+        description="Whether you need fast-acting sublingual ED troches or testosterone replacement therapy, Clear Choice Pharmacy delivers pharmacy compounding and upfront pricing—no insurance middlemen."
+        highlight="🔒 Buy online · Provider review · Pharmacy-formulated · Discreet delivery"
         primaryCta={{
-          label: "Start ED Consultation",
-          href: ED_CONSULTATION_URL,
+          label: "Shop ED Troches",
+          href: ED_LANDING_URL,
+          scrollTo: "#ed-troches",
         }}
-        secondaryCta={{ label: "Explore TRT Programs", href: "#trt", scrollTo: "#trt" }}
+        secondaryCta={{ label: "Shop TRT Programs", href: TRT_LANDING_URL, scrollTo: "#trt" }}
       />
 
       <TrustRibbon
@@ -101,7 +105,7 @@ export default function MensHealthPage() {
           {
             icon: "lock",
             title: "Private & Discreet",
-            description: "Confidential consultations and direct delivery",
+            description: "Confidential checkout and direct delivery",
           },
           {
             icon: "shield",
@@ -111,11 +115,11 @@ export default function MensHealthPage() {
         ]}
       />
 
-      <ContentSection id="benefits">
+      <ContentSection id="ed-troches">
         <SectionIntro
           eyebrow="Sublingual ED Troches"
           title="Sildenafil, Tadalafil, PE & Libido Options"
-          description="Choose from six compounded troche formulations—Sildenafil, Tadalafil, combinations, PE support, Apomorphine, or Oxytocin—with the same card-based intake as our TRT programs."
+          description="Choose a formulation and buy online. Optional add-ons (Oxytocin, Apomorphine, PE support) can be added before checkout. Prescription required after provider review."
         />
         <BenefitList items={trocheBenefits} />
 
@@ -141,24 +145,30 @@ export default function MensHealthPage() {
                       ? `$${pricing.totalBilled} billed quarterly · includes shipping`
                       : "Monthly billing available"}
                   </p>
+                  <div className="mt-4">
+                    <EdBuyButton
+                      productId={formulation.id}
+                      productName={formulation.name}
+                      plan="quarterly"
+                      fullWidth
+                    />
+                  </div>
                 </div>
               </Card>
             )
           })}
         </div>
 
-        <div className="mt-8">
-          <Button asChild size="lg">
-            <Link href={ED_CONSULTATION_URL}>Start ED Consultation</Link>
-          </Button>
-        </div>
+        <p className="text-xs text-muted-foreground mt-4">
+          Prescription required. Payment authorized as a hold and captured only upon provider approval.
+        </p>
       </ContentSection>
 
       <ContentSection id="trt" tone="muted">
         <SectionIntro
           eyebrow="Testosterone Replacement Therapy"
           title="Physician-Supervised TRT With Transparent Pricing"
-          description="Restore energy, libido, and vitality with testosterone therapy reviewed by a licensed provider and fulfilled by Clear Choice Pharmacy. Competitive cash-pay pricing—injectable programs from $109/mo on quarterly billing, including medication, supplies, and shipping."
+          description="Buy a TRT program online. Injectable programs from $109/mo on quarterly billing, including medication, supplies, and shipping. Provider review required."
         />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {TRT_PROGRAMS.map((program) => {
@@ -173,10 +183,18 @@ export default function MensHealthPage() {
                 <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
                 <div className="mt-5 pt-4 border-t">
-                  <p className="text-3xl font-bold text-primary">${pricing.pricePerMonth}<span className="text-base font-normal text-muted-foreground">/mo</span></p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {pricing.plan === "quarterly" ? `$${pricing.totalBilled} billed quarterly · includes shipping` : "Monthly billing available"}
+                  <p className="text-3xl font-bold text-primary">
+                    ${pricing.pricePerMonth}
+                    <span className="text-base font-normal text-muted-foreground">/mo</span>
                   </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {pricing.plan === "quarterly"
+                      ? `$${pricing.totalBilled} billed quarterly · includes shipping`
+                      : "Monthly billing available"}
+                  </p>
+                  <div className="mt-4">
+                    <ServiceBuyButton href={buildTrtIntakeUrl(program.id, "quarterly")} fullWidth />
+                  </div>
                 </div>
               </Card>
             )
@@ -187,27 +205,21 @@ export default function MensHealthPage() {
           Unlike nutrient-only hormone balance injections, our TRT programs deliver physician-supervised testosterone
           therapy with pharmacy fulfillment—designed for men seeking real hormone optimization with upfront pricing.
         </p>
-
-        <div className="mt-8">
-          <Button asChild size="lg">
-            <Link href={TRT_CONSULTATION_URL}>Start TRT Consultation</Link>
-          </Button>
-        </div>
       </ContentSection>
 
       <ProcessSteps
         title="How It Works"
-        subtitle="From consultation to compounded care at your door"
+        subtitle="From purchase to compounded care at your door"
         steps={[
           {
             step: 1,
-            title: "Start Your Consultation",
-            description: "Complete a private online health review for ED troches or TRT—choose the program that fits your goals.",
+            title: "Buy Your Program",
+            description: "Select ED troches or TRT, add optional formulation enhancements, and complete secure checkout.",
           },
           {
             step: 2,
             title: "Physician Approval",
-            description: "A licensed provider reviews your history and approves a customized ED or testosterone protocol.",
+            description: "A licensed provider reviews your intake and approves a customized protocol.",
           },
           {
             step: 3,
@@ -224,22 +236,24 @@ export default function MensHealthPage() {
       />
 
       <PremiumDisclaimer>
-        Compounded medications are prepared pursuant to a patient-specific prescription. Consultation and clinical
-        evaluation are required. Individual results may vary. Testosterone is a controlled substance requiring
+        Compounded medications are prepared pursuant to a patient-specific prescription. Provider clinical
+        evaluation is required. Individual results may vary. Testosterone is a controlled substance requiring
         physician supervision.
       </PremiumDisclaimer>
 
       <PremiumCta
         icon="heart"
         title="Ready to Get Started?"
-        description="Choose ED troches or testosterone replacement therapy—both with private consultations and transparent pricing."
+        description="Buy ED troches or testosterone replacement therapy with transparent pricing and discreet fulfillment."
         primaryCta={{
-          label: "Start ED Consultation",
-          href: ED_CONSULTATION_URL,
+          label: "Shop ED Troches",
+          href: ED_LANDING_URL,
+          scrollTo: "#ed-troches",
         }}
         secondaryCta={{
-          label: "Start TRT Consultation",
-          href: TRT_CONSULTATION_URL,
+          label: "Shop TRT Programs",
+          href: TRT_LANDING_URL,
+          scrollTo: "#trt",
         }}
       />
     </ClinicalLandingShell>

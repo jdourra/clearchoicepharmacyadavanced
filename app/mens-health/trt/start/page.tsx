@@ -3,25 +3,36 @@ import { TrtIntakeForm } from "@/components/trt-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Start Your TRT Consultation | Clear Choice Pharmacy",
+  title: "Buy TRT Program | Clear Choice Pharmacy",
   description:
-    "Complete a secure online intake for testosterone replacement therapy. Physician-reviewed TRT with transparent pricing from $109/mo through Clear Choice Pharmacy.",
+    "Complete secure checkout for testosterone replacement therapy. Physician-reviewed TRT with transparent pricing from $109/mo through Clear Choice Pharmacy.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/trt/start`,
   },
   openGraph: {
-    title: "Start Your TRT Consultation | Clear Choice Pharmacy",
-    description: "Secure TRT intake with injectable, topical, and enclomiphene options. Transparent cash-pay pricing.",
+    title: "Buy TRT Program | Clear Choice Pharmacy",
+    description: "Secure TRT checkout with injectable, topical, and enclomiphene options. Transparent cash-pay pricing.",
     url: `${SITE_URL}/mens-health/trt/start`,
     type: "website",
   },
 }
 
-export default function TrtStartPage() {
+type PageProps = {
+  searchParams: Promise<{ program?: string; plan?: string }>
+}
+
+export default async function TrtStartPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const programId = params.program?.trim() || ""
+  const initialProgram = programId && TRT_PROGRAMS.some((p) => p.id === programId) ? programId : undefined
+  const planParam = params.plan as TrtBillingPlan | undefined
+  const initialBillingPlan = planParam === "monthly" || planParam === "quarterly" ? planParam : "quarterly"
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -32,14 +43,14 @@ export default function TrtStartPage() {
               <div className="mb-8">
                 <p className="text-sm font-medium text-primary mb-2">Clear Choice TRT</p>
                 <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  Start Your Testosterone Replacement Consultation
+                  Complete Your TRT Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Complete our secure intake for physician-reviewed TRT. Programs include medication, supplies,
-                  and discreet pharmacy fulfillment—with transparent pricing from $109/mo on quarterly billing.
+                  Finish your secure intake for physician-reviewed testosterone therapy. Programs include medication,
+                  supplies, and discreet pharmacy fulfillment.
                 </p>
               </div>
-              <TrtIntakeForm />
+              <TrtIntakeForm initialProgram={initialProgram} initialBillingPlan={initialBillingPlan} />
             </div>
 
             <div className="lg:col-span-2">

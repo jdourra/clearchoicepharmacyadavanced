@@ -31,9 +31,20 @@ export interface PatientPortalData {
 }
 
 export function formatPortalStatus(status: string): string {
-  return status
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
+  const labels: Record<string, string> = {
+    pending_provider_review: "Pending provider review",
+    pending_review: "Pending provider review",
+    rx_at_pharmacy: "Prescription at pharmacy",
+    preparing: "Pharmacy preparing",
+    shipped: "Shipped",
+    ready_for_dispatch: "Ready for RN dispatch",
+    dispatched: "RN dispatched",
+    completed: "Completed",
+    provider_denied: "Not approved",
+    provider_follow_up: "Follow-up required",
+    cancelled: "Cancelled",
+  }
+  return labels[status] || status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 export function portalStatusVariant(

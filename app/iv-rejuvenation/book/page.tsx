@@ -32,7 +32,7 @@ export default async function IvBookPage({ searchParams }: PageProps) {
         <div className="mx-auto max-w-2xl px-4 py-12 lg:py-16">
           <div className="mb-8">
             <p className="text-sm font-medium text-sky-600 mb-2">Clear Choice IV &amp; Rejuvenation</p>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">IV Therapy Intake</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Complete Your IV Order</h1>
             <p className="mt-3 text-slate-600">
               Complete this form for telehealth provider review. Approved prescriptions are sent to Clear Choice
               Pharmacy for compounding before mobile RN dispatch.

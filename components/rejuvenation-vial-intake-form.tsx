@@ -14,6 +14,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getRejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
+import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import {
+  emptyIntakePaymentValues,
+  getIntakePaymentInvalidFields,
+  paymentCapturedOnClient,
+  type IntakePaymentValues,
+} from "@/lib/intake-payment"
+import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  emptyInjectionTelehealthConsents,
+  getInjectionConsentInvalidFields,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
@@ -47,7 +60,11 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
   const [heartCondition, setHeartCondition] = useState("")
   const [pregnantOrBreastfeeding, setPregnantOrBreastfeeding] = useState(false)
   const [additionalNotes, setAdditionalNotes] = useState("")
-  const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [authorizeHold, setAuthorizeHold] = useState(false)
+  const [payment, setPayment] = useState<IntakePaymentValues>(emptyIntakePaymentValues)
+  const [injectionConsents, setInjectionConsents] = useState<InjectionTelehealthConsentValues>({
+    ...emptyInjectionTelehealthConsents,
+  })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
@@ -69,7 +86,13 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
     if (!shippingZip) invalid.add("shippingZip")
     if (!kidneyDisease) invalid.add("kidneyDisease")
     if (!heartCondition) invalid.add("heartCondition")
-    if (!agreeToTerms) invalid.add("agreeToTerms")
+    for (const field of getIntakePaymentInvalidFields(payment)) invalid.add(field)
+    for (const field of getInjectionConsentInvalidFields(injectionConsents, {
+      variant: "rejuvenation-vial",
+    })) {
+      invalid.add(field)
+    }
+    if (!authorizeHold) invalid.add("authorizeHold")
     if (email && !/^\S+@\S+\.\S+$/.test(email)) invalid.add("email")
 
     if (invalid.size > 0) {
@@ -92,6 +115,19 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
       next.delete(field)
       return next
     })
+  }
+
+  const updatePayment = <K extends keyof IntakePaymentValues>(key: K, value: IntakePaymentValues[K]) => {
+    setPayment((prev) => ({ ...prev, [key]: value }))
+    clearError(key)
+  }
+
+  const updateInjectionConsent = <K extends keyof InjectionTelehealthConsentValues>(
+    key: K,
+    value: InjectionTelehealthConsentValues[K]
+  ) => {
+    setInjectionConsents((prev) => ({ ...prev, [key]: value }))
+    clearError(key)
   }
 
   const handleSubmit = async () => {
@@ -123,7 +159,9 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
           heartCondition,
           pregnantOrBreastfeeding,
           additionalNotes,
-          agreeToTerms,
+          authorizeHold,
+          payment: paymentCapturedOnClient(payment),
+          injectionConsents,
         }),
       })
 
@@ -326,13 +364,41 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
             <Label>Questions for the provider</Label>
             <Textarea value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} placeholder="Prior injection experience, concerns, etc." />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Identity &amp; Payment</CardTitle>
+          <CardDescription>Upload your ID and authorize payment before submission.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <IntakeIdentityPaymentSection
+            idPrefix="vial"
+            serviceType="rejuvenation_vial"
+            patientEmail={email}
+            intakePrefix={`vial-${email || "draft"}`}
+            values={payment}
+            onChange={updatePayment}
+            totalBilled={selectedVial.price}
+            invalidFields={fieldErrors}
+          />
+
+          <InjectionTelehealthConsents
+            idPrefix="vial"
+            variant="rejuvenation-vial"
+            values={injectionConsents}
+            onChange={updateInjectionConsent}
+            invalidFields={fieldErrors}
+          />
+
           <div
-            data-field="agreeToTerms"
-            className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTerms") && "ring-2 ring-destructive bg-destructive/5")}
+            data-field="authorizeHold"
+            className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2 border-t pt-4", isInvalid("authorizeHold") && "ring-2 ring-destructive bg-destructive/5")}
           >
-            <Checkbox id="agree" checked={agreeToTerms} onCheckedChange={(c) => { setAgreeToTerms(c === true); clearError("agreeToTerms") }} />
-            <Label htmlFor="agree" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTerms") && "text-destructive")}>
-              I agree to the Terms of Service and consent to telehealth screening before my kit is shipped *
+            <Checkbox id="authorize" checked={authorizeHold} onCheckedChange={(c) => { setAuthorizeHold(c === true); clearError("authorizeHold") }} />
+            <Label htmlFor="authorize" className={cn("font-normal cursor-pointer leading-snug", isInvalid("authorizeHold") && "text-destructive")}>
+              I authorize a payment hold of <strong>${selectedVial.price}</strong> to be charged only upon prescription approval *
             </Label>
           </div>
         </CardContent>

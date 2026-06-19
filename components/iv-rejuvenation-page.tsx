@@ -37,6 +37,7 @@ import { IV_BOOSTERS, IV_PACKAGES, IV_TRAVEL_FEE, calculateIvSubtotal, calculate
 import { REJUVENATION_VIALS, VIAL_CATEGORY_LABELS } from "@/lib/rejuvenation-vial-catalog"
 import { IV_REJUVENATION_FAQS } from "@/lib/clinical-seo"
 import { IvBoosterPicker } from "@/components/iv-booster-picker"
+import { buildIvBookUrl } from "@/lib/intake-prefill"
 
 const BOOSTERS = IV_BOOSTERS
 
@@ -125,12 +126,14 @@ export function IvRejuvenationPage() {
   }, [selectedPackage, selectedBoosters])
 
   const openBooking = (pkg?: IvPackage) => {
-    if (pkg) {
-      setSelectedPackage((current) => {
-        if (current?.id !== pkg.id) setSelectedBoosters([])
-        return pkg
-      })
+    if (!pkg) {
+      scrollToMenu()
+      return
     }
+    setSelectedPackage((current) => {
+      if (current?.id !== pkg.id) setSelectedBoosters([])
+      return pkg
+    })
     setSheetOpen(true)
   }
 
@@ -141,6 +144,7 @@ export function IvRejuvenationPage() {
   }
 
   const scrollToMenu = () => {
+    setSheetOpen(false)
     document.getElementById("iv-menu")?.scrollIntoView({ behavior: "smooth" })
   }
 
@@ -179,9 +183,9 @@ export function IvRejuvenationPage() {
                 <Button
                   size="lg"
                   className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-lg shadow-sky-500/25"
-                  onClick={() => openBooking()}
+                  onClick={scrollToMenu}
                 >
-                  Book Mobile IV
+                  Buy Mobile IV
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button
@@ -190,15 +194,7 @@ export function IvRejuvenationPage() {
                   className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
                   onClick={scrollToVialMenu}
                 >
-                  Rejuvenation Vials
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
-                  onClick={scrollToMenu}
-                >
-                  View IV Menu
+                  Shop Vial Kits
                 </Button>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm text-sky-100">
@@ -242,7 +238,7 @@ export function IvRejuvenationPage() {
               <p className="text-slate-600 leading-relaxed">
                 Pharmacy-formulated IV packages with transparent pricing. Drip prices do not include the{" "}
                 <strong className="text-slate-800">${IV_TRAVEL_FEE} mobile dispatch fee</strong>, added at checkout.
-                Tap <strong className="text-slate-800">Book Drip</strong> to customize with optional pharmacy boosters.
+                Tap <strong className="text-slate-800">Buy</strong> on a drip to add optional boosters and continue to checkout.
               </p>
             </div>
 
@@ -288,13 +284,16 @@ export function IvRejuvenationPage() {
                       </p>
                     )}
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="flex flex-col gap-2">
                     <Button
                       className="w-full bg-slate-900 hover:bg-slate-800"
                       onClick={() => openBooking(pkg)}
                     >
-                      Book Drip
+                      Buy
                       <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" className="w-full" asChild>
+                      <Link href={buildIvBookUrl(pkg.id)}>Skip boosters — checkout now</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -367,7 +366,7 @@ export function IvRejuvenationPage() {
                   <CardFooter>
                     <Button className="w-full bg-sky-600 hover:bg-sky-500" asChild>
                       <Link href={`/iv-rejuvenation/vials/start?vial=${vial.id}`}>
-                        Start Consultation
+                        Buy
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -455,9 +454,9 @@ export function IvRejuvenationPage() {
               <Button
                 size="lg"
                 className="bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/25"
-                onClick={() => openBooking()}
+                onClick={scrollToMenu}
               >
-                Book Mobile IV
+                Buy Mobile IV
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
@@ -466,7 +465,7 @@ export function IvRejuvenationPage() {
                 className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
                 onClick={scrollToVialMenu}
               >
-                Browse Vial Kits
+                Shop Vial Kits
               </Button>
             </div>
           </div>
@@ -552,7 +551,7 @@ export function IvRejuvenationPage() {
             >
               {selectedPackage ? (
                 <Link href={bookingUrl} onClick={() => setSheetOpen(false)}>
-                  Continue to Intake
+                  Continue to checkout
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               ) : (
@@ -560,7 +559,7 @@ export function IvRejuvenationPage() {
               )}
             </Button>
             <Button variant="outline" className="w-full" onClick={scrollToMenu}>
-              View IV Menu
+              Choose a different drip
             </Button>
           </SheetFooter>
         </SheetContent>

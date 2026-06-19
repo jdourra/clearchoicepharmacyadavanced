@@ -17,8 +17,6 @@ import {
   AlertTriangle,
   Shield,
   Zap,
-  Upload,
-  CreditCard,
   FileText,
   Activity,
   XCircle,
@@ -32,6 +30,12 @@ import {
   getEdTrocheProduct,
   type EdBillingPlan,
 } from "@/lib/ed-troche-catalog"
+import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { IntakeOrderSummary } from "@/components/intake-order-summary"
+import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
+import { scrollToFirstField } from "@/lib/intake-field-labels"
 
 // ============================================
 // TYPE DEFINITIONS
@@ -43,6 +47,7 @@ type FormData = {
   // Step 1: Product Selection
   selectedProduct: string
   selectedBillingPlan: BillingPlan
+  selectedAddOns: EdFormulationAddOn[]
   
   // Step 2: Demographics Module
   firstName: string
@@ -95,10 +100,12 @@ type FormData = {
   sameAsResidential: boolean
   idFrontFile: File | null
   idBackFile: File | null
-  cardNumber: string
-  cardExpiry: string
-  cardCVC: string
-  cardName: string
+  idFrontKey: string | null
+  idBackKey: string | null
+  idFrontUploading: boolean
+  idBackUploading: boolean
+  stripePaymentIntentId: string | null
+  paymentAuthorized: boolean
   
   // Consents
   agreeToTerms: boolean
@@ -110,6 +117,7 @@ type FormData = {
 const initialFormData: FormData = {
   selectedProduct: "",
   selectedBillingPlan: "quarterly",
+  selectedAddOns: [],
   firstName: "",
   lastName: "",
   email: "",
@@ -150,10 +158,7 @@ const initialFormData: FormData = {
   sameAsResidential: true,
   idFrontFile: null,
   idBackFile: null,
-  cardNumber: "",
-  cardExpiry: "",
-  cardCVC: "",
-  cardName: "",
+  ...emptyIntakePaymentValues,
   agreeToTerms: false,
   agreeToTelehealth: false,
   agreeToPrivacy: false,
@@ -206,24 +211,129 @@ function checkContraindicationHardStop(formData: FormData): { isHardStop: boolea
   return { isHardStop: false, reason: "" }
 }
 
-// ============================================
-// MAIN COMPONENT
-// ============================================
+type StepValidation = { valid: boolean; message: string; fields: string[] }
 
-export function ClinicalIntakeForm() {
-  const [step, setStep] = useState(1)
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+function getEdStepValidation(formData: FormData, currentStep: number): StepValidation {
+  const fields: string[] = []
+  const add = (...keys: string[]) => {
+    for (const key of keys) {
+      if (!fields.includes(key)) fields.push(key)
+    }
+  }
+
+  switch (currentStep) {
+    case 1:
+      if (!formData.selectedProduct) {
+        add("selectedProduct")
+        return { valid: false, message: "Please select a treatment option to continue.", fields }
+      }
+      return { valid: true, message: "", fields: [] }
+
+    case 2: {
+      if (!formData.firstName) add("firstName")
+      if (!formData.lastName) add("lastName")
+      if (!formData.email) add("email")
+      if (!formData.phone) add("phone")
+      if (!formData.dateOfBirth) add("dateOfBirth")
+      if (!formData.state) add("state")
+      if (fields.length > 0) {
+        return { valid: false, message: "Please complete all required demographic fields.", fields }
+      }
+      if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+        return { valid: false, message: "Please enter a valid email address.", fields: ["email"] }
+      }
+      if (!formData.systolicBP) add("systolicBP")
+      if (!formData.diastolicBP) add("diastolicBP")
+      if (fields.length > 0) {
+        return { valid: false, message: "Please enter your blood pressure readings.", fields }
+      }
+      if (!formData.edDuration) add("edDuration")
+      if (!formData.edSeverity) add("edSeverity")
+      if (fields.length > 0) {
+        return { valid: false, message: "Please complete the treatment goals section.", fields }
+      }
+      return { valid: true, message: "", fields: [] }
+    }
+
+    case 3: {
+      if (!formData.sameAsResidential) {
+        if (!formData.shippingAddress) add("shippingAddress")
+        if (!formData.shippingCity) add("shippingCity")
+        if (!formData.shippingState) add("shippingState")
+        if (!formData.shippingZip) add("shippingZip")
+        if (fields.length > 0) {
+          return { valid: false, message: "Please complete shipping address information.", fields }
+        }
+      }
+      if (!formData.idFrontKey) add("idFrontFile")
+      if (!formData.idBackKey) add("idBackFile")
+      for (const field of getIntakePaymentInvalidFields(formData)) {
+        if (field === "idFrontFile" || field === "idBackFile" || field === "stripePayment") add(field)
+      }
+      if (fields.length > 0) {
+        return { valid: false, message: "Please upload your ID and authorize payment.", fields }
+      }
+      if (!formData.agreeToTerms) add("agreeToTerms")
+      if (!formData.agreeToTelehealth) add("agreeToTelehealth")
+      if (!formData.agreeToPrivacy) add("agreeToPrivacy")
+      if (!formData.authorizeHold) add("authorizeHold")
+      if (fields.length > 0) {
+        return { valid: false, message: "Please agree to all terms and authorize the payment hold.", fields }
+      }
+      return { valid: true, message: "", fields: [] }
+    }
+
+    default:
+      return { valid: true, message: "", fields: [] }
+  }
+}
+
+export type ClinicalIntakeFormProps = {
+  initialProduct?: string
+  initialAddOns?: EdFormulationAddOn[]
+  initialBillingPlan?: BillingPlan
+}
+
+export function ClinicalIntakeForm({
+  initialProduct,
+  initialAddOns = [],
+  initialBillingPlan = "quarterly",
+}: ClinicalIntakeFormProps = {}) {
+  const productPrefilled = Boolean(initialProduct && getEdTrocheProduct(initialProduct))
+  const minStep = productPrefilled ? 2 : 1
+
+  const [step, setStep] = useState(productPrefilled ? 2 : 1)
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
+    selectedProduct: initialProduct || "",
+    selectedBillingPlan: initialBillingPlan,
+    selectedAddOns: initialAddOns,
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
+  const [validationFields, setValidationFields] = useState<string[]>([])
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
   const [hardStop, setHardStop] = useState<{ active: boolean; reason: string }>({ active: false, reason: "" })
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
   const [statusLogs, setStatusLogs] = useState<string[]>([])
   
   const totalSteps = 4
+
+  const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
+
+  const clearFieldError = useCallback((field: string) => {
+    setFieldErrors((prev) => {
+      if (!prev.has(field)) return prev
+      const next = new Set(prev)
+      next.delete(field)
+      return next
+    })
+  }, [])
   
   const updateFormData = useCallback(<K extends keyof FormData>(field: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-  }, [])
+    clearFieldError(field as string)
+  }, [clearFieldError])
   
   const handleCheckboxArrayChange = useCallback((field: "previousTreatments" | "treatmentGoals", value: string, checked: boolean) => {
     setFormData((prev) => {
@@ -260,64 +370,21 @@ export function ClinicalIntakeForm() {
   }, [formData])
   
   const validateStep = (currentStep: number): boolean => {
-    setError("")
-    
-    switch (currentStep) {
-      case 1:
-        if (!formData.selectedProduct) {
-          setError("Please select a treatment option to continue.")
-          return false
-        }
-        return true
-        
-      case 2:
-        // Demographics validation
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.dateOfBirth || !formData.state) {
-          setError("Please complete all required demographic information.")
-          return false
-        }
-        if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-          setError("Please enter a valid email address.")
-          return false
-        }
-        // Blood pressure validation
-        if (!formData.systolicBP || !formData.diastolicBP) {
-          setError("Please enter your blood pressure readings.")
-          return false
-        }
-        // Check for hard stops
-        if (!validateBloodPressure()) {
-          return false
-        }
-        // ED info validation
-        if (!formData.edDuration || !formData.edSeverity) {
-          setError("Please complete the treatment goals section.")
-          return false
-        }
-        return true
-        
-      case 3:
-        if (!formData.sameAsResidential && (!formData.shippingAddress || !formData.shippingCity || !formData.shippingState || !formData.shippingZip)) {
-          setError("Please complete shipping address information.")
-          return false
-        }
-        if (!formData.idFrontFile || !formData.idBackFile) {
-          setError("Please upload both front and back of your photo ID.")
-          return false
-        }
-        if (!formData.cardNumber || !formData.cardExpiry || !formData.cardCVC || !formData.cardName) {
-          setError("Please complete payment information.")
-          return false
-        }
-        if (!formData.agreeToTerms || !formData.agreeToTelehealth || !formData.agreeToPrivacy || !formData.authorizeHold) {
-          setError("Please agree to all terms and authorize the payment hold to continue.")
-          return false
-        }
-        return true
-        
-      default:
-        return true
+    const result = getEdStepValidation(formData, currentStep)
+    if (!result.valid) {
+      setError(result.message)
+      setValidationFields(result.fields)
+      setFieldErrors(new Set(result.fields))
+      scrollToFirstField(result.fields)
+      return false
     }
+    if (currentStep === 2 && !validateBloodPressure()) {
+      return false
+    }
+    setError("")
+    setValidationFields([])
+    setFieldErrors(new Set())
+    return true
   }
   
   const nextStep = () => {
@@ -330,8 +397,10 @@ export function ClinicalIntakeForm() {
   
   const prevStep = () => {
     setError("")
+    setValidationFields([])
+    setFieldErrors(new Set())
     setHardStop({ active: false, reason: "" })
-    setStep((prev) => Math.max(prev - 1, 1))
+    setStep((prev) => Math.max(prev - 1, minStep))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   
@@ -388,10 +457,33 @@ export function ClinicalIntakeForm() {
         treatment: {
           selectedProduct: formData.selectedProduct,
           selectedBillingPlan: formData.selectedBillingPlan,
+          selectedAddOns: formData.selectedAddOns,
           edDuration: formData.edDuration,
           edSeverity: formData.edSeverity,
           previousTreatments: formData.previousTreatments,
           treatmentGoals: formData.treatmentGoals,
+        },
+        identity: {
+          shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
+          shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
+          shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
+          shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
+          ...paymentCapturedOnClient({
+            idFrontFile: formData.idFrontFile,
+            idBackFile: formData.idBackFile,
+            idFrontKey: formData.idFrontKey,
+            idBackKey: formData.idBackKey,
+            idFrontUploading: formData.idFrontUploading,
+            idBackUploading: formData.idBackUploading,
+            stripePaymentIntentId: formData.stripePaymentIntentId,
+            paymentAuthorized: formData.paymentAuthorized,
+          }),
+        },
+        consents: {
+          agreeToTerms: formData.agreeToTerms,
+          agreeToTelehealth: formData.agreeToTelehealth,
+          agreeToPrivacy: formData.agreeToPrivacy,
+          authorizeHold: formData.authorizeHold,
         },
         // NOTE: ID images would be uploaded to secure storage with BAA
         // NOTE: Payment info would be tokenized via Stripe/similar before transmission
@@ -455,10 +547,6 @@ export function ClinicalIntakeForm() {
     }
   }
   
-  const handleFileUpload = (field: "idFrontFile" | "idBackFile", file: File | null) => {
-    updateFormData(field, file)
-  }
-
   // ============================================
   // RENDER: HARD STOP SCREEN
   // ============================================
@@ -725,6 +813,26 @@ export function ClinicalIntakeForm() {
   
   const renderStep2 = () => (
     <div className="space-y-8">
+      {productPrefilled && (() => {
+        const product = getEdTrocheProduct(formData.selectedProduct)
+        const pricing = product?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
+        const billingLabel =
+          formData.selectedBillingPlan === "monthly"
+            ? "Monthly"
+            : formData.selectedBillingPlan === "quarterly"
+              ? "Quarterly"
+              : "Annual"
+        return product ? (
+          <IntakeOrderSummary
+            productName={product.name}
+            productSubtitle={product.subtitle}
+            billingLabel={billingLabel}
+            priceLine={pricing ? `$${pricing.pricePerMonth}/mo` : undefined}
+            addOns={formData.selectedAddOns}
+            changeHref="/mens-health#ed-troches"
+          />
+        ) : null
+      })()}
       {/* Module 1: Demographics */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b pb-2">
@@ -733,66 +841,74 @@ export function ClinicalIntakeForm() {
         </div>
         
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name *</Label>
+          <div className="space-y-2" data-field="firstName">
+            <Label htmlFor="firstName" className={cn(isInvalid("firstName") && "text-destructive")}>First Name *</Label>
             <Input
               id="firstName"
               value={formData.firstName}
               onChange={(e) => updateFormData("firstName", e.target.value)}
               placeholder="John"
+              className={cn(isInvalid("firstName") && "border-destructive")}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name *</Label>
+          <div className="space-y-2" data-field="lastName">
+            <Label htmlFor="lastName" className={cn(isInvalid("lastName") && "text-destructive")}>Last Name *</Label>
             <Input
               id="lastName"
               value={formData.lastName}
               onChange={(e) => updateFormData("lastName", e.target.value)}
               placeholder="Smith"
+              className={cn(isInvalid("lastName") && "border-destructive")}
             />
           </div>
         </div>
         
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+          <div className="space-y-2" data-field="email">
+            <Label htmlFor="email" className={cn(isInvalid("email") && "text-destructive")}>Email *</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => updateFormData("email", e.target.value)}
               placeholder="john@example.com"
+              className={cn(isInvalid("email") && "border-destructive")}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone *</Label>
+          <div className="space-y-2" data-field="phone">
+            <Label htmlFor="phone" className={cn(isInvalid("phone") && "text-destructive")}>Phone *</Label>
             <Input
               id="phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => updateFormData("phone", e.target.value)}
               placeholder="(555) 123-4567"
+              className={cn(isInvalid("phone") && "border-destructive")}
             />
           </div>
         </div>
         
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+          <div className="space-y-2" data-field="dateOfBirth">
+            <Label htmlFor="dateOfBirth" className={cn(isInvalid("dateOfBirth") && "text-destructive")}>Date of Birth *</Label>
             <Input
               id="dateOfBirth"
               type="date"
               value={formData.dateOfBirth}
               onChange={(e) => updateFormData("dateOfBirth", e.target.value)}
+              className={cn(isInvalid("dateOfBirth") && "border-destructive")}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State *</Label>
+          <div className="space-y-2" data-field="state">
+            <Label htmlFor="state" className={cn(isInvalid("state") && "text-destructive")}>State *</Label>
             <select
               id="state"
               value={formData.state}
               onChange={(e) => updateFormData("state", e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className={cn(
+                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isInvalid("state") && "border-destructive"
+              )}
             >
               <option value="">Select state</option>
               {states.map((state) => (
@@ -850,8 +966,8 @@ export function ClinicalIntakeForm() {
         </Alert>
         
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2">
-            <Label htmlFor="systolicBP">Systolic (top number) *</Label>
+          <div className="space-y-2" data-field="systolicBP">
+            <Label htmlFor="systolicBP" className={cn(isInvalid("systolicBP") && "text-destructive")}>Systolic (top number) *</Label>
             <Input
               id="systolicBP"
               type="number"
@@ -860,10 +976,11 @@ export function ClinicalIntakeForm() {
               placeholder="120"
               min="60"
               max="250"
+              className={cn(isInvalid("systolicBP") && "border-destructive")}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="diastolicBP">Diastolic (bottom number) *</Label>
+          <div className="space-y-2" data-field="diastolicBP">
+            <Label htmlFor="diastolicBP" className={cn(isInvalid("diastolicBP") && "text-destructive")}>Diastolic (bottom number) *</Label>
             <Input
               id="diastolicBP"
               type="number"
@@ -872,6 +989,7 @@ export function ClinicalIntakeForm() {
               placeholder="80"
               min="40"
               max="150"
+              className={cn(isInvalid("diastolicBP") && "border-destructive")}
             />
           </div>
           <div className="space-y-2">
@@ -1105,8 +1223,8 @@ export function ClinicalIntakeForm() {
           <h3 className="font-semibold">Treatment Goals</h3>
         </div>
         
-        <div className="space-y-2">
-          <Label>How long have you experienced ED symptoms? *</Label>
+        <div className="space-y-2" data-field="edDuration">
+          <Label className={cn(isInvalid("edDuration") && "text-destructive")}>How long have you experienced ED symptoms? *</Label>
           <RadioGroup
             value={formData.edDuration}
             onValueChange={(value) => updateFormData("edDuration", value)}
@@ -1127,8 +1245,8 @@ export function ClinicalIntakeForm() {
           </RadioGroup>
         </div>
         
-        <div className="space-y-2">
-          <Label>How would you rate the severity of your ED? *</Label>
+        <div className="space-y-2" data-field="edSeverity">
+          <Label className={cn(isInvalid("edSeverity") && "text-destructive")}>How would you rate the severity of your ED? *</Label>
           <RadioGroup
             value={formData.edSeverity}
             onValueChange={(value) => updateFormData("edSeverity", value)}
@@ -1304,137 +1422,25 @@ export function ClinicalIntakeForm() {
           )}
         </div>
         
-        {/* Identity Verification */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b pb-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Identity Verification</h3>
-          </div>
-          
-          <Alert>
-            <Shield className="h-4 w-4" />
-            <AlertTitle>Why we need your ID</AlertTitle>
-            <AlertDescription>
-              Federal and state regulations require identity verification for telemedicine prescriptions. Your ID is stored securely and only used for verification purposes.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Photo ID - Front *</Label>
-              <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload("idFrontFile", e.target.files?.[0] || null)}
-                  className="hidden"
-                  id="idFront"
-                />
-                <label htmlFor="idFront" className="cursor-pointer">
-                  {formData.idFrontFile ? (
-                    <div className="flex items-center justify-center gap-2 text-green-600">
-                      <CheckCircle2 className="h-5 w-5" />
-                      <span className="text-sm">{formData.idFrontFile.name}</span>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Click to upload front of ID</p>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Photo ID - Back *</Label>
-              <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload("idBackFile", e.target.files?.[0] || null)}
-                  className="hidden"
-                  id="idBack"
-                />
-                <label htmlFor="idBack" className="cursor-pointer">
-                  {formData.idBackFile ? (
-                    <div className="flex items-center justify-center gap-2 text-green-600">
-                      <CheckCircle2 className="h-5 w-5" />
-                      <span className="text-sm">{formData.idBackFile.name}</span>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Click to upload back of ID</p>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Payment Information */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b pb-2">
-            <CreditCard className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Payment Authorization</h3>
-          </div>
-          
-          <Alert>
-            <CreditCard className="h-4 w-4" />
-            <AlertTitle>Authorization Hold Only</AlertTitle>
-            <AlertDescription>
-              Funds will be held via a temporary pre-authorization and only officially captured upon Dr. Dourra&apos;s clinical approval.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="cardName">Name on Card *</Label>
-              <Input
-                id="cardName"
-                value={formData.cardName}
-                onChange={(e) => updateFormData("cardName", e.target.value)}
-                placeholder="John Smith"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="cardNumber">Card Number *</Label>
-              <Input
-                id="cardNumber"
-                value={formData.cardNumber}
-                onChange={(e) => updateFormData("cardNumber", e.target.value)}
-                placeholder="4242 4242 4242 4242"
-                maxLength={19}
-              />
-            </div>
-            
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="cardExpiry">Expiration Date *</Label>
-                <Input
-                  id="cardExpiry"
-                  value={formData.cardExpiry}
-                  onChange={(e) => updateFormData("cardExpiry", e.target.value)}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardCVC">CVC *</Label>
-                <Input
-                  id="cardCVC"
-                  value={formData.cardCVC}
-                  onChange={(e) => updateFormData("cardCVC", e.target.value)}
-                  placeholder="123"
-                  maxLength={4}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Identity & Payment */}
+        <IntakeIdentityPaymentSection
+          idPrefix="ed"
+          serviceType="mens_health"
+          patientEmail={formData.email}
+          intakePrefix={`ed-${formData.email || "draft"}`}
+          values={{
+            idFrontFile: formData.idFrontFile,
+            idBackFile: formData.idBackFile,
+            idFrontKey: formData.idFrontKey,
+            idBackKey: formData.idBackKey,
+            idFrontUploading: formData.idFrontUploading,
+            idBackUploading: formData.idBackUploading,
+            stripePaymentIntentId: formData.stripePaymentIntentId,
+            paymentAuthorized: formData.paymentAuthorized,
+          }}
+          onChange={updateFormData}
+          totalBilled={totalBilled}
+        />
         
         {/* Consents */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
@@ -1448,7 +1454,7 @@ export function ClinicalIntakeForm() {
                 onCheckedChange={(checked) => updateFormData("agreeToTerms", checked as boolean)}
               />
               <Label htmlFor="agreeToTerms" className="font-normal text-sm cursor-pointer">
-                I agree to the <a href="/terms" className="text-primary underline">Terms of Service</a> and <a href="/privacy" className="text-primary underline">Privacy Policy</a> *
+                I agree to the <a href="/terms-and-conditions" className="text-primary underline">Terms of Service</a> and <a href="/privacy" className="text-primary underline">Privacy Policy</a> *
               </Label>
             </div>
             
@@ -1516,25 +1522,20 @@ export function ClinicalIntakeForm() {
         
         <CardTitle>
           {step === 1 && "Choose your troche formulation"}
-          {step === 2 && "Medical Intake Questionnaire"}
-          {step === 3 && "Identity & Payment"}
+          {step === 2 && "Your information & health profile"}
+          {step === 3 && "Identity & payment"}
           {step === 4 && "Confirmation"}
         </CardTitle>
         <CardDescription>
-          {step === 1 && "Pick Sildenafil, Tadalafil, combination, PE, or low libido troches—same layout as our TRT programs"}
-          {step === 2 && "Help us understand your health profile for safe treatment"}
+          {step === 1 && "Select a formulation, then continue to checkout"}
+          {step === 2 && "Complete required fields so your provider can review safely"}
           {step === 3 && "Verify your identity and authorize payment hold"}
           {step === 4 && "Review your submission status"}
         </CardDescription>
       </CardHeader>
       
       <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        <IntakeValidationAlert message={error} fields={validationFields} />
         
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
@@ -1542,7 +1543,7 @@ export function ClinicalIntakeForm() {
       </CardContent>
       
       <CardFooter className="flex justify-between border-t pt-6">
-        {step > 1 ? (
+        {step > minStep ? (
           <Button variant="outline" onClick={prevStep} disabled={isSubmitting}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back

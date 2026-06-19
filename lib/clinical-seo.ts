@@ -117,6 +117,16 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
     answer:
       "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying patients in Novi, MI and Metro Detroit seeking Semaglutide or Tirzepatide medical weight management.",
   },
+  {
+    question: "What is the MIC + B12 skinny shot and how does it help with weight loss?",
+    answer:
+      "The MIC + B12 skinny shot is a lipotropic injection blend containing Methionine, Inositol, Choline (MIC), Vitamin B12, and L-Carnitine. MIC nutrients support liver function and fat mobilization, B12 supports energy and metabolism, and L-Carnitine helps transport fatty acids for fuel. It is commonly used weekly as metabolic support alongside diet, exercise, and GLP-1 therapy.",
+  },
+  {
+    question: "Can I use MIC + B12 with GLP-1 therapy?",
+    answer:
+      "Many patients use MIC + B12 as complementary metabolic support while on Semaglutide or Tirzepatide. Your provider will review your health profile and confirm whether combining therapies is appropriate for you.",
+  },
 ]
 
 export const IV_REJUVENATION_FAQS: FaqItem[] = [

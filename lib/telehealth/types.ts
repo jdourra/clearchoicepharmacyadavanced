@@ -8,9 +8,15 @@
  *   pending_provider_review → rx_at_pharmacy → preparing → ready_for_dispatch → dispatched
  */
 
+import type { IntakePaymentMetadata } from "@/lib/intake-payment"
 export type TelehealthPartnerId = "manual" | "beluga" | "openloop" | "wheel"
 
-export type ClinicalServiceType = "mens_health" | "weight_loss" | "iv_rejuvenation"
+export type ClinicalServiceType =
+  | "mens_health"
+  | "trt"
+  | "weight_loss"
+  | "iv_rejuvenation"
+  | "rejuvenation_vial"
 
 export type IvBookingStatus =
   | "pending_provider_review"
@@ -63,7 +69,10 @@ export type IvIntakePayload = {
   consents: {
     agreeToTerms: boolean
     agreeToTelehealth: boolean
+    agreeToPrivacy?: boolean
+    authorizeHold?: boolean
   }
+  payment?: IntakePaymentMetadata
 }
 
 export type PartnerSubmitResult = {

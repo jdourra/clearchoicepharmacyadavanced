@@ -3,52 +3,38 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Start GLP Weight Loss Consultation | Clear Choice Pharmacy",
+  title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
   description:
-    "Complete a secure online intake for medical weight loss with Semaglutide or Tirzepatide. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
+    "Complete secure checkout for medical weight loss with Semaglutide or Tirzepatide. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
   },
   openGraph: {
-    title: "Start GLP Weight Loss Consultation | Clear Choice Pharmacy",
+    title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
     description:
-      "Secure intake for GLP-1 medical weight management. Transparent pricing and pharmacy fulfillment in Novi, MI.",
+      "Secure checkout for GLP-1 medical weight management. Transparent pricing and pharmacy fulfillment in Novi, MI.",
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
 }
 
-const trustFeatures = [
-  {
-    icon: Shield,
-    title: "HIPAA Compliant",
-    description: "Your information is protected by federal healthcare privacy laws",
-  },
-  {
-    icon: Lock,
-    title: "256-bit Encryption",
-    description: "Bank-level security for all personal and medical data",
-  },
-  {
-    icon: Clock,
-    title: "Fast Review",
-    description: "Provider review typically within 2-4 business hours",
-  },
-]
+type PageProps = {
+  searchParams: Promise<{ program?: string; plan?: string }>
+}
 
-const processSteps = [
-  "Select Semaglutide or Tirzepatide program",
-  "Complete the secure medical questionnaire and vitals",
-  "Answer clinical screening questions",
-  "Licensed provider reviews your eligibility",
-  "If approved, Clear Choice Pharmacy compounds and ships your GLP therapy",
-]
+export default async function WeightLossStartPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const programId = params.program?.trim() || ""
+  const initialProgram =
+    programId && WEIGHT_LOSS_PROGRAMS.some((p) => p.id === programId) ? programId : undefined
+  const planParam = params.plan
+  const initialBillingPlan = planParam === "quarterly" || planParam === "monthly" ? planParam : "monthly"
 
-export default function WeightLossStartPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -59,15 +45,15 @@ export default function WeightLossStartPage() {
               <div className="mb-8">
                 <p className="text-sm font-medium text-primary mb-2">Clear Choice Weight Management</p>
                 <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  Start Your GLP Weight Loss Consultation
+                  Complete Your GLP Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Complete our secure intake to connect with a licensed provider. Custom compounded Semaglutide and
-                  Tirzepatide programs are fulfilled by Clear Choice Pharmacy with transparent cash-pay pricing.
+                  Finish your secure intake for custom compounded Semaglutide or Tirzepatide. A licensed provider
+                  reviews your information before Clear Choice Pharmacy prepares your therapy.
                 </p>
               </div>
 
-              <WeightLossIntakeForm />
+              <WeightLossIntakeForm initialProgram={initialProgram} initialBillingPlan={initialBillingPlan} />
             </div>
 
             <div className="lg:col-span-2">
@@ -106,7 +92,7 @@ export default function WeightLossStartPage() {
                 <div className="rounded-xl border border-border bg-muted p-6">
                   <h3 className="font-semibold text-foreground mb-2">Need Help?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Our team is available to answer questions about GLP-1 therapy and the intake process.
+                    Our team is available to answer questions about GLP-1 therapy and checkout.
                   </p>
                   <div className="space-y-3">
                     <a
@@ -134,3 +120,29 @@ export default function WeightLossStartPage() {
     </div>
   )
 }
+
+const trustFeatures = [
+  {
+    icon: Shield,
+    title: "HIPAA Compliant",
+    description: "Your information is protected by federal healthcare privacy laws",
+  },
+  {
+    icon: Lock,
+    title: "256-bit Encryption",
+    description: "Bank-level security for all personal and medical data",
+  },
+  {
+    icon: Clock,
+    title: "Fast Review",
+    description: "Provider review typically within 2-4 business hours",
+  },
+]
+
+const processSteps = [
+  "Review your selected GLP program",
+  "Complete the secure medical questionnaire and vitals",
+  "Answer clinical screening questions",
+  "Licensed provider reviews your eligibility",
+  "If approved, Clear Choice Pharmacy compounds and ships your GLP therapy",
+]

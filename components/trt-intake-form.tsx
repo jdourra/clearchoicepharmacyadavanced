@@ -14,6 +14,17 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
+import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { IntakeOrderSummary } from "@/components/intake-order-summary"
+import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { scrollToFirstField } from "@/lib/intake-field-labels"
+import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  emptyInjectionTelehealthConsents,
+  getInjectionConsentInvalidFields,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 type FormData = {
   selectedProgram: string
@@ -55,9 +66,15 @@ type FormData = {
   shippingState: string
   shippingZip: string
   sameAsResidential: boolean
-  agreeToTerms: boolean
-  agreeToTelehealth: boolean
-  agreeToPrivacy: boolean
+  idFrontFile: File | null
+  idBackFile: File | null
+  idFrontKey: string | null
+  idBackKey: string | null
+  idFrontUploading: boolean
+  idBackUploading: boolean
+  stripePaymentIntentId: string | null
+  paymentAuthorized: boolean
+  injectionConsents: InjectionTelehealthConsentValues
   authorizeHold: boolean
 }
 
@@ -101,9 +118,10 @@ const initialFormData: FormData = {
   shippingState: "",
   shippingZip: "",
   sameAsResidential: true,
-  agreeToTerms: false,
-  agreeToTelehealth: false,
-  agreeToPrivacy: false,
+  idFrontFile: null,
+  idBackFile: null,
+  ...emptyIntakePaymentValues,
+  injectionConsents: { ...emptyInjectionTelehealthConsents },
   authorizeHold: false,
 }
 
@@ -151,10 +169,27 @@ function toggleArrayItem(list: string[], item: string) {
   return list.includes(item) ? list.filter((i) => i !== item) : [...list, item]
 }
 
-export function TrtIntakeForm() {
-  const [step, setStep] = useState(1)
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+export type TrtIntakeFormProps = {
+  initialProgram?: string
+  initialBillingPlan?: TrtBillingPlan
+}
+
+export function TrtIntakeForm({
+  initialProgram,
+  initialBillingPlan = "quarterly",
+}: TrtIntakeFormProps = {}) {
+  const programPrefilled = Boolean(initialProgram && TRT_PROGRAMS.some((p) => p.id === initialProgram))
+  const minStep = programPrefilled ? 2 : 1
+
+  const [step, setStep] = useState(programPrefilled ? 2 : 1)
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
+    selectedProgram: initialProgram || "",
+    selectedBillingPlan: initialBillingPlan,
+  })
   const [error, setError] = useState("")
+  const [validationFields, setValidationFields] = useState<string[]>([])
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [submissionId, setSubmissionId] = useState("")
@@ -162,7 +197,25 @@ export function TrtIntakeForm() {
   const updateFormData = useCallback(<K extends keyof FormData>(key: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
     setError("")
+    setFieldErrors((prev) => {
+      if (!prev.has(key as string)) return prev
+      const next = new Set(prev)
+      next.delete(key as string)
+      return next
+    })
   }, [])
+
+  const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
+
+  const updateInjectionConsent = useCallback(
+    <K extends keyof InjectionTelehealthConsentValues>(key: K, value: InjectionTelehealthConsentValues[K]) => {
+      setFormData((prev) => ({
+        ...prev,
+        injectionConsents: { ...prev.injectionConsents, [key]: value },
+      }))
+    },
+    []
+  )
 
   const selectedProgram = TRT_PROGRAMS.find((p) => p.id === formData.selectedProgram)
   const currentPricing = selectedProgram?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
@@ -223,6 +276,20 @@ export function TrtIntakeForm() {
             shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
             shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
             shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
+            ...paymentCapturedOnClient({
+              idFrontFile: formData.idFrontFile,
+              idBackFile: formData.idBackFile,
+              idFrontKey: formData.idFrontKey,
+              idBackKey: formData.idBackKey,
+              idFrontUploading: formData.idFrontUploading,
+              idBackUploading: formData.idBackUploading,
+              stripePaymentIntentId: formData.stripePaymentIntentId,
+              paymentAuthorized: formData.paymentAuthorized,
+            }),
+          },
+          consents: {
+            authorizeHold: formData.authorizeHold,
+            injection: formData.injectionConsents,
           },
         }),
       })
@@ -266,11 +333,7 @@ export function TrtIntakeForm() {
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Unable to continue</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <IntakeValidationAlert message={error} fields={validationFields} />
       )}
 
       {step === 1 && (
@@ -346,31 +409,40 @@ export function TrtIntakeForm() {
             <CardDescription>Tell us about yourself and what you&apos;re experiencing.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {programPrefilled && selectedProgram && currentPricing && (
+              <IntakeOrderSummary
+                productName={selectedProgram.name}
+                productSubtitle={selectedProgram.subtitle}
+                billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
+                priceLine={`$${currentPricing.pricePerMonth}/mo`}
+                changeHref="/mens-health#trt"
+              />
+            )}
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>First name</Label>
-                <Input value={formData.firstName} onChange={(e) => updateFormData("firstName", e.target.value)} required />
+              <div className="space-y-2" data-field="firstName">
+                <Label className={cn(isInvalid("firstName") && "text-destructive")}>First name</Label>
+                <Input value={formData.firstName} onChange={(e) => updateFormData("firstName", e.target.value)} required className={cn(isInvalid("firstName") && "border-destructive")} />
               </div>
-              <div className="space-y-2">
-                <Label>Last name</Label>
-                <Input value={formData.lastName} onChange={(e) => updateFormData("lastName", e.target.value)} required />
+              <div className="space-y-2" data-field="lastName">
+                <Label className={cn(isInvalid("lastName") && "text-destructive")}>Last name</Label>
+                <Input value={formData.lastName} onChange={(e) => updateFormData("lastName", e.target.value)} required className={cn(isInvalid("lastName") && "border-destructive")} />
               </div>
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input type="email" value={formData.email} onChange={(e) => updateFormData("email", e.target.value)} required />
+              <div className="space-y-2" data-field="email">
+                <Label className={cn(isInvalid("email") && "text-destructive")}>Email</Label>
+                <Input type="email" value={formData.email} onChange={(e) => updateFormData("email", e.target.value)} required className={cn(isInvalid("email") && "border-destructive")} />
               </div>
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", e.target.value)} required />
+              <div className="space-y-2" data-field="phone">
+                <Label className={cn(isInvalid("phone") && "text-destructive")}>Phone</Label>
+                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", e.target.value)} required className={cn(isInvalid("phone") && "border-destructive")} />
               </div>
-              <div className="space-y-2">
-                <Label>Date of birth</Label>
-                <Input type="date" value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} required />
+              <div className="space-y-2" data-field="dateOfBirth">
+                <Label className={cn(isInvalid("dateOfBirth") && "text-destructive")}>Date of birth</Label>
+                <Input type="date" value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} required className={cn(isInvalid("dateOfBirth") && "border-destructive")} />
               </div>
-              <div className="space-y-2">
-                <Label>State</Label>
+              <div className="space-y-2" data-field="state">
+                <Label className={cn(isInvalid("state") && "text-destructive")}>State</Label>
                 <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("state") && "border-destructive")}
                   value={formData.state}
                   onChange={(e) => updateFormData("state", e.target.value)}
                   required
@@ -398,8 +470,8 @@ export function TrtIntakeForm() {
               </div>
             </div>
 
-            <div>
-              <Label className="mb-3 block">Symptoms you&apos;re experiencing</Label>
+            <div data-field="symptoms">
+              <Label className={cn("mb-3 block", isInvalid("symptoms") && "text-destructive")}>Symptoms you&apos;re experiencing</Label>
               <div className="grid sm:grid-cols-2 gap-2">
                 {symptomOptions.map((symptom) => (
                   <label key={symptom} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -446,17 +518,27 @@ export function TrtIntakeForm() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+            <Button variant="outline" onClick={() => setStep((s) => Math.max(s - 1, minStep))}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
             <Button
               onClick={() => {
-                if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.dateOfBirth || !formData.state) {
+                const fields: string[] = []
+                if (!formData.firstName) fields.push("firstName")
+                if (!formData.lastName) fields.push("lastName")
+                if (!formData.email) fields.push("email")
+                if (!formData.phone) fields.push("phone")
+                if (!formData.dateOfBirth) fields.push("dateOfBirth")
+                if (!formData.state) fields.push("state")
+                if (formData.symptoms.length === 0) fields.push("symptoms")
+                if (fields.length > 0) {
                   setError("Please complete all required fields.")
+                  setValidationFields(fields)
+                  setFieldErrors(new Set(fields))
+                  scrollToFirstField(fields)
                   return
                 }
-                if (formData.symptoms.length === 0) {
-                  setError("Please select at least one symptom.")
-                  return
-                }
+                setValidationFields([])
+                setFieldErrors(new Set())
+                setError("")
                 setStep(3)
               }}
             >
@@ -564,14 +646,17 @@ export function TrtIntakeForm() {
       {step === 4 && (
         <Card>
           <CardHeader>
-            <CardTitle>Shipping & consent</CardTitle>
-            <CardDescription>Review your selection and authorize clinical review.</CardDescription>
+            <CardTitle>Identity &amp; Payment</CardTitle>
+            <CardDescription>Verify your identity, authorize payment, and complete consent.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
               <p className="font-semibold">{selectedProgram?.name}</p>
               <p className="text-muted-foreground">{selectedProgram?.subtitle}</p>
               <p className="text-lg font-bold text-primary mt-2">${currentPricing?.pricePerMonth}/mo</p>
+              {currentPricing && (
+                <p className="text-sm text-muted-foreground">Total due upon approval: ${currentPricing.totalBilled}</p>
+              )}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -594,17 +679,42 @@ export function TrtIntakeForm() {
               Shipping address same as above
             </label>
 
-            {[
-              { key: "agreeToTerms" as const, label: "I agree to the Terms of Service" },
-              { key: "agreeToTelehealth" as const, label: "I consent to telehealth evaluation for TRT" },
-              { key: "agreeToPrivacy" as const, label: "I acknowledge the HIPAA Privacy Notice" },
-              { key: "authorizeHold" as const, label: "I authorize a payment hold upon provider approval (no charge until approved)" },
-            ].map(({ key, label }) => (
-              <label key={key} className="flex items-start gap-2 text-sm cursor-pointer">
-                <Checkbox checked={formData[key]} onCheckedChange={(c) => updateFormData(key, c === true)} />
-                {label}
+            <IntakeIdentityPaymentSection
+              idPrefix="trt"
+              serviceType="trt"
+              patientEmail={formData.email}
+              intakePrefix={`trt-${formData.email || "draft"}`}
+              values={{
+                idFrontFile: formData.idFrontFile,
+                idBackFile: formData.idBackFile,
+                idFrontKey: formData.idFrontKey,
+                idBackKey: formData.idBackKey,
+                idFrontUploading: formData.idFrontUploading,
+                idBackUploading: formData.idBackUploading,
+                stripePaymentIntentId: formData.stripePaymentIntentId,
+                paymentAuthorized: formData.paymentAuthorized,
+              }}
+              onChange={updateFormData}
+              totalBilled={currentPricing?.totalBilled ?? 0}
+            />
+
+            <InjectionTelehealthConsents
+              idPrefix="trt"
+              variant="trt"
+              programId={formData.selectedProgram}
+              values={formData.injectionConsents}
+              onChange={updateInjectionConsent}
+            />
+
+            <div className="space-y-3 border-t pt-4">
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <Checkbox
+                  checked={formData.authorizeHold}
+                  onCheckedChange={(c) => updateFormData("authorizeHold", c === true)}
+                />
+                I authorize a payment hold of <strong>${currentPricing?.totalBilled ?? 0}</strong> to be charged only upon prescription approval *
               </label>
-            ))}
+            </div>
           </CardContent>
           <CardFooter className="justify-between">
             <Button variant="outline" onClick={() => setStep(3)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
@@ -615,8 +725,30 @@ export function TrtIntakeForm() {
                   setError("Please complete your address.")
                   return
                 }
-                if (!formData.agreeToTerms || !formData.agreeToTelehealth || !formData.agreeToPrivacy || !formData.authorizeHold) {
-                  setError("Please agree to all required consents.")
+                const paymentFields = getIntakePaymentInvalidFields({
+                  idFrontFile: formData.idFrontFile,
+                  idBackFile: formData.idBackFile,
+                  idFrontKey: formData.idFrontKey,
+                  idBackKey: formData.idBackKey,
+                  idFrontUploading: formData.idFrontUploading,
+                  idBackUploading: formData.idBackUploading,
+                  stripePaymentIntentId: formData.stripePaymentIntentId,
+                  paymentAuthorized: formData.paymentAuthorized,
+                })
+                if (paymentFields.length > 0) {
+                  setError("Please upload your ID and complete payment information.")
+                  return
+                }
+                const consentFields = getInjectionConsentInvalidFields(formData.injectionConsents, {
+                  variant: "trt",
+                  programId: formData.selectedProgram,
+                })
+                if (consentFields.length > 0) {
+                  setError("Please complete all required telemedicine consents and e-sign with your full name.")
+                  return
+                }
+                if (!formData.authorizeHold) {
+                  setError("Please authorize the payment hold to continue.")
                   return
                 }
                 handleSubmit()

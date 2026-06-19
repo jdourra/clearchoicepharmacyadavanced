@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import {
   Activity,
@@ -91,7 +92,8 @@ type PremiumHeroProps = {
   subheadline: string
   description?: string
   highlight?: string
-  primaryCta: { label: string; href: string; external?: boolean }
+  heroImage?: { src: string; alt: string }
+  primaryCta: { label: string; href: string; external?: boolean; scrollTo?: string }
   secondaryCta?: { label: string; href: string; external?: boolean; scrollTo?: string }
 }
 
@@ -101,6 +103,7 @@ export function PremiumHero({
   subheadline,
   description,
   highlight,
+  heroImage,
   primaryCta,
   secondaryCta,
 }: PremiumHeroProps) {
@@ -108,7 +111,13 @@ export function PremiumHero({
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-sky-950 text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.18),transparent_45%)]" />
       <div className="container relative max-w-6xl mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-3xl">
+        <div
+          className={cn(
+            "items-center gap-10 lg:gap-14",
+            heroImage ? "grid lg:grid-cols-2" : "max-w-3xl"
+          )}
+        >
+          <div className={heroImage ? undefined : "max-w-3xl"}>
           <Badge className="mb-6 bg-sky-500/20 text-sky-100 border-sky-400/30 hover:bg-sky-500/20">
             {badge}
           </Badge>
@@ -125,7 +134,12 @@ export function PremiumHero({
               size="lg"
               className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-lg shadow-sky-500/25"
             >
-              {primaryCta.external ? (
+              {primaryCta.scrollTo ? (
+                <a href={primaryCta.scrollTo}>
+                  {primaryCta.label}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+              ) : primaryCta.external ? (
                 <a href={primaryCta.href} target="_blank" rel="noopener noreferrer">
                   {primaryCta.label}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -159,6 +173,20 @@ export function PremiumHero({
           {highlight && (
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm text-sky-100">
               {highlight}
+            </div>
+          )}
+          </div>
+          {heroImage && (
+            <div className="relative mx-auto w-full max-w-md lg:max-w-none lg:mx-0">
+              <div className="absolute -inset-4 rounded-3xl bg-sky-500/20 blur-3xl" aria-hidden />
+              <Image
+                src={heroImage.src}
+                alt={heroImage.alt}
+                width={640}
+                height={640}
+                priority
+                className="relative w-full h-auto drop-shadow-2xl"
+              />
             </div>
           )}
         </div>

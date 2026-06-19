@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { sql } from "@/lib/db"
 import { getTrtProgram } from "@/lib/trt-catalog"
-
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
+import { formatPaymentSummary, requireIntakePaymentSubmission, type IntakeConsents, type IntakePaymentMetadata } from "@/lib/intake-payment"
+import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import {
+  formatInjectionConsentsSummary,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 type TrtIntakePayload = {
   patientInfo: {
@@ -55,11 +55,14 @@ type TrtIntakePayload = {
     hasRecentLabs: string
     additionalConcerns: string
   }
-  identity: {
+  identity: IntakePaymentMetadata & {
     shippingAddress: string
     shippingCity: string
     shippingState: string
     shippingZip: string
+  }
+  consents?: IntakeConsents & {
+    injection?: InjectionTelehealthConsentValues
   }
 }
 
@@ -105,6 +108,9 @@ Meds: ${data.medicalHistory.currentMedications || "None"}
 Allergies: ${data.medicalHistory.allergies || "None"}
 
 SHIP TO: ${data.identity.shippingAddress}, ${data.identity.shippingCity}, ${data.identity.shippingState} ${data.identity.shippingZip}
+
+${formatPaymentSummary(data.identity, data.consents)}
+${data.consents?.injection ? `\n\nTELEMEDICINE CONSENTS:\n${formatInjectionConsentsSummary(data.consents.injection)}` : ""}
 `.trim()
 }
 
@@ -132,6 +138,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a TRT program" }, { status: 400 })
     }
 
+    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
+    if (paymentError) {
+      return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
+    if (!stripeCheck.ok) {
+      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
+    }
+
+    if (!data.consents?.injection) {
+      return NextResponse.json({ error: "Telemedicine consents are required before submission." }, { status: 400 })
+    }
+
+    const consentError = validateInjectionTelehealthConsents(data.consents.injection, {
+      variant: "trt",
+      programId: data.treatmentInfo.selectedProgram,
+    })
+    if (!consentError.valid) {
+      return NextResponse.json({ error: consentError.message }, { status: 400 })
+    }
+
     const eligibility = checkEligibility(data)
     if (eligibility.hardStop) {
       return NextResponse.json({ error: eligibility.error, hardStop: true }, { status: 422 })
@@ -139,6 +167,22 @@ export async function POST(request: NextRequest) {
 
     const submissionId = `CCR-TRT-${Date.now().toString(36).toUpperCase()}`
     const clinicalSummary = formatClinicalSummary(data, submissionId)
+
+    const partnerResult = await submitClinicalIntakeToPartner({
+      serviceType: "trt",
+      submissionId,
+      patient: {
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        email: data.patientInfo.email,
+        phone: data.patientInfo.phone,
+      },
+      clinicalSummary,
+    })
+
+    if (!partnerResult.success) {
+      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
+    }
 
     try {
       await sql(
@@ -150,7 +194,8 @@ export async function POST(request: NextRequest) {
           hypertension, sleep_apnea, cardiovascular_disease, diabetes, liver_disease, kidney_disease,
           current_medications, allergies, additional_concerns,
           selected_program, selected_billing_plan,
-          shipping_address, shipping_city, shipping_state, shipping_zip, status
+          shipping_address, shipping_city, shipping_state, shipping_zip,
+          status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
           $11, $12, $13,
@@ -159,7 +204,7 @@ export async function POST(request: NextRequest) {
           $24, $25, $26, $27, $28, $29,
           $30, $31, $32,
           $33, $34,
-          $35, $36, $37, $38, $39
+          $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
         )`,
         [
           submissionId,
@@ -200,29 +245,17 @@ export async function POST(request: NextRequest) {
           data.identity.shippingCity,
           data.identity.shippingState,
           data.identity.shippingZip,
-          "pending_review",
+          STANDARD_INTAKE_STATUS.pending,
+          data.identity.stripePaymentIntentId,
+          data.identity.idFrontKey,
+          data.identity.idBackKey,
+          partnerResult.partnerName,
+          partnerResult.partnerStatus || "queued_for_manual_review",
         ]
       )
     } catch (dbError) {
       console.error("[trt-intake] Database error:", dbError)
-    }
-
-    const clinicianEmail = process.env.CLINICIAN_NOTIFICATION_EMAIL || process.env.ADMIN_EMAIL
-    if (clinicianEmail && process.env.AWS_ACCESS_KEY_ID) {
-      try {
-        await sesClient.send(
-          new SendEmailCommand({
-            Source: process.env.SES_FROM_EMAIL || "noreply@clearchoicepharmacy.com",
-            Destination: { ToAddresses: [clinicianEmail] },
-            Message: {
-              Subject: { Data: `New TRT Intake: ${data.patientInfo.firstName} ${data.patientInfo.lastName}` },
-              Body: { Text: { Data: clinicalSummary } },
-            },
-          })
-        )
-      } catch (emailError) {
-        console.error("[trt-intake] Email notification failed:", emailError)
-      }
+      return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, submissionId })

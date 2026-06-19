@@ -1,3 +1,5 @@
+import { MIC_B12_WEIGHT_LOSS } from "@/lib/weight-loss-catalog"
+
 export type RejuvenationVialCategory = "energy" | "anti-aging" | "immunity" | "skin" | "metabolic"
 
 export type RejuvenationVial = {
@@ -29,18 +31,6 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     frequency: "Twice per week",
     description:
       "Improve energy, metabolism, mood, and sleep. Physician-reviewed kit with syringes, alcohol pads, and injection tutorial.",
-  },
-  {
-    id: "mic-skinny",
-    title: "MIC Skinny Shot Homekit",
-    price: 99,
-    category: "metabolic",
-    ingredients: ["MIC blend", "Vitamin B12", "L-Carnitine"],
-    supply: "30-day kit · weekly doses",
-    route: "Intramuscular self-injection",
-    frequency: "Once per week",
-    description:
-      "Metabolic support blend for energy, fat metabolism, and appetite support — compounded at Clear Choice Pharmacy.",
   },
   {
     id: "glutathione",
@@ -109,6 +99,7 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
 ]
 
 export function getRejuvenationVial(id: string) {
+  if (id === MIC_B12_WEIGHT_LOSS.id) return MIC_B12_WEIGHT_LOSS
   return REJUVENATION_VIALS.find((v) => v.id === id)
 }
 

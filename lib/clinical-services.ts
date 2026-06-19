@@ -20,8 +20,8 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     description:
       "Semaglutide and Tirzepatide programs with custom titration and upfront cash-pay pricing in Novi, MI.",
     pathType: "consultation",
-    pathLabel: "Consultation required",
-    cta: "Start consultation",
+    pathLabel: "Provider review required",
+    cta: "Buy now",
     icon: Scale,
   },
   {
@@ -30,8 +30,8 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     description:
       "Custom sublingual ED troches and physician-supervised TRT with transparent cash-pay pricing in Novi, MI.",
     pathType: "consultation",
-    pathLabel: "Consultation required",
-    cta: "Start consultation",
+    pathLabel: "Provider review required",
+    cta: "Buy now",
     icon: Heart,
   },
   {
@@ -40,8 +40,8 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     description:
       "Pharmacy-formulated IV therapy with licensed RNs—Myers' Cocktail, NAD+, hydration, and more.",
     pathType: "consultation",
-    pathLabel: "Consultation required",
-    cta: "Book IV therapy",
+    pathLabel: "Provider review required",
+    cta: "Buy IV therapy",
     icon: Syringe,
   },
   {

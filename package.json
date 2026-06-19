@@ -8,9 +8,10 @@
     "lint": "eslint .",
     "start": "next start",
     "db:migrate:iv": "node scripts/run-migrations.mjs 017 018",
-    "db:migrate:intake": "node scripts/run-migrations.mjs 015 016 017 018"
+    "db:migrate:intake": "node scripts/run-migrations.mjs 015 016 017 018 020"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1072.0",
     "@aws-sdk/client-ses": "^3.1064.0",
     "@hookform/resolvers": "^3.10.0",
     "@neondatabase/serverless": "1.0.2",
@@ -41,6 +42,8 @@
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
+    "@stripe/react-stripe-js": "^6.6.0",
+    "@stripe/stripe-js": "^9.8.0",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
@@ -61,6 +64,7 @@
     "recharts": "2.15.4",
     "server-only": "^0.0.1",
     "sonner": "^1.7.4",
+    "stripe": "^22.2.1",
     "swr": "^2.3.3",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

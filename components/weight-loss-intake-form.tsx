@@ -20,17 +20,21 @@ import {
   XCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { IntakeOrderSummary } from "@/components/intake-order-summary"
+import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  emptyInjectionTelehealthConsents,
+  getInjectionConsentInvalidFields,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
+import { WEIGHT_LOSS_PROGRAMS, type WeightLossBillingPlan } from "@/lib/weight-loss-catalog"
 
-type BillingPlan = "monthly" | "quarterly"
+type BillingPlan = WeightLossBillingPlan
 
-type ProgramOption = {
-  id: string
-  name: string
-  subtitle: string
-  description: string
-  features: string[]
-  pricing: { plan: BillingPlan; pricePerMonth: number; totalBilled: number; badge?: string }[]
-}
+type ProgramOption = (typeof WEIGHT_LOSS_PROGRAMS)[number]
 
 type FormData = {
   selectedProgram: string
@@ -75,9 +79,15 @@ type FormData = {
   shippingState: string
   shippingZip: string
   sameAsResidential: boolean
-  agreeToTerms: boolean
-  agreeToTelehealth: boolean
-  agreeToPrivacy: boolean
+  idFrontFile: File | null
+  idBackFile: File | null
+  idFrontKey: string | null
+  idBackKey: string | null
+  idFrontUploading: boolean
+  idBackUploading: boolean
+  stripePaymentIntentId: string | null
+  paymentAuthorized: boolean
+  injectionConsents: InjectionTelehealthConsentValues
   authorizeHold: boolean
 }
 
@@ -124,38 +134,14 @@ const initialFormData: FormData = {
   shippingState: "",
   shippingZip: "",
   sameAsResidential: true,
-  agreeToTerms: false,
-  agreeToTelehealth: false,
-  agreeToPrivacy: false,
+  idFrontFile: null,
+  idBackFile: null,
+  ...emptyIntakePaymentValues,
+  injectionConsents: { ...emptyInjectionTelehealthConsents },
   authorizeHold: false,
 }
 
-const programs: ProgramOption[] = [
-  {
-    id: "semaglutide",
-    name: "Semaglutide Program",
-    subtitle: "GLP-1 Therapy",
-    description:
-      "Physician-guided compounded semaglutide with a structured titration schedule tailored to your metabolic goals.",
-    features: ["Weekly dosing protocol", "Structured titration", "Ongoing provider oversight", "Pharmacy fulfillment"],
-    pricing: [
-      { plan: "monthly", pricePerMonth: 189, totalBilled: 189 },
-      { plan: "quarterly", pricePerMonth: 169, totalBilled: 507, badge: "Best Value" },
-    ],
-  },
-  {
-    id: "tirzepatide",
-    name: "Tirzepatide Program",
-    subtitle: "Dual GLP-1/GIP Therapy",
-    description:
-      "Advanced dual-pathway therapy for patients who may benefit from combined GLP-1 and GIP receptor activation.",
-    features: ["Weekly dosing protocol", "Dual-action support", "Provider-guided titration", "Pharmacy fulfillment"],
-    pricing: [
-      { plan: "monthly", pricePerMonth: 255, totalBilled: 255 },
-      { plan: "quarterly", pricePerMonth: 229, totalBilled: 687, badge: "Best Value" },
-    ],
-  },
-]
+const programs = WEIGHT_LOSS_PROGRAMS
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
@@ -329,12 +315,34 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
           return { valid: false, message: "Please complete shipping address information.", fields }
         }
       }
-      if (!formData.agreeToTerms) add("agreeToTerms")
-      if (!formData.agreeToTelehealth) add("agreeToTelehealth")
-      if (!formData.agreeToPrivacy) add("agreeToPrivacy")
+      for (const field of getIntakePaymentInvalidFields({
+        idFrontFile: formData.idFrontFile,
+        idBackFile: formData.idBackFile,
+        idFrontKey: formData.idFrontKey,
+        idBackKey: formData.idBackKey,
+        idFrontUploading: formData.idFrontUploading,
+        idBackUploading: formData.idBackUploading,
+        stripePaymentIntentId: formData.stripePaymentIntentId,
+        paymentAuthorized: formData.paymentAuthorized,
+      })) {
+        add(field)
+      }
+      if (fields.length > 0) {
+        return { valid: false, message: "Please upload your ID and complete payment information.", fields }
+      }
+      for (const field of getInjectionConsentInvalidFields(formData.injectionConsents, {
+        variant: "weight-loss",
+        programId: formData.selectedProgram,
+      })) {
+        add(field)
+      }
       if (!formData.authorizeHold) add("authorizeHold")
       if (fields.length > 0) {
-        return { valid: false, message: "Please agree to all highlighted terms to continue.", fields }
+        return {
+          valid: false,
+          message: "Please complete all required telemedicine consents and payment authorization.",
+          fields,
+        }
       }
       return { valid: true, message: "", fields: [] }
     }
@@ -417,15 +425,31 @@ function YesNoField({
   )
 }
 
-export function WeightLossIntakeForm() {
-  const [step, setStep] = useState(1)
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+export type WeightLossIntakeFormProps = {
+  initialProgram?: string
+  initialBillingPlan?: BillingPlan
+}
+
+export function WeightLossIntakeForm({
+  initialProgram,
+  initialBillingPlan = "monthly",
+}: WeightLossIntakeFormProps = {}) {
+  const programPrefilled = Boolean(initialProgram && programs.some((p) => p.id === initialProgram))
+  const minStep = programPrefilled ? 2 : 1
+
+  const [step, setStep] = useState(programPrefilled ? 2 : 1)
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
+    selectedProgram: initialProgram || "",
+    selectedBillingPlan: initialBillingPlan,
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [hardStop, setHardStop] = useState<{ active: boolean; reason: string }>({ active: false, reason: "" })
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
   const [statusLogs, setStatusLogs] = useState<string[]>([])
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
+  const [validationFields, setValidationFields] = useState<string[]>([])
 
   const totalSteps = 4
   const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
@@ -449,6 +473,17 @@ export function WeightLossIntakeForm() {
     setFormData((prev) => ({ ...prev, [field]: value }))
     clearFieldError(field as string)
   }, [clearFieldError])
+
+  const updateInjectionConsent = useCallback(
+    <K extends keyof InjectionTelehealthConsentValues>(key: K, value: InjectionTelehealthConsentValues[K]) => {
+      setFormData((prev) => ({
+        ...prev,
+        injectionConsents: { ...prev.injectionConsents, [key]: value },
+      }))
+      clearFieldError(key)
+    },
+    [clearFieldError]
+  )
 
   const toggleArrayValue = useCallback((field: "comorbidities" | "weightLossGoals", value: string, checked: boolean) => {
     setFormData((prev) => {
@@ -475,11 +510,13 @@ export function WeightLossIntakeForm() {
     const result = getStepValidation(formData, bmi, currentStep)
     if (!result.valid) {
       setError(result.message)
+      setValidationFields(result.fields)
       setFieldErrors(new Set(result.fields))
       scrollToFirstField(result.fields)
       return false
     }
     setError("")
+    setValidationFields([])
     setFieldErrors(new Set())
     return true
   }
@@ -501,9 +538,10 @@ export function WeightLossIntakeForm() {
 
   const prevStep = () => {
     setError("")
+    setValidationFields([])
     setFieldErrors(new Set())
     setHardStop({ active: false, reason: "" })
-    setStep((prev) => Math.max(prev - 1, 1))
+    setStep((prev) => Math.max(prev - 1, minStep))
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -579,6 +617,20 @@ export function WeightLossIntakeForm() {
           shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
           shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
           shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
+          ...paymentCapturedOnClient({
+            idFrontFile: formData.idFrontFile,
+            idBackFile: formData.idBackFile,
+            idFrontKey: formData.idFrontKey,
+            idBackKey: formData.idBackKey,
+            idFrontUploading: formData.idFrontUploading,
+            idBackUploading: formData.idBackUploading,
+            stripePaymentIntentId: formData.stripePaymentIntentId,
+            paymentAuthorized: formData.paymentAuthorized,
+          }),
+        },
+        consents: {
+          authorizeHold: formData.authorizeHold,
+          injection: formData.injectionConsents,
         },
       }
 
@@ -699,12 +751,7 @@ export function WeightLossIntakeForm() {
         </div>
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <IntakeValidationAlert message={error} fields={validationFields} />
 
       {step === 1 && (
         <Card>
@@ -799,6 +846,15 @@ export function WeightLossIntakeForm() {
             <CardDescription>Tell us about yourself and your current health metrics.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {programPrefilled && selectedProgram && (
+              <IntakeOrderSummary
+                productName={selectedProgram.name}
+                productSubtitle={selectedProgram.subtitle}
+                billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
+                priceLine={`$${selectedProgram.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.pricePerMonth ?? "—"}/mo`}
+                changeHref="/weight-loss#programs"
+              />
+            )}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2" data-field="firstName">
                 <Label htmlFor="firstName" className={cn(isFieldInvalid("firstName") && "text-destructive")}>First name *</Label>
@@ -1080,10 +1136,23 @@ export function WeightLossIntakeForm() {
       {step === 4 && submissionStatus !== "success" && (
         <Card>
           <CardHeader>
-            <CardTitle>Shipping & Consent</CardTitle>
-            <CardDescription>Confirm delivery details and authorize clinical review.</CardDescription>
+            <CardTitle>Identity &amp; Payment</CardTitle>
+            <CardDescription>Verify your identity, authorize payment, and complete consent.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {(() => {
+              const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
+              const currentPricing = selectedProgram?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
+              return selectedProgram && currentPricing ? (
+                <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
+                  <p className="font-semibold">{selectedProgram.name}</p>
+                  <p className="text-muted-foreground">{selectedProgram.subtitle}</p>
+                  <p className="text-lg font-bold text-primary mt-2">${currentPricing.pricePerMonth}/mo</p>
+                  <p className="text-sm text-muted-foreground">Total due upon approval: ${currentPricing.totalBilled}</p>
+                </div>
+              ) : null
+            })()}
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="address">Street address</Label>
@@ -1129,34 +1198,66 @@ export function WeightLossIntakeForm() {
               </div>
             )}
 
+            <IntakeIdentityPaymentSection
+              idPrefix="glp1"
+              serviceType="weight_loss"
+              patientEmail={formData.email}
+              intakePrefix={`glp1-${formData.email || "draft"}`}
+              values={{
+                idFrontFile: formData.idFrontFile,
+                idBackFile: formData.idBackFile,
+                idFrontKey: formData.idFrontKey,
+                idBackKey: formData.idBackKey,
+                idFrontUploading: formData.idFrontUploading,
+                idBackUploading: formData.idBackUploading,
+                stripePaymentIntentId: formData.stripePaymentIntentId,
+                paymentAuthorized: formData.paymentAuthorized,
+              }}
+              onChange={updateFormData}
+              totalBilled={
+                programs
+                  .find((p) => p.id === formData.selectedProgram)
+                  ?.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.totalBilled ?? 0
+              }
+              invalidFields={fieldErrors}
+            />
+
+            <InjectionTelehealthConsents
+              idPrefix="glp1"
+              variant="weight-loss"
+              programId={formData.selectedProgram}
+              values={formData.injectionConsents}
+              onChange={updateInjectionConsent}
+              invalidFields={fieldErrors}
+            />
+
             <div className="space-y-3 border-t pt-4">
-              {[
-                { field: "agreeToTerms" as const, label: "I agree to the Terms of Service" },
-                { field: "agreeToTelehealth" as const, label: "I consent to telehealth evaluation for GLP-1 therapy" },
-                { field: "agreeToPrivacy" as const, label: "I acknowledge the HIPAA Privacy Notice" },
-                { field: "authorizeHold" as const, label: "I authorize a payment hold upon provider approval (no charge until approved)" },
-              ].map(({ field, label }) => (
-                <div
-                  key={field}
-                  data-field={field}
-                  className={cn(
-                    "flex items-start space-x-2 rounded-md p-2 -mx-2 transition-colors",
-                    isFieldInvalid(field) && "ring-2 ring-destructive bg-destructive/5"
-                  )}
+              <div
+                data-field="authorizeHold"
+                className={cn(
+                  "flex items-start space-x-2 rounded-md p-2 -mx-2 transition-colors",
+                  isFieldInvalid("authorizeHold") && "ring-2 ring-destructive bg-destructive/5"
+                )}
+              >
+                <Checkbox
+                  id="authorizeHold"
+                  checked={formData.authorizeHold}
+                  onCheckedChange={(checked) => updateFormData("authorizeHold", checked === true)}
+                />
+                <Label
+                  htmlFor="authorizeHold"
+                  className={cn("font-normal cursor-pointer leading-snug", isFieldInvalid("authorizeHold") && "text-destructive")}
                 >
-                  <Checkbox
-                    id={field}
-                    checked={formData[field]}
-                    onCheckedChange={(checked) => updateFormData(field, checked === true)}
-                  />
-                  <Label
-                    htmlFor={field}
-                    className={cn("font-normal cursor-pointer leading-snug", isFieldInvalid(field) && "text-destructive")}
-                  >
-                    {label}
-                  </Label>
-                </div>
-              ))}
+                  I authorize a payment hold of{" "}
+                  <strong>
+                    $
+                    {programs
+                      .find((p) => p.id === formData.selectedProgram)
+                      ?.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.totalBilled ?? 0}
+                  </strong>{" "}
+                  to be charged only upon prescription approval *
+                </Label>
+              </div>
             </div>
 
             {submissionStatus === "processing" && statusLogs.length > 0 && (

@@ -34,7 +34,7 @@ function parseWebhookEvent(body: unknown): TelehealthWebhookEvent | null {
   const serviceType = record.serviceType
 
   if (typeof event !== "string" || typeof submissionId !== "string") return null
-  if (serviceType !== "iv_rejuvenation" && serviceType !== "mens_health" && serviceType !== "weight_loss") {
+  if (serviceType !== "iv_rejuvenation" && serviceType !== "mens_health" && serviceType !== "weight_loss" && serviceType !== "trt" && serviceType !== "rejuvenation_vial") {
     return null
   }
 
@@ -73,6 +73,12 @@ export async function POST(request: NextRequest) {
 
   if (event.serviceType === "iv_rejuvenation") {
     const updated = await applyIvWebhookEvent(event)
+    if (!updated) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 })
+    }
+  } else {
+    const { applyClinicalWebhookEvent } = await import("@/lib/telehealth/intake-status")
+    const updated = await applyClinicalWebhookEvent(event)
     if (!updated) {
       return NextResponse.json({ error: "Submission not found" }, { status: 404 })
     }

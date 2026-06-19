@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { sql } from "@/lib/db"
-import { submitIvIntakeToPartner, partnerDisplayName } from "@/lib/telehealth/partner-client"
+import { partnerDisplayName } from "@/lib/telehealth/partner-client"
+import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import {
   CLEAR_CHOICE_PHARMACY,
   getActiveTelehealthPartner,
   getPharmacyNcpdpId,
   type IvIntakePayload,
 } from "@/lib/telehealth/types"
+import { formatPaymentSummary, requireIntakePaymentSubmission } from "@/lib/intake-payment"
+import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 
 /**
  * IV Rejuvenation intake API
@@ -18,43 +21,6 @@ import {
  * 3. On provider approval, partner sends eRx to Clear Choice Pharmacy (Michigan)
  * 4. Pharmacy prepares IV bag → RN dispatch scheduled
  */
-
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
-
-async function sendEmailViaSES(to: string, subject: string, body: string, from: string) {
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-    console.log("AWS SES not configured - logging IV intake email:")
-    console.log(`To: ${to}\nSubject: ${subject}\n${body}`)
-    return { success: true }
-  }
-  if (!to) {
-    console.log("No clinician email configured - logging IV intake:")
-    console.log(body)
-    return { success: true }
-  }
-  try {
-    await sesClient.send(
-      new SendEmailCommand({
-        Source: from,
-        Destination: { ToAddresses: [to] },
-        Message: {
-          Subject: { Data: subject, Charset: "UTF-8" },
-          Body: { Text: { Data: body, Charset: "UTF-8" } },
-        },
-      })
-    )
-    return { success: true }
-  } catch (error) {
-    console.error("SES error:", error)
-    return { success: false }
-  }
-}
 
 function formatClinicianSummary(payload: IvIntakePayload, partnerLabel: string): string {
   const b = payload.treatment.selectedBoosters
@@ -109,6 +75,11 @@ Current Meds:       ${payload.screening.currentMedications || "None reported"}
 Notes:
 ${payload.screening.additionalNotes || "None"}
 
+───────────────────────────────────────────────────────────────────────────────
+                           IDENTITY & PAYMENT
+───────────────────────────────────────────────────────────────────────────────
+${formatPaymentSummary(payload.payment, payload.consents)}
+
 ═══════════════════════════════════════════════════════════════════════════════
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth platform
@@ -143,6 +114,24 @@ export async function POST(request: NextRequest) {
 
     if (!/^\S+@\S+\.\S+$/.test(data.email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
+    }
+
+    const paymentError = requireIntakePaymentSubmission(
+      {
+        agreeToTerms: data.agreeToTerms,
+        agreeToTelehealth: data.agreeToTelehealth,
+        agreeToPrivacy: data.agreeToPrivacy,
+        authorizeHold: data.authorizeHold,
+      },
+      data.payment
+    )
+    if (paymentError) {
+      return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    const stripeCheck = await verifyPaymentHoldReady(data.payment?.stripePaymentIntentId || "")
+    if (!stripeCheck.ok) {
+      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     if (data.pregnantOrBreastfeeding) {
@@ -197,12 +186,25 @@ export async function POST(request: NextRequest) {
         additionalNotes: data.additionalNotes || null,
       },
       consents: {
-        agreeToTerms: data.agreeToTerms ?? true,
-        agreeToTelehealth: data.agreeToTelehealth ?? true,
+        agreeToTerms: data.agreeToTerms ?? false,
+        agreeToTelehealth: data.agreeToTelehealth ?? false,
+        agreeToPrivacy: data.agreeToPrivacy ?? false,
+        authorizeHold: data.authorizeHold ?? false,
       },
+      payment: data.payment,
     }
 
-    const partnerResult = await submitIvIntakeToPartner(intakePayload)
+    const partnerLabel = partnerDisplayName(partner)
+    const clinicalSummary = formatClinicianSummary(intakePayload, partnerLabel)
+
+    const partnerResult = await submitClinicalIntakeToPartner({
+      serviceType: "iv_rejuvenation",
+      submissionId,
+      patient: intakePayload.patient,
+      clinicalSummary,
+      ivPayload: intakePayload,
+    })
+
     if (!partnerResult.success) {
       return NextResponse.json(
         { error: partnerResult.error || "Failed to submit to telehealth partner" },
@@ -219,10 +221,12 @@ export async function POST(request: NextRequest) {
           selected_package, selected_package_title, selected_boosters, estimated_total,
           allergies, current_medications, pregnant_or_breastfeeding,
           kidney_disease, heart_condition, additional_notes,
-          status, partner_name, partner_case_id, partner_status, intake_payload
+          status, partner_name, partner_case_id, partner_status, intake_payload,
+          stripe_payment_intent_id, id_front_key, id_back_key
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14::jsonb, $15,
-          $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26::jsonb
+          $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26::jsonb,
+          $27, $28, $29
         )`,
         [
           submissionId,
@@ -246,11 +250,14 @@ export async function POST(request: NextRequest) {
           data.kidneyDisease || null,
           data.heartCondition || null,
           data.additionalNotes || null,
-          "pending_provider_review",
-          partnerResult.mode === "api" ? partner : "manual",
+          STANDARD_INTAKE_STATUS.pending,
+          partnerResult.mode === "api" ? partner : partnerResult.partnerName,
           partnerResult.partnerCaseId || null,
-          partnerResult.partnerStatus || "pending_provider_review",
+          partnerResult.partnerStatus || STANDARD_INTAKE_STATUS.pending,
           JSON.stringify(intakePayload),
+          data.payment?.stripePaymentIntentId || null,
+          data.payment?.idFrontKey || null,
+          data.payment?.idBackKey || null,
         ]
       )
     } catch (dbError) {
@@ -258,27 +265,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
 
-    const clinicianEmail =
-      process.env.TELEHEALTH_CLINICIAN_EMAIL ||
-      process.env.DR_DOURRA_EMAIL ||
-      process.env.ADMIN_EMAIL ||
-      ""
-    const senderEmail = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
-    const partnerLabel = partnerDisplayName(partner)
-
-    await sendEmailViaSES(
-      clinicianEmail,
-      `[IV INTAKE ${submissionId}] ${data.firstName} ${data.lastName} - Pending Provider Review`,
-      formatClinicianSummary(intakePayload, partnerLabel),
-      senderEmail
-    )
-
     return NextResponse.json({
       success: true,
       message:
         "Your intake has been securely submitted. A licensed telehealth provider will review your request. If approved, your prescription will be sent to Clear Choice Pharmacy for preparation before RN dispatch.",
       submissionId,
-      status: "pending_provider_review",
+      status: STANDARD_INTAKE_STATUS.pending,
       estimatedReviewTime: "2-4 business hours",
       fulfillmentPharmacy: CLEAR_CHOICE_PHARMACY.name,
     })

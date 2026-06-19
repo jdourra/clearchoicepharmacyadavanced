@@ -12,6 +12,11 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
+import { ServiceBuyButton } from "@/components/service-buy-button"
+import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
+import { buildVialIntakeUrl, buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
   WEIGHT_LOSS_FAQS,
@@ -19,12 +24,12 @@ import {
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
 
-const CONSULTATION_URL = "/weight-loss/start"
+const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
   title: "Medical Weight Loss & GLP Therapy | Clear Choice Pharmacy",
   description:
-    "Semaglutide and Tirzepatide medical weight management in Novi, MI. Custom GLP-1 formulations with transparent pricing. Start your weight loss consultation online.",
+    "Semaglutide and Tirzepatide medical weight management in Novi, MI. Custom GLP-1 formulations with transparent pricing. Buy online with provider review.",
   keywords: [
     "medical weight loss Novi",
     "GLP-1 weight loss Michigan",
@@ -65,6 +70,7 @@ export default function WeightLossPage() {
     about: [
       { "@type": "MedicalTherapy", name: "Semaglutide Weight Management" },
       { "@type": "MedicalTherapy", name: "Tirzepatide Weight Management" },
+      { "@type": "MedicalTherapy", name: "MIC + B12 Metabolic Weight Support" },
     ],
     provider: pharmacyProviderSchema(),
   }
@@ -77,9 +83,14 @@ export default function WeightLossPage() {
         subheadline="Semaglutide and Tirzepatide programs with transparent, upfront pricing."
         description="Achieving long-term metabolic health requires premium clinical tools. Clear Choice Pharmacy compounds customized GLP-1 formulations designed to match your specific titration schedule—without insurance opacity or PBM middlemen."
         highlight="📊 Custom titration · Pharmacy-compounded · Licensed provider review"
+        heroImage={{
+          src: "/images/weight-loss-glp-hero.png",
+          alt: "GLP-1 therapy hero image with Semaglutide and Tirzepatide vials",
+        }}
         primaryCta={{
-          label: "Start Your Weight Loss Consultation",
-          href: CONSULTATION_URL,
+          label: "Shop GLP Programs",
+          href: PROGRAMS_URL,
+          scrollTo: "#programs",
         }}
         secondaryCta={{ label: "Explore GLP Benefits", href: "#benefits", scrollTo: "#benefits" }}
       />
@@ -118,7 +129,67 @@ export default function WeightLossPage() {
         <BenefitList items={glpBenefits} />
       </ContentSection>
 
-      <ContentSection tone="muted">
+      <ContentSection id="programs">
+        <SectionIntro
+          eyebrow="Choose Your Program"
+          title="Semaglutide, Tirzepatide & MIC + B12"
+          description="Buy online with transparent pricing. Provider review and pharmacy fulfillment included."
+        />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+          {WEIGHT_LOSS_PROGRAMS.map((program) => {
+            const pricing = program.pricing.find((p) => p.plan === "monthly") || program.pricing[0]
+            return (
+              <Card key={program.id} className="p-6 flex flex-col h-full">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
+                </div>
+                <h3 className="text-xl font-bold">{program.name}</h3>
+                <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
+                <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
+                <div className="mt-5 pt-4 border-t">
+                  <p className="text-3xl font-bold text-primary">
+                    ${pricing.pricePerMonth}
+                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                  </p>
+                  <div className="mt-4">
+                    <ServiceBuyButton href={buildWeightLossIntakeUrl(program.id, pricing.plan)} fullWidth />
+                  </div>
+                </div>
+              </Card>
+            )
+          })}
+          <Card className="p-6 flex flex-col h-full">
+            <h3 className="text-xl font-bold">MIC + B12 Skinny Shot</h3>
+            <p className="text-sm text-primary font-medium mt-1">Lipotropic Metabolic Support</p>
+            <p className="text-sm text-muted-foreground mt-3 flex-1">{MIC_B12_WEIGHT_LOSS.description}</p>
+            <div className="mt-5 pt-4 border-t">
+              <p className="text-3xl font-bold text-primary">
+                ${MIC_B12_WEIGHT_LOSS.price}
+                <span className="text-base font-normal text-muted-foreground">/kit</span>
+              </p>
+              <div className="mt-4">
+                <ServiceBuyButton href={buildVialIntakeUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth />
+              </div>
+            </div>
+          </Card>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4">
+          Prescription required after provider review.
+        </p>
+      </ContentSection>
+
+      <ContentSection id="mic-b12" tone="muted">
+        <SectionIntro
+          eyebrow="Metabolic Support"
+          title="How MIC + B12 Supports Weight Loss"
+          description="A lipotropic injection kit that supports fat metabolism, energy, and metabolic health — ideal on its own or alongside GLP-1 therapy."
+        />
+        <BenefitList
+          items={MIC_B12_HOW_IT_WORKS.map(({ title, description }) => `${title}: ${description}`)}
+        />
+      </ContentSection>
+
+      <ContentSection>
         <SectionIntro
           eyebrow="Why Clear Choice"
           title="Premium Clinical Tools for Lasting Results"
@@ -151,8 +222,8 @@ export default function WeightLossPage() {
         steps={[
           {
             step: 1,
-            title: "Consultation & Screening",
-            description: "Complete a digital health review to determine eligibility for GLP-1 medical weight management.",
+            title: "Buy Your Program",
+            description: "Select Semaglutide or Tirzepatide and complete secure checkout with your health profile.",
           },
           {
             step: 2,
@@ -182,10 +253,11 @@ export default function WeightLossPage() {
       <PremiumCta
         icon="scale"
         title="Ready to Begin Your Journey?"
-        description="Start your medical weight loss consultation for Semaglutide or Tirzepatide through Clear Choice Pharmacy."
+        description="Buy Semaglutide or Tirzepatide medical weight loss through Clear Choice Pharmacy."
         primaryCta={{
-          label: "Start Your Weight Loss Consultation",
-          href: CONSULTATION_URL,
+          label: "Shop GLP Programs",
+          href: PROGRAMS_URL,
+          scrollTo: "#programs",
         }}
       />
     </ClinicalLandingShell>

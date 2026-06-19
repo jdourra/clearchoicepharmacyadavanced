@@ -14,6 +14,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { calculateIvSubtotal, calculateIvTotal, getIvBoosters, getIvPackage, IV_TRAVEL_FEE, type IvBooster } from "@/lib/iv-catalog"
+import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import {
+  emptyIntakePaymentValues,
+  getIntakePaymentInvalidFields,
+  paymentCapturedOnClient,
+  type IntakePaymentValues,
+} from "@/lib/intake-payment"
 
 const TIME_WINDOWS = [
   { value: "asap", label: "ASAP — dispatch when available" },
@@ -62,6 +69,10 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
   const [pregnantOrBreastfeeding, setPregnantOrBreastfeeding] = useState(false)
   const [additionalNotes, setAdditionalNotes] = useState("")
   const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [agreeToTelehealth, setAgreeToTelehealth] = useState(false)
+  const [agreeToPrivacy, setAgreeToPrivacy] = useState(false)
+  const [authorizeHold, setAuthorizeHold] = useState(false)
+  const [payment, setPayment] = useState<IntakePaymentValues>(emptyIntakePaymentValues)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
@@ -84,7 +95,11 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
     if (!preferredTimeWindow) invalid.add("preferredTimeWindow")
     if (!kidneyDisease) invalid.add("kidneyDisease")
     if (!heartCondition) invalid.add("heartCondition")
+    for (const field of getIntakePaymentInvalidFields(payment)) invalid.add(field)
     if (!agreeToTerms) invalid.add("agreeToTerms")
+    if (!agreeToTelehealth) invalid.add("agreeToTelehealth")
+    if (!agreeToPrivacy) invalid.add("agreeToPrivacy")
+    if (!authorizeHold) invalid.add("authorizeHold")
     if (email && !/^\S+@\S+\.\S+$/.test(email)) invalid.add("email")
 
     if (invalid.size > 0) {
@@ -107,6 +122,11 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
       next.delete(field)
       return next
     })
+  }
+
+  const updatePayment = <K extends keyof IntakePaymentValues>(key: K, value: IntakePaymentValues[K]) => {
+    setPayment((prev) => ({ ...prev, [key]: value }))
+    clearError(key)
   }
 
   const handleSubmit = async () => {
@@ -142,7 +162,10 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           pregnantOrBreastfeeding,
           additionalNotes,
           agreeToTerms,
-          agreeToTelehealth: agreeToTerms,
+          agreeToTelehealth,
+          agreeToPrivacy,
+          authorizeHold,
+          payment: paymentCapturedOnClient(payment),
         }),
       })
 
@@ -383,14 +406,62 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
             <Label>Special instructions for the RN</Label>
             <Textarea value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} placeholder="Gate code, parking, symptoms, etc." />
           </div>
-          <div
-            data-field="agreeToTerms"
-            className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTerms") && "ring-2 ring-destructive bg-destructive/5")}
-          >
-            <Checkbox id="agree" checked={agreeToTerms} onCheckedChange={(c) => { setAgreeToTerms(c === true); clearError("agreeToTerms") }} />
-            <Label htmlFor="agree" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTerms") && "text-destructive")}>
-              I agree to the Terms of Service and consent to telehealth screening before IV administration *
-            </Label>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Identity &amp; Payment</CardTitle>
+          <CardDescription>Upload your ID and authorize payment before submission.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <IntakeIdentityPaymentSection
+            idPrefix="iv"
+            serviceType="iv_rejuvenation"
+            patientEmail={email}
+            intakePrefix={`iv-${email || "draft"}`}
+            values={payment}
+            onChange={updatePayment}
+            totalBilled={estimatedTotal}
+            invalidFields={fieldErrors}
+          />
+          <div className="space-y-3 border-t pt-4">
+            <div
+              data-field="agreeToTerms"
+              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTerms") && "ring-2 ring-destructive bg-destructive/5")}
+            >
+              <Checkbox id="agree" checked={agreeToTerms} onCheckedChange={(c) => { setAgreeToTerms(c === true); clearError("agreeToTerms") }} />
+              <Label htmlFor="agree" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTerms") && "text-destructive")}>
+                I agree to the Terms of Service *
+              </Label>
+            </div>
+            <div
+              data-field="agreeToTelehealth"
+              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTelehealth") && "ring-2 ring-destructive bg-destructive/5")}
+            >
+              <Checkbox id="telehealth" checked={agreeToTelehealth} onCheckedChange={(c) => { setAgreeToTelehealth(c === true); clearError("agreeToTelehealth") }} />
+              <Label htmlFor="telehealth" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTelehealth") && "text-destructive")}>
+                I consent to telehealth screening before IV administration *
+              </Label>
+            </div>
+            <div
+              data-field="agreeToPrivacy"
+              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToPrivacy") && "ring-2 ring-destructive bg-destructive/5")}
+            >
+              <Checkbox id="privacy" checked={agreeToPrivacy} onCheckedChange={(c) => { setAgreeToPrivacy(c === true); clearError("agreeToPrivacy") }} />
+              <Label htmlFor="privacy" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToPrivacy") && "text-destructive")}>
+                I understand my health information will be handled in accordance with HIPAA regulations *
+              </Label>
+            </div>
+            <div
+              data-field="authorizeHold"
+              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("authorizeHold") && "ring-2 ring-destructive bg-destructive/5")}
+            >
+              <Checkbox id="authorize" checked={authorizeHold} onCheckedChange={(c) => { setAuthorizeHold(c === true); clearError("authorizeHold") }} />
+              <Label htmlFor="authorize" className={cn("font-normal cursor-pointer leading-snug", isInvalid("authorizeHold") && "text-destructive")}>
+                I authorize a payment hold of <strong>${estimatedTotal}</strong> to be charged only upon prescription approval *
+              </Label>
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-3">
