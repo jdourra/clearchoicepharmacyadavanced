@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
-import { ED_PRODUCT_LABELS } from "@/lib/ed-troche-catalog"
-import { formatEdAddOns, parseEdAddOns, type EdFormulationAddOn } from "@/lib/ed-add-ons"
+import { ED_PRODUCT_LABELS, calculateEdOrderPricing, type EdBillingPlan } from "@/lib/ed-troche-catalog"
+import { formatEdAddOnsWithPricing, parseEdAddOns, type EdFormulationAddOn } from "@/lib/ed-add-ons"
 import { requireIntakePaymentSubmission, type IntakePaymentMetadata } from "@/lib/intake-payment"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
@@ -52,6 +52,7 @@ type ClinicalIntakePayload = {
   }
   treatmentInfo: {
     selectedProduct: string
+    selectedBillingPlan: EdBillingPlan
     selectedAddOns?: EdFormulationAddOn[]
     edDuration: string
     edSeverity: string
@@ -89,6 +90,13 @@ function formatClinicalSummary(data: ClinicalIntakePayload): string {
   if (data.medicalHistory.liverDisease === "yes") riskFlags.push("Liver Disease")
   if (data.medicalHistory.kidneyDisease === "yes") riskFlags.push("Kidney Disease")
   if (data.medicalHistory.visionProblems === "yes") riskFlags.push("Vision Problems")
+
+  const billingPlan = data.treatmentInfo.selectedBillingPlan || "quarterly"
+  const orderPricing = calculateEdOrderPricing(
+    data.treatmentInfo.selectedProduct,
+    billingPlan,
+    data.treatmentInfo.selectedAddOns || []
+  )
 
   return `
 ═══════════════════════════════════════════════════════════════════════════════
@@ -147,7 +155,10 @@ ${data.medicalHistory.allergies || "None reported"}
                            TREATMENT INFORMATION
 ───────────────────────────────────────────────────────────────────────────────
 Selected Product:       ${ED_PRODUCT_LABELS[data.treatmentInfo.selectedProduct] || data.treatmentInfo.selectedProduct}
-Optional Add-Ons:       ${formatEdAddOns(data.treatmentInfo.selectedAddOns || [])}
+Billing Plan:           ${billingPlan}
+Optional Add-Ons:       ${formatEdAddOnsWithPricing(data.treatmentInfo.selectedAddOns || [], billingPlan)}
+Effective Monthly:      $${orderPricing.pricePerMonth}/mo
+Total Authorized:       $${orderPricing.totalBilled}
 ED Duration:            ${data.treatmentInfo.edDuration}
 ED Severity:            ${data.treatmentInfo.edSeverity}
 Preferred Frequency:    ${data.treatmentInfo.preferredFrequency}
@@ -218,10 +229,13 @@ export async function POST(request: NextRequest) {
       },
       treatmentInfo: {
         selectedProduct: rawData.treatment?.selectedProduct || "",
+        selectedBillingPlan: (rawData.treatment?.selectedBillingPlan || "quarterly") as EdBillingPlan,
         selectedAddOns: parseEdAddOns(
           Array.isArray(rawData.treatment?.selectedAddOns)
             ? (rawData.treatment.selectedAddOns as string[]).join(",")
-            : undefined
+            : typeof rawData.treatment?.selectedAddOns === "string"
+              ? rawData.treatment.selectedAddOns
+              : undefined
         ),
         edDuration: rawData.treatment?.edDuration || "",
         edSeverity: rawData.treatment?.edSeverity || "",

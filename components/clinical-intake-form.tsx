@@ -25,8 +25,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
   ED_FORMULATIONS,
-  calculateEdMonthlyPrice,
-  calculateEdTotalBilled,
+  calculateEdOrderPricing,
   getEdTrocheProduct,
   type EdBillingPlan,
 } from "@/lib/ed-troche-catalog"
@@ -617,7 +616,11 @@ export function ClinicalIntakeForm({
   
   if (step === 4 && submissionStatus === "success") {
     const selectedProduct = getEdTrocheProduct(formData.selectedProduct)
-    const monthlyTotal = calculateEdMonthlyPrice(formData.selectedProduct, formData.selectedBillingPlan)
+    const orderPricing = calculateEdOrderPricing(
+      formData.selectedProduct,
+      formData.selectedBillingPlan,
+      formData.selectedAddOns
+    )
     const billingLabel = formData.selectedBillingPlan === "monthly" ? "Monthly" : formData.selectedBillingPlan === "quarterly" ? "Quarterly" : "Annual"
     
     return (
@@ -644,7 +647,13 @@ export function ClinicalIntakeForm({
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">Selected Treatment</p>
                 <p className="font-medium">{selectedProduct?.name}</p>
-                <p className="text-xs text-muted-foreground">{billingLabel} plan — ${monthlyTotal}/mo</p>
+                <p className="text-xs text-muted-foreground">{billingLabel} plan — ${orderPricing.pricePerMonth}/mo</p>
+                {orderPricing.addOnLineItems.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Add-ons: {orderPricing.addOnLineItems.map((item) => item.label).join(", ")}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">Total authorized: ${orderPricing.totalBilled}</p>
                 <p className="text-xs text-muted-foreground">{selectedProduct?.subtitle}</p>
               </div>
               <div className="rounded-lg border p-4">
@@ -815,7 +824,11 @@ export function ClinicalIntakeForm({
     <div className="space-y-8">
       {productPrefilled && (() => {
         const product = getEdTrocheProduct(formData.selectedProduct)
-        const pricing = product?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
+        const orderPricing = calculateEdOrderPricing(
+          formData.selectedProduct,
+          formData.selectedBillingPlan,
+          formData.selectedAddOns
+        )
         const billingLabel =
           formData.selectedBillingPlan === "monthly"
             ? "Monthly"
@@ -827,8 +840,8 @@ export function ClinicalIntakeForm({
             productName={product.name}
             productSubtitle={product.subtitle}
             billingLabel={billingLabel}
-            priceLine={pricing ? `$${pricing.pricePerMonth}/mo` : undefined}
             addOns={formData.selectedAddOns}
+            orderPricing={orderPricing}
             changeHref="/mens-health#ed-troches"
           />
         ) : null
@@ -1311,11 +1324,15 @@ export function ClinicalIntakeForm({
   
   const renderStep3 = () => {
     const selectedProduct = getEdTrocheProduct(formData.selectedProduct)
-    const monthlyTotal = calculateEdMonthlyPrice(formData.selectedProduct, formData.selectedBillingPlan)
+    const orderPricing = calculateEdOrderPricing(
+      formData.selectedProduct,
+      formData.selectedBillingPlan,
+      formData.selectedAddOns
+    )
     const billingLabel = formData.selectedBillingPlan === "monthly" ? "Monthly" : formData.selectedBillingPlan === "quarterly" ? "Quarterly" : "Annual"
     
     const currentPricing = selectedProduct?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
-    const totalBilled = calculateEdTotalBilled(formData.selectedProduct, formData.selectedBillingPlan)
+    const totalBilled = orderPricing.totalBilled
     
     return (
       <div className="space-y-8">
@@ -1330,7 +1347,7 @@ export function ClinicalIntakeForm({
                   <p className="text-sm text-muted-foreground">{selectedProduct.subtitle}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-bold text-primary">${monthlyTotal}/mo</span>
+                  <span className="text-lg font-bold text-primary">${orderPricing.baseMonthly}/mo</span>
                   {currentPricing.badge && (
                     <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
                       currentPricing.badge === "Best Seller" 
@@ -1342,13 +1359,32 @@ export function ClinicalIntakeForm({
                   )}
                 </div>
               </div>
+              {orderPricing.addOnLineItems.map((item) => (
+                <div key={item.id} className="flex justify-between items-start text-sm">
+                  <div>
+                    <span className="font-medium">{item.label}</span>
+                    <p className="text-muted-foreground">Blended add-on</p>
+                  </div>
+                  <span className="font-medium text-primary">+${item.pricePerMonth}/mo</span>
+                </div>
+              ))}
               <div className="border-t pt-2 space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Billing Plan</span>
                   <span>{billingLabel}</span>
                 </div>
+                {orderPricing.addOnLineItems.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Add-ons ({billingLabel.toLowerCase()})</span>
+                    <span>${orderPricing.addOnTotalBilled}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total Due Today</span>
+                  <span className="text-muted-foreground">Effective Monthly</span>
+                  <span>${orderPricing.pricePerMonth}/mo</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Total Due Upon Approval</span>
                   <span className="font-semibold">${totalBilled}</span>
                 </div>
               </div>

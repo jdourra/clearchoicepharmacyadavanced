@@ -1,3 +1,11 @@
+import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
+import {
+  calculateEdAddOnsMonthlyPrice,
+  calculateEdAddOnsTotalBilled,
+  ED_FORMULATION_ADD_ONS,
+  getEdAddOnPricing,
+} from "@/lib/ed-add-ons"
+
 export type EdBillingPlan = "monthly" | "quarterly" | "annual"
 
 export type EdTrocheProduct = {
@@ -146,6 +154,46 @@ export function calculateEdMonthlyPrice(productId: string, billingPlan: EdBillin
 
 export function calculateEdTotalBilled(productId: string, billingPlan: EdBillingPlan): number {
   return getEdPricing(productId, billingPlan)?.totalBilled ?? 0
+}
+
+export type EdOrderPricing = {
+  baseMonthly: number
+  baseTotalBilled: number
+  addOnMonthly: number
+  addOnTotalBilled: number
+  pricePerMonth: number
+  totalBilled: number
+  addOnLineItems: {
+    id: EdFormulationAddOn
+    label: string
+    pricePerMonth: number
+    totalBilled: number
+  }[]
+}
+
+export function calculateEdOrderPricing(
+  productId: string,
+  billingPlan: EdBillingPlan,
+  addOns: EdFormulationAddOn[] = []
+): EdOrderPricing {
+  const baseMonthly = calculateEdMonthlyPrice(productId, billingPlan)
+  const baseTotalBilled = calculateEdTotalBilled(productId, billingPlan)
+  const addOnMonthly = calculateEdAddOnsMonthlyPrice(addOns, billingPlan)
+  const addOnTotalBilled = calculateEdAddOnsTotalBilled(addOns, billingPlan)
+
+  return {
+    baseMonthly,
+    baseTotalBilled,
+    addOnMonthly,
+    addOnTotalBilled,
+    pricePerMonth: baseMonthly + addOnMonthly,
+    totalBilled: baseTotalBilled + addOnTotalBilled,
+    addOnLineItems: addOns.map((id) => {
+      const pricing = getEdAddOnPricing(id, billingPlan)
+      const label = ED_FORMULATION_ADD_ONS.find((a) => a.id === id)?.label ?? id
+      return { id, label, ...pricing }
+    }),
+  }
 }
 
 export const ED_PRODUCT_LABELS: Record<string, string> = {
