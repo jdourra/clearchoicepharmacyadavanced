@@ -24,6 +24,11 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
+  DEFAULT_INTAKE_SUCCESS_STEPS,
+  physicianReviewDescription,
+  physicianReviewPendingLabel,
+} from "@/lib/clinical-provider"
+import {
   ED_FORMULATIONS,
   calculateEdOrderPricing,
   getEdTrocheProduct,
@@ -632,7 +637,7 @@ export function ClinicalIntakeForm({
             </div>
             <div>
               <CardTitle className="text-green-700">Intake Protocol Securely Transmitted</CardTitle>
-              <CardDescription>Dr. Dourra is currently reviewing your medical history</CardDescription>
+              <CardDescription>{physicianReviewDescription()}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -662,7 +667,7 @@ export function ClinicalIntakeForm({
               </div>
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">Status</p>
-                <p className="font-medium text-amber-600">Pending Dr. Dourra&apos;s Review</p>
+                <p className="font-medium text-amber-600">{physicianReviewPendingLabel()}</p>
               </div>
             </div>
             
@@ -685,15 +690,15 @@ export function ClinicalIntakeForm({
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">1.</span>
-                  <span>Dr. Dourra will review your medical information (typically within 2-4 hours during business hours)</span>
+                  <span>{DEFAULT_INTAKE_SUCCESS_STEPS[0]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">2.</span>
-                  <span>You&apos;ll receive an email with Dr. Dourra&apos;s decision and any follow-up questions</span>
+                  <span>{DEFAULT_INTAKE_SUCCESS_STEPS[1]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">3.</span>
-                  <span>If approved, your payment will be processed and medication will ship within 1-2 business days</span>
+                  <span>{DEFAULT_INTAKE_SUCCESS_STEPS[2]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">4.</span>

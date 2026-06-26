@@ -143,7 +143,7 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "Is mobile IV therapy safe?",
     answer:
-      "Yes. A licensed telehealth provider reviews each request before treatment. IV bags are prepared at Clear Choice Pharmacy pursuant to a patient-specific prescription, then administered by registered nurses.",
+      "Yes. A licensed telehealth provider reviews each request before treatment. Clinical intakes for Michigan patients are reviewed by Dr. Dourra and affiliated physicians. IV bags are prepared at Clear Choice Pharmacy pursuant to a patient-specific prescription, then administered by registered nurses.",
   },
   {
     question: "What areas do you serve for mobile IV therapy?",

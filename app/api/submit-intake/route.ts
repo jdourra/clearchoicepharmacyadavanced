@@ -6,6 +6,7 @@ import { requireIntakePaymentSubmission, type IntakePaymentMetadata } from "@/li
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 /**
  * Patient Intake API Route
@@ -408,7 +409,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Intake protocol securely transmitted. A licensed provider is reviewing your medical history.",
+        message: `Intake protocol securely transmitted. ${PRIMARY_PHYSICIAN.name} is reviewing your medical history.`,
         submissionId,
         estimatedReviewTime: "2-4 business hours",
       },

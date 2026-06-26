@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
 import { formatEdAddOns } from "@/lib/ed-add-ons"
 import type { EdOrderPricing } from "@/lib/ed-troche-catalog"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 type IntakeOrderSummaryProps = {
   productName: string
@@ -62,7 +63,7 @@ export function IntakeOrderSummary({
       )}
 
       <p className="text-xs text-muted-foreground">
-        Prescription required after provider review. Payment is authorized as a hold and captured only if approved.
+        Prescription required after ${PRIMARY_PHYSICIAN.name}'s review. Payment is authorized as a hold and captured only if approved.
       </p>
     </div>
   )

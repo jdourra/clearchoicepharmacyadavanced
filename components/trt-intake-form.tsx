@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
+import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
+import { TRT_PROGRAMS, getTrtProgram, type TrtBillingPlan } from "@/lib/trt-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
@@ -308,19 +308,15 @@ export function TrtIntakeForm({
   }
 
   if (success) {
+    const program = getTrtProgram(formData.selectedProgram)
     return (
-      <Card className="border-green-200 bg-green-50/50">
-        <CardContent className="pt-8 pb-8 text-center">
-          <CheckCircle2 className="h-14 w-14 text-green-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Intake Submitted</h2>
-          <p className="text-muted-foreground mb-4">
-            A licensed provider will review your TRT intake. Reference: <span className="font-mono font-semibold">{submissionId}</span>
-          </p>
-          <Button asChild variant="outline">
-            <Link href="/mens-health">Back to Men&apos;s Health</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <IntakeSuccessPanel
+        title="TRT Intake Submitted"
+        submissionId={submissionId}
+        treatmentLabel={program?.name}
+        returnHref="/mens-health"
+        returnLabel="Back to Men's Health"
+      />
     )
   }
 

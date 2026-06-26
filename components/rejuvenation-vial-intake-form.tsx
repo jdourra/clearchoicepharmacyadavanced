@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import Link from "next/link"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -199,34 +201,22 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
 
   if (success) {
     return (
-      <Card className="border-green-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-8 w-8 text-green-600" />
-            <div>
-              <CardTitle>Intake Submitted — Pending Provider Review</CardTitle>
-              <CardDescription>Reference: {submissionId}</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4 text-muted-foreground">
-          <p>
-            Thank you! A licensed telehealth provider will review your screening. If approved, your{" "}
-            <strong className="text-slate-900">{selectedVial.title}</strong> will be compounded at{" "}
-            <strong className="text-slate-900">Clear Choice Pharmacy</strong> and shipped to your address.
-          </p>
-          <ol className="text-sm space-y-2 list-decimal list-inside">
-            <li>Provider review (typically 2–4 business hours)</li>
-            <li>Prescription received at Clear Choice Pharmacy</li>
-            <li>Homekit shipped with supplies and injection instructions</li>
-          </ol>
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" onClick={() => router.push("/iv-rejuvenation")}>
-            Back to IV &amp; Rejuvenation
-          </Button>
-        </CardFooter>
-      </Card>
+      <IntakeSuccessPanel
+        title="Rejuvenation Vial Intake Submitted"
+        submissionId={submissionId}
+        treatmentLabel={selectedVial.title}
+        returnHref="/iv-rejuvenation"
+        returnLabel="Back to IV & Rejuvenation"
+        steps={[
+          `${PRIMARY_PHYSICIAN.name} will review your screening (typically 2–4 business hours)`,
+          "Prescription received at Clear Choice Pharmacy",
+          "Homekit shipped with supplies and injection instructions",
+        ]}
+      >
+        <p className="text-sm text-muted-foreground">
+          If approved, your kit will be compounded at Clear Choice Pharmacy and shipped to your address.
+        </p>
+      </IntakeSuccessPanel>
     )
   }
 
@@ -243,7 +233,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
         <CardContent className="pt-6 text-sm text-slate-600 space-y-2">
           <p className="font-medium text-slate-900">What happens next</p>
           <ol className="list-decimal list-inside space-y-1">
-            <li>Licensed telehealth provider reviews your intake</li>
+            <li>{PRIMARY_PHYSICIAN.name} reviews your intake</li>
             <li>If approved, eRx is routed to Clear Choice Pharmacy (Michigan)</li>
             <li>Your 30-day home injection kit is shipped to your door</li>
           </ol>

@@ -38,7 +38,7 @@ export interface PatientPortalData {
 
 export function formatPortalStatus(status: string): string {
   const labels: Record<string, string> = {
-    pending_provider_review: "Pending provider review",
+    pending_provider_review: "Pending Dr. Dourra's review",
     pending_review: "Pending pharmacy review",
     coordinating_transfer: "Coordinating transfer",
     prior_auth_in_progress: "Prior authorization in progress",

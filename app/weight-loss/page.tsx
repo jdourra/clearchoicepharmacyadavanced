@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/card"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 import { buildVialIntakeUrl, buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
   SITE_URL,
   WEIGHT_LOSS_FAQS,
@@ -83,7 +84,7 @@ export default function WeightLossPage() {
         headline="Medical Weight Loss & GLP Therapy in Novi, MI"
         subheadline="Semaglutide and Tirzepatide programs with transparent, upfront pricing."
         description="Achieving long-term metabolic health requires premium clinical tools. Clear Choice Pharmacy compounds customized GLP-1 formulations designed to match your specific titration schedule—without insurance opacity or PBM middlemen."
-        highlight="📊 Custom titration · Pharmacy-compounded · Licensed provider review"
+        highlight="📊 Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra"
         heroImage={{
           src: "/images/weight-loss-hero.png",
           alt: "Woman measuring waist progress during medical weight loss program",

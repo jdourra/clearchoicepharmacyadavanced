@@ -12,7 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { IntakeSuccessPanel } from "@/components/intake-success-panel"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { calculateIvSubtotal, calculateIvTotal, getIvBoosters, getIvPackage, IV_TRAVEL_FEE, type IvBooster } from "@/lib/iv-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import {
@@ -203,40 +204,29 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
 
   if (success) {
     return (
-      <Card className="border-green-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-8 w-8 text-green-600" />
-            <div>
-              <CardTitle>Intake Submitted — Pending Provider Review</CardTitle>
-              <CardDescription>Reference: {submissionId}</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4 text-muted-foreground">
-          <p>
-            Thank you! A licensed telehealth provider will review your screening. If approved, your prescription
-            will be sent to <strong className="text-slate-900">Clear Choice Pharmacy</strong> in Novi, MI to prepare
-            your IV. Our team will then contact you to schedule mobile RN dispatch.
-          </p>
-          <ol className="text-sm space-y-2 list-decimal list-inside">
-            <li>Provider review (typically 2–4 business hours)</li>
-            <li>Prescription received at Clear Choice Pharmacy</li>
-            <li>IV prepared and RN dispatch scheduled</li>
-          </ol>
-          <p className="text-sm">
-            Need immediate assistance? Call{" "}
-            <a href="tel:+12489876182" className="text-sky-600 font-medium hover:underline">
-              1-248-987-6182
-            </a>
-          </p>
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" onClick={() => router.push("/iv-rejuvenation")}>
-            Back to IV Menu
-          </Button>
-        </CardFooter>
-      </Card>
+      <IntakeSuccessPanel
+        title="IV Booking Intake Submitted"
+        submissionId={submissionId}
+        treatmentLabel={selectedPackage?.title}
+        returnHref="/iv-rejuvenation"
+        returnLabel="Back to IV Menu"
+        steps={[
+          `${PRIMARY_PHYSICIAN.name} will review your screening (typically 2–4 business hours)`,
+          "Prescription received at Clear Choice Pharmacy in Novi, MI",
+          "IV prepared and RN dispatch scheduled",
+        ]}
+      >
+        <p className="text-sm text-muted-foreground">
+          If approved, your prescription will be sent to Clear Choice Pharmacy. Our team will contact you to schedule
+          mobile RN dispatch.
+        </p>
+        <p className="text-sm">
+          Need immediate assistance? Call{" "}
+          <a href="tel:+12489876182" className="text-sky-600 font-medium hover:underline">
+            1-248-987-6182
+          </a>
+        </p>
+      </IntakeSuccessPanel>
     )
   }
 
@@ -253,7 +243,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         <CardContent className="pt-6 text-sm text-slate-600 space-y-2">
           <p className="font-medium text-slate-900">What happens next</p>
           <ol className="list-decimal list-inside space-y-1">
-            <li>Licensed telehealth provider reviews your intake</li>
+            <li>{PRIMARY_PHYSICIAN.name} reviews your intake</li>
             <li>If approved, eRx is routed to Clear Choice Pharmacy (Michigan)</li>
             <li>Pharmacy prepares your IV → RN dispatched to your location</li>
           </ol>

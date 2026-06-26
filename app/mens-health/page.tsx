@@ -26,6 +26,7 @@ import {
 import { TRT_PROGRAMS } from "@/lib/trt-catalog"
 import { ED_FORMULATIONS } from "@/lib/ed-troche-catalog"
 import { buildTrtIntakeUrl } from "@/lib/intake-prefill"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
@@ -236,7 +237,7 @@ export default function MensHealthPage() {
           {
             step: 2,
             title: "Physician Approval",
-            description: "A licensed provider reviews your intake and approves a customized protocol.",
+            description: `${PRIMARY_PHYSICIAN.name} reviews your intake and approves a customized protocol.`,
           },
           {
             step: 3,

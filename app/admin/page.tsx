@@ -94,6 +94,9 @@ export default function AdminDashboard() {
             <Link href="/admin" className="text-sm font-medium text-primary">
               Dashboard
             </Link>
+            <Link href="/admin/intakes" className="text-sm font-medium hover:text-primary transition-colors">
+              Clinical Intakes
+            </Link>
             <Link href="/admin/orders" className="text-sm font-medium hover:text-primary transition-colors">
               Orders
             </Link>
@@ -191,11 +194,12 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </Link>
-            <Link href="/admin/prescriptions">
+            <Link href="/admin/intakes">
               <Card className="hover:border-primary cursor-pointer transition-colors h-full">
                 <CardContent className="flex flex-col items-center justify-center py-6">
                   <FileText className="h-8 w-8 text-primary mb-2" />
-                  <p className="font-medium">Prescriptions</p>
+                  <p className="font-medium">Clinical Intakes</p>
+                  <p className="text-xs text-muted-foreground mt-1">Dr. Dourra review queue</p>
                 </CardContent>
               </Card>
             </Link>

@@ -1,5 +1,6 @@
 import "server-only"
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
+import { getClinicianInboxEmail, PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 const sesClient = new SESClient({
   region: process.env.AWS_REGION || "us-east-1",
@@ -14,11 +15,7 @@ export async function notifyClinicianQueue(params: {
   subject: string
   body: string
 }): Promise<{ success: boolean; error?: string }> {
-  const to =
-    process.env.TELEHEALTH_CLINICIAN_EMAIL ||
-    process.env.DR_DOURRA_EMAIL ||
-    process.env.ADMIN_EMAIL ||
-    ""
+  const to = getClinicianInboxEmail()
 
   const from = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
 
@@ -42,8 +39,13 @@ export async function notifyClinicianQueue(params: {
         Source: from,
         Destination: { ToAddresses: [to] },
         Message: {
-          Subject: { Data: params.subject, Charset: "UTF-8" },
-          Body: { Text: { Data: params.body, Charset: "UTF-8" } },
+          Subject: { Data: `[${PRIMARY_PHYSICIAN.name}] ${params.subject}`, Charset: "UTF-8" },
+          Body: {
+            Text: {
+              Data: `Assigned reviewer: ${PRIMARY_PHYSICIAN.name} (${PRIMARY_PHYSICIAN.credentials})\nReview in admin: /admin/intakes\n\n${params.body}`,
+              Charset: "UTF-8",
+            },
+          },
         },
       })
     )

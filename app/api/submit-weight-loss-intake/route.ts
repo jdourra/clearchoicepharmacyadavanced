@@ -9,6 +9,7 @@ import {
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -449,7 +450,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Your intake has been securely submitted. A licensed provider will review your information.",
+        message: `Your intake has been securely submitted. ${PRIMARY_PHYSICIAN.name} will review your information.`,
         submissionId,
         estimatedReviewTime: "2-4 business hours",
       },

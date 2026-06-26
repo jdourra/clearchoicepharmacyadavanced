@@ -80,3 +80,14 @@ export async function capturePaymentHold(paymentIntentId: string): Promise<boole
   const intent = await stripe.paymentIntents.capture(paymentIntentId)
   return intent.status === "succeeded"
 }
+
+/** Release an uncaptured authorization hold after provider denial. */
+export async function cancelPaymentHold(paymentIntentId: string): Promise<boolean> {
+  if (!isStripeConfigured()) return paymentIntentId.startsWith("dev_mock_")
+  const stripe = getStripe()
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId)
+  if (intent.status === "canceled") return true
+  if (intent.status === "succeeded") return false
+  const cancelled = await stripe.paymentIntents.cancel(paymentIntentId)
+  return cancelled.status === "canceled"
+}

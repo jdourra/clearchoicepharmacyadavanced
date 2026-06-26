@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 export const metadata: Metadata = {
   title: "Telehealth Consent | Clear Choice Pharmacy",
@@ -12,7 +13,8 @@ export default function TelehealthConsentPage() {
       <p>Last updated: June 2026</p>
       <p>
         By consenting to telehealth, you agree to receive clinical evaluation through asynchronous (store-and-forward)
-        telemedicine and, when appropriate, synchronous communication with a licensed provider.
+        telemedicine with {PRIMARY_PHYSICIAN.name}, {PRIMARY_PHYSICIAN.credentials}, and affiliated Michigan providers
+        when appropriate, synchronous communication.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Nature of telehealth</h2>
       <p>

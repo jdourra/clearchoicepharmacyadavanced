@@ -431,7 +431,7 @@ function ProgramsTab({ programs }: { programs: ClinicalProgramSubmission[] }) {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
-                A licensed provider or our pharmacy team will update you by email or phone when your status changes.
+                A licensed provider or our pharmacy team will update you by email when your status changes. Clinical intakes are reviewed by Dr. Dourra and affiliated Michigan physicians.
               </p>
               <Button asChild variant="link" className="px-0 mt-2 h-auto">
                 <Link href={program.href}>View program details</Link>

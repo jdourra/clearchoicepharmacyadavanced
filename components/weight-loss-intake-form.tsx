@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
@@ -703,35 +704,17 @@ export function WeightLossIntakeForm({
 
   if (submissionStatus === "success") {
     return (
-      <Card className="border-green-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <CheckCircle2 className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <CardTitle>Intake Submitted Successfully</CardTitle>
-              <CardDescription>A licensed provider will review your information</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            Thank you for completing your GLP weight loss intake. If approved, Clear Choice Pharmacy will compound and
-            fulfill your medication with ongoing clinical support.
-          </p>
-          <ul className="text-sm space-y-2 text-muted-foreground">
-            <li>1. Provider review typically within 2-4 business hours</li>
-            <li>2. You will receive an email with next steps or follow-up questions</li>
-            <li>3. If approved, your treatment plan and titration schedule will be confirmed</li>
-          </ul>
-        </CardContent>
-        <CardFooter className="border-t pt-6">
-          <Button className="w-full" asChild>
-            <a href="/weight-loss">Return to Weight Loss</a>
-          </Button>
-        </CardFooter>
-      </Card>
+      <IntakeSuccessPanel
+        title="Weight Loss Intake Submitted"
+        treatmentLabel={selectedProgram?.name}
+        returnHref="/weight-loss"
+        returnLabel="Return to Weight Loss"
+      >
+        <p className="text-sm text-muted-foreground">
+          Thank you for completing your GLP weight loss intake. If approved, Clear Choice Pharmacy will compound and
+          fulfill your medication with ongoing clinical support.
+        </p>
+      </IntakeSuccessPanel>
     )
   }
 
