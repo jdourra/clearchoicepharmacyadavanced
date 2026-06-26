@@ -1,6 +1,12 @@
 import type { Order } from "@/lib/auth-types"
 
-export type ClinicalProgramType = "mens_health" | "trt" | "weight_loss" | "iv_rejuvenation" | "rejuvenation_vial"
+export type ClinicalProgramType =
+  | "mens_health"
+  | "trt"
+  | "weight_loss"
+  | "iv_rejuvenation"
+  | "rejuvenation_vial"
+  | "specialty_pharmacy"
 
 export interface ClinicalProgramSubmission {
   type: ClinicalProgramType
@@ -33,7 +39,11 @@ export interface PatientPortalData {
 export function formatPortalStatus(status: string): string {
   const labels: Record<string, string> = {
     pending_provider_review: "Pending provider review",
-    pending_review: "Pending provider review",
+    pending_review: "Pending pharmacy review",
+    coordinating_transfer: "Coordinating transfer",
+    prior_auth_in_progress: "Prior authorization in progress",
+    copay_assistance: "Copay assistance in progress",
+    ready_for_fulfillment: "Ready for fulfillment",
     rx_at_pharmacy: "Prescription at pharmacy",
     preparing: "Pharmacy preparing",
     shipped: "Shipped",

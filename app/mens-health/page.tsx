@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 import {
-  BenefitList,
   ClinicalLandingShell,
   ContentSection,
   FaqSection,
@@ -55,10 +55,6 @@ export const metadata: Metadata = {
   },
 }
 
-const trocheBenefits = [
-  "Six formulation cards to choose from: Sildenafil, Tadalafil, dual combination, premature ejaculation combination, Apomorphine, and Oxytocin.",
-]
-
 export default function MensHealthPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
@@ -90,44 +86,28 @@ export default function MensHealthPage() {
         secondaryCta={{ label: "Shop TRT Programs", href: TRT_LANDING_URL, scrollTo: "#trt" }}
       />
 
-      <TrustRibbon
-        items={[
-          {
-            icon: "flask-conical",
-            title: "Pharmacy Compounded",
-            description: "ED troches and TRT prepared by licensed pharmacists",
-          },
-          {
-            icon: "sparkles",
-            title: "Faster Than Pills",
-            description: "Sublingual ED troches bypass the digestive tract",
-          },
-          {
-            icon: "lock",
-            title: "Private & Discreet",
-            description: "Confidential checkout and direct delivery",
-          },
-          {
-            icon: "shield",
-            title: "Transparent Pricing",
-            description: "Clear Choice cash-pay model—no hidden fees",
-          },
-        ]}
-      />
-
       <ContentSection id="ed-troches">
         <SectionIntro
           eyebrow="Sublingual ED Troches"
-          title="Sildenafil, Tadalafil, PE & Libido Options"
+          title="Sildenafil, Tadalafil & Dual Combination"
           description="Choose a formulation and buy online. Optional add-ons (Oxytocin, Apomorphine, PE support) can be added before checkout. Prescription required after provider review."
         />
-        <BenefitList items={trocheBenefits} />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {ED_FORMULATIONS.map((formulation) => {
             const pricing = formulation.pricing.find((p) => p.plan === "quarterly") || formulation.pricing[0]
             return (
-              <Card key={formulation.id} className="p-6 flex flex-col h-full">
+              <Card key={formulation.id} className="overflow-hidden p-0 flex flex-col h-full">
+                <div className="relative aspect-[4/3] w-full bg-muted/40">
+                  <Image
+                    src={formulation.image.src}
+                    alt={formulation.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover object-center"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
                   {formulation.highlight && <Badge variant="secondary">{formulation.highlight}</Badge>}
                   {pricing.badge && <Badge>{pricing.badge}</Badge>}
@@ -154,6 +134,7 @@ export default function MensHealthPage() {
                     />
                   </div>
                 </div>
+                </div>
               </Card>
             )
           })}
@@ -174,7 +155,17 @@ export default function MensHealthPage() {
           {TRT_PROGRAMS.map((program) => {
             const pricing = program.pricing.find((p) => p.plan === "quarterly") || program.pricing[0]
             return (
-              <Card key={program.id} className="p-6 flex flex-col h-full">
+              <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
+                <div className="relative aspect-[4/3] w-full bg-muted/40">
+                  <Image
+                    src={program.image.src}
+                    alt={program.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover object-center"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
                   {program.highlight && <Badge variant="secondary">{program.highlight}</Badge>}
                   {pricing.badge && <Badge>{pricing.badge}</Badge>}
@@ -196,6 +187,7 @@ export default function MensHealthPage() {
                     <ServiceBuyButton href={buildTrtIntakeUrl(program.id, "quarterly")} fullWidth />
                   </div>
                 </div>
+                </div>
               </Card>
             )
           })}
@@ -206,6 +198,31 @@ export default function MensHealthPage() {
           therapy with pharmacy fulfillment—designed for men seeking real hormone optimization with upfront pricing.
         </p>
       </ContentSection>
+
+      <TrustRibbon
+        items={[
+          {
+            icon: "flask-conical",
+            title: "Pharmacy Compounded",
+            description: "ED troches and TRT prepared by licensed pharmacists",
+          },
+          {
+            icon: "sparkles",
+            title: "Faster Than Pills",
+            description: "Sublingual ED troches bypass the digestive tract",
+          },
+          {
+            icon: "lock",
+            title: "Private & Discreet",
+            description: "Confidential checkout and direct delivery",
+          },
+          {
+            icon: "shield",
+            title: "Transparent Pricing",
+            description: "Clear Choice cash-pay model—no hidden fees",
+          },
+        ]}
+      />
 
       <ProcessSteps
         title="How It Works"

@@ -14,6 +14,7 @@ export type RejuvenationVial = {
   route: string
   frequency: string
   description: string
+  image: { src: string; alt: string }
   shippingNote?: string
 }
 
@@ -31,6 +32,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     frequency: "Twice per week",
     description:
       "Improve energy, metabolism, mood, and sleep. Physician-reviewed kit with syringes, alcohol pads, and injection tutorial.",
+    image: {
+      src: "/images/b12-vial.png",
+      alt: "Vitamin B12 injection homekit vial",
+    },
   },
   {
     id: "glutathione",
@@ -45,6 +50,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     frequency: "As directed by physician",
     description:
       "Master antioxidant for detox, skin radiance, and immune support. Shipped after telehealth physician approval.",
+    image: {
+      src: "/images/glutathione-vial.png",
+      alt: "Glutathione injection homekit vial",
+    },
   },
   {
     id: "vitamin-c",
@@ -57,6 +66,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     frequency: "As directed by physician",
     description:
       "High-potency vitamin C for immune defense, collagen support, and recovery — bypasses GI absorption limits.",
+    image: {
+      src: "/images/vitamin-c-vial.png",
+      alt: "Vitamin C injection homekit vial",
+    },
   },
   {
     id: "nad",
@@ -72,6 +85,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     description:
       "Cellular energy and anti-aging support for focus, stamina, and recovery. Includes supplies and physician access.",
     shippingNote: "Shipped cold — refrigerate upon arrival.",
+    image: {
+      src: "/images/nad-vial.png",
+      alt: "NAD+ injection homekit vial",
+    },
   },
   {
     id: "biotin",
@@ -83,6 +100,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     route: "Intramuscular self-injection",
     frequency: "Weekly",
     description: "Hair, skin, and nail support with pharmacy-compounded biotin injections.",
+    image: {
+      src: "/images/biotin-vial.png",
+      alt: "Biotin injection homekit vial",
+    },
   },
   {
     id: "nac",
@@ -95,6 +116,10 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     frequency: "As directed by physician",
     description:
       "Supports detox pathways, respiratory wellness, mood, and inflammation — physician-reviewed before shipping.",
+    image: {
+      src: "/images/nac-vial.png",
+      alt: "NAC injection homekit vial",
+    },
   },
 ]
 

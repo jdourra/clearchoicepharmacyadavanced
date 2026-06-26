@@ -8,6 +8,7 @@ export type WeightLossProgram = {
   subtitle: string
   description: string
   features: string[]
+  image: { src: string; alt: string }
   pricing: { plan: WeightLossBillingPlan; pricePerMonth: number; totalBilled: number; badge?: string }[]
 }
 
@@ -19,6 +20,10 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     description:
       "Physician-guided compounded semaglutide with a structured titration schedule tailored to your metabolic goals.",
     features: ["Weekly dosing protocol", "Structured titration", "Ongoing provider oversight", "Pharmacy fulfillment"],
+    image: {
+      src: "/images/semaglutide-vial.png",
+      alt: "Compounded Semaglutide injection vial",
+    },
     pricing: [
       { plan: "monthly", pricePerMonth: 189, totalBilled: 189 },
       { plan: "quarterly", pricePerMonth: 169, totalBilled: 507, badge: "Best Value" },
@@ -31,6 +36,10 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     description:
       "Advanced dual-pathway therapy for patients who may benefit from combined GLP-1 and GIP receptor activation.",
     features: ["Weekly dosing protocol", "Dual-action support", "Provider-guided titration", "Pharmacy fulfillment"],
+    image: {
+      src: "/images/tirzepatide-vial.png",
+      alt: "Compounded Tirzepatide injection vial",
+    },
     pricing: [
       { plan: "monthly", pricePerMonth: 255, totalBilled: 255 },
       { plan: "quarterly", pricePerMonth: 229, totalBilled: 687, badge: "Best Value" },
@@ -54,7 +63,11 @@ export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   frequency: "Once per week",
   description:
     "Physician-reviewed lipotropic injection kit for metabolic support, energy, and fat metabolism — compounded at Clear Choice Pharmacy.",
-}
+  image: {
+    src: "/images/mic-b12-vial.png",
+    alt: "MIC + B12 lipotropic injection vial",
+  },
+} satisfies RejuvenationVial & { image: { src: string; alt: string } }
 
 export const MIC_B12_HOW_IT_WORKS = [
   {

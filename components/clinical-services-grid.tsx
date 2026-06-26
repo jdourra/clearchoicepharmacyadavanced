@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,7 +19,24 @@ export function ClinicalServicesGrid({ className, showViewAll = true }: Clinical
           const Icon = service.icon
           return (
             <Link key={service.href} href={service.href}>
-              <Card className="p-6 h-full border-2 hover:border-primary hover:shadow-lg transition-all group">
+              <Card
+                className={cn(
+                  "h-full border-2 hover:border-primary hover:shadow-lg transition-all group overflow-hidden",
+                  service.image ? "p-0" : "p-6",
+                )}
+              >
+                {service.image && (
+                  <div className="relative aspect-[16/10] w-full bg-muted/40">
+                    <Image
+                      src={service.image.src}
+                      alt={service.image.alt}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
+                )}
+                <div className={service.image ? "p-6" : undefined}>
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <Icon className="h-8 w-8 text-primary shrink-0" />
                   <Badge
@@ -36,6 +54,7 @@ export function ClinicalServicesGrid({ className, showViewAll = true }: Clinical
                   {service.cta}
                   <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
+                </div>
               </Card>
             </Link>
           )

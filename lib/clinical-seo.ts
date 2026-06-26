@@ -67,17 +67,12 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer combination troches for premature ejaculation?",
     answer:
-      "Yes. Clear Choice Pharmacy compounds combination troches for premature ejaculation—pairing PDE5 support with PE-focused adjunct ingredients tailored by your physician. Select the PE combination option during your online intake.",
+      "Yes. PE support can be added as an optional enhancement when you checkout with Sildenafil, Tadalafil, or our dual combination troche—pairing PDE5 support with PE-focused adjunct ingredients tailored by your physician.",
   },
   {
     question: "Which ED troche formulations do you offer?",
     answer:
-      "You can select from six compounded troche options during intake: Sildenafil, Tadalafil, Sildenafil + Tadalafil combination, premature ejaculation combination, Apomorphine for low libido, and Oxytocin for low libido and connection support.",
-  },
-  {
-    question: "Which Apomorphine or Oxytocin troche should I choose?",
-    answer:
-      "Yes. Apomorphine and Oxytocin are available as their own troche formulation cards during intake—choose the one that matches your goals. Your provider will confirm the appropriate protocol after review.",
+      "You can select from three compounded troche options during intake: Sildenafil, Tadalafil, and Sildenafil + Tadalafil combination. Optional add-ons for Oxytocin, Apomorphine, and PE support are available at checkout.",
   },
   {
     question: "Can you combine Sildenafil and Tadalafil?",

@@ -11,11 +11,13 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
+import { Card, CardContent } from "@/components/ui/card"
+import Link from "next/link"
 import { SITE_URL, AREA_SERVED, PHARMACY_ADDRESS, PHARMACY_PHONE } from "@/lib/clinical-seo"
-
+import { COMMON_SPECIALTY_MEDICATIONS } from "@/lib/specialty-pharmacy-catalog"
 
 export const metadata: Metadata = {
-  title: "Specialty Pharmacy Care | All Insurances Accepted - Prior Auth & Copay Support",
+  title: "Specialty Medicine Program | All Insurances Accepted - Prior Auth & Copay Support",
   description:
     "Clear Choice Pharmacy simplifies specialty medications. All major insurance accepted. In-house Prior Authorization team expedites clinical approvals. Copay assistance programs can lower out-of-pocket costs to as low as $0. Transfer your specialty care to Novi, MI.",
   keywords: [
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/specialty-pharmacy`,
   },
   openGraph: {
-    title: "Specialized Pharmacy Care. All Insurances Accepted.",
+    title: "Specialty Medicine Program. All Insurances Accepted.",
     description:
       "Expedited in-house Prior Authorizations & copay support for specialty medications. Transfer your specialty care to Clear Choice Pharmacy.",
     url: `${SITE_URL}/specialty-pharmacy`,
@@ -100,13 +102,37 @@ export default function SpecialtyPharmacyPage() {
     <ClinicalLandingShell jsonLd={[faqJsonLd, serviceJsonLd]}>
       <PremiumHero
         badge="Clear Choice Specialty Pharmacy"
-        headline="Specialized Pharmacy Care. All Insurances Accepted."
+        headline="Specialty Medicine Program. All Insurances Accepted."
         subheadline="Expedited in-house Prior Authorizations & copay assistance navigation."
         description="Getting your specialty medications shouldn't mean fighting with your insurance company or facing massive out-of-pocket costs. We accept all major insurance plans and handle the heavy lifting for you and your doctor."
         highlight="✓ In-house PA team · Copay assistance · All major insurances accepted"
-        primaryCta={{ label: "Call to Transfer Care", href: "tel:248-987-6182" }}
-        secondaryCta={{ label: "Browse Medications", href: "/medications" }}
+        primaryCta={{ label: "Start Your Transfer", href: "/specialty-pharmacy/start" }}
+        secondaryCta={{ label: "Browse Medications", href: "#medications", scrollTo: "#medications" }}
       />
+
+      <ContentSection id="medications" tone="muted">
+        <SectionIntro
+          eyebrow="Common Therapies"
+          title="Most Prescribed Specialty Medications"
+          description="We support fulfillment, prior authorization, and copay assistance for a wide range of high-cost specialty therapies. Below are among the most commonly prescribed medications our team handles."
+        />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {COMMON_SPECIALTY_MEDICATIONS.map((med) => (
+            <Link key={med.id} href={`/specialty-pharmacy/start?medication=${med.id}`}>
+              <Card className="border-slate-200 bg-white hover:border-sky-300 hover:shadow-md transition-all h-full">
+                <CardContent className="p-5">
+                  <p className="font-semibold text-slate-900 mb-1">{med.name}</p>
+                  <p className="text-sm text-slate-600 leading-relaxed">{med.indication}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+        <p className="text-sm text-slate-500 mt-8 max-w-3xl">
+          Don&apos;t see your medication listed? We work with many additional specialty therapies—call us to confirm
+          coverage and transfer your prescription.
+        </p>
+      </ContentSection>
 
       <TrustRibbon
         items={[
@@ -222,7 +248,7 @@ export default function SpecialtyPharmacyPage() {
         icon="phone"
         title="Ready to Transfer Your Specialty Care?"
         description="Get your specialty prescriptions filled without the insurance stress. Our team is ready to help today."
-        primaryCta={{ label: "Call (248) 987-6182", href: "tel:248-987-6182" }}
+        primaryCta={{ label: "Start Your Transfer", href: "/specialty-pharmacy/start" }}
         secondaryCta={{ label: "Browse Medications", href: "/medications" }}
       />
     </ClinicalLandingShell>

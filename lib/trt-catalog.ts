@@ -15,6 +15,7 @@ export type TrtProgram = {
     badge?: string
   }[]
   highlight?: string
+  image: { src: string; alt: string }
 }
 
 /** Competitive cash-pay TRT pricing — includes physician review, medication, supplies, and shipping. */
@@ -38,6 +39,10 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       { plan: "quarterly", pricePerMonth: 109, totalBilled: 327, badge: "Best Value" },
     ],
     highlight: "Most popular",
+    image: {
+      src: "/images/testosterone-cypionate-vial.png",
+      alt: "Testosterone Cypionate injection vial for TRT",
+    },
   },
   {
     id: "testosterone-cream",
@@ -57,6 +62,10 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       { plan: "monthly", pricePerMonth: 149, totalBilled: 149 },
       { plan: "quarterly", pricePerMonth: 129, totalBilled: 387, badge: "Best Value" },
     ],
+    image: {
+      src: "/images/testosterone-gel.png",
+      alt: "Testosterone gel tube and pump dispenser for topical TRT",
+    },
   },
   {
     id: "enclomiphene",
@@ -76,6 +85,10 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       { plan: "monthly", pricePerMonth: 99, totalBilled: 99 },
       { plan: "quarterly", pricePerMonth: 79, totalBilled: 237, badge: "Best Value" },
     ],
+    image: {
+      src: "/images/enclomiphene-tablets.png",
+      alt: "Enclomiphene citrate tablets for oral testosterone support",
+    },
   },
 ]
 

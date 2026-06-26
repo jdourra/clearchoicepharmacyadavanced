@@ -11,6 +11,7 @@ export interface ClinicalService {
   pathLabel: string
   cta: string
   icon: LucideIcon
+  image?: { src: string; alt: string }
 }
 
 export const CLINICAL_SERVICES: ClinicalService[] = [
@@ -23,6 +24,10 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     pathLabel: "Provider review required",
     cta: "Buy now",
     icon: Scale,
+    image: {
+      src: "/images/weight-loss-card.png",
+      alt: "Patient showing weight loss progress with looser-fitting jeans",
+    },
   },
   {
     href: "/mens-health",
@@ -33,6 +38,10 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     pathLabel: "Provider review required",
     cta: "Buy now",
     icon: Heart,
+    image: {
+      src: "/images/mens-health-card.png",
+      alt: "Athlete running outdoors as part of an active men's health lifestyle",
+    },
   },
   {
     href: "/iv-rejuvenation",
@@ -43,6 +52,10 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     pathLabel: "Provider review required",
     cta: "Buy IV therapy",
     icon: Syringe,
+    image: {
+      src: "/images/iv-rejuvenation-card.png",
+      alt: "Pharmacist compounding IV therapy in a sterile pharmacy lab",
+    },
   },
   {
     href: "/specialty-pharmacy",
@@ -53,6 +66,10 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     pathLabel: "Insurance accepted",
     cta: "Transfer specialty care",
     icon: Stethoscope,
+    image: {
+      src: "/images/specialty-medicine-card.png",
+      alt: "Pharmacist in gloves dispensing specialty medication capsules",
+    },
   },
 ]
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import {
   BenefitList,
   ClinicalLandingShell,
@@ -84,8 +85,8 @@ export default function WeightLossPage() {
         description="Achieving long-term metabolic health requires premium clinical tools. Clear Choice Pharmacy compounds customized GLP-1 formulations designed to match your specific titration schedule—without insurance opacity or PBM middlemen."
         highlight="📊 Custom titration · Pharmacy-compounded · Licensed provider review"
         heroImage={{
-          src: "/images/weight-loss-glp-hero.png",
-          alt: "GLP-1 therapy hero image with Semaglutide and Tirzepatide vials",
+          src: "/images/weight-loss-hero.png",
+          alt: "Woman measuring waist progress during medical weight loss program",
         }}
         primaryCta={{
           label: "Shop GLP Programs",
@@ -94,6 +95,77 @@ export default function WeightLossPage() {
         }}
         secondaryCta={{ label: "Explore GLP Benefits", href: "#benefits", scrollTo: "#benefits" }}
       />
+
+      <ContentSection id="programs">
+        <SectionIntro
+          eyebrow="Choose Your Program"
+          title="Semaglutide, Tirzepatide & MIC + B12"
+          description="Buy online with transparent pricing. Provider review and pharmacy fulfillment included."
+        />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+          {WEIGHT_LOSS_PROGRAMS.map((program) => {
+            const pricing = program.pricing.find((p) => p.plan === "monthly") || program.pricing[0]
+            return (
+              <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
+                <div className="relative aspect-[4/3] w-full bg-muted/40">
+                  <Image
+                    src={program.image.src}
+                    alt={program.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-contain object-center p-3"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
+                </div>
+                <h3 className="text-xl font-bold">{program.name}</h3>
+                <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
+                <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
+                <div className="mt-5 pt-4 border-t">
+                  <p className="text-3xl font-bold text-primary">
+                    ${pricing.pricePerMonth}
+                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                  </p>
+                  <div className="mt-4">
+                    <ServiceBuyButton href={buildWeightLossIntakeUrl(program.id, pricing.plan)} fullWidth />
+                  </div>
+                </div>
+                </div>
+              </Card>
+            )
+          })}
+          <Card className="overflow-hidden p-0 flex flex-col h-full">
+            <div className="relative aspect-[4/3] w-full bg-muted/40">
+              <Image
+                src={MIC_B12_WEIGHT_LOSS.image.src}
+                alt={MIC_B12_WEIGHT_LOSS.image.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-contain object-center p-3"
+              />
+            </div>
+            <div className="p-6 flex flex-col flex-1">
+            <h3 className="text-xl font-bold">MIC + B12 Skinny Shot</h3>
+            <p className="text-sm text-primary font-medium mt-1">Lipotropic Metabolic Support</p>
+            <p className="text-sm text-muted-foreground mt-3 flex-1">{MIC_B12_WEIGHT_LOSS.description}</p>
+            <div className="mt-5 pt-4 border-t">
+              <p className="text-3xl font-bold text-primary">
+                ${MIC_B12_WEIGHT_LOSS.price}
+                <span className="text-base font-normal text-muted-foreground">/kit</span>
+              </p>
+              <div className="mt-4">
+                <ServiceBuyButton href={buildVialIntakeUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth />
+              </div>
+            </div>
+            </div>
+          </Card>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4">
+          Prescription required after provider review.
+        </p>
+      </ContentSection>
 
       <TrustRibbon
         items={[
@@ -127,55 +199,6 @@ export default function WeightLossPage() {
           description="Complete a secure online intake and access transparently priced GLP-1 programs through Clear Choice Pharmacy."
         />
         <BenefitList items={glpBenefits} />
-      </ContentSection>
-
-      <ContentSection id="programs">
-        <SectionIntro
-          eyebrow="Choose Your Program"
-          title="Semaglutide, Tirzepatide & MIC + B12"
-          description="Buy online with transparent pricing. Provider review and pharmacy fulfillment included."
-        />
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-          {WEIGHT_LOSS_PROGRAMS.map((program) => {
-            const pricing = program.pricing.find((p) => p.plan === "monthly") || program.pricing[0]
-            return (
-              <Card key={program.id} className="p-6 flex flex-col h-full">
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
-                </div>
-                <h3 className="text-xl font-bold">{program.name}</h3>
-                <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
-                <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
-                <div className="mt-5 pt-4 border-t">
-                  <p className="text-3xl font-bold text-primary">
-                    ${pricing.pricePerMonth}
-                    <span className="text-base font-normal text-muted-foreground">/mo</span>
-                  </p>
-                  <div className="mt-4">
-                    <ServiceBuyButton href={buildWeightLossIntakeUrl(program.id, pricing.plan)} fullWidth />
-                  </div>
-                </div>
-              </Card>
-            )
-          })}
-          <Card className="p-6 flex flex-col h-full">
-            <h3 className="text-xl font-bold">MIC + B12 Skinny Shot</h3>
-            <p className="text-sm text-primary font-medium mt-1">Lipotropic Metabolic Support</p>
-            <p className="text-sm text-muted-foreground mt-3 flex-1">{MIC_B12_WEIGHT_LOSS.description}</p>
-            <div className="mt-5 pt-4 border-t">
-              <p className="text-3xl font-bold text-primary">
-                ${MIC_B12_WEIGHT_LOSS.price}
-                <span className="text-base font-normal text-muted-foreground">/kit</span>
-              </p>
-              <div className="mt-4">
-                <ServiceBuyButton href={buildVialIntakeUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth />
-              </div>
-            </div>
-          </Card>
-        </div>
-        <p className="text-xs text-muted-foreground mt-4">
-          Prescription required after provider review.
-        </p>
       </ContentSection>
 
       <ContentSection id="mic-b12" tone="muted">

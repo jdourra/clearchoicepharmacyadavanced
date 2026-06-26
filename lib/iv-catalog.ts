@@ -7,6 +7,7 @@ export type IvPackage = {
   ingredients: string[]
   description: string
   note?: string
+  image: { src: string; alt: string }
 }
 
 export type IvBooster = {
@@ -30,6 +31,10 @@ export const IV_PACKAGES: IvPackage[] = [
     ingredients: ["Vitamin C", "B-Complex", "Vitamin B12", "Magnesium", "Calcium"],
     description:
       "The gold standard for overall wellness, immune support, chronic fatigue, and rapid cellular hydration.",
+    image: {
+      src: "/images/myers-cocktail-iv.png",
+      alt: "Standard Myers Cocktail IV infusion bag with vitamin C, B-complex, and magnesium",
+    },
   },
   {
     id: "symptom-relief",
@@ -43,6 +48,10 @@ export const IV_PACKAGES: IvPackage[] = [
     ],
     description:
       "Engineered for rapid relief from migraines, severe hangovers, food poisoning, or flu symptoms.",
+    image: {
+      src: "/images/iv-b-complex.png",
+      alt: "IV fluids and B-complex infusion bag for symptom relief and recovery",
+    },
   },
   {
     id: "immunity-glow",
@@ -51,6 +60,10 @@ export const IV_PACKAGES: IvPackage[] = [
     ingredients: ["High-dose Vitamin C", "Zinc", "Multi-trace elements", "Glutathione Push"],
     description:
       "Boost your immune defense, enhance skin radiance, and detoxify cells from the inside out.",
+    image: {
+      src: "/images/immunity-max-iv.png",
+      alt: "High-dose vitamin C, zinc, and glutathione IV bag for immunity and energy",
+    },
   },
   {
     id: "nad",
@@ -62,6 +75,10 @@ export const IV_PACKAGES: IvPackage[] = [
     description:
       "Advanced cellular repair that boosts cognitive function, accelerates metabolic energy, and fights aging.",
     note: "Requires 2-hour monitored infusion.",
+    image: {
+      src: "/images/nad-therapy-iv.png",
+      alt: "Premium anti-aging NAD+ therapy IV infusion bag",
+    },
   },
   {
     id: "hydration",
@@ -69,6 +86,10 @@ export const IV_PACKAGES: IvPackage[] = [
     price: 149,
     ingredients: ["1,000ml Normal Saline or Lactated Ringer's"],
     description: "Pure, rapid fluid restoration for athletes or general dehydration.",
+    image: {
+      src: "/images/basic-hydration-iv.png",
+      alt: "Basic hydration IV infusion bag with sterile saline",
+    },
   },
 ]
 

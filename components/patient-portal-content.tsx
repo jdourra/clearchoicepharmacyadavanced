@@ -69,6 +69,8 @@ function programIcon(type: ClinicalProgramSubmission["type"]) {
       return Syringe
     case "rejuvenation_vial":
       return FlaskConical
+    case "specialty_pharmacy":
+      return Stethoscope
   }
 }
 

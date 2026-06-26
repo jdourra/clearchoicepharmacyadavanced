@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
     const email = String(patients[0].email).toLowerCase()
 
-    const [userOrders, prescriptionRows, mensHealthRows, trtRows, weightLossRows, ivRows, vialRows] = await Promise.all([
+    const [userOrders, prescriptionRows, mensHealthRows, trtRows, weightLossRows, ivRows, vialRows, specialtyRows] = await Promise.all([
       orders.getOrdersForPatient(userId),
       sql(
         `SELECT rx.id, rx.status, rx.quantity_prescribed, rx.refills_remaining, rx.prescriber_name, rx.created_at,
@@ -63,6 +63,13 @@ export async function GET(request: Request) {
       sql(
         `SELECT id, status, selected_vial, selected_vial_title, created_at
          FROM rejuvenation_vial_intakes
+         WHERE LOWER(email) = $1
+         ORDER BY created_at DESC`,
+        [email]
+      ).catch(() => []),
+      sql(
+        `SELECT id, status, selected_medication, request_type, created_at
+         FROM specialty_intake
          WHERE LOWER(email) = $1
          ORDER BY created_at DESC`,
         [email]
@@ -134,6 +141,15 @@ export async function GET(request: Request) {
             : undefined,
         submittedAt: String(row.created_at),
         href: "/iv-rejuvenation#vial-menu",
+      })),
+      ...specialtyRows.map((row: Record<string, unknown>) => ({
+        type: "specialty_pharmacy" as const,
+        id: String(row.id),
+        status: String(row.status),
+        title: "Specialty Medicine Program",
+        subtitle: row.selected_medication ? String(row.selected_medication) : undefined,
+        submittedAt: String(row.created_at),
+        href: "/specialty-pharmacy",
       })),
     ].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
 

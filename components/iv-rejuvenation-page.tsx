@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -205,28 +206,6 @@ export function IvRejuvenationPage() {
           </div>
         </section>
 
-        {/* Trust ribbon */}
-        <section className="border-b bg-slate-50">
-          <div className="container max-w-6xl mx-auto px-4 py-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {TRUST_ITEMS.map((item) => {
-                const Icon = item.icon
-                return (
-                  <div key={item.title} className="flex gap-4 items-start">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">{item.title}</p>
-                      <p className="text-sm text-slate-600 mt-1">{item.description}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* IV Menu */}
         <section id="iv-menu" className="py-16 md:py-20 bg-white scroll-mt-20">
           <div className="container max-w-6xl mx-auto px-4">
@@ -247,11 +226,20 @@ export function IvRejuvenationPage() {
                 <Card
                   key={pkg.id}
                   className={cn(
-                    "flex flex-col border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300",
+                    "flex flex-col overflow-hidden p-0 border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300",
                     selectedPackage?.id === pkg.id && "ring-2 ring-sky-500 border-sky-300",
                   )}
                 >
-                  <CardHeader className="space-y-3">
+                  <div className="relative aspect-[4/3] w-full bg-slate-50">
+                    <Image
+                      src={pkg.image.src}
+                      alt={pkg.image.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-contain object-center p-3"
+                    />
+                  </div>
+                  <CardHeader className="space-y-3 px-6 pt-6">
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="font-bold text-lg leading-tight text-slate-900">{pkg.title}</h3>
                       {pkg.badge && (
@@ -263,7 +251,7 @@ export function IvRejuvenationPage() {
                     <p className="text-3xl font-bold text-sky-600">${pkg.price}</p>
                     <p className="text-xs text-slate-500">+ ${IV_TRAVEL_FEE} mobile dispatch at checkout</p>
                   </CardHeader>
-                  <CardContent className="flex-1 space-y-4">
+                  <CardContent className="flex-1 space-y-4 px-6">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
                         Key Ingredients
@@ -284,7 +272,7 @@ export function IvRejuvenationPage() {
                       </p>
                     )}
                   </CardContent>
-                  <CardFooter className="flex flex-col gap-2">
+                  <CardFooter className="flex flex-col gap-2 px-6 pb-6">
                     <Button
                       className="w-full bg-slate-900 hover:bg-slate-800"
                       onClick={() => openBooking(pkg)}
@@ -318,8 +306,17 @@ export function IvRejuvenationPage() {
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
               {REJUVENATION_VIALS.map((vial) => (
-                <Card key={vial.id} className="flex flex-col border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="space-y-3">
+                <Card key={vial.id} className="flex flex-col overflow-hidden p-0 border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300">
+                  <div className="relative aspect-[4/3] w-full bg-slate-50">
+                    <Image
+                      src={vial.image.src}
+                      alt={vial.image.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-contain object-center p-3"
+                    />
+                  </div>
+                  <CardHeader className="space-y-3 px-6 pt-6">
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="font-bold text-lg leading-tight text-slate-900">{vial.title}</h3>
                       {vial.badge && (
@@ -339,7 +336,7 @@ export function IvRejuvenationPage() {
                     <p className="text-3xl font-bold text-sky-600">${vial.price}</p>
                     <p className="text-xs text-slate-500">{vial.supply}</p>
                   </CardHeader>
-                  <CardContent className="flex-1 space-y-4">
+                  <CardContent className="flex-1 space-y-4 px-6">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
                         Key Ingredients
@@ -363,7 +360,7 @@ export function IvRejuvenationPage() {
                       </p>
                     )}
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="px-6 pb-6">
                     <Button className="w-full bg-sky-600 hover:bg-sky-500" asChild>
                       <Link href={`/iv-rejuvenation/vials/start?vial=${vial.id}`}>
                         Buy
@@ -373,6 +370,28 @@ export function IvRejuvenationPage() {
                   </CardFooter>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Trust ribbon */}
+        <section className="border-y bg-slate-50">
+          <div className="container max-w-6xl mx-auto px-4 py-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {TRUST_ITEMS.map((item) => {
+                const Icon = item.icon
+                return (
+                  <div key={item.title} className="flex gap-4 items-start">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">{item.title}</p>
+                      <p className="text-sm text-slate-600 mt-1">{item.description}</p>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>
