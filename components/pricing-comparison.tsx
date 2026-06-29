@@ -89,8 +89,8 @@ export function PricingComparison({
                   </div>
                   {isAuthenticated ? (
                     <Button asChild className="w-full">
-                      <Link href={`/prescriptions/submit?medication=${medicationId}&quantity=${qty}`}>
-                        Submit Prescription
+                      <Link href={`/medications/${medicationId}`}>
+                        View medication & order
                       </Link>
                     </Button>
                   ) : (

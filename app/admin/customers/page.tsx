@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import type { Order, User } from "@/lib/auth-types"
+import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,15 +50,15 @@ export default function AdminCustomersPage() {
 
   const loadData = async () => {
     try {
-      const meRes = await fetch("/api/admin/me", { credentials: "include" })
+      const meRes = await staffAuthFetch("/api/admin/me")
       if (!meRes.ok) {
         router.push("/admin/login")
         return
       }
 
       const [customersRes, ordersRes] = await Promise.all([
-        fetch("/api/admin/customers", { credentials: "include" }),
-        fetch("/api/admin/orders", { credentials: "include" }),
+        staffAuthFetch("/api/admin/customers"),
+        staffAuthFetch("/api/admin/orders"),
       ])
 
       const allUsers: User[] = customersRes.ok ? (await customersRes.json()).users || [] : []
@@ -79,6 +80,7 @@ export default function AdminCustomersPage() {
 
   const handleSignOut = async () => {
     await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
+    clearStaffSession()
     router.push("/admin/login")
   }
 

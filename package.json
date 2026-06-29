@@ -8,7 +8,10 @@
     "lint": "eslint .",
     "start": "next start",
     "db:migrate:iv": "node scripts/run-migrations.mjs 017 018",
-    "db:migrate:intake": "node scripts/run-migrations.mjs 015 016 017 018 020"
+    "db:migrate:intake": "node scripts/run-migrations.mjs 015 016 017 018 020",
+    "db:migrate:orders": "node scripts/run-migrations.mjs 022 023 024",
+    "s3:setup": "node scripts/setup-s3-bucket.mjs",
+    "s3:verify": "node scripts/verify-s3-upload.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",

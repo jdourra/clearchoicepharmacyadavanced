@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import type { Order } from "@/lib/auth-types"
+import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -31,19 +32,19 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
-      const meRes = await fetch("/api/admin/me", { credentials: "include" })
+      const meRes = await staffAuthFetch("/api/admin/me")
       if (!meRes.ok) {
         router.push("/admin/login")
         return
       }
-      const ordersRes = await fetch("/api/admin/orders", { credentials: "include" })
+      const ordersRes = await staffAuthFetch("/api/admin/orders")
       if (ordersRes.ok) {
         const data = await ordersRes.json()
         const orderList: Order[] = data.orders || []
         setAllOrders(orderList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
       }
     } catch {
-      router.push("/admin/login")
+      // Keep the dashboard visible if orders fail to load after auth succeeds.
     } finally {
       setLoading(false)
     }
@@ -51,6 +52,7 @@ export default function AdminDashboard() {
 
   const handleSignOut = async () => {
     await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
+    clearStaffSession()
     router.push("/admin/login")
   }
 
@@ -96,6 +98,9 @@ export default function AdminDashboard() {
             </Link>
             <Link href="/admin/intakes" className="text-sm font-medium hover:text-primary transition-colors">
               Clinical Intakes
+            </Link>
+            <Link href="/admin/medications" className="text-sm font-medium hover:text-primary transition-colors">
+              Medications
             </Link>
             <Link href="/admin/orders" className="text-sm font-medium hover:text-primary transition-colors">
               Orders
@@ -169,7 +174,7 @@ export default function AdminDashboard() {
             </Card>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-4 mb-8">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
             <Link href="/admin/orders">
               <Card className="hover:border-primary cursor-pointer transition-colors h-full">
                 <CardContent className="flex flex-col items-center justify-center py-6">
@@ -200,6 +205,15 @@ export default function AdminDashboard() {
                   <FileText className="h-8 w-8 text-primary mb-2" />
                   <p className="font-medium">Clinical Intakes</p>
                   <p className="text-xs text-muted-foreground mt-1">Dr. Dourra review queue</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/admin/medications">
+              <Card className="hover:border-primary cursor-pointer transition-colors h-full">
+                <CardContent className="flex flex-col items-center justify-center py-6">
+                  <Pill className="h-8 w-8 text-primary mb-2" />
+                  <p className="font-medium">Medication Catalog</p>
+                  <p className="text-xs text-muted-foreground mt-1">Add, edit, or deactivate drugs</p>
                 </CardContent>
               </Card>
             </Link>

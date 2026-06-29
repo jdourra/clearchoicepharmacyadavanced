@@ -6,8 +6,11 @@ export async function POST(request: Request) {
     const { email, password } = await request.json()
     const { staff, sessionId } = await staffAuth.signIn(email, password)
 
-    return NextResponse.json({ staff, sessionId })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 401 })
+    const response = NextResponse.json({ staff, sessionId })
+    response.headers.append("Set-Cookie", staffAuth.buildCookieHeader(sessionId))
+    return response
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Invalid email or password"
+    return NextResponse.json({ error: message }, { status: 401 })
   }
 }

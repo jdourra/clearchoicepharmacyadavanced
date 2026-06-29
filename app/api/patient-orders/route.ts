@@ -1,17 +1,31 @@
 import { NextResponse } from "next/server"
 import { orders } from "@/lib/auth"
+import { createTelemedicineIntakeForOrder } from "@/lib/order-prescription-admin"
 import { getUserIdFromRequest } from "@/lib/server-session"
 
 export async function POST(request: Request) {
   try {
     const userId = await getUserIdFromRequest(request)
-    const { items, total_amount, delivery_method, notes } = await request.json()
+    const { items, total_amount, delivery_method, notes, prescription_method } = await request.json()
     const orderItems = (items || []).map((item: any) => ({
       drug_name: item.medication_name || item.drug_name || "Unknown",
       quantity: item.quantity || 1,
       price: item.unit_price || item.price || 0,
     }))
-    const order = await orders.createOrder(userId, orderItems, total_amount || 0, delivery_method || "pickup", notes || "")
+    const method = prescription_method ? String(prescription_method) : null
+    const order = await orders.createOrder(
+      userId,
+      orderItems,
+      total_amount || 0,
+      delivery_method || "pickup",
+      notes || "",
+      method
+    )
+
+    if (order && method === "telemedicine") {
+      await createTelemedicineIntakeForOrder(order.id, userId)
+    }
+
     return NextResponse.json({ order })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

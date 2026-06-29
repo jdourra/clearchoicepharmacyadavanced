@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pill, Lock } from "lucide-react"
 import Link from "next/link"
+import { saveStaffSession } from "@/lib/staff-session"
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("")
@@ -24,11 +25,15 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/staff-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
       if (!res.ok) {
         throw new Error(data.error || "Invalid email or password")
+      }
+      if (data.sessionId) {
+        saveStaffSession(data.sessionId)
       }
       window.location.href = "/admin"
     } catch (err: any) {
@@ -91,14 +96,6 @@ export default function AdminLoginPage() {
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground text-center">
-                <strong>Demo Credentials:</strong><br />
-                Email: admin@clearchoicepharmacy.com<br />
-                Password: admin123
-              </p>
-            </div>
 
             <div className="mt-4 text-center">
               <Link href="/" className="text-sm text-muted-foreground hover:text-primary">

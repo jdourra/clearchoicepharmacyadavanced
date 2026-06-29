@@ -6,7 +6,7 @@ import { cookies } from "next/headers"
 export type { User, StaffUser, OrderItem, Order, Message } from "@/lib/auth-types"
 
 // Import types for local use
-import type { User, StaffUser, OrderItem, Order, Message } from "@/lib/auth-types"
+import type { User, StaffUser, OrderItem, Order, Message, PatientProfileSummary } from "@/lib/auth-types"
 
 // ─── Session helpers ─────────────────────────────────────
 
@@ -154,6 +154,20 @@ export const auth = {
 
 // ─── Staff auth ──────────────────────────────────────────
 
+function resolveStaffSessionIdFromRequest(request?: Request): string | null {
+  if (request) {
+    const authHeader = request.headers.get("authorization") || ""
+    if (authHeader.startsWith("Bearer ")) {
+      const token = authHeader.slice(7).trim()
+      if (token && token !== "null" && token !== "undefined") return token
+    }
+    const cookieHeader = request.headers.get("cookie") || ""
+    const match = cookieHeader.match(/staff_session_id=([^;]+)/)
+    if (match?.[1]) return match[1]
+  }
+  return null
+}
+
 export const staffAuth = {
   async signIn(email: string, password: string): Promise<{ staff: StaffUser; sessionId: string }> {
     const rows = await sql(
@@ -171,10 +185,15 @@ export const staffAuth = {
     return { staff: { id: staff.id, email: staff.email, full_name: staff.full_name, role: staff.role }, sessionId }
   },
 
-  async getCurrentStaff(): Promise<StaffUser | null> {
+  async getCurrentStaff(request?: Request): Promise<StaffUser | null> {
     try {
-      const cookieStore = await cookies()
-      const sessionId = cookieStore.get(STAFF_SESSION_COOKIE)?.value
+      let sessionId = resolveStaffSessionIdFromRequest(request)
+
+      if (!sessionId) {
+        const cookieStore = await cookies()
+        sessionId = cookieStore.get(STAFF_SESSION_COOKIE)?.value ?? null
+      }
+
       if (!sessionId) return null
 
       const session = await getSession(sessionId)
@@ -210,8 +229,8 @@ export const admin = {
     return { success: true, sessionId: result.sessionId }
   },
 
-  async isLoggedIn(): Promise<boolean> {
-    const staff = await staffAuth.getCurrentStaff()
+  async isLoggedIn(request?: Request): Promise<boolean> {
+    const staff = await staffAuth.getCurrentStaff(request)
     return staff?.role === "admin"
   },
 
@@ -230,19 +249,71 @@ export const admin = {
     const p = rows[0]
     return { id: p.id, email: p.email, name: `${p.first_name} ${p.last_name}`.trim(), created_at: p.created_at }
   },
+
+  async getPatientProfileById(patientId: string): Promise<PatientProfileSummary | null> {
+    const rows = await sql(
+      `SELECT id, email, first_name, last_name, phone, date_of_birth,
+              address_line1, address_line2, city, state, zip_code
+       FROM patients WHERE id = $1`,
+      [patientId]
+    )
+    if (rows.length === 0) return null
+    const p = rows[0]
+    return {
+      id: String(p.id),
+      email: String(p.email),
+      firstName: String(p.first_name || ""),
+      lastName: String(p.last_name || ""),
+      phone: p.phone != null ? String(p.phone) : null,
+      dob: p.date_of_birth != null ? String(p.date_of_birth) : null,
+      addressLine1: p.address_line1 != null ? String(p.address_line1) : null,
+      addressLine2: p.address_line2 != null ? String(p.address_line2) : null,
+      city: p.city != null ? String(p.city) : null,
+      state: p.state != null ? String(p.state) : null,
+      zip: p.zip_code != null ? String(p.zip_code) : null,
+    }
+  },
 }
 
 // ─── Orders ──────────────────────────────────────────────
 
+function mapOrderRow(r: Record<string, unknown>): Order {
+  return {
+    id: String(r.id),
+    order_number: String(r.order_number),
+    patient_id: String(r.patient_id),
+    items: (r.items as Order["items"])?.[0]?.drug_name ? (r.items as Order["items"]) : [],
+    total_amount: Number(r.total_amount),
+    status: String(r.status),
+    payment_status: String(r.payment_status),
+    payment_method: r.payment_method != null ? String(r.payment_method) : null,
+    payment_preference: r.payment_preference != null ? String(r.payment_preference) : null,
+    stripe_payment_intent_id:
+      r.stripe_payment_intent_id != null ? String(r.stripe_payment_intent_id) : null,
+    stripe_checkout_session_id:
+      r.stripe_checkout_session_id != null ? String(r.stripe_checkout_session_id) : null,
+    prescription_method: r.prescription_method != null ? String(r.prescription_method) : null,
+    notes: r.notes ? String(r.notes) : "",
+    created_at: String(r.created_at),
+  }
+}
+
 export const orders = {
-  async createOrder(patientId: string | null, items: OrderItem[], total: number, deliveryMethod: string, notes?: string): Promise<Order | null> {
+  async createOrder(
+    patientId: string | null,
+    items: OrderItem[],
+    total: number,
+    deliveryMethod: string,
+    notes?: string,
+    prescriptionMethod?: string | null
+  ): Promise<Order | null> {
     // Use crypto for collision-safe order numbers (timestamp + random hex)
     const randomHex = crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()
     const orderNumber = `CCP-${Date.now().toString(36).toUpperCase()}-${randomHex}`
 
     const rows = await sql(
-      "INSERT INTO orders (patient_id, order_number, status, total_amount, payment_method, payment_status, notes) VALUES ($1, $2, 'pending', $3, $4, 'unpaid', $5) RETURNING *",
-      [patientId, orderNumber, total, deliveryMethod, notes || ""]
+      "INSERT INTO orders (patient_id, order_number, status, total_amount, payment_method, payment_status, notes, prescription_method) VALUES ($1, $2, 'pending', $3, $4, 'unpaid', $5, $6) RETURNING *",
+      [patientId, orderNumber, total, deliveryMethod, notes || "", prescriptionMethod || null]
     )
     const order = rows[0]
 
@@ -254,9 +325,8 @@ export const orders = {
     }
 
     return {
-      id: order.id, order_number: order.order_number, patient_id: order.patient_id,
-      items, total_amount: Number(order.total_amount), status: order.status,
-      payment_status: order.payment_status, notes: order.notes || "", created_at: order.created_at,
+      ...mapOrderRow(order),
+      items,
     }
   },
 
@@ -267,12 +337,7 @@ export const orders = {
        WHERE o.patient_id = $1 GROUP BY o.id ORDER BY o.created_at DESC`,
       [patientId]
     )
-    return rows.map((r) => ({
-      id: r.id, order_number: r.order_number, patient_id: r.patient_id,
-      items: r.items?.[0]?.drug_name ? r.items : [],
-      total_amount: Number(r.total_amount), status: r.status,
-      payment_status: r.payment_status, notes: r.notes || "", created_at: r.created_at,
-    }))
+    return rows.map((r) => mapOrderRow(r))
   },
 
   async getAllOrders(limit = 200, offset = 0): Promise<Order[]> {
@@ -282,12 +347,7 @@ export const orders = {
        GROUP BY o.id ORDER BY o.created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset]
     )
-    return rows.map((r) => ({
-      id: r.id, order_number: r.order_number, patient_id: r.patient_id,
-      items: r.items?.[0]?.drug_name ? r.items : [],
-      total_amount: Number(r.total_amount), status: r.status,
-      payment_status: r.payment_status, notes: r.notes || "", created_at: r.created_at,
-    }))
+    return rows.map((r) => mapOrderRow(r))
   },
 
   async getOrderById(orderId: string): Promise<Order | null> {
@@ -298,17 +358,73 @@ export const orders = {
       [orderId]
     )
     if (rows.length === 0) return null
-    const r = rows[0]
-    return {
-      id: r.id, order_number: r.order_number, patient_id: r.patient_id,
-      items: r.items?.[0]?.drug_name ? r.items : [],
-      total_amount: Number(r.total_amount), status: r.status,
-      payment_status: r.payment_status, notes: r.notes || "", created_at: r.created_at,
-    }
+    return mapOrderRow(rows[0])
+  },
+
+  async getOrderForPatient(orderId: string, patientId: string): Promise<Order | null> {
+    const order = await orders.getOrderById(orderId)
+    if (!order || order.patient_id !== patientId) return null
+    return order
+  },
+
+  async saveCheckoutSession(orderId: string, sessionId: string): Promise<boolean> {
+    const rows = await sql(
+      "UPDATE orders SET stripe_checkout_session_id = $2, payment_preference = 'pay_now', updated_at = now() WHERE id = $1 RETURNING id",
+      [orderId, sessionId]
+    )
+    return rows.length > 0
+  },
+
+  async markOrderPaid(
+    orderId: string,
+    stripePaymentIntentId: string,
+    stripeCheckoutSessionId?: string | null
+  ): Promise<boolean> {
+    const rows = await sql(
+      `UPDATE orders SET
+         payment_status = 'paid',
+         payment_method = 'stripe',
+         payment_preference = 'pay_now',
+         stripe_payment_intent_id = $2,
+         stripe_checkout_session_id = COALESCE($3, stripe_checkout_session_id),
+         updated_at = now()
+       WHERE id = $1 AND payment_status != 'paid'
+       RETURNING id`,
+      [orderId, stripePaymentIntentId, stripeCheckoutSessionId || null]
+    )
+    return rows.length > 0
+  },
+
+  async setPaymentPreference(
+    orderId: string,
+    preference: "pay_by_phone" | "pay_now"
+  ): Promise<boolean> {
+    const paymentMethod = preference === "pay_by_phone" ? "phone" : null
+    const rows = await sql(
+      `UPDATE orders SET
+         payment_preference = $2,
+         payment_method = COALESCE($3, payment_method),
+         updated_at = now()
+       WHERE id = $1 RETURNING id`,
+      [orderId, preference, paymentMethod]
+    )
+    return rows.length > 0
   },
 
   async updateOrderStatus(orderId: string, status: string): Promise<boolean> {
     const rows = await sql("UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING id", [status, orderId])
+    return rows.length > 0
+  },
+
+  async updateOrderPrescription(
+    orderId: string,
+    prescriptionMethod: string,
+    notes: string
+  ): Promise<boolean> {
+    const rows = await sql(
+      `UPDATE orders SET prescription_method = $2, notes = $3, updated_at = now() WHERE id = $1 RETURNING id`,
+      [orderId, prescriptionMethod, notes]
+    )
     return rows.length > 0
   },
 }
@@ -316,18 +432,29 @@ export const orders = {
 // ─── Messaging ───────────────────────────────────────────
 
 export const messaging = {
-  async sendMessage(senderType: string, senderId: string, recipientType: string, recipientId: string | null, subject: string | null, body: string): Promise<Message> {
+  async sendMessage(
+    senderType: string,
+    senderId: string,
+    recipientType: string,
+    recipientId: string | null,
+    subject: string | null,
+    body: string,
+    orderId?: string | null
+  ): Promise<Message> {
     const rows = await sql(
-      "INSERT INTO messages (sender_type, sender_id, recipient_type, recipient_id, subject, body) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [senderType, senderId, recipientType, recipientId, subject, body]
+      `INSERT INTO messages (sender_type, sender_id, recipient_type, recipient_id, subject, body, order_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [senderType, senderId, recipientType, recipientId, subject, body, orderId || null]
     )
     return rows[0] as Message
   },
 
-  async getMessagesForUser(userId: string, userType: string): Promise<Message[]> {
+  async getMessagesForPatient(patientId: string): Promise<Message[]> {
     const rows = await sql(
-      "SELECT * FROM messages WHERE (recipient_id = $1 AND recipient_type = $2) OR (sender_id = $1 AND sender_type = $2) ORDER BY created_at DESC",
-      [userId, userType]
+      `SELECT * FROM messages
+       WHERE recipient_id = $1 AND recipient_type = 'patient'
+       ORDER BY created_at DESC`,
+      [patientId]
     )
     return rows as Message[]
   },

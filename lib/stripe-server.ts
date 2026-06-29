@@ -1,5 +1,6 @@
 import "server-only"
 import Stripe from "stripe"
+import type { OrderCheckoutLineItem } from "@/lib/order-payment"
 
 let stripeClient: Stripe | null = null
 
@@ -90,4 +91,56 @@ export async function cancelPaymentHold(paymentIntentId: string): Promise<boolea
   if (intent.status === "succeeded") return false
   const cancelled = await stripe.paymentIntents.cancel(paymentIntentId)
   return cancelled.status === "canceled"
+}
+
+/** Immediate capture for prescription order checkout. */
+export async function createOrderCheckoutSession(params: {
+  orderId: string
+  orderNumber: string
+  email: string
+  lineItems: OrderCheckoutLineItem[]
+  successUrl: string
+  cancelUrl: string
+}): Promise<{ sessionId: string; url: string }> {
+  const stripe = getStripe()
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: params.email,
+    line_items: params.lineItems.map((item) => ({
+      quantity: item.quantity,
+      price_data: {
+        currency: "usd",
+        unit_amount: item.amountCents,
+        product_data: { name: item.name },
+      },
+    })),
+    success_url: params.successUrl,
+    cancel_url: params.cancelUrl,
+    metadata: {
+      order_id: params.orderId,
+      order_number: params.orderNumber,
+      payment_type: "prescription_order",
+    },
+  })
+
+  if (!session.url) {
+    throw new Error("Stripe did not return a checkout URL")
+  }
+
+  return { sessionId: session.id, url: session.url }
+}
+
+export async function retrieveCheckoutSession(sessionId: string) {
+  const stripe = getStripe()
+  return stripe.checkout.sessions.retrieve(sessionId, {
+    expand: ["payment_intent"],
+  })
+}
+
+export function getPaymentIntentIdFromSession(
+  session: Stripe.Checkout.Session
+): string | null {
+  if (!session.payment_intent) return null
+  if (typeof session.payment_intent === "string") return session.payment_intent
+  return session.payment_intent.id
 }

@@ -3,27 +3,25 @@ import type { Metadata } from "next"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Clear Choice Pharmacy | Affordable Prescriptions & Specialty Pharmacy Care in Novi, MI",
+  title: "Clear Choice Pharmacy | Affordable Prescriptions & Pharmacy Care in Novi, MI",
   description:
-    "Clear Choice Pharmacy in Novi, MI offers affordable cash-pay prescriptions and specialized pharmacy care. All major insurances accepted for specialty medications. In-house Prior Authorization team and copay assistance support. Save up to 80% on generics or transfer your specialty care today.",
+    "Clear Choice Pharmacy in Novi, MI offers low cost prescription drugs, GLP-1 weight loss, men's health, mobile IV therapy, and specialty pharmacy care. Transparent cash-pay pricing and in-house prior authorization support.",
   keywords: [
+    "pharmacy Novi MI",
+    "low cost prescription drugs",
     "specialty pharmacy",
-    "specialty medications",
+    "GLP-1 weight loss",
+    "cash pay pharmacy",
     "prior authorization pharmacy",
     "copay assistance programs",
-    "all insurances accepted pharmacy",
-    "cheap prescription medications",
-    "affordable prescription drugs",
-    "cash pay pharmacy",
-    "Novi MI pharmacy",
   ],
   alternates: {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: "Clear Choice Pharmacy | Affordable Prescriptions & Specialty Pharmacy Care",
+    title: "Clear Choice Pharmacy | Affordable Prescriptions & Pharmacy Care",
     description:
-      "Cash-pay savings on generics plus specialized pharmacy care with expedited prior authorizations and copay support. All major insurances accepted.",
+      "Low cost prescriptions, clinical programs, and specialty pharmacy care with transparent pricing and prior authorization support.",
     url: SITE_URL,
     type: "website",
   },

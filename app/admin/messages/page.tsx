@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import type { Message } from "@/lib/auth-types"
+import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,12 +25,12 @@ export default function AdminMessagesPage() {
 
   const loadData = async () => {
     try {
-      const meRes = await fetch("/api/admin/me", { credentials: "include" })
+      const meRes = await staffAuthFetch("/api/admin/me")
       if (!meRes.ok) {
         router.push("/admin/login")
         return
       }
-      const messagesRes = await fetch("/api/admin/messages", { credentials: "include" })
+      const messagesRes = await staffAuthFetch("/api/admin/messages")
       if (messagesRes.ok) {
         const data = await messagesRes.json()
         const msgList: Message[] = data.messages || []
@@ -44,6 +45,7 @@ export default function AdminMessagesPage() {
 
   const handleSignOut = async () => {
     await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
+    clearStaffSession()
     router.push("/admin/login")
   }
 

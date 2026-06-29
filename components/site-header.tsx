@@ -57,13 +57,14 @@ export function SiteHeader() {
   }
 
   const medicationLinks = [
-    { href: "/", label: "Search medications" },
+    { href: "/prescriptions", label: "Low cost prescriptions" },
     { href: "/medications", label: "See how much your medications cost" },
     { href: "/pricing", label: "How pricing works" },
   ]
 
   const clinicalLinks = [
-    { href: "/services", label: "All clinical programs" },
+    { href: "/services", label: "All services" },
+    { href: "/prescriptions", label: "Low cost prescriptions" },
     { href: "/weight-loss", label: "GLP-1 weight loss" },
     { href: "/mens-health", label: "Men's health, ED & TRT" },
     { href: "/iv-rejuvenation", label: "IV rejuvenation" },
@@ -131,7 +132,7 @@ export function SiteHeader() {
                   ))}
 
                   <div className="px-3 pt-4 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Clinical services
+                    Services
                   </div>
                   {clinicalLinks.map((link) => (
                     <SheetClose asChild key={link.href}>
@@ -214,8 +215,8 @@ export function SiteHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-5">
-          <NavHoverMenu label="Medications" links={medicationLinks} menuClassName="w-52" />
-          <NavHoverMenu label="Clinical Services" links={clinicalLinks} menuClassName="w-56" />
+          <NavHoverMenu label="Medications" links={medicationLinks} menuClassName="w-56" />
+          <NavHoverMenu label="Services" links={clinicalLinks} menuClassName="w-56" />
           {mounted && user && (
             <Link href="/account" className="text-sm font-medium hover:text-primary transition-colors">
               Patient portal

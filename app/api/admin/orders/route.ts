@@ -3,7 +3,7 @@ import { staffAuth, orders } from "@/lib/auth"
 
 export async function GET(request: Request) {
   try {
-    const staff = await staffAuth.getCurrentStaff()
+    const staff = await staffAuth.getCurrentStaff(request)
     if (!staff || staff.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

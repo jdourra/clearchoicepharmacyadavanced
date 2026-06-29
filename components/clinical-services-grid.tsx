@@ -63,7 +63,7 @@ export function ClinicalServicesGrid({ className, showViewAll = true }: Clinical
       {showViewAll && (
         <p className="text-center text-sm text-muted-foreground">
           <Link href="/services" className="text-primary font-medium hover:underline">
-            View all clinical programs
+            View all services
           </Link>
         </p>
       )}

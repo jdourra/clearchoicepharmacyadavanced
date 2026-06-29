@@ -8,7 +8,7 @@ const VALID_ACTIONS: IntakeReviewAction[] = ["approve", "deny", "follow_up"]
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const staff = await staffAuth.getCurrentStaff()
+    const staff = await staffAuth.getCurrentStaff(request)
     if (!staff || staff.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

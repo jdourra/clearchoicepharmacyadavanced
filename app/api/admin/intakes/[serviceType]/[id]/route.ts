@@ -11,7 +11,7 @@ type RouteParams = { params: Promise<{ serviceType: string; id: string }> }
 
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
-    const staff = await staffAuth.getCurrentStaff()
+    const staff = await staffAuth.getCurrentStaff(request)
     if (!staff || staff.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

@@ -12,37 +12,8 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Upload, Check, Stethoscope, ArrowRightLeft } from "lucide-react"
 import Link from "next/link"
 import { authFetch } from "@/lib/session"
+import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { hydrateCartItems, type CartItem } from "@/lib/cart"
-
-function buildPrescriptionNotes(
-  prescriptionMethod: string,
-  options: {
-    doctorName: string
-    doctorPhone: string
-    transferRxNumbers: string
-    transferPharmacyName: string
-    transferPharmacyPhone: string
-    deliveryMethod: string
-  }
-) {
-  const { doctorName, doctorPhone, transferRxNumbers, transferPharmacyName, transferPharmacyPhone, deliveryMethod } =
-    options
-
-  if (prescriptionMethod === "eprescribe") {
-    return `Delivery: ${deliveryMethod}, Prescription: E-Prescribe, Doctor: ${doctorName}, Doctor Phone: ${doctorPhone}`
-  }
-
-  if (prescriptionMethod === "transfer") {
-    const rxNumbers = transferRxNumbers
-      .split(/[\n,]+/)
-      .map((n) => n.trim())
-      .filter(Boolean)
-      .join(", ")
-    return `Delivery: ${deliveryMethod}, Prescription: Transfer, RX Numbers: ${rxNumbers}, Pharmacy: ${transferPharmacyName}, Pharmacy Phone: ${transferPharmacyPhone}`
-  }
-
-  return `Delivery: ${deliveryMethod}, Prescription: Upload`
-}
 
 export default function CheckoutPage() {
   const [step, setStep] = useState(1)
@@ -139,6 +110,7 @@ export default function CheckoutPage() {
           items: orderItems,
           total_amount: total,
           delivery_method: deliveryMethod,
+          prescription_method: prescriptionMethod,
           notes: buildPrescriptionNotes(prescriptionMethod, {
             doctorName,
             doctorPhone,
@@ -154,6 +126,19 @@ export default function CheckoutPage() {
       console.log("[v0] Order response:", JSON.stringify(data))
       if (!res.ok || !data.order) {
         throw new Error(data.error || "Order creation failed")
+      }
+
+      if (prescriptionMethod === "upload" && prescriptionFile && data.order.id) {
+        const uploadForm = new FormData()
+        uploadForm.append("file", prescriptionFile)
+        const uploadRes = await authFetch(`/api/patient-orders/${data.order.id}/upload-prescription`, {
+          method: "POST",
+          body: uploadForm,
+        })
+        if (!uploadRes.ok) {
+          const uploadErr = await uploadRes.json().catch(() => ({}))
+          console.warn("[checkout] Prescription upload failed:", uploadErr.error)
+        }
       }
       window.sessionStorage.removeItem("cart")
       router.push(`/confirmation?orderId=${data.order.id}&orderNumber=${data.order.order_number}`)
@@ -191,7 +176,8 @@ export default function CheckoutPage() {
     (prescriptionMethod === "transfer" &&
       transferRxList.length > 0 &&
       !!transferPharmacyName.trim() &&
-      !!transferPharmacyPhone.trim())
+      !!transferPharmacyPhone.trim()) ||
+    prescriptionMethod === "telemedicine"
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -500,6 +486,29 @@ export default function CheckoutPage() {
                           )}
                         </div>
                       </div>
+
+                      <div className="flex items-start space-x-3 border rounded-lg p-4">
+                        <RadioGroupItem value="telemedicine" id="telemedicine" className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor="telemedicine" className="font-semibold cursor-pointer">
+                            Telemedicine visit ($40)
+                          </Label>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            No prescription yet? A Michigan physician will review your intake and e-prescribe if
+                            appropriate.
+                          </p>
+                          {prescriptionMethod === "telemedicine" && (
+                            <div className="mt-4 rounded-lg bg-muted/50 p-4 text-sm space-y-2">
+                              <p className="font-medium">What happens next</p>
+                              <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                                <li>Your order is placed and intake is sent for physician review</li>
+                                <li>Dr. Dourra or an affiliated provider reviews within 2–4 business hours</li>
+                                <li>If approved, your prescription is sent to Clear Choice Pharmacy</li>
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </RadioGroup>
 
                     <div className="flex gap-3">
@@ -610,6 +619,13 @@ export default function CheckoutPage() {
                           </p>
                           <p className="text-muted-foreground">
                             {"Pharmacy Phone: "}{transferPharmacyPhone}
+                          </p>
+                        </div>
+                      ) : prescriptionMethod === "telemedicine" ? (
+                        <div className="text-sm space-y-1">
+                          <p>Telemedicine visit — physician review required</p>
+                          <p className="text-muted-foreground">
+                            Intake will be reviewed by Dr. Dourra before prescribing.
                           </p>
                         </div>
                       ) : (

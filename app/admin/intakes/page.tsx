@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { staffAuthFetch } from "@/lib/staff-session"
 
 type IntakeRow = {
   serviceType: string
@@ -30,7 +31,7 @@ export default function AdminIntakesPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/admin/intakes?status=pending", { credentials: "include" })
+    staffAuthFetch("/api/admin/intakes?status=pending")
       .then(async (res) => {
         if (!res.ok) {
           router.push("/admin/login")

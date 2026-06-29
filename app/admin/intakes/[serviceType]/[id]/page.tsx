@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { staffAuthFetch } from "@/lib/staff-session"
 import { Loader2 } from "lucide-react"
 
 type PageProps = { params: Promise<{ serviceType: string; id: string }> }
@@ -35,7 +36,7 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
     params.then(({ serviceType: st, id: intakeId }) => {
       setServiceType(st)
       setId(intakeId)
-      fetch(`/api/admin/intakes/${st}/${intakeId}`, { credentials: "include" })
+      staffAuthFetch(`/api/admin/intakes/${st}/${intakeId}`)
         .then(async (res) => {
           if (!res.ok) {
             router.push("/admin/login")
@@ -53,9 +54,8 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
     setSubmitting(action)
     setError("")
     try {
-      const res = await fetch(`/api/admin/intakes/${serviceType}/${id}/review`, {
+      const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${id}/review`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, note: note || undefined }),
       })

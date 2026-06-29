@@ -29,8 +29,27 @@ export interface Order {
   total_amount: number
   status: string
   payment_status: string
+  payment_method?: string | null
+  payment_preference?: string | null
+  stripe_payment_intent_id?: string | null
+  stripe_checkout_session_id?: string | null
+  prescription_method?: string | null
   notes?: string
   created_at: string
+}
+
+export interface PatientProfileSummary {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone: string | null
+  dob: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
 }
 
 export interface Message {
@@ -42,5 +61,6 @@ export interface Message {
   subject: string | null
   body: string
   is_read: boolean
+  order_id?: string | null
   created_at: string
 }

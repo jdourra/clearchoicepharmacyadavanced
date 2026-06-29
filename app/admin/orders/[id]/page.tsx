@@ -1,9 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
-import type { Order, Message } from "@/lib/auth-types"
+import type { Order, PatientProfileSummary } from "@/lib/auth-types"
+import type { OrderPrescriptionDetails } from "@/lib/order-prescription"
+import {
+  buildPaymentRequestMessage,
+  buildPrescriptionReadyMessage,
+  resolveMessageBaseUrl,
+} from "@/lib/order-patient-message"
+import { messageSubjectForType } from "@/lib/patient-message-subjects"
+import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
+import { AdminOrderPrescriptionPanel } from "@/components/admin-order-prescription"
+import { AdminOrderPatientPanel } from "@/components/admin-order-patient"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -35,6 +45,9 @@ export default function AdminOrderDetailPage() {
   const orderId = params.id as string
 
   const [order, setOrder] = useState<Order | null>(null)
+  const [patient, setPatient] = useState<PatientProfileSummary | null>(null)
+  const [prescription, setPrescription] = useState<OrderPrescriptionDetails | null>(null)
+  const [staffId, setStaffId] = useState<string>("admin")
   const [loading, setLoading] = useState(true)
   const [messageType, setMessageType] = useState<string>("custom")
   const [customMessage, setCustomMessage] = useState("")
@@ -48,15 +61,20 @@ export default function AdminOrderDetailPage() {
 
   const loadData = async () => {
     try {
-      const meRes = await fetch("/api/admin/me", { credentials: "include" })
+      const meRes = await staffAuthFetch("/api/admin/me")
       if (!meRes.ok) {
         router.push("/admin/login")
         return
       }
-      const orderRes = await fetch(`/api/admin/orders/${orderId}`, { credentials: "include" })
+      const meData = await meRes.json()
+      if (meData.staff?.id) setStaffId(meData.staff.id)
+
+      const orderRes = await staffAuthFetch(`/api/admin/orders/${orderId}`)
       if (orderRes.ok) {
         const data = await orderRes.json()
         setOrder(data.order)
+        setPatient(data.patient || null)
+        setPrescription(data.prescription || null)
         if (data.order) {
           setPaymentAmount(data.order.total_amount?.toFixed(2) || "0")
         }
@@ -70,33 +88,54 @@ export default function AdminOrderDetailPage() {
 
   const handleSignOut = async () => {
     await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
+    clearStaffSession()
     router.push("/admin/login")
   }
 
   const handleStatusChange = async (newStatus: string) => {
     if (!order) return
-    await fetch(`/api/admin/orders/${order.id}`, {
+    await staffAuthFetch(`/api/admin/orders/${order.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ status: newStatus }),
     })
     setOrder({ ...order, status: newStatus })
   }
 
+  const messageBaseUrl = resolveMessageBaseUrl()
+
+  const templatedMessagePreview = useMemo(() => {
+    if (!order) return ""
+    if (messageType === "prescription_ready") {
+      return buildPrescriptionReadyMessage(order, paymentAmount, messageBaseUrl)
+    }
+    if (messageType === "payment_request") {
+      return buildPaymentRequestMessage(order, paymentAmount, messageBaseUrl)
+    }
+    return ""
+  }, [order, messageType, paymentAmount, messageBaseUrl])
+
   const handleSendMessage = async () => {
     if (!order) return
+
+    if (!order.patient_id) {
+      setSuccessMessage("")
+      alert("This order has no linked patient account. Messages can only be sent to registered patients.")
+      return
+    }
+
     setSending(true)
     setSuccessMessage("")
 
     let content = ""
+    let type = messageType
 
     switch (messageType) {
       case "prescription_ready":
-        content = `Your prescription is ready! The total cost is $${paymentAmount}. How would you like to pay? Please reply or call us at (248) 987-6182.`
+        content = buildPrescriptionReadyMessage(order, paymentAmount, messageBaseUrl)
         break
       case "payment_request":
-        content = `Payment request for Order #${order.order_number || order.id}. Amount due: $${paymentAmount}. Please complete your payment to proceed with your order.`
+        content = buildPaymentRequestMessage(order, paymentAmount, messageBaseUrl)
         break
       case "shipped":
         content = `Great news! Your prescription has been shipped. Order #${order.order_number || order.id}. You should receive it within 2-3 business days.`
@@ -108,25 +147,31 @@ export default function AdminOrderDetailPage() {
         break
       case "custom":
         content = customMessage
+        type = "custom"
         break
     }
 
     if (content) {
-      await fetch("/api/admin/messages", {
+      const res = await staffAuthFetch("/api/admin/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           senderType: "admin",
-          senderId: "admin",
+          senderId: staffId,
           recipientType: "patient",
           recipientId: order.patient_id,
-          subject: messageType,
+          subject: messageSubjectForType(type, order.order_number || order.id),
           body: content,
+          orderId: order.id,
         }),
       })
-      setSuccessMessage("Message sent successfully!")
-      setCustomMessage("")
+      if (res.ok) {
+        setSuccessMessage("Message sent to patient portal!")
+        setCustomMessage("")
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || "Failed to send message")
+      }
     }
 
     setSending(false)
@@ -246,14 +291,38 @@ export default function AdminOrderDetailPage() {
               <p className="text-muted-foreground mt-1">{new Date(order.created_at).toLocaleString()}</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={handlePrint}>
-                <Printer className="h-4 w-4 mr-2" />
-                Print Prescription
-              </Button>
+              {prescription?.method === "upload" && prescription.uploads.length > 0 ? (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const upload = prescription.uploads[0]
+                    const url = `/api/admin/orders/${order.id}/prescription-file?uploadId=${upload.id}`
+                    const win = window.open(url, "_blank")
+                    if (win) setTimeout(() => win.print(), 600)
+                  }}
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Print Prescription
+                </Button>
+              ) : (
+                <Button variant="outline" onClick={handlePrint}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Print Order Summary
+                </Button>
+              )}
             </div>
           </div>
 
+          {prescription && (
+            <div className="mb-6">
+              <AdminOrderPrescriptionPanel orderId={order.id} prescription={prescription} />
+            </div>
+          )}
+
           <div className="grid gap-6 lg:grid-cols-2">
+            <div className="space-y-6">
+              <AdminOrderPatientPanel patient={patient} patientId={order.patient_id} />
+
             <Card>
               <CardHeader>
                 <CardTitle>Order Details</CardTitle>
@@ -276,11 +345,22 @@ export default function AdminOrderDetailPage() {
                   </Select>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Payment</span>
+                  <div className="text-right space-y-1">
+                    <Badge variant="outline">{order.payment_status || "unpaid"}</Badge>
+                    {order.payment_preference && (
+                      <p className="text-xs text-muted-foreground">
+                        Preference: {order.payment_preference === "pay_by_phone" ? "Pay by phone" : "Pay now"}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total</span>
                   <span className="text-xl font-bold text-primary">${(order.total_amount || 0).toFixed(2)}</span>
                 </div>
 
-                {order.notes && (
+                {order.notes && prescription?.method === "unknown" && (
                   <div className="border-t pt-4 mt-4">
                     <h4 className="font-semibold mb-3">Order Notes</h4>
                     <div className="p-3 bg-muted rounded-lg text-sm whitespace-pre-wrap">{order.notes}</div>
@@ -303,11 +383,14 @@ export default function AdminOrderDetailPage() {
                 </div>
               </CardContent>
             </Card>
+            </div>
 
             <Card>
               <CardHeader>
                 <CardTitle>Send Message to Patient</CardTitle>
-                <CardDescription>Notify the patient about their prescription status</CardDescription>
+                <CardDescription>
+                  Messages appear in the patient&apos;s portal under Messages
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {successMessage && (
@@ -359,15 +442,25 @@ export default function AdminOrderDetailPage() {
                 </div>
 
                 {(messageType === "prescription_ready" || messageType === "payment_request") && (
-                  <div className="space-y-2">
-                    <Label>Amount ($)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={paymentAmount}
-                      onChange={(e) => setPaymentAmount(e.target.value)}
-                    />
-                  </div>
+                  <>
+                    <div className="space-y-2">
+                      <Label>Total override (optional)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        placeholder={order.total_amount?.toFixed(2) || "0.00"}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Medication costs are taken from the order items below. Override only if the total differs.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Message preview</Label>
+                      <Textarea value={templatedMessagePreview} readOnly rows={8} className="text-sm" />
+                    </div>
+                  </>
                 )}
 
                 {messageType === "custom" && (

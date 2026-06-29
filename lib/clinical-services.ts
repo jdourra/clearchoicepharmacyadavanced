@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { Heart, Scale, Stethoscope, Syringe } from "lucide-react"
+import { Heart, Pill, Scale, Stethoscope, Syringe } from "lucide-react"
 
 export type ServicePathType = "cash-pay" | "consultation" | "insurance"
 
@@ -15,6 +15,20 @@ export interface ClinicalService {
 }
 
 export const CLINICAL_SERVICES: ClinicalService[] = [
+  {
+    href: "/prescriptions",
+    title: "Low Cost Prescription Drugs",
+    description:
+      "Most common medications hover around $5 for a 30-day supply. Drug Cost + 15% + $5 dispensing fee—no insurance required.",
+    pathType: "cash-pay",
+    pathLabel: "Cash pay",
+    cta: "Look up prices",
+    icon: Pill,
+    image: {
+      src: "/images/low-cost-prescriptions-card.png",
+      alt: "Prescription bottle with pills next to a five dollar bill — most meds cost around $5",
+    },
+  },
   {
     href: "/weight-loss",
     title: "GLP-1 Medical Weight Loss",

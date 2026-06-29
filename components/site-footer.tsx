@@ -45,7 +45,7 @@ export function SiteFooter() {
             </div>
             <h3 className="font-semibold text-foreground">Prescription prices</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/prescriptions" className="text-muted-foreground hover:text-foreground transition-colors">
                 Search medications
               </Link>
               <Link href="/medications" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -58,10 +58,13 @@ export function SiteFooter() {
           </div>
 
           <div className="space-y-3 md:col-span-1">
-            <h3 className="font-semibold text-foreground">Clinical programs</h3>
+            <h3 className="font-semibold text-foreground">Services</h3>
             <div className="flex flex-col gap-2 text-sm">
               <Link href="/services" className="text-muted-foreground hover:text-foreground transition-colors">
-                All programs
+                All services
+              </Link>
+              <Link href="/prescriptions" className="text-muted-foreground hover:text-foreground transition-colors">
+                Low cost prescriptions
               </Link>
               <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
                 GLP-1 weight loss

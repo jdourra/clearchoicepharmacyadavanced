@@ -14,6 +14,8 @@ import {
   Stethoscope,
   FlaskConical,
   Activity,
+  CreditCard,
+  MessageSquare,
 } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,7 +27,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { authFetch, clearSession } from "@/lib/session"
 import toast from "react-hot-toast"
-import type { Order } from "@/lib/auth-types"
+import type { Order, Message } from "@/lib/auth-types"
+import { getOrderPayPath, isOrderPaid } from "@/lib/order-payment"
+import { prescriptionMethodLabel, type PrescriptionMethod } from "@/lib/order-prescription"
 import type {
   ClinicalProgramSubmission,
   PatientPortalData,
@@ -48,7 +52,7 @@ interface PatientProfile {
   created_at: string
 }
 
-const TAB_VALUES = ["overview", "orders", "prescriptions", "programs", "profile"] as const
+const TAB_VALUES = ["overview", "orders", "messages", "prescriptions", "programs", "profile"] as const
 
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
@@ -84,6 +88,7 @@ export function PatientPortalContent() {
 
   const [user, setUser] = useState<PatientProfile | null>(null)
   const [portal, setPortal] = useState<PatientPortalData | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(initialTab)
 
@@ -110,6 +115,12 @@ export function PatientPortalContent() {
         } else {
           setPortal({ orders: [], prescriptions: [], clinicalPrograms: [] })
         }
+
+        const messagesRes = await authFetch("/api/patient-messages")
+        if (messagesRes.ok) {
+          const msgData = await messagesRes.json()
+          setMessages(msgData.messages || [])
+        }
       } catch {
         router.push("/auth/login?redirect=/account")
       } finally {
@@ -133,6 +144,7 @@ export function PatientPortalContent() {
   const orders = portal?.orders ?? []
   const prescriptions = portal?.prescriptions ?? []
   const clinicalPrograms = portal?.clinicalPrograms ?? []
+  const unreadCount = messages.filter((m) => !m.is_read).length
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -151,6 +163,9 @@ export function PatientPortalContent() {
             <TabsList className="flex flex-wrap h-auto gap-1">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="orders">Orders ({orders.length})</TabsTrigger>
+              <TabsTrigger value="messages">
+                Messages{unreadCount > 0 ? ` (${unreadCount} new)` : messages.length > 0 ? ` (${messages.length})` : ""}
+              </TabsTrigger>
               <TabsTrigger value="prescriptions">Prescriptions ({prescriptions.length})</TabsTrigger>
               <TabsTrigger value="programs">Clinical programs ({clinicalPrograms.length})</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -197,11 +212,25 @@ export function PatientPortalContent() {
                 </Card>
                 <Card>
                   <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Messages</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-3xl font-bold">{messages.length}</p>
+                    {unreadCount > 0 && (
+                      <p className="text-sm text-primary font-medium">{unreadCount} unread</p>
+                    )}
+                    <Button variant="link" className="px-0 h-auto mt-1" onClick={() => setActiveTab("messages")}>
+                      View messages
+                    </Button>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Need a refill?</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Button asChild size="sm" className="w-full">
-                      <Link href="/">Search medications</Link>
+                      <Link href="/prescriptions">Search medications</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -217,7 +246,7 @@ export function PatientPortalContent() {
                       Cash-pay medication lookup and reordering.
                     </p>
                     <Button asChild variant="outline" className="w-full bg-transparent">
-                      <Link href="/">
+                      <Link href="/prescriptions">
                         Search medications
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
@@ -247,6 +276,18 @@ export function PatientPortalContent() {
               <OrdersTab orders={orders} />
             </TabsContent>
 
+            <TabsContent value="messages">
+              <MessagesTab
+                messages={messages}
+                onMarkRead={async (id) => {
+                  await authFetch(`/api/patient-messages/${id}/read`, { method: "PATCH" })
+                  setMessages((prev) =>
+                    prev.map((m) => (m.id === id ? { ...m, is_read: true } : m))
+                  )
+                }}
+              />
+            </TabsContent>
+
             <TabsContent value="prescriptions">
               <PrescriptionsTab prescriptions={prescriptions} />
             </TabsContent>
@@ -265,6 +306,71 @@ export function PatientPortalContent() {
   )
 }
 
+function MessagesTab({
+  messages,
+  onMarkRead,
+}: {
+  messages: Message[]
+  onMarkRead: (id: string) => Promise<void>
+}) {
+  if (messages.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-xl font-semibold mb-2">No messages yet</h3>
+          <p className="text-muted-foreground">
+            Updates from Clear Choice Pharmacy about your orders will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {messages.map((msg) => {
+        const showPay =
+          msg.order_id &&
+          (msg.subject?.toLowerCase().includes("payment") ||
+            msg.subject?.toLowerCase().includes("prescription ready"))
+        return (
+          <Card
+            key={msg.id}
+            className={!msg.is_read ? "border-primary/40 bg-primary/5" : undefined}
+            onClick={() => {
+              if (!msg.is_read) onMarkRead(msg.id)
+            }}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <CardTitle className="text-lg">{msg.subject || "Message from pharmacy"}</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {new Date(msg.created_at).toLocaleString()}
+                  </p>
+                </div>
+                {!msg.is_read && <Badge>New</Badge>}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
+              {showPay && msg.order_id && (
+                <Button asChild size="sm">
+                  <Link href={getOrderPayPath(msg.order_id)}>
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    View payment options
+                  </Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
 function OrdersTab({ orders }: { orders: Order[] }) {
   if (orders.length === 0) {
     return (
@@ -274,7 +380,7 @@ function OrdersTab({ orders }: { orders: Order[] }) {
           <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
           <p className="text-muted-foreground mb-6">Search a medication to see pricing and place an order.</p>
           <Button asChild>
-            <Link href="/">Search medications</Link>
+            <Link href="/prescriptions">Search medications</Link>
           </Button>
         </CardContent>
       </Card>
@@ -314,6 +420,39 @@ function OrdersTab({ orders }: { orders: Order[] }) {
                 </ul>
               </div>
             )}
+            {!isOrderPaid(order) && (
+              <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {order.payment_preference === "pay_by_phone"
+                    ? "We'll call you to collect payment."
+                    : "Pay now for faster processing, or wait for our pharmacy to call you."}
+                </p>
+                <Button asChild size="sm">
+                  <Link href={getOrderPayPath(order.id)}>
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Choose payment option
+                  </Link>
+                </Button>
+              </div>
+            )}
+            <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="text-sm text-muted-foreground">
+                {order.prescription_method ? (
+                  <span>
+                    Prescription:{" "}
+                    {prescriptionMethodLabel(order.prescription_method as PrescriptionMethod)}
+                  </span>
+                ) : (
+                  <span className="text-amber-700 font-medium">Prescription info needed</span>
+                )}
+              </div>
+              <Button asChild size="sm" variant="outline" className="bg-transparent">
+                <Link href={`/account/orders/${order.id}`}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Manage order & prescription
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -332,7 +471,7 @@ function PrescriptionsTab({ prescriptions }: { prescriptions: PortalPrescription
             Prescriptions from your doctor or clinical programs will appear here.
           </p>
           <Button asChild variant="outline" className="bg-transparent">
-            <Link href="/">Browse medications</Link>
+            <Link href="/prescriptions">Browse medications</Link>
           </Button>
         </CardContent>
       </Card>

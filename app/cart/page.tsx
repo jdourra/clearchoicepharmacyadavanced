@@ -93,7 +93,7 @@ export default function CartPage() {
               <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
               <p className="text-sm text-muted-foreground mb-8">Start shopping to add medications to your cart</p>
               <Button asChild>
-                <Link href="/">Search Medications</Link>
+                <Link href="/prescriptions">Search Medications</Link>
               </Button>
             </Card>
           </div>

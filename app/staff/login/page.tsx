@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pill } from "lucide-react"
+import { saveStaffSession } from "@/lib/staff-session"
 
 export default function StaffLoginPage() {
   const [email, setEmail] = useState("")
@@ -23,14 +24,17 @@ export default function StaffLoginPage() {
       const res = await fetch("/api/auth/staff-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
       if (!res.ok) {
         throw new Error(data.error || "Invalid staff credentials")
       }
-      document.cookie = `staff_session_id=${data.sessionId}; path=/; max-age=2592000; samesite=lax`
-      window.location.href = "/staff/dashboard"
+      if (data.sessionId) {
+        saveStaffSession(data.sessionId)
+      }
+      window.location.href = data.staff?.role === "admin" ? "/admin" : "/staff/dashboard"
     } catch (err: any) {
       setError(err.message)
       setIsLoading(false)
@@ -79,9 +83,6 @@ export default function StaffLoginPage() {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
-              </div>
-              <div className="mt-4 text-center text-xs text-muted-foreground">
-                {"Demo: admin@clearchoicepharmacy.com / admin123"}
               </div>
             </form>
           </CardContent>

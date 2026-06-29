@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Clinical Programs | Clear Choice Pharmacy",
+  title: "Our Services | Clear Choice Pharmacy",
   description:
-    "Clear Choice clinical programs in Novi and Metro Detroit: GLP-1 weight loss, men's health ED compounding, mobile IV rejuvenation, and specialty pharmacy care with prior authorization support.",
+    "Clear Choice Pharmacy services in Novi and Metro Detroit: low cost prescription drugs, GLP-1 weight loss, men's health ED compounding, mobile IV rejuvenation, and specialty pharmacy care with prior authorization support.",
   alternates: {
     canonical: `${SITE_URL}/services`,
   },
   openGraph: {
-    title: "Clinical Programs | Clear Choice Pharmacy",
+    title: "Our Services | Clear Choice Pharmacy",
     description:
-      "GLP-1 weight loss, ED troches, mobile IV therapy, and specialty medications—all from Clear Choice Pharmacy in Novi, MI.",
+      "Low cost prescriptions, GLP-1 weight loss, ED troches, mobile IV therapy, and specialty medications—all from Clear Choice Pharmacy in Novi, MI.",
     url: `${SITE_URL}/services`,
     type: "website",
   },
@@ -37,25 +37,15 @@ export default function ServicesPage() {
           </Button>
 
           <div className="text-center mb-10">
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Clear Choice Health</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Clinical Programs</h1>
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Clear Choice Pharmacy</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Specialized care compounded and coordinated by Clear Choice Pharmacy in Novi, MI. Each program has a
-              clear path—online consultation, provider review, and pharmacy fulfillment.
+              From everyday prescriptions at honest prices to specialized clinical programs—each service has a clear
+              path to care, coordinated by our Novi pharmacy team.
             </p>
           </div>
 
           <ClinicalServicesGrid showViewAll={false} />
-
-          <div className="mt-12 rounded-lg border bg-muted/40 p-6 text-center">
-            <h2 className="font-semibold text-lg mb-2">Looking for everyday prescription prices?</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Search 6,000+ medications with transparent cash-pay pricing—Drug Cost + 15% + $5.
-            </p>
-            <Button asChild>
-              <Link href="/">Search prescription prices</Link>
-            </Button>
-          </div>
         </div>
       </main>
       <SiteFooter />
