@@ -38,14 +38,19 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
       setId(intakeId)
       staffAuthFetch(`/api/admin/intakes/${st}/${intakeId}`)
         .then(async (res) => {
-          if (!res.ok) {
+          if (res.status === 401) {
             router.push("/admin/login")
+            return
+          }
+          if (!res.ok) {
+            const json = await res.json().catch(() => ({}))
+            setError(json.error || `Failed to load intake (${res.status})`)
             return
           }
           const json = await res.json()
           setData(json)
         })
-        .catch(() => router.push("/admin/login"))
+        .catch(() => setError("Failed to load intake. Check your connection and try again."))
         .finally(() => setLoading(false))
     })
   }, [params, router])
@@ -72,10 +77,23 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
     }
   }
 
-  if (loading || !data) {
+  if (loading) {
     return (
       <AdminShell title="Intake Review" description="Loading…">
         <p>Loading intake…</p>
+      </AdminShell>
+    )
+  }
+
+  if (!data) {
+    return (
+      <AdminShell title="Intake Review" description="Unable to load intake">
+        <div className="space-y-4">
+          <p className="text-destructive">{error || "Intake not found."}</p>
+          <Button variant="outline" asChild>
+            <Link href="/admin/intakes">← Back to queue</Link>
+          </Button>
+        </div>
       </AdminShell>
     )
   }
