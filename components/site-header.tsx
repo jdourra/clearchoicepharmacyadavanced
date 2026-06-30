@@ -236,13 +236,18 @@ export function SiteHeader() {
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent max-w-[140px]">
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent max-w-[min(100%,16rem)]">
                   <User className="h-4 w-4 shrink-0" />
-                  <span className="hidden sm:inline truncate">Welcome, {user.name.split(" ")[0]}</span>
+                  <span className="hidden sm:inline truncate" title={user.name}>
+                    Welcome, {user.name}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My account</DropdownMenuLabel>
+                <DropdownMenuLabel className="font-normal">
+                  <span className="block font-semibold truncate">{user.name}</span>
+                  <span className="block text-xs font-normal text-muted-foreground truncate">{user.email}</span>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/account">Patient portal</Link>

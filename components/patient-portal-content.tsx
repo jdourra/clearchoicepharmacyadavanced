@@ -153,7 +153,9 @@ export function PatientPortalContent() {
         <div className="container max-w-6xl mx-auto px-4">
           <div className="mb-8">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-1">Patient portal</p>
-            <h1 className="text-3xl md:text-4xl font-bold">Welcome, {user?.firstName || user?.name?.split(" ")[0]}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">
+              Welcome, {user?.name?.trim() || [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "there"}
+            </h1>
             <p className="text-muted-foreground mt-1">
               Orders, prescriptions, and clinical program updates in one place.
             </p>
