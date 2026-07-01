@@ -1,23 +1,11 @@
 import "server-only"
 import { randomUUID } from "crypto"
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
+import { getAwsCredentials, getIntakeIdBucket, getS3Client } from "@/lib/s3-env"
 
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
-
-function getS3Client() {
-  return new S3Client({
-    region: process.env.AWS_REGION || "us-east-1",
-    credentials:
-      process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          }
-        : undefined,
-  })
-}
 
 export async function storeSpecialtyPrescription(params: {
   file: Buffer
@@ -36,8 +24,8 @@ export async function storeSpecialtyPrescription(params: {
   const ext = params.originalName.split(".").pop()?.toLowerCase() || "pdf"
   const storageKey = `specialty-prescriptions/${params.intakePrefix}/rx-${randomUUID()}.${ext}`
 
-  const bucket = process.env.INTAKE_ID_BUCKET
-  if (bucket) {
+  const bucket = getIntakeIdBucket()
+  if (bucket && getAwsCredentials()) {
     const client = getS3Client()
     await client.send(
       new PutObjectCommand({

@@ -1,23 +1,16 @@
 import "server-only"
 import { randomUUID } from "crypto"
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
-import { envTrim, getIntakeIdBucket } from "@/lib/s3-env"
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
+import {
+  getAwsCredentials,
+  getAwsRegion,
+  getIntakeIdBucket,
+  getS3Client,
+  isS3Configured,
+} from "@/lib/s3-env"
 
 const MAX_BYTES = 10 * 1024 * 1024
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
-
-function getS3Client() {
-  return new S3Client({
-    region: envTrim("AWS_REGION") || "us-east-1",
-    credentials:
-      envTrim("AWS_ACCESS_KEY_ID") && envTrim("AWS_SECRET_ACCESS_KEY")
-        ? {
-            accessKeyId: envTrim("AWS_ACCESS_KEY_ID")!,
-            secretAccessKey: envTrim("AWS_SECRET_ACCESS_KEY")!,
-          }
-        : undefined,
-  })
-}
 
 export async function storeOrderPrescription(params: {
   file: Buffer
@@ -36,7 +29,7 @@ export async function storeOrderPrescription(params: {
   const storageKey = `order-prescriptions/${params.orderId}/rx-${randomUUID()}.${ext}`
   const bucket = getIntakeIdBucket()
 
-  if (bucket && envTrim("AWS_ACCESS_KEY_ID") && envTrim("AWS_SECRET_ACCESS_KEY")) {
+  if (bucket && getAwsCredentials()) {
     const client = getS3Client()
     await client.send(
       new PutObjectCommand({
@@ -60,6 +53,7 @@ export type PrescriptionFileFetchError =
   | "not_found"
   | "access_denied"
   | "empty"
+  | "credentials_invalid"
 
 export type PrescriptionFileFetchResult =
   | { ok: true; body: Buffer; contentType: string }
@@ -69,7 +63,7 @@ export async function fetchOrderPrescriptionFile(
   storageKey: string
 ): Promise<PrescriptionFileFetchResult> {
   const bucket = getIntakeIdBucket()
-  if (!bucket) return { ok: false, error: "bucket_not_configured" }
+  if (!bucket || !getAwsCredentials()) return { ok: false, error: "bucket_not_configured" }
 
   try {
     const client = getS3Client()
@@ -91,11 +85,18 @@ export async function fetchOrderPrescriptionFile(
     const name = error && typeof error === "object" && "name" in error ? String(error.name) : ""
     const code =
       error && typeof error === "object" && "Code" in error ? String((error as { Code: string }).Code) : ""
+    const message = error instanceof Error ? error.message : ""
     if (name === "NoSuchKey" || code === "NoSuchKey" || code === "NotFound") {
       return { ok: false, error: "not_found" }
     }
     if (name === "AccessDenied" || code === "AccessDenied") {
       return { ok: false, error: "access_denied" }
+    }
+    if (
+      message.includes("signature we calculated does not match") ||
+      message.includes("authorization header is malformed")
+    ) {
+      return { ok: false, error: "credentials_invalid" }
     }
     throw error
   }
@@ -104,7 +105,9 @@ export async function fetchOrderPrescriptionFile(
 export function prescriptionFileFetchErrorMessage(error: PrescriptionFileFetchError): string {
   switch (error) {
     case "bucket_not_configured":
-      return "S3 is not configured on this server. In Vercel → Environment Variables, add INTAKE_ID_BUCKET and AWS keys for Production and Preview, then redeploy. Preview URLs (*.vercel.app) do not use Production-only vars."
+      return "S3 is not configured on this server. In Vercel → Environment Variables, add INTAKE_ID_BUCKET and AWS keys for Production and Preview, then redeploy."
+    case "credentials_invalid":
+      return "AWS credentials are rejected by S3. In Vercel, set AWS_ACCESS_KEY_ID to only the AKIA... key (no prefix) and AWS_SECRET_ACCESS_KEY to only the 40-character secret. Then redeploy."
     case "not_found":
       return "Prescription file is missing in storage (often from orders placed before S3 was enabled). Re-upload the file below or ask the patient to re-upload from their account."
     case "access_denied":
@@ -113,3 +116,5 @@ export function prescriptionFileFetchErrorMessage(error: PrescriptionFileFetchEr
       return "Prescription file exists in S3 but returned empty. Re-upload the file."
   }
 }
+
+export { isS3Configured, getAwsRegion }

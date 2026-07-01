@@ -1,14 +1,14 @@
 import "server-only"
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { getAwsCredentials, getAwsRegion } from "@/lib/s3-env"
 
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
+function getSesClient() {
+  return new SESClient({
+    region: getAwsRegion(),
+    credentials: getAwsCredentials(),
+  })
+}
 
 export type IntakeDecision = "approved" | "denied" | "follow_up"
 
@@ -61,7 +61,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
 — Clear Choice Pharmacy`,
   }
 
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+  if (!getAwsCredentials()) {
     console.log("[telehealth/patient] SES not configured — patient notification log:")
     console.log(`To: ${to} | Decision: ${decision} | ${submissionId}`)
     console.log(bodies[decision])
@@ -69,7 +69,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
   }
 
   try {
-    await sesClient.send(
+    await getSesClient().send(
       new SendEmailCommand({
         Source: from,
         Destination: { ToAddresses: [to] },

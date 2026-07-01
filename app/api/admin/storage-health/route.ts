@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server"
-import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3"
+import {
+  DeleteObjectCommand,
+  HeadBucketCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3"
 import { staffAuth } from "@/lib/auth"
-import { envTrim, s3ConfigStatus } from "@/lib/s3-env"
+import {
+  awsCredentialDiagnostics,
+  getAwsCredentials,
+  getAwsRegion,
+  getIntakeIdBucket,
+  getS3Client,
+  s3ConfigStatus,
+} from "@/lib/s3-env"
 
 export async function GET(request: Request) {
   try {
@@ -11,35 +22,61 @@ export async function GET(request: Request) {
     }
 
     const status = s3ConfigStatus()
+    const credentials = awsCredentialDiagnostics()
     let bucketReachable: boolean | null = null
+    let writeTestOk: boolean | null = null
     let bucketError: string | null = null
 
-    if (status.configured && status.bucket) {
+    const bucket = getIntakeIdBucket()
+    const creds = getAwsCredentials()
+
+    if (status.configured && bucket && creds) {
+      const client = getS3Client()
       try {
-        const client = new S3Client({
-          region: envTrim("AWS_REGION") || "us-east-1",
-          credentials: {
-            accessKeyId: envTrim("AWS_ACCESS_KEY_ID")!,
-            secretAccessKey: envTrim("AWS_SECRET_ACCESS_KEY")!,
-          },
-        })
-        await client.send(new HeadBucketCommand({ Bucket: status.bucket }))
+        await client.send(new HeadBucketCommand({ Bucket: bucket }))
         bucketReachable = true
       } catch (err) {
         bucketReachable = false
         bucketError = err instanceof Error ? err.message : "HeadBucket failed"
       }
+
+      if (bucketReachable) {
+        const testKey = `__healthcheck__/api-${Date.now()}.txt`
+        try {
+          await client.send(
+            new PutObjectCommand({
+              Bucket: bucket,
+              Key: testKey,
+              Body: "storage-health",
+              ContentType: "text/plain",
+            })
+          )
+          await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: testKey }))
+          writeTestOk = true
+        } catch (err) {
+          writeTestOk = false
+          bucketError = err instanceof Error ? err.message : "Write test failed"
+        }
+      }
     }
 
     return NextResponse.json({
       ...status,
+      region: getAwsRegion(),
+      credentials,
       bucketReachable,
+      writeTestOk,
       bucketError,
-      hint: status.configured
-        ? bucketReachable
-          ? "S3 is configured. Prescription uploads should work after redeploy if you just added vars."
-          : "Env vars are set but bucket check failed — verify IAM and bucket name."
-        : "Add INTAKE_ID_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION in Vercel for Production and Preview, then Redeploy. Testing on *.vercel.app requires Preview env vars.",
+      hint:
+        credentials.issues.length > 0
+          ? credentials.issues.join(" ")
+          : writeTestOk
+            ? "S3 is fully working. Prescription uploads should succeed."
+            : bucketError?.includes("signature")
+              ? "Fix AWS_SECRET_ACCESS_KEY in Vercel — paste only the 40-character secret, no variable name or quotes."
+              : status.configured
+                ? "Env vars are set but S3 test failed — check IAM permissions and bucket name."
+                : "Add INTAKE_ID_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION in Vercel for Production and Preview, then Redeploy.",
     })
   } catch (error) {
     console.error("[admin/storage-health]", error)

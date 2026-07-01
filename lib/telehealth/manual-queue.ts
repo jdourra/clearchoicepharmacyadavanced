@@ -1,14 +1,14 @@
 import "server-only"
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import { getClinicianInboxEmail, PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { getAwsCredentials, getAwsRegion } from "@/lib/s3-env"
 
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-})
+function getSesClient() {
+  return new SESClient({
+    region: getAwsRegion(),
+    credentials: getAwsCredentials(),
+  })
+}
 
 export async function notifyClinicianQueue(params: {
   submissionId: string
@@ -19,7 +19,7 @@ export async function notifyClinicianQueue(params: {
 
   const from = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
 
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+  if (!getAwsCredentials()) {
     console.log("[telehealth/manual] SES not configured — clinician queue log:")
     console.log(`Submission: ${params.submissionId}`)
     console.log(`Subject: ${params.subject}`)
@@ -34,7 +34,7 @@ export async function notifyClinicianQueue(params: {
   }
 
   try {
-    await sesClient.send(
+    await getSesClient().send(
       new SendEmailCommand({
         Source: from,
         Destination: { ToAddresses: [to] },

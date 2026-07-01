@@ -1,24 +1,12 @@
 import "server-only"
 import { randomUUID } from "crypto"
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
+import { getAwsCredentials, getIntakeIdBucket, getS3Client } from "@/lib/s3-env"
 
 const MAX_ID_BYTES = 10 * 1024 * 1024 // 10 MB
 
-function getS3Client() {
-  return new S3Client({
-    region: process.env.AWS_REGION || "us-east-1",
-    credentials:
-      process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          }
-        : undefined,
-  })
-}
-
 export function isIdStorageConfigured(): boolean {
-  return Boolean(process.env.INTAKE_ID_BUCKET)
+  return Boolean(getIntakeIdBucket() && getAwsCredentials())
 }
 
 export async function storeIdDocument(params: {
@@ -35,8 +23,8 @@ export async function storeIdDocument(params: {
   const ext = params.originalName.split(".").pop()?.toLowerCase() || "jpg"
   const storageKey = `intake-ids/${params.intakePrefix}/${params.side}-${randomUUID()}.${ext}`
 
-  const bucket = process.env.INTAKE_ID_BUCKET
-  if (bucket) {
+  const bucket = getIntakeIdBucket()
+  if (bucket && getAwsCredentials()) {
     const client = getS3Client()
     await client.send(
       new PutObjectCommand({
