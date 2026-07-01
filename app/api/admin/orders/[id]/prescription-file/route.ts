@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
 import { sql } from "@/lib/db"
-import { fetchOrderPrescriptionFile } from "@/lib/order-prescription-storage"
+import {
+  fetchOrderPrescriptionFile,
+  prescriptionFileFetchErrorMessage,
+} from "@/lib/order-prescription-storage"
 
 export async function GET(
   request: NextRequest,
@@ -31,13 +34,10 @@ export async function GET(
     const fileName = rows[0].file_name ? String(rows[0].file_name) : "prescription"
 
     const file = await fetchOrderPrescriptionFile(storageKey)
-    if (!file) {
+    if (!file.ok) {
       return NextResponse.json(
-        {
-          error:
-            "Prescription file is not available in storage. Configure INTAKE_ID_BUCKET or re-upload from checkout.",
-        },
-        { status: 404 }
+        { error: prescriptionFileFetchErrorMessage(file.error), code: file.error },
+        { status: file.error === "bucket_not_configured" ? 503 : 404 }
       )
     }
 

@@ -54,25 +54,61 @@ export async function storeOrderPrescription(params: {
   return { storageKey, mode: "dev" }
 }
 
-export async function fetchOrderPrescriptionFile(storageKey: string): Promise<{
-  body: Buffer
-  contentType: string
-} | null> {
+export type PrescriptionFileFetchError =
+  | "bucket_not_configured"
+  | "not_found"
+  | "access_denied"
+  | "empty"
+
+export type PrescriptionFileFetchResult =
+  | { ok: true; body: Buffer; contentType: string }
+  | { ok: false; error: PrescriptionFileFetchError }
+
+export async function fetchOrderPrescriptionFile(
+  storageKey: string
+): Promise<PrescriptionFileFetchResult> {
   const bucket = process.env.INTAKE_ID_BUCKET
-  if (!bucket) return null
+  if (!bucket) return { ok: false, error: "bucket_not_configured" }
 
-  const client = getS3Client()
-  const response = await client.send(
-    new GetObjectCommand({
-      Bucket: bucket,
-      Key: storageKey,
-    })
-  )
+  try {
+    const client = getS3Client()
+    const response = await client.send(
+      new GetObjectCommand({
+        Bucket: bucket,
+        Key: storageKey,
+      })
+    )
 
-  if (!response.Body) return null
-  const bytes = await response.Body.transformToByteArray()
-  return {
-    body: Buffer.from(bytes),
-    contentType: response.ContentType || "application/octet-stream",
+    if (!response.Body) return { ok: false, error: "empty" }
+    const bytes = await response.Body.transformToByteArray()
+    return {
+      ok: true,
+      body: Buffer.from(bytes),
+      contentType: response.ContentType || "application/octet-stream",
+    }
+  } catch (error: unknown) {
+    const name = error && typeof error === "object" && "name" in error ? String(error.name) : ""
+    const code =
+      error && typeof error === "object" && "Code" in error ? String((error as { Code: string }).Code) : ""
+    if (name === "NoSuchKey" || code === "NoSuchKey" || code === "NotFound") {
+      return { ok: false, error: "not_found" }
+    }
+    if (name === "AccessDenied" || code === "AccessDenied") {
+      return { ok: false, error: "access_denied" }
+    }
+    throw error
+  }
+}
+
+export function prescriptionFileFetchErrorMessage(error: PrescriptionFileFetchError): string {
+  switch (error) {
+    case "bucket_not_configured":
+      return "S3 is not configured on this server. Add INTAKE_ID_BUCKET and AWS credentials in Vercel, then redeploy."
+    case "not_found":
+      return "Prescription file is missing in storage (often from orders placed before S3 was enabled). Re-upload the file below or ask the patient to re-upload from their account."
+    case "access_denied":
+      return "Cannot read prescription from S3. Check IAM permissions for s3:GetObject on your bucket."
+    case "empty":
+      return "Prescription file exists in S3 but returned empty. Re-upload the file."
   }
 }

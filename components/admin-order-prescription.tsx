@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef, useState } from "react"
 import Link from "next/link"
 import {
   Upload,
@@ -20,10 +21,12 @@ import type { OrderPrescriptionDetails } from "@/lib/order-prescription"
 import { prescriptionMethodLabel } from "@/lib/order-prescription"
 import { PRIMARY_PHYSICIAN, physicianReviewPendingLabel } from "@/lib/clinical-provider"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
+import { staffAuthFetch } from "@/lib/staff-session"
 
 type AdminOrderPrescriptionPanelProps = {
   orderId: string
   prescription: OrderPrescriptionDetails
+  onRefresh?: () => void
 }
 
 function MethodIcon({ method }: { method: OrderPrescriptionDetails["method"] }) {
@@ -41,8 +44,39 @@ function MethodIcon({ method }: { method: OrderPrescriptionDetails["method"] }) 
   }
 }
 
-export function AdminOrderPrescriptionPanel({ orderId, prescription }: AdminOrderPrescriptionPanelProps) {
+export function AdminOrderPrescriptionPanel({
+  orderId,
+  prescription,
+  onRefresh,
+}: AdminOrderPrescriptionPanelProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState("")
+
   const viewUrl = (uploadId: string) => `/api/admin/orders/${orderId}/prescription-file?uploadId=${uploadId}`
+
+  const handleAdminUpload = async (file: File) => {
+    setUploading(true)
+    setUploadError("")
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await staffAuthFetch(`/api/admin/orders/${orderId}/upload-prescription`, {
+        method: "POST",
+        body: formData,
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed")
+      }
+      onRefresh?.()
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed")
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }
 
   const handlePrintUpload = (uploadId: string) => {
     const url = viewUrl(uploadId)
@@ -75,6 +109,33 @@ export function AdminOrderPrescriptionPanel({ orderId, prescription }: AdminOrde
       <CardContent className="space-y-6">
         {prescription.method === "upload" && (
           <div className="space-y-4">
+            <div className="rounded-lg border border-dashed p-4 space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Upload or replace the prescription file (JPG, PNG, or PDF, max 10MB). Use this if the
+                order was placed before S3 storage was enabled.
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,application/pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void handleAdminUpload(file)
+                }}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {uploading ? "Uploading…" : "Upload / replace prescription"}
+              </Button>
+              {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
+            </div>
             {prescription.uploads.length > 0 ? (
               prescription.uploads.map((upload) => (
                 <div

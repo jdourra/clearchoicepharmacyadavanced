@@ -315,7 +315,11 @@ export default function AdminOrderDetailPage() {
 
           {prescription && (
             <div className="mb-6">
-              <AdminOrderPrescriptionPanel orderId={order.id} prescription={prescription} />
+              <AdminOrderPrescriptionPanel
+                orderId={order.id}
+                prescription={prescription}
+                onRefresh={loadData}
+              />
             </div>
           )}
 

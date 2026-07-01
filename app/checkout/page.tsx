@@ -138,6 +138,10 @@ export default function CheckoutPage() {
         if (!uploadRes.ok) {
           const uploadErr = await uploadRes.json().catch(() => ({}))
           console.warn("[checkout] Prescription upload failed:", uploadErr.error)
+          alert(
+            uploadErr.error ||
+              "Order was created but the prescription file could not be saved. Please re-upload from your account."
+          )
         }
       }
       window.sessionStorage.removeItem("cart")

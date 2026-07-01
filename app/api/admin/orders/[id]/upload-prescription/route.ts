@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { orders } from "@/lib/auth"
+import { orders, staffAuth } from "@/lib/auth"
 import { savePrescriptionUpload } from "@/lib/order-prescription-admin"
 import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { storeOrderPrescription } from "@/lib/order-prescription-storage"
-import { getUserIdFromRequest } from "@/lib/server-session"
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -12,10 +11,13 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = await getUserIdFromRequest(request)
-    const { id: orderId } = await params
+    const staff = await staffAuth.getCurrentStaff(request)
+    if (!staff || staff.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-    const order = userId ? await orders.getOrderForPatient(orderId, userId) : null
+    const { id: orderId } = await params
+    const order = await orders.getOrderById(orderId)
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
@@ -43,7 +45,7 @@ export async function POST(
       return NextResponse.json(
         {
           error:
-            "S3 is not configured on this server. Prescription could not be saved. Contact support or try again later.",
+            "S3 is not configured on this server. Add INTAKE_ID_BUCKET and AWS credentials, then redeploy.",
         },
         { status: 503 }
       )
@@ -51,7 +53,7 @@ export async function POST(
 
     await savePrescriptionUpload({
       orderId,
-      patientId: userId,
+      patientId: order.patient_id,
       storageKey: stored.storageKey,
       fileName: file.name,
     })
@@ -60,9 +62,9 @@ export async function POST(
     const notes = buildPrescriptionNotes("upload", { deliveryMethod })
     await orders.updateOrderPrescription(orderId, "upload", notes)
 
-    return NextResponse.json({ success: true, storageKey: stored.storageKey, mode: stored.mode })
+    return NextResponse.json({ success: true, storageKey: stored.storageKey })
   } catch (error) {
-    console.error("[patient-orders/upload-prescription]", error)
+    console.error("[admin/orders/upload-prescription]", error)
     const message = error instanceof Error ? error.message : "Upload failed"
     return NextResponse.json({ error: message }, { status: 500 })
   }
