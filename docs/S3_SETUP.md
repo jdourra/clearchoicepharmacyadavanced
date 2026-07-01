@@ -125,3 +125,9 @@ If you prefer not to run the script:
 ## HIPAA note
 
 S3 can be used in a HIPAA context when covered by a **BAA with AWS**. Enable logging, restrict IAM, and avoid public buckets. This setup keeps objects private and encrypted at rest; work with your compliance advisor for full HIPAA program requirements.
+
+---
+
+## Email (SES)
+
+Patient intake notifications use **Amazon SES** (separate from S3). See [SES_SETUP.md](./SES_SETUP.md).
