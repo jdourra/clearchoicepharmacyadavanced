@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from "react"
-import Link from "next/link"
 import {
   Upload,
   Stethoscope,
@@ -78,14 +77,41 @@ export function AdminOrderPrescriptionPanel({
     }
   }
 
-  const handlePrintUpload = (uploadId: string) => {
-    const url = viewUrl(uploadId)
-    const win = window.open(url, "_blank")
-    if (win) {
-      win.onload = () => {
-        setTimeout(() => win.print(), 500)
+  const openPrescriptionFile = async (uploadId: string, print = false) => {
+    try {
+      const res = await staffAuthFetch(viewUrl(uploadId))
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        const message =
+          data.error ||
+          "Could not load prescription. Add INTAKE_ID_BUCKET on Vercel and re-upload the file using the button above."
+        setUploadError(message)
+        alert(message)
+        return
       }
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const win = window.open(objectUrl, "_blank")
+      if (!win) {
+        URL.revokeObjectURL(objectUrl)
+        alert("Pop-up blocked. Allow pop-ups for this site to view the prescription.")
+        return
+      }
+      if (print) {
+        setTimeout(() => {
+          win.print()
+        }, 600)
+      }
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000)
+    } catch {
+      const message = "Could not load prescription file."
+      setUploadError(message)
+      alert(message)
     }
+  }
+
+  const handlePrintUpload = (uploadId: string) => {
+    void openPrescriptionFile(uploadId, true)
   }
 
   return (
@@ -152,11 +178,14 @@ export function AdminOrderPrescriptionPanel({
                     </Badge>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline" size="sm" className="bg-transparent">
-                      <Link href={viewUrl(upload.id)} target="_blank">
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        View
-                      </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent"
+                      onClick={() => void openPrescriptionFile(upload.id)}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View
                     </Button>
                     <Button
                       variant="default"
