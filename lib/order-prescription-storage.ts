@@ -1,18 +1,19 @@
 import "server-only"
 import { randomUUID } from "crypto"
 import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { envTrim, getIntakeIdBucket } from "@/lib/s3-env"
 
 const MAX_BYTES = 10 * 1024 * 1024
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
 function getS3Client() {
   return new S3Client({
-    region: process.env.AWS_REGION || "us-east-1",
+    region: envTrim("AWS_REGION") || "us-east-1",
     credentials:
-      process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+      envTrim("AWS_ACCESS_KEY_ID") && envTrim("AWS_SECRET_ACCESS_KEY")
         ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            accessKeyId: envTrim("AWS_ACCESS_KEY_ID")!,
+            secretAccessKey: envTrim("AWS_SECRET_ACCESS_KEY")!,
           }
         : undefined,
   })
@@ -33,9 +34,9 @@ export async function storeOrderPrescription(params: {
 
   const ext = params.originalName.split(".").pop()?.toLowerCase() || "pdf"
   const storageKey = `order-prescriptions/${params.orderId}/rx-${randomUUID()}.${ext}`
-  const bucket = process.env.INTAKE_ID_BUCKET
+  const bucket = getIntakeIdBucket()
 
-  if (bucket) {
+  if (bucket && envTrim("AWS_ACCESS_KEY_ID") && envTrim("AWS_SECRET_ACCESS_KEY")) {
     const client = getS3Client()
     await client.send(
       new PutObjectCommand({
@@ -50,7 +51,7 @@ export async function storeOrderPrescription(params: {
     return { storageKey, mode: "s3" }
   }
 
-  console.warn(`[order-rx] INTAKE_ID_BUCKET not set — recorded key only: ${storageKey}`)
+  console.warn(`[order-rx] S3 not configured — set INTAKE_ID_BUCKET and AWS keys (Vercel → redeploy)`)
   return { storageKey, mode: "dev" }
 }
 
@@ -67,7 +68,7 @@ export type PrescriptionFileFetchResult =
 export async function fetchOrderPrescriptionFile(
   storageKey: string
 ): Promise<PrescriptionFileFetchResult> {
-  const bucket = process.env.INTAKE_ID_BUCKET
+  const bucket = getIntakeIdBucket()
   if (!bucket) return { ok: false, error: "bucket_not_configured" }
 
   try {
