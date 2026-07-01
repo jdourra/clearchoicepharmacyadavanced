@@ -152,6 +152,14 @@ export default function AdminOrderDetailPage() {
     }
 
     if (content) {
+      if (!order.patient_id || order.patient_id === "null") {
+        alert(
+          "This order is not linked to a patient account. Ask the customer to place orders while logged in, or contact them by email directly."
+        )
+        setSending(false)
+        return
+      }
+
       const res = await staffAuthFetch("/api/admin/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -166,7 +174,14 @@ export default function AdminOrderDetailPage() {
         }),
       })
       if (res.ok) {
-        setSuccessMessage("Message sent to patient portal!")
+        const data = await res.json().catch(() => ({}))
+        if (data.emailed) {
+          setSuccessMessage("Message sent to patient portal and email!")
+        } else {
+          setSuccessMessage(
+            "Message sent to patient portal. Email was not sent — patient can view it at /account → Messages."
+          )
+        }
         setCustomMessage("")
       } else {
         const data = await res.json().catch(() => ({}))

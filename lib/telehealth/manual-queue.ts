@@ -1,14 +1,8 @@
 import "server-only"
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
+import { SendEmailCommand } from "@aws-sdk/client-ses"
 import { getClinicianInboxEmail, PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { getAwsCredentials, getAwsRegion } from "@/lib/s3-env"
-
-function getSesClient() {
-  return new SESClient({
-    region: getAwsRegion(),
-    credentials: getAwsCredentials(),
-  })
-}
+import { getAwsCredentials } from "@/lib/s3-env"
+import { getSesClient } from "@/lib/ses-client"
 
 export async function notifyClinicianQueue(params: {
   submissionId: string

@@ -281,7 +281,7 @@ function mapOrderRow(r: Record<string, unknown>): Order {
   return {
     id: String(r.id),
     order_number: String(r.order_number),
-    patient_id: String(r.patient_id),
+    patient_id: r.patient_id != null ? String(r.patient_id) : "",
     items: (r.items as Order["items"])?.[0]?.drug_name ? (r.items as Order["items"]) : [],
     total_amount: Number(r.total_amount),
     status: String(r.status),
@@ -465,9 +465,14 @@ export const messaging = {
 
   async getMessagesForPatient(patientId: string): Promise<Message[]> {
     const rows = await sql(
-      `SELECT * FROM messages
-       WHERE recipient_id = $1 AND recipient_type = 'patient'
-       ORDER BY created_at DESC`,
+      `SELECT DISTINCT m.*
+       FROM messages m
+       LEFT JOIN orders o ON o.id = m.order_id
+       WHERE (
+         (m.recipient_id = $1 AND m.recipient_type = 'patient')
+         OR o.patient_id::text = $1
+       )
+       ORDER BY m.created_at DESC`,
       [patientId]
     )
     return rows as Message[]
