@@ -50,11 +50,15 @@ async function main() {
   const accessKey = process.env.AWS_ACCESS_KEY_ID
   const secretKey = process.env.AWS_SECRET_ACCESS_KEY
   const from = process.env.SES_SENDER_EMAIL
-  const to =
+  const to = (
     parseToArg() ||
     process.env.SES_VERIFY_TO ||
     process.env.DR_DOURRA_EMAIL ||
-    process.env.TELEHEALTH_CLINICIAN_EMAIL
+    process.env.TELEHEALTH_CLINICIAN_EMAIL ||
+    ""
+  )
+    .trim()
+    .toLowerCase()
 
   if (!accessKey || !secretKey) {
     console.error("Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env.local")

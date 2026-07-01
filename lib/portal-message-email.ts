@@ -13,6 +13,7 @@ export async function emailPatientPortalMessage(params: {
 }): Promise<{ emailed: boolean; error?: string }> {
   const from = envTrim("SES_SENDER_EMAIL") || "intake@clearchoicepharmacy.com"
   const { to, patientName, subject, body, orderId } = params
+  const recipient = to.trim().toLowerCase()
 
   if (!getAwsCredentials()) {
     return { emailed: false, error: "SES not configured" }
@@ -39,7 +40,7 @@ Questions? Call (248) 987-6182 or reply to this email.
     await getSesClient().send(
       new SendEmailCommand({
         Source: from,
-        Destination: { ToAddresses: [to] },
+        Destination: { ToAddresses: [recipient] },
         Message: {
           Subject: { Data: subject, Charset: "UTF-8" },
           Body: { Text: { Data: text, Charset: "UTF-8" } },

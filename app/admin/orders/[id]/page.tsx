@@ -178,9 +178,15 @@ export default function AdminOrderDetailPage() {
         if (data.emailed) {
           setSuccessMessage("Message sent to patient portal and email!")
         } else {
-          setSuccessMessage(
-            "Message sent to patient portal. Email was not sent — patient can view it at /account → Messages."
-          )
+          const emailHint = data.emailError
+            ? ` Email failed: ${data.emailError}`
+            : " Email was not sent."
+          setSuccessMessage(`Message saved to patient portal.${emailHint} Patient can also check /account → Messages.`)
+          if (data.emailError) {
+            alert(
+              `Portal message saved, but email was not delivered:\n\n${data.emailError}\n\nIf SES is in sandbox mode, verify the patient's email in AWS SES or request production access.`
+            )
+          }
         }
         setCustomMessage("")
       } else {
