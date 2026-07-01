@@ -1,0 +1,2 @@
+-- Patient portal messages: sender_type and recipient_type must be 'patient' or 'staff'.
+-- Admin users send as sender_type = 'staff' (see lib/auth.ts messaging.sendMessage).

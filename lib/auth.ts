@@ -431,6 +431,12 @@ export const orders = {
 
 // ─── Messaging ───────────────────────────────────────────
 
+function normalizeMessageActorType(type: string): string {
+  // DB check constraint allows only patient | staff (admin users send as staff).
+  if (type === "admin") return "staff"
+  return type
+}
+
 export const messaging = {
   async sendMessage(
     senderType: string,
@@ -444,7 +450,15 @@ export const messaging = {
     const rows = await sql(
       `INSERT INTO messages (sender_type, sender_id, recipient_type, recipient_id, subject, body, order_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [senderType, senderId, recipientType, recipientId, subject, body, orderId || null]
+      [
+        normalizeMessageActorType(senderType),
+        senderId,
+        normalizeMessageActorType(recipientType),
+        recipientId,
+        subject,
+        body,
+        orderId || null,
+      ]
     )
     return rows[0] as Message
   },

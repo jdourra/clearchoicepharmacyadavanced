@@ -156,7 +156,7 @@ export default function AdminOrderDetailPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          senderType: "admin",
+          senderType: "staff",
           senderId: staffId,
           recipientType: "patient",
           recipientId: order.patient_id,
