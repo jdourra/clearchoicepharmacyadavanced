@@ -39,7 +39,7 @@ export async function GET(request: Request) {
         ? bucketReachable
           ? "S3 is configured. Prescription uploads should work after redeploy if you just added vars."
           : "Env vars are set but bucket check failed — verify IAM and bucket name."
-        : "Add INTAKE_ID_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION in Vercel → Production, then Redeploy.",
+        : "Add INTAKE_ID_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION in Vercel for Production and Preview, then Redeploy. Testing on *.vercel.app requires Preview env vars.",
     })
   } catch (error) {
     console.error("[admin/storage-health]", error)

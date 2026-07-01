@@ -93,6 +93,8 @@ In [Vercel](https://vercel.com) → your project → **Settings** → **Environm
 - `AWS_REGION`
 - `INTAKE_ID_BUCKET`
 
+Enable **Production** and **Preview** (preview deploys use `*.vercel.app` and do not inherit Production-only vars).
+
 Redeploy after saving.
 
 ---

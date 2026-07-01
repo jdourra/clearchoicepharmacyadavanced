@@ -104,7 +104,7 @@ export async function fetchOrderPrescriptionFile(
 export function prescriptionFileFetchErrorMessage(error: PrescriptionFileFetchError): string {
   switch (error) {
     case "bucket_not_configured":
-      return "S3 is not configured on this server. Add INTAKE_ID_BUCKET and AWS credentials in Vercel, then redeploy."
+      return "S3 is not configured on this server. In Vercel → Environment Variables, add INTAKE_ID_BUCKET and AWS keys for Production and Preview, then redeploy. Preview URLs (*.vercel.app) do not use Production-only vars."
     case "not_found":
       return "Prescription file is missing in storage (often from orders placed before S3 was enabled). Re-upload the file below or ask the patient to re-upload from their account."
     case "access_denied":

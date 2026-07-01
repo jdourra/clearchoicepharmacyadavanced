@@ -45,7 +45,7 @@ export async function POST(
       return NextResponse.json(
         {
           error:
-            "S3 is not configured on this server. In Vercel → Settings → Environment Variables, add INTAKE_ID_BUCKET and AWS keys for Production, then Redeploy. Check /api/admin/storage-health while logged in as admin.",
+            "S3 is not configured on this server. In Vercel → Environment Variables, add INTAKE_ID_BUCKET and AWS keys for Production and Preview, then Redeploy. Preview URLs (*.vercel.app) need Preview env vars.",
         },
         { status: 503 }
       )
