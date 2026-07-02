@@ -19,6 +19,8 @@ export type IntakeReviewResult = {
   success: boolean
   status?: string
   paymentAction?: "captured" | "released" | "none" | "failed"
+  emailSent?: boolean
+  emailError?: string
   error?: string
 }
 
@@ -132,10 +134,13 @@ export async function reviewClinicalIntake(params: {
   const serviceLabel = SERVICE_LABELS[serviceType]
   const treatmentLabel = treatmentLabelFromDetail(serviceType, detail)
 
+  let emailSent = false
+  let emailError: string | undefined
+
   if (patientEmail) {
     const decision =
       action === "approve" ? "approved" : action === "deny" ? "denied" : "follow_up"
-    await notifyPatientIntakeDecision({
+    const emailResult = await notifyPatientIntakeDecision({
       to: patientEmail,
       patientName: patientName || "Patient",
       serviceLabel: `${serviceLabel} — ${treatmentLabel}`,
@@ -143,7 +148,11 @@ export async function reviewClinicalIntake(params: {
       decision,
       note,
     })
+    emailSent = emailResult.success
+    emailError = emailResult.error
+  } else {
+    emailError = "Patient email is missing on this intake."
   }
 
-  return { success: true, status: next, paymentAction }
+  return { success: true, status: next, paymentAction, emailSent, emailError }
 }

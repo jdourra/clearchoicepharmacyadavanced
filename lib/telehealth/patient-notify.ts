@@ -56,10 +56,16 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
   }
 
   if (!getAwsCredentials()) {
-    console.log("[telehealth/patient] SES not configured — patient notification log:")
-    console.log(`To: ${to} | Decision: ${decision} | ${submissionId}`)
-    console.log(bodies[decision])
-    return { success: true }
+    const message =
+      "SES is not configured on this server. Add AWS keys and SES_SENDER_EMAIL on Vercel, then redeploy."
+    console.error("[telehealth/patient]", message, { to, decision, submissionId })
+    return { success: false, error: message }
+  }
+
+  if (!process.env.SES_SENDER_EMAIL?.trim()) {
+    const message = "SES_SENDER_EMAIL is not set. Configure intake@clearchoicepharmacy.com on Vercel."
+    console.error("[telehealth/patient]", message, { to, decision, submissionId })
+    return { success: false, error: message }
   }
 
   try {
@@ -76,9 +82,13 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
     return { success: true }
   } catch (error) {
     console.error("[telehealth/patient] SES error:", error)
+    const raw = error instanceof Error ? error.message : "Failed to send patient notification"
+    const message = raw.includes("Email address is not verified")
+      ? `Patient email could not be reached: ${to} is not verified in AWS SES sandbox. Request SES production access or verify this address in SES.`
+      : raw
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to send patient notification",
+      error: message,
     }
   }
 }
