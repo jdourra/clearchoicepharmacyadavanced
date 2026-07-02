@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import {
   INJECTION_CONSENT_URLS,
   requiresSelfInjectionConsent,
+  show28DayExpiration,
   showTirzepatideAddendum,
   type InjectionConsentVariant,
   type InjectionTelehealthConsentValues,
@@ -22,6 +23,8 @@ type InjectionTelehealthConsentsProps = {
   programId?: string
   invalidFields?: Set<string>
   idPrefix?: string
+  /** When false, injection video copy omits external links (e.g. GLP until pharmacy publishes its own). */
+  showHowToInjectLink?: boolean
 }
 
 function isInvalid(invalidFields: Set<string> | undefined, field: string) {
@@ -67,9 +70,12 @@ export function InjectionTelehealthConsents({
   programId,
   invalidFields,
   idPrefix = "injection-consent",
+  showHowToInjectLink = Boolean(INJECTION_CONSENT_URLS.howToInject),
 }: InjectionTelehealthConsentsProps) {
   const selfInject = requiresSelfInjectionConsent(variant, programId)
   const tirzepatide = showTirzepatideAddendum(programId)
+  const showExpiration = show28DayExpiration(variant)
+  const howToInjectUrl = INJECTION_CONSENT_URLS.howToInject
 
   return (
     <div className="space-y-4">
@@ -91,16 +97,28 @@ export function InjectionTelehealthConsents({
           >
             <p className="font-semibold text-foreground">REQUIRED &quot;HOW TO&quot; VIDEO *</p>
             <p>
-              I have watched the video and know how to give myself an injection. The instructional video is available at{" "}
-              <a
-                href={INJECTION_CONSENT_URLS.howToInject}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline"
-              >
-                {INJECTION_CONSENT_URLS.howToInject}
-              </a>
-              .
+              I have watched the video and know how to give myself an injection.
+              {showHowToInjectLink && howToInjectUrl ? (
+                <>
+                  {" "}
+                  The instructional video is available at{" "}
+                  <a
+                    href={howToInjectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline"
+                  >
+                    {howToInjectUrl}
+                  </a>
+                  .
+                </>
+              ) : (
+                <>
+                  {" "}
+                  I will use the injection instruction video provided by Clear Choice Pharmacy when it is made
+                  available to me.
+                </>
+              )}
             </p>
           </ConsentRow>
 
@@ -113,22 +131,34 @@ export function InjectionTelehealthConsents({
           >
             <p>
               I WILL FOLLOW THE INSTRUCTIONS AND DOSAGE AMOUNTS ON MY BOTTLE. I understand these injections are to be
-              self-injected in the area written on my bottle. I will watch the video to learn how to self-inject. I am
-              aware the instructional video is available at{" "}
-              <a
-                href={INJECTION_CONSENT_URLS.howToInject}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline"
-              >
-                {INJECTION_CONSENT_URLS.howToInject}
-              </a>
-              . I agree I will use the syringes and medication as directed.
+              self-injected in the area written on my bottle. I will watch the video to learn how to self-inject.
+              {showHowToInjectLink && howToInjectUrl ? (
+                <>
+                  {" "}
+                  I am aware the instructional video is available at{" "}
+                  <a
+                    href={howToInjectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline"
+                  >
+                    {howToInjectUrl}
+                  </a>
+                  .
+                </>
+              ) : (
+                <>
+                  {" "}
+                  I will follow injection instructions provided by Clear Choice Pharmacy.
+                </>
+              )}{" "}
+              I agree I will use the syringes and medication as directed.
             </p>
           </ConsentRow>
         </>
       )}
 
+      {showExpiration && (
       <ConsentRow
         id={`${idPrefix}-expiration`}
         field="understand28DayExpiration"
@@ -142,6 +172,7 @@ export function InjectionTelehealthConsents({
           expired and should be discarded by me.
         </p>
       </ConsentRow>
+      )}
 
       <ConsentRow
         id={`${idPrefix}-503a`}

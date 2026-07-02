@@ -9,13 +9,27 @@ import { cn } from "@/lib/utils"
 interface ClinicalServicesGridProps {
   className?: string
   showViewAll?: boolean
+  /** On /services, show Low Cost Prescription Drugs last. */
+  prescriptionLast?: boolean
 }
 
-export function ClinicalServicesGrid({ className, showViewAll = true }: ClinicalServicesGridProps) {
+function orderedServices(prescriptionLast: boolean) {
+  if (!prescriptionLast) return CLINICAL_SERVICES
+  const rest = CLINICAL_SERVICES.filter((s) => s.href !== "/prescriptions")
+  const prescription = CLINICAL_SERVICES.find((s) => s.href === "/prescriptions")
+  return prescription ? [...rest, prescription] : CLINICAL_SERVICES
+}
+
+export function ClinicalServicesGrid({
+  className,
+  showViewAll = true,
+  prescriptionLast = false,
+}: ClinicalServicesGridProps) {
+  const services = orderedServices(prescriptionLast)
   return (
     <div className={cn("space-y-6", className)}>
       <div className="grid sm:grid-cols-2 gap-4">
-        {CLINICAL_SERVICES.map((service) => {
+        {services.map((service) => {
           const Icon = service.icon
           return (
             <Link key={service.href} href={service.href}>

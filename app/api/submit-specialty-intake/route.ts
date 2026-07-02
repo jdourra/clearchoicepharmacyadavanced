@@ -3,6 +3,11 @@ import { auth } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import { SPECIALTY_INTAKE_STATUS } from "@/lib/specialty-pharmacy-catalog"
+import {
+  formatInjectionConsentsSummary,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 type SpecialtyIntakePayload = {
   patient: {
@@ -49,6 +54,7 @@ type SpecialtyIntakePayload = {
     additionalNotes: string
     fulfillmentPreference: string
   }
+  injectionConsents?: InjectionTelehealthConsentValues
 }
 
 function formatStaffSummary(data: SpecialtyIntakePayload, submissionId: string): string {
@@ -121,6 +127,11 @@ Fulfillment:         ${data.clinical.fulfillmentPreference || "—"}
 Additional notes:
 ${data.clinical.additionalNotes || "None"}
 
+───────────────────────────────────────────────────────────────────────────────
+                           TELEMEDICINE CONSENTS
+───────────────────────────────────────────────────────────────────────────────
+${data.injectionConsents ? formatInjectionConsentsSummary(data.injectionConsents) : "—"}
+
 ═══════════════════════════════════════════════════════════════════════════════
 `
 }
@@ -177,6 +188,7 @@ function parsePayload(raw: Record<string, unknown>): SpecialtyIntakePayload {
       additionalNotes: clinical.additionalNotes || "",
       fulfillmentPreference: clinical.fulfillmentPreference || "",
     },
+    injectionConsents: raw.injectionConsents as InjectionTelehealthConsentValues | undefined,
   }
 }
 
@@ -233,6 +245,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validationError }, { status: 400 })
     }
 
+    if (!data.injectionConsents) {
+      return NextResponse.json({ error: "Telemedicine consents are required before submission." }, { status: 400 })
+    }
+
+    const consentError = validateInjectionTelehealthConsents(data.injectionConsents, {
+      variant: "specialty-pharmacy",
+    })
+    if (!consentError.valid) {
+      return NextResponse.json({ error: consentError.message }, { status: 400 })
+    }
+
     let patientId = await getUserIdFromRequest(request)
     let sessionId: string | undefined
 
@@ -272,6 +295,15 @@ export async function POST(request: NextRequest) {
       data.medication.selectedMedication === "other"
         ? data.medication.medicationOther.trim()
         : data.medication.selectedMedication
+
+    const storedNotes = [
+      data.clinical.additionalNotes?.trim(),
+      data.injectionConsents
+        ? `--- Telemedicine consents ---\n${formatInjectionConsentsSummary(data.injectionConsents)}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n\n")
 
     try {
       await sql(
@@ -326,7 +358,7 @@ export async function POST(request: NextRequest) {
           data.clinical.prescriberName || null,
           data.clinical.prescriberPhone || null,
           data.clinical.allergies || null,
-          data.clinical.additionalNotes || null,
+          storedNotes || null,
           data.clinical.fulfillmentPreference,
           SPECIALTY_INTAKE_STATUS.pending,
         ]

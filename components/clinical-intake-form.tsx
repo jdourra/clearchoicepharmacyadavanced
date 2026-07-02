@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -40,6 +40,7 @@ import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
+import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 
 // ============================================
 // TYPE DEFINITIONS
@@ -320,8 +321,14 @@ export function ClinicalIntakeForm({
   const [hardStop, setHardStop] = useState<{ active: boolean; reason: string }>({ active: false, reason: "" })
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
   const [statusLogs, setStatusLogs] = useState<string[]>([])
+  const { profile } = usePatientProfilePrefill()
   
   const totalSteps = 4
+
+  useEffect(() => {
+    if (!profile) return
+    setFormData((prev) => applyResidentialProfile(prev, profile))
+  }, [profile])
 
   const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
 

@@ -11,6 +11,11 @@ import {
 } from "@/lib/telehealth/types"
 import { formatPaymentSummary, requireIntakePaymentSubmission } from "@/lib/intake-payment"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import {
+  formatInjectionConsentsSummary,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
 
 /**
  * IV Rejuvenation intake API
@@ -80,6 +85,8 @@ ${payload.screening.additionalNotes || "None"}
 ───────────────────────────────────────────────────────────────────────────────
 ${formatPaymentSummary(payload.payment, payload.consents)}
 
+${payload.injectionConsents ? formatInjectionConsentsSummary(payload.injectionConsents) : ""}
+
 ═══════════════════════════════════════════════════════════════════════════════
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth platform
@@ -118,15 +125,23 @@ export async function POST(request: NextRequest) {
 
     const paymentError = requireIntakePaymentSubmission(
       {
-        agreeToTerms: data.agreeToTerms,
-        agreeToTelehealth: data.agreeToTelehealth,
-        agreeToPrivacy: data.agreeToPrivacy,
         authorizeHold: data.authorizeHold,
       },
       data.payment
     )
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    if (!data.injectionConsents) {
+      return NextResponse.json({ error: "Telemedicine consents are required before submission." }, { status: 400 })
+    }
+
+    const consentError = validateInjectionTelehealthConsents(data.injectionConsents as InjectionTelehealthConsentValues, {
+      variant: "iv-rejuvenation",
+    })
+    if (!consentError.valid) {
+      return NextResponse.json({ error: consentError.message }, { status: 400 })
     }
 
     const stripeCheck = await verifyPaymentHoldReady(data.payment?.stripePaymentIntentId || "")
@@ -186,11 +201,12 @@ export async function POST(request: NextRequest) {
         additionalNotes: data.additionalNotes || null,
       },
       consents: {
-        agreeToTerms: data.agreeToTerms ?? false,
-        agreeToTelehealth: data.agreeToTelehealth ?? false,
-        agreeToPrivacy: data.agreeToPrivacy ?? false,
+        agreeToTerms: data.injectionConsents?.termsAndConditions ?? false,
+        agreeToTelehealth: data.injectionConsents?.telehealthConsent ?? false,
+        agreeToPrivacy: data.injectionConsents?.agreeToPrivacy ?? false,
         authorizeHold: data.authorizeHold ?? false,
       },
+      injectionConsents: data.injectionConsents,
       payment: data.payment,
     }
 

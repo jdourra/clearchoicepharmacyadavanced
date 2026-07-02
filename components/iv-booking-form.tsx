@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,17 @@ import {
   paymentCapturedOnClient,
   type IntakePaymentValues,
 } from "@/lib/intake-payment"
+import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  emptyInjectionTelehealthConsents,
+  getInjectionConsentInvalidFields,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
+import {
+  pickProfile,
+  stateToFullName,
+  usePatientProfilePrefill,
+} from "@/lib/patient-profile-prefill"
 
 const TIME_WINDOWS = [
   { value: "asap", label: "ASAP — dispatch when available" },
@@ -70,9 +81,9 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
   const [heartCondition, setHeartCondition] = useState("")
   const [pregnantOrBreastfeeding, setPregnantOrBreastfeeding] = useState(false)
   const [additionalNotes, setAdditionalNotes] = useState("")
-  const [agreeToTerms, setAgreeToTerms] = useState(false)
-  const [agreeToTelehealth, setAgreeToTelehealth] = useState(false)
-  const [agreeToPrivacy, setAgreeToPrivacy] = useState(false)
+  const [injectionConsents, setInjectionConsents] = useState<InjectionTelehealthConsentValues>({
+    ...emptyInjectionTelehealthConsents,
+  })
   const [authorizeHold, setAuthorizeHold] = useState(false)
   const [payment, setPayment] = useState<IntakePaymentValues>(emptyIntakePaymentValues)
 
@@ -81,6 +92,25 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
   const [success, setSuccess] = useState(false)
   const [submissionId, setSubmissionId] = useState("")
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
+  const { profile } = usePatientProfilePrefill()
+
+  useEffect(() => {
+    if (!profile) return
+    setFirstName((v) => pickProfile(v, profile.firstName))
+    setLastName((v) => pickProfile(v, profile.lastName))
+    setEmail((v) => pickProfile(v, profile.email))
+    setPhone((v) => pickProfile(v, profile.phone))
+    setServiceAddress((v) => pickProfile(v, profile.address))
+    setServiceCity((v) => pickProfile(v, profile.city))
+    setServiceState((v) => pickProfile(v, stateToFullName(profile.state) || "Michigan"))
+    setServiceZip((v) => pickProfile(v, profile.zip))
+    setInjectionConsents((prev) => ({
+      ...prev,
+      eSignName:
+        prev.eSignName.trim() ||
+        `${profile.firstName} ${profile.lastName}`.trim(),
+    }))
+  }, [profile])
 
   const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
 
@@ -98,9 +128,11 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
     if (!kidneyDisease) invalid.add("kidneyDisease")
     if (!heartCondition) invalid.add("heartCondition")
     for (const field of getIntakePaymentInvalidFields(payment)) invalid.add(field)
-    if (!agreeToTerms) invalid.add("agreeToTerms")
-    if (!agreeToTelehealth) invalid.add("agreeToTelehealth")
-    if (!agreeToPrivacy) invalid.add("agreeToPrivacy")
+    for (const field of getInjectionConsentInvalidFields(injectionConsents, {
+      variant: "iv-rejuvenation",
+    })) {
+      invalid.add(field)
+    }
     if (!authorizeHold) invalid.add("authorizeHold")
     if (email && !/^\S+@\S+\.\S+$/.test(email)) invalid.add("email")
 
@@ -130,6 +162,14 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
     setPayment((prev) => ({ ...prev, [key]: value }))
     clearError(key)
   }
+
+  const updateInjectionConsent = useCallback(
+    <K extends keyof InjectionTelehealthConsentValues>(key: K, value: InjectionTelehealthConsentValues[K]) => {
+      setInjectionConsents((prev) => ({ ...prev, [key]: value }))
+      clearError(key)
+    },
+    []
+  )
 
   const handleSubmit = async () => {
     if (!selectedPackage) return
@@ -163,9 +203,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           heartCondition,
           pregnantOrBreastfeeding,
           additionalNotes,
-          agreeToTerms,
-          agreeToTelehealth,
-          agreeToPrivacy,
+          injectionConsents,
           authorizeHold,
           payment: paymentCapturedOnClient(payment),
         }),
@@ -416,34 +454,14 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
             totalBilled={estimatedTotal}
             invalidFields={fieldErrors}
           />
+          <InjectionTelehealthConsents
+            idPrefix="iv"
+            variant="iv-rejuvenation"
+            values={injectionConsents}
+            onChange={updateInjectionConsent}
+            invalidFields={fieldErrors}
+          />
           <div className="space-y-3 border-t pt-4">
-            <div
-              data-field="agreeToTerms"
-              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTerms") && "ring-2 ring-destructive bg-destructive/5")}
-            >
-              <Checkbox id="agree" checked={agreeToTerms} onCheckedChange={(c) => { setAgreeToTerms(c === true); clearError("agreeToTerms") }} />
-              <Label htmlFor="agree" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTerms") && "text-destructive")}>
-                I agree to the Terms of Service *
-              </Label>
-            </div>
-            <div
-              data-field="agreeToTelehealth"
-              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToTelehealth") && "ring-2 ring-destructive bg-destructive/5")}
-            >
-              <Checkbox id="telehealth" checked={agreeToTelehealth} onCheckedChange={(c) => { setAgreeToTelehealth(c === true); clearError("agreeToTelehealth") }} />
-              <Label htmlFor="telehealth" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToTelehealth") && "text-destructive")}>
-                I consent to telehealth screening before IV administration *
-              </Label>
-            </div>
-            <div
-              data-field="agreeToPrivacy"
-              className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("agreeToPrivacy") && "ring-2 ring-destructive bg-destructive/5")}
-            >
-              <Checkbox id="privacy" checked={agreeToPrivacy} onCheckedChange={(c) => { setAgreeToPrivacy(c === true); clearError("agreeToPrivacy") }} />
-              <Label htmlFor="privacy" className={cn("font-normal cursor-pointer leading-snug", isInvalid("agreeToPrivacy") && "text-destructive")}>
-                I understand my health information will be handled in accordance with HIPAA regulations *
-              </Label>
-            </div>
             <div
               data-field="authorizeHold"
               className={cn("flex items-start space-x-2 rounded-md p-2 -mx-2", isInvalid("authorizeHold") && "ring-2 ring-destructive bg-destructive/5")}

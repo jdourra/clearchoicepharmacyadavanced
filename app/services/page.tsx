@@ -45,7 +45,7 @@ export default function ServicesPage() {
             </p>
           </div>
 
-          <ClinicalServicesGrid showViewAll={false} />
+          <ClinicalServicesGrid showViewAll={false} prescriptionLast />
         </div>
       </main>
       <SiteFooter />

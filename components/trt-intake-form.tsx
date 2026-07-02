@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,6 +25,7 @@ import {
   getInjectionConsentInvalidFields,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 
 type FormData = {
   selectedProgram: string
@@ -193,6 +194,21 @@ export function TrtIntakeForm({
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [submissionId, setSubmissionId] = useState("")
+  const { profile } = usePatientProfilePrefill()
+
+  useEffect(() => {
+    if (!profile) return
+    setFormData((prev) => {
+      const next = applyResidentialProfile(prev, profile)
+      const eSignName =
+        next.injectionConsents.eSignName.trim() ||
+        `${profile.firstName} ${profile.lastName}`.trim()
+      return {
+        ...next,
+        injectionConsents: { ...next.injectionConsents, eSignName },
+      }
+    })
+  }, [profile])
 
   const updateFormData = useCallback(<K extends keyof FormData>(key: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }))

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,6 +32,7 @@ import {
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
 import { WEIGHT_LOSS_PROGRAMS, type WeightLossBillingPlan } from "@/lib/weight-loss-catalog"
+import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 
 type BillingPlan = WeightLossBillingPlan
 
@@ -451,6 +452,7 @@ export function WeightLossIntakeForm({
   const [statusLogs, setStatusLogs] = useState<string[]>([])
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
   const [validationFields, setValidationFields] = useState<string[]>([])
+  const { profile } = usePatientProfilePrefill()
 
   const totalSteps = 4
   const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
@@ -458,6 +460,20 @@ export function WeightLossIntakeForm({
     () => calculateBmi(formData.heightFeet, formData.heightInches, formData.weightLbs),
     [formData.heightFeet, formData.heightInches, formData.weightLbs]
   )
+
+  useEffect(() => {
+    if (!profile) return
+    setFormData((prev) => {
+      const next = applyResidentialProfile(prev, profile)
+      const eSignName =
+        next.injectionConsents.eSignName.trim() ||
+        `${profile.firstName} ${profile.lastName}`.trim()
+      return {
+        ...next,
+        injectionConsents: { ...next.injectionConsents, eSignName },
+      }
+    })
+  }, [profile])
 
   const isFieldInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
 
@@ -1212,6 +1228,7 @@ export function WeightLossIntakeForm({
               values={formData.injectionConsents}
               onChange={updateInjectionConsent}
               invalidFields={fieldErrors}
+              showHowToInjectLink={false}
             />
 
             <div className="space-y-3 border-t pt-4">

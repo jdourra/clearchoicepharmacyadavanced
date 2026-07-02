@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import Link from "next/link"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
@@ -29,6 +29,11 @@ import {
   getInjectionConsentInvalidFields,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import {
+  pickProfile,
+  stateToFullName,
+  usePatientProfilePrefill,
+} from "@/lib/patient-profile-prefill"
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
@@ -73,6 +78,25 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
   const [success, setSuccess] = useState(false)
   const [submissionId, setSubmissionId] = useState("")
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
+  const { profile } = usePatientProfilePrefill()
+
+  useEffect(() => {
+    if (!profile) return
+    setFirstName((v) => pickProfile(v, profile.firstName))
+    setLastName((v) => pickProfile(v, profile.lastName))
+    setEmail((v) => pickProfile(v, profile.email))
+    setPhone((v) => pickProfile(v, profile.phone))
+    setShippingAddress((v) => pickProfile(v, profile.address))
+    setShippingCity((v) => pickProfile(v, profile.city))
+    setShippingState((v) => pickProfile(v, stateToFullName(profile.state) || "Michigan"))
+    setShippingZip((v) => pickProfile(v, profile.zip))
+    setInjectionConsents((prev) => ({
+      ...prev,
+      eSignName:
+        prev.eSignName.trim() ||
+        `${profile.firstName} ${profile.lastName}`.trim(),
+    }))
+  }, [profile])
 
   const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
 

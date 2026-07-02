@@ -9,6 +9,7 @@
  */
 
 import type { IntakePaymentMetadata } from "@/lib/intake-payment"
+import type { InjectionTelehealthConsentValues } from "@/lib/injection-telehealth-consents"
 export type TelehealthPartnerId = "manual" | "beluga" | "openloop" | "wheel"
 
 export type ClinicalServiceType =
@@ -72,6 +73,7 @@ export type IvIntakePayload = {
     agreeToPrivacy?: boolean
     authorizeHold?: boolean
   }
+  injectionConsents?: InjectionTelehealthConsentValues
   payment?: IntakePaymentMetadata
 }
 

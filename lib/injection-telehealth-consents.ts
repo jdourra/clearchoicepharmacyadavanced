@@ -1,12 +1,18 @@
 export const INJECTION_CONSENT_URLS = {
-  howToInject: "https://www.vitastir.com/howtoinject",
+  /** Set when Clear Choice publishes its own injection video page. */
+  howToInject: "",
   refundPolicy: "https://clearchoicepharmacy.com/refund-policy",
   telehealthConsent: "https://clearchoicepharmacy.com/telehealth-consent",
   terms: "https://clearchoicepharmacy.com/terms-and-conditions",
   privacy: "https://clearchoicepharmacy.com/privacy",
 } as const
 
-export type InjectionConsentVariant = "weight-loss" | "rejuvenation-vial" | "trt"
+export type InjectionConsentVariant =
+  | "weight-loss"
+  | "rejuvenation-vial"
+  | "trt"
+  | "iv-rejuvenation"
+  | "specialty-pharmacy"
 
 export type InjectionTelehealthConsentValues = {
   watchedInjectionVideo: boolean
@@ -35,8 +41,13 @@ export const emptyInjectionTelehealthConsents: InjectionTelehealthConsentValues 
 }
 
 export function requiresSelfInjectionConsent(variant: InjectionConsentVariant, programId?: string): boolean {
+  if (variant === "iv-rejuvenation" || variant === "specialty-pharmacy") return false
   if (variant === "weight-loss" || variant === "rejuvenation-vial") return true
   return variant === "trt" && programId === "testosterone-cypionate"
+}
+
+export function show28DayExpiration(variant: InjectionConsentVariant): boolean {
+  return variant !== "iv-rejuvenation" && variant !== "specialty-pharmacy"
 }
 
 export function showTirzepatideAddendum(programId?: string): boolean {
@@ -52,7 +63,9 @@ export function getInjectionConsentInvalidFields(
 
   if (selfInject && !values.watchedInjectionVideo) fields.push("watchedInjectionVideo")
   if (selfInject && !values.followBottleInstructions) fields.push("followBottleInstructions")
-  if (!values.understand28DayExpiration) fields.push("understand28DayExpiration")
+  if (show28DayExpiration(options.variant) && !values.understand28DayExpiration) {
+    fields.push("understand28DayExpiration")
+  }
   if (!values.compounding503ADisclosure) fields.push("compounding503ADisclosure")
   if (selfInject && !values.homeInjectionConsent) fields.push("homeInjectionConsent")
   if (!values.noReturnsRefundPolicy) fields.push("noReturnsRefundPolicy")

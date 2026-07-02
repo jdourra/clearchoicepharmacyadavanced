@@ -23,6 +23,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
+import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  emptyInjectionTelehealthConsents,
+  getInjectionConsentInvalidFields,
+  validateInjectionTelehealthConsents,
+  type InjectionTelehealthConsentValues,
+} from "@/lib/injection-telehealth-consents"
+import {
+  formatDobForInput,
+  pickProfile,
+  stateToCode,
+  usePatientProfilePrefill,
+} from "@/lib/patient-profile-prefill"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 import {
@@ -49,7 +62,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
   const intakePrefix = useMemo(() => `sp-${Date.now().toString(36)}`, [])
 
   const [step, setStep] = useState(1)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { profile, isLoggedIn } = usePatientProfilePrefill()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
@@ -96,26 +109,29 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
   const [allergies, setAllergies] = useState("")
   const [additionalNotes, setAdditionalNotes] = useState("")
   const [fulfillmentPreference, setFulfillmentPreference] = useState("")
+  const [injectionConsents, setInjectionConsents] = useState<InjectionTelehealthConsentValues>({
+    ...emptyInjectionTelehealthConsents,
+  })
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.user) {
-          setIsLoggedIn(true)
-          setFirstName(d.user.firstName || d.user.name?.split(" ")[0] || "")
-          setLastName(d.user.lastName || d.user.name?.split(" ").slice(1).join(" ") || "")
-          setEmail(d.user.email || "")
-          setPhone(d.user.phone || "")
-          setDateOfBirth(d.user.dob ? d.user.dob.split("T")[0] : "")
-          setAddress(d.user.address || "")
-          setCity(d.user.city || "")
-          setState(d.user.state || "MI")
-          setZipCode(d.user.zip || "")
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (!profile) return
+    setFirstName((v) => pickProfile(v, profile.firstName))
+    setLastName((v) => pickProfile(v, profile.lastName))
+    setEmail((v) => pickProfile(v, profile.email))
+    setPhone((v) => pickProfile(v, profile.phone))
+    setDateOfBirth((v) => pickProfile(v, formatDobForInput(profile.dob)))
+    setAddress((v) => pickProfile(v, profile.address))
+    setCity((v) => pickProfile(v, profile.city))
+    setState((v) => pickProfile(v, stateToCode(profile.state) || "MI"))
+    setZipCode((v) => pickProfile(v, profile.zip))
+    setInjectionConsents((prev) => ({
+      ...prev,
+      eSignName:
+        prev.eSignName.trim() ||
+        `${profile.firstName} ${profile.lastName}`.trim(),
+    }))
+  }, [profile])
 
   const medicationLabel = useMemo(() => {
     if (selectedMedication === "other") return medicationOther
@@ -257,6 +273,26 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
       return
     }
 
+    const consentInvalid = new Set(
+      getInjectionConsentInvalidFields(injectionConsents, { variant: "specialty-pharmacy" })
+    )
+    if (consentInvalid.size > 0) {
+      setFieldErrors(consentInvalid)
+      setError("Please complete all required telemedicine consents and acknowledgments.")
+      const first = [...consentInvalid][0]
+      document.querySelector(`[data-field="${first}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" })
+      return
+    }
+    setFieldErrors(new Set())
+
+    const consentCheck = validateInjectionTelehealthConsents(injectionConsents, {
+      variant: "specialty-pharmacy",
+    })
+    if (!consentCheck.valid) {
+      setError(consentCheck.message)
+      return
+    }
+
     setIsSubmitting(true)
     setError("")
 
@@ -310,6 +346,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
             additionalNotes,
             fulfillmentPreference,
           },
+          injectionConsents,
         }),
       })
 
@@ -879,6 +916,22 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                         : "—"}
                 </p>
               </div>
+
+              <InjectionTelehealthConsents
+                idPrefix="specialty"
+                variant="specialty-pharmacy"
+                values={injectionConsents}
+                onChange={(key, value) => {
+                  setInjectionConsents((prev) => ({ ...prev, [key]: value }))
+                  setFieldErrors((prev) => {
+                    if (!prev.has(key)) return prev
+                    const next = new Set(prev)
+                    next.delete(key)
+                    return next
+                  })
+                }}
+                invalidFields={fieldErrors}
+              />
             </CardContent>
           </>
         )}
