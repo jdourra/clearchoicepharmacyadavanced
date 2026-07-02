@@ -2,14 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import { loadStripe, type StripeElementsOptions } from "@stripe/stripe-js"
+import { loadStripe, type Stripe } from "@stripe/stripe-js"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
-
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  : null
 
 type StripePaymentHoldInnerProps = {
   clientSecret: string
@@ -83,13 +79,38 @@ type StripePaymentHoldProps = {
   invalid?: boolean
 }
 
+async function resolveStripePromise(): Promise<ReturnType<typeof loadStripe>> {
+  const buildTimeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim()
+  if (buildTimeKey) return loadStripe(buildTimeKey)
+
+  const res = await fetch("/api/payments/config")
+  const data = await res.json().catch(() => ({}))
+  if (data.publishableKey) return loadStripe(data.publishableKey)
+  return null
+}
+
 export function StripePaymentHold({ amount, email, serviceType, onAuthorized, invalid }: StripePaymentHoldProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null)
   const [mode, setMode] = useState<"loading" | "stripe" | "mock" | "error">("loading")
   const [error, setError] = useState("")
   const onAuthorizedRef = useRef(onAuthorized)
   onAuthorizedRef.current = onAuthorized
+
+  useEffect(() => {
+    let active = true
+    resolveStripePromise()
+      .then((promise) => {
+        if (active) setStripePromise(promise)
+      })
+      .catch(() => {
+        if (active) setStripePromise(null)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const initHold = useCallback(async () => {
     if (!email || amount < 1) return
@@ -101,7 +122,7 @@ export function StripePaymentHold({ amount, email, serviceType, onAuthorized, in
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount, email, serviceType }),
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || "Failed to initialize payment")
 
       setPaymentIntentId(data.paymentIntentId)
@@ -154,14 +175,16 @@ export function StripePaymentHold({ amount, email, serviceType, onAuthorized, in
   if (!clientSecret || !paymentIntentId || !stripePromise) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>Stripe publishable key is not configured.</AlertDescription>
+        <AlertDescription>
+          Payment form is not configured yet. Enter your email above, then refresh — or call (248) 987-6182 for help.
+        </AlertDescription>
       </Alert>
     )
   }
 
-  const options: StripeElementsOptions = {
+  const options = {
     clientSecret,
-    appearance: { theme: "stripe" },
+    appearance: { theme: "stripe" as const },
   }
 
   return (
@@ -177,9 +200,7 @@ export function StripePaymentHold({ amount, email, serviceType, onAuthorized, in
           onError={setError}
         />
       </Elements>
-      {error && (
-        <p className="text-sm text-destructive mt-2">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive mt-2">{error}</p>}
     </div>
   )
 }

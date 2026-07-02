@@ -1,15 +1,14 @@
 import "server-only"
 import Stripe from "stripe"
 import type { OrderCheckoutLineItem } from "@/lib/order-payment"
+import { getStripeSecretKey, isStripeConfigured } from "@/lib/stripe-env"
+
+export { isStripeConfigured } from "@/lib/stripe-env"
 
 let stripeClient: Stripe | null = null
 
-export function isStripeConfigured(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY)
-}
-
 export function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY
+  const key = getStripeSecretKey()
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not configured")
   }

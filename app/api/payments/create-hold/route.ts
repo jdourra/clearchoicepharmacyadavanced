@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createPaymentHold, isStripeConfigured } from "@/lib/stripe-server"
+import { getStripePublishableKey, stripeConfigStatus } from "@/lib/stripe-env"
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,8 +29,24 @@ export async function POST(request: NextRequest) {
           message: "Stripe not configured — using development mock authorization.",
         })
       }
+
+      console.error("[payments/create-hold] Stripe not configured:", stripeConfigStatus().issues)
       return NextResponse.json(
-        { error: "Payment processing is not configured. Please contact support." },
+        {
+          error:
+            "Payment processing is not configured. Please call (248) 987-6182 to complete your booking.",
+        },
+        { status: 503 }
+      )
+    }
+
+    if (!getStripePublishableKey()) {
+      console.error("[payments/create-hold] Stripe publishable key missing:", stripeConfigStatus().issues)
+      return NextResponse.json(
+        {
+          error:
+            "Payment form is not fully configured. Please call (248) 987-6182 to complete your booking.",
+        },
         { status: 503 }
       )
     }
