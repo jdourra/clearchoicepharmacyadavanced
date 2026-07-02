@@ -144,13 +144,17 @@ export function AdminIntakeDetailView({
   const [error, setError] = useState("")
   const [reviewMessage, setReviewMessage] = useState("")
   const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
+  const [sesHint, setSesHint] = useState<string | null>(null)
+  const [sesReviewStatus, setSesReviewStatus] = useState<string | null>(null)
 
   useEffect(() => {
     staffAuthFetch("/api/admin/ses-health")
       .then(async (res) => {
         if (!res.ok) return
         const data = await res.json()
-        setSesSandbox(data.sandboxLikely === true)
+        setSesSandbox(data.canEmailPatients === false)
+        setSesHint(data.productionAccessHint ?? null)
+        setSesReviewStatus(data.reviewStatus ?? null)
       })
       .catch(() => {})
   }, [])
@@ -351,11 +355,10 @@ export function AdminIntakeDetailView({
 
             <div className="space-y-4 no-print">
               {sesSandbox && (
-                <Alert variant="destructive">
+                <Alert variant={sesReviewStatus === "DENIED" ? "destructive" : "default"}>
                   <AlertDescription>
-                    AWS SES is in <strong>sandbox mode</strong>. Patient emails to Gmail, Yahoo, etc.
-                    will fail until you request <strong>production access</strong> in the SES console
-                    (US East Ohio). Domain DKIM is set up — production access is the remaining step.
+                    {sesHint ||
+                      "AWS SES is in sandbox mode. Patient emails to external addresses will fail until production access is granted."}
                   </AlertDescription>
                 </Alert>
               )}

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
-import { GetSendQuotaCommand } from "@aws-sdk/client-ses"
 import { staffAuth } from "@/lib/auth"
-import { getSesClient } from "@/lib/ses-client"
+import { getSesAccountStatus, sesReviewHint } from "@/lib/ses-account-status"
 import { looksLikeSesSandbox, sesConfigStatus } from "@/lib/ses-env"
 
 export async function GET(request: Request) {
@@ -12,38 +11,27 @@ export async function GET(request: Request) {
     }
 
     const status = sesConfigStatus()
-    let sandboxLikely: boolean | null = null
-    let max24HourSend: number | null = null
-    let sentLast24Hours: number | null = null
-    let quotaError: string | null = null
+    const account = await getSesAccountStatus()
 
-    if (status.configured) {
-      try {
-        const quota = await getSesClient().send(new GetSendQuotaCommand({}))
-        max24HourSend = quota.Max24HourSend ?? null
-        sentLast24Hours = quota.SentLast24Hours ?? null
-        sandboxLikely =
-          max24HourSend != null ? looksLikeSesSandbox(max24HourSend) : null
-      } catch (err) {
-        quotaError = err instanceof Error ? err.message : "Could not read SES quota"
-      }
-    }
+    const sandboxLikely =
+      account.max24HourSend != null
+        ? looksLikeSesSandbox(account.max24HourSend)
+        : !account.productionAccessEnabled
 
-    const canEmailPatients = status.configured && sandboxLikely === false
+    const canEmailPatients = status.configured && account.productionAccessEnabled
 
     return NextResponse.json({
       ...status,
       sandboxLikely,
-      max24HourSend,
-      sentLast24Hours,
-      quotaError,
+      productionAccessEnabled: account.productionAccessEnabled,
+      reviewStatus: account.reviewStatus,
+      reviewCaseId: account.reviewCaseId,
+      max24HourSend: account.max24HourSend,
+      sentLast24Hours: account.sentLast24Hours,
+      websiteUrl: account.websiteUrl,
+      accountError: account.error,
       canEmailPatients,
-      productionAccessHint:
-        sandboxLikely === true
-          ? "AWS SES is in sandbox mode. Request production access: AWS Console → SES → US East (Ohio) → Account dashboard → Request production access. Until approved, only verified @clearchoicepharmacy.com addresses can receive mail."
-          : status.configured
-            ? "SES appears ready to email patients."
-            : "Configure AWS credentials and SES_SENDER_EMAIL on Vercel, then redeploy.",
+      productionAccessHint: sesReviewHint(account),
     })
   } catch (error) {
     console.error("[admin/ses-health]", error)

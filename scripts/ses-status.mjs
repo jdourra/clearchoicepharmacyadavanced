@@ -64,7 +64,11 @@ async function main() {
 
   try {
     const account = await sesv2.send(new GetAccountCommand({}))
+    const review = account.Details?.ReviewDetails
     console.log(`Production:   ${account.ProductionAccessEnabled ? "enabled" : "disabled (sandbox)"}`)
+    if (review?.Status) {
+      console.log(`Review:       ${review.Status}${review.CaseId ? ` (case ${review.CaseId})` : ""}`)
+    }
     if (account.Details?.WebsiteURL) {
       console.log(`Website URL:  ${account.Details.WebsiteURL}`)
     }

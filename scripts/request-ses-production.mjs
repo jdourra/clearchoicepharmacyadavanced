@@ -62,6 +62,24 @@ async function main() {
       console.log("Patients can receive email. Run: npm run ses:verify -- --to patient@example.com")
       return
     }
+
+    const review = account.Details?.ReviewDetails
+    if (review?.Status === "PENDING") {
+      console.log("SES production access review is already pending.")
+      if (review.CaseId) console.log(`Support case: ${review.CaseId}`)
+      console.log("AWS typically responds within 24 hours.")
+      return
+    }
+    if (review?.Status === "DENIED") {
+      console.error("SES production access was DENIED by AWS.")
+      if (review.CaseId) {
+        console.error(`Open AWS Support Center and reply to case ${review.CaseId} with your appeal.`)
+        console.error(`https://console.aws.amazon.com/support/home#/case/?displayId=${review.CaseId}`)
+      }
+      console.error("\nYou cannot submit a new request until you resolve the denied case.")
+      console.error("Explain: licensed Michigan pharmacy, transactional intake emails only, no marketing.")
+      process.exit(1)
+    }
   } catch (err) {
     console.warn("Could not read account status:", err.message)
   }
