@@ -12,12 +12,19 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { intakeDetailEntries } from "@/lib/intake-admin-display"
+import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
 import { staffAuthFetch } from "@/lib/staff-session"
-import { ExternalLink, Loader2, Printer } from "lucide-react"
+import { ExternalLink, ChevronDown, Loader2, Printer } from "lucide-react"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+
+import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 
 type AdminIntakeDetailViewProps = {
-  serviceType: string
+  serviceType: AdminIntakeServiceType | string
   id: string
   serviceLabel: string
   treatmentLabel: string
@@ -136,9 +143,24 @@ export function AdminIntakeDetailView({
   const [note, setNote] = useState("")
   const [error, setError] = useState("")
   const [reviewMessage, setReviewMessage] = useState("")
+  const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    staffAuthFetch("/api/admin/ses-health")
+      .then(async (res) => {
+        if (!res.ok) return
+        const data = await res.json()
+        setSesSandbox(data.sandboxLikely === true)
+      })
+      .catch(() => {})
+  }, [])
 
   const patientName = `${detail.first_name ?? ""} ${detail.last_name ?? ""}`.trim()
-  const entries = intakeDetailEntries(detail)
+  const layout = buildIntakeReviewLayout(
+    serviceType as AdminIntakeServiceType,
+    detail,
+    id
+  )
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
 
@@ -227,22 +249,72 @@ export function AdminIntakeDetailView({
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-4">
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <CardTitle>{treatmentLabel}</CardTitle>
                     <Badge>{formatPortalStatus(String(detail.status ?? ""))}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground font-mono">{id}</p>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {entries.map(({ key, label, value }) => (
-                    <div key={key} className="border-b pb-2 last:border-0">
-                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        {label}
-                      </p>
-                      <p className="text-sm mt-0.5 break-words whitespace-pre-wrap">{value}</p>
+                <CardContent className="space-y-4">
+                  <div className="rounded-lg bg-muted/40 border px-4 py-3 space-y-2 text-sm">
+                    <p className="font-medium text-foreground">{layout.patientLine}</p>
+                    {layout.addressLine && (
+                      <p className="text-muted-foreground">{layout.addressLine}</p>
+                    )}
+                    {layout.treatmentLine && (
+                      <p className="text-foreground">{layout.treatmentLine}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground font-mono">{layout.metaLine}</p>
+                  </div>
+
+                  {layout.clinicalItems.length > 0 && (
+                    <div className="space-y-3">
+                      <p className="text-sm font-semibold text-foreground">Clinical screening</p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {layout.clinicalItems.map((item) => (
+                          <div
+                            key={item.label}
+                            className="rounded-md border bg-background px-3 py-2 text-sm"
+                          >
+                            <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
+                            <p className="mt-0.5 break-words whitespace-pre-wrap">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
+                  )}
+
+                  {layout.adminItems.length > 0 && (
+                    <Collapsible className="no-print">
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="w-full justify-between px-2">
+                          <span className="text-muted-foreground">Admin &amp; billing details</span>
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pt-2">
+                        <div className="rounded-md border bg-muted/20 px-3 py-2 space-y-2 text-xs font-mono">
+                          {layout.adminItems.map((item) => (
+                            <div key={item.label} className="break-all">
+                              <span className="text-muted-foreground">{item.label}: </span>
+                              {item.value}
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+
+                  {layout.adminItems.length > 0 && (
+                    <div className="hidden print:block space-y-1 text-xs">
+                      <p className="font-semibold">Admin &amp; billing</p>
+                      {layout.adminItems.map((item) => (
+                        <p key={item.label}>
+                          {item.label}: {item.value}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -278,6 +350,15 @@ export function AdminIntakeDetailView({
             </div>
 
             <div className="space-y-4 no-print">
+              {sesSandbox && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    AWS SES is in <strong>sandbox mode</strong>. Patient emails to Gmail, Yahoo, etc.
+                    will fail until you request <strong>production access</strong> in the SES console
+                    (US East Ohio). Domain DKIM is set up — production access is the remaining step.
+                  </AlertDescription>
+                </Alert>
+              )}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">{PRIMARY_PHYSICIAN.name}&apos;s Decision</CardTitle>
@@ -357,7 +438,8 @@ export function AdminIntakeDetailView({
                   )}
 
                   <p className="text-xs text-muted-foreground">
-                    Patient receives an email on approve, deny, or follow-up (requires AWS SES).
+                    Patient receives an email on approve, deny, or follow-up when SES production access
+                    is enabled.
                   </p>
                 </CardContent>
               </Card>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { AdminShell } from "@/components/admin-shell"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
@@ -13,6 +13,7 @@ import { staffAuthFetch } from "@/lib/staff-session"
 
 type IntakeRow = {
   serviceType: string
+  serviceLabel: string
   id: string
   firstName: string
   lastName: string
@@ -73,38 +74,37 @@ export default function AdminIntakesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {intakes.map((intake) => (
-            <Card key={`${intake.serviceType}-${intake.id}`}>
-              <CardHeader className="pb-3">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-lg">
+            <Card key={`${intake.serviceType}-${intake.id}`} className="overflow-hidden">
+              <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-sm font-medium leading-snug">
+                    <span className="text-foreground">
                       {intake.firstName} {intake.lastName}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {intake.email}
-                      {intake.phone ? ` · ${intake.phone}` : ""}
-                      {intake.state ? ` · ${intake.state}` : ""}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{intake.serviceType.replace(/_/g, " ")}</Badge>
-                    <Badge variant="outline">{formatPortalStatus(intake.status)}</Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-0">
-                <div className="text-sm">
-                  <p className="font-medium">{intake.treatmentLabel}</p>
-                  <p className="text-muted-foreground text-xs mt-1">
+                    </span>
+                    <span className="text-muted-foreground"> · </span>
+                    <span className="text-muted-foreground">{intake.serviceLabel}</span>
+                    <span className="text-muted-foreground"> · </span>
+                    <span>{intake.treatmentLabel}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {intake.email}
+                    {intake.phone ? ` · ${intake.phone}` : ""}
+                    {intake.state ? ` · ${intake.state}` : ""}
+                    {" · "}
                     Submitted {new Date(intake.createdAt).toLocaleString()}
-                    {intake.stripePaymentIntentId ? " · Payment hold on file" : ""}
+                    {intake.stripePaymentIntentId ? " · Payment hold" : ""}
                   </p>
                 </div>
-                <Button asChild>
-                  <Link href={`/admin/intakes/${intake.serviceType}/${intake.id}`}>Review</Link>
-                </Button>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Badge variant="outline" className="hidden sm:inline-flex">
+                    {formatPortalStatus(intake.status)}
+                  </Badge>
+                  <Button asChild size="sm">
+                    <Link href={`/admin/intakes/${intake.serviceType}/${intake.id}`}>Review</Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}

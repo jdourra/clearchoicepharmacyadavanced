@@ -13,11 +13,14 @@
     "s3:setup": "node scripts/setup-s3-bucket.mjs",
     "s3:verify": "node scripts/verify-s3-upload.mjs",
     "ses:verify": "node scripts/verify-ses.mjs",
+    "ses:status": "node scripts/ses-status.mjs",
+    "ses:request-production": "node scripts/request-ses-production.mjs",
     "stripe:verify": "node scripts/verify-stripe.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
     "@aws-sdk/client-ses": "^3.1064.0",
+    "@aws-sdk/client-sesv2": "^3.1078.0",
     "@hookform/resolvers": "^3.10.0",
     "@neondatabase/serverless": "1.0.2",
     "@radix-ui/react-accordion": "1.2.2",

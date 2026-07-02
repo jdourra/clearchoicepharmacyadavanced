@@ -46,7 +46,7 @@ function parseToArg() {
 async function main() {
   loadEnvLocal()
 
-  const region = process.env.AWS_REGION || "us-east-1"
+  const region = process.env.SES_REGION || process.env.AWS_REGION || "us-east-2"
   const accessKey = process.env.AWS_ACCESS_KEY_ID
   const secretKey = process.env.AWS_SECRET_ACCESS_KEY
   const from = process.env.SES_SENDER_EMAIL
@@ -88,8 +88,9 @@ async function main() {
 
   await client.send(
     new SendEmailCommand({
-      Source: from,
+      Source: `Clear Choice Pharmacy <${from}>`,
       Destination: { ToAddresses: [to] },
+      ReplyToAddresses: [from],
       Message: {
         Subject: {
           Data: "Clear Choice Pharmacy — SES test",

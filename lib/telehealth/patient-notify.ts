@@ -1,8 +1,6 @@
 import "server-only"
-import { SendEmailCommand } from "@aws-sdk/client-ses"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { getAwsCredentials } from "@/lib/s3-env"
-import { getSesClient } from "@/lib/ses-client"
+import { sendPatientEmail } from "@/lib/ses-mail"
 
 export type IntakeDecision = "approved" | "denied" | "follow_up"
 
@@ -13,8 +11,7 @@ export async function notifyPatientIntakeDecision(params: {
   submissionId: string
   decision: IntakeDecision
   note?: string
-}): Promise<{ success: boolean; error?: string }> {
-  const from = process.env.SES_SENDER_EMAIL || "intake@clearchoicepharmacy.com"
+}): Promise<{ success: boolean; error?: string; sandboxBlocked?: boolean }> {
   const { to, patientName, serviceLabel, submissionId, decision, note } = params
 
   const subjects: Record<IntakeDecision, string> = {
@@ -55,40 +52,20 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
 — Clear Choice Pharmacy`,
   }
 
-  if (!getAwsCredentials()) {
-    const message =
-      "SES is not configured on this server. Add AWS keys and SES_SENDER_EMAIL on Vercel, then redeploy."
-    console.error("[telehealth/patient]", message, { to, decision, submissionId })
-    return { success: false, error: message }
+  const result = await sendPatientEmail({
+    to,
+    subject: subjects[decision],
+    text: bodies[decision],
+  })
+
+  if (!result.success) {
+    console.error("[telehealth/patient] email failed:", {
+      to,
+      decision,
+      submissionId,
+      error: result.error,
+    })
   }
 
-  if (!process.env.SES_SENDER_EMAIL?.trim()) {
-    const message = "SES_SENDER_EMAIL is not set. Configure intake@clearchoicepharmacy.com on Vercel."
-    console.error("[telehealth/patient]", message, { to, decision, submissionId })
-    return { success: false, error: message }
-  }
-
-  try {
-    await getSesClient().send(
-      new SendEmailCommand({
-        Source: from,
-        Destination: { ToAddresses: [to] },
-        Message: {
-          Subject: { Data: subjects[decision], Charset: "UTF-8" },
-          Body: { Text: { Data: bodies[decision], Charset: "UTF-8" } },
-        },
-      })
-    )
-    return { success: true }
-  } catch (error) {
-    console.error("[telehealth/patient] SES error:", error)
-    const raw = error instanceof Error ? error.message : "Failed to send patient notification"
-    const message = raw.includes("Email address is not verified")
-      ? `Patient email could not be reached: ${to} is not verified in AWS SES sandbox. Request SES production access or verify this address in SES.`
-      : raw
-    return {
-      success: false,
-      error: message,
-    }
-  }
+  return result
 }

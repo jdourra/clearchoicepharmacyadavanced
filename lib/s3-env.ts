@@ -57,7 +57,7 @@ export function getAwsSecretAccessKey(): string | undefined {
 }
 
 export function getAwsRegion(): string {
-  return envTrim("AWS_REGION") || "us-east-1"
+  return envTrim("AWS_REGION") || "us-east-2"
 }
 
 export function getAwsCredentials():

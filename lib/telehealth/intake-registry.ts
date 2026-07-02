@@ -7,6 +7,7 @@ export type AdminIntakeServiceType = ClinicalServiceType | "specialty_pharmacy"
 
 export type IntakeListItem = {
   serviceType: AdminIntakeServiceType
+  serviceLabel: string
   id: string
   firstName: string
   lastName: string
@@ -45,6 +46,7 @@ function rowToItem(
 ): IntakeListItem {
   return {
     serviceType,
+    serviceLabel: SERVICE_LABELS[serviceType],
     id: String(row.id),
     firstName: String(row.first_name ?? ""),
     lastName: String(row.last_name ?? ""),

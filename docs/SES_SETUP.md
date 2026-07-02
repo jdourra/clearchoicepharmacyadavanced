@@ -15,7 +15,7 @@ Clear Choice Pharmacy uses **Amazon SES** for:
 |----------|---------|---------|
 | `AWS_ACCESS_KEY_ID` | `AKIA...` | Same IAM user as S3 (or dedicated user) |
 | `AWS_SECRET_ACCESS_KEY` | `...` | IAM secret |
-| `AWS_REGION` | `us-east-2` | Must match SES region (often same as S3) |
+| `AWS_REGION` | `us-east-2` | Must match SES region (Ohio — where DKIM is configured) |
 | `SES_SENDER_EMAIL` | `intake@clearchoicepharmacy.com` | **Verified** From address in SES |
 | `DR_DOURRA_EMAIL` | `dr@example.com` | New-intake alerts + test recipient |
 | `TELEHEALTH_CLINICIAN_EMAIL` | (optional) | Overrides Dr. Dourra for clinician inbox |
@@ -38,8 +38,25 @@ Add the same vars to **Vercel → Project → Environment Variables** for produc
 
 New SES accounts start in **sandbox**:
 
-- You can only send **to verified email addresses**.
-- Request **production access**: SES → **Account dashboard** → **Request production access**.
+- You can only send **to verified email addresses** (e.g. `@clearchoicepharmacy.com`).
+- Patient Gmail/Yahoo addresses **will not receive mail** until production is approved.
+
+Check status:
+
+```bash
+npm run ses:status
+```
+
+Request production access (console or CLI):
+
+1. **Console**: SES → **US East (Ohio)** → **Account dashboard** → **Request production access**
+2. **CLI** (from this repo):
+
+```bash
+npm run ses:request-production
+```
+
+Use case: transactional only (intake decisions, portal messages). Website: `https://clearchoicepharmacy.com`.
 
 Until production is approved, verify each test patient email under **Verified identities**, or test only with verified addresses.
 
