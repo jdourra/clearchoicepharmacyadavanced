@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useRef, useState } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
@@ -34,20 +34,27 @@ export function IntakeIdentityPaymentSection({
   idPrefix = "intake",
 }: IntakeIdentityPaymentProps) {
   const isInvalid = (field: string) => fieldInvalid(invalidFields, field)
+  const frontInputRef = useRef<HTMLInputElement>(null)
+  const backInputRef = useRef<HTMLInputElement>(null)
+  const [uploadErrors, setUploadErrors] = useState<{ front?: string; back?: string }>({})
 
   const uploadId = useCallback(
     async (side: "front" | "back", file: File | null) => {
       const fileKey = side === "front" ? "idFrontFile" : "idBackFile"
       const storageKey = side === "front" ? "idFrontKey" : "idBackKey"
       const uploadingKey = side === "front" ? "idFrontUploading" : "idBackUploading"
+      const inputRef = side === "front" ? frontInputRef : backInputRef
 
       onChange(fileKey, file)
       if (!file) {
         onChange(storageKey, null)
+        setUploadErrors((prev) => ({ ...prev, [side]: undefined }))
         return
       }
 
       onChange(uploadingKey, true)
+      setUploadErrors((prev) => ({ ...prev, [side]: undefined }))
+
       try {
         const formData = new FormData()
         formData.append("file", file)
@@ -55,14 +62,19 @@ export function IntakeIdentityPaymentSection({
         formData.append("intakePrefix", intakePrefix)
 
         const res = await fetch("/api/intake/upload-id", { method: "POST", body: formData })
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         if (!res.ok) throw new Error(data.error || "Upload failed")
 
         onChange(storageKey, data.storageKey)
-      } catch {
+      } catch (err) {
         onChange(storageKey, null)
+        setUploadErrors((prev) => ({
+          ...prev,
+          [side]: err instanceof Error ? err.message : "Upload failed. Please try again.",
+        }))
       } finally {
         onChange(uploadingKey, false)
+        if (inputRef.current) inputRef.current.value = ""
       }
     },
     [intakePrefix, onChange]
@@ -95,13 +107,14 @@ export function IntakeIdentityPaymentSection({
               )}
             >
               <input
+                ref={frontInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif"
                 onChange={(e) => uploadId("front", e.target.files?.[0] || null)}
                 className="hidden"
                 id={`${idPrefix}-idFront`}
               />
-              <label htmlFor={`${idPrefix}-idFront`} className="cursor-pointer">
+              <label htmlFor={`${idPrefix}-idFront`} className="cursor-pointer block">
                 {values.idFrontUploading ? (
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -120,6 +133,9 @@ export function IntakeIdentityPaymentSection({
                 )}
               </label>
             </div>
+            {uploadErrors.front && (
+              <p className="text-sm text-destructive">{uploadErrors.front}</p>
+            )}
           </div>
 
           <div className="space-y-2" data-field="idBackFile">
@@ -131,13 +147,14 @@ export function IntakeIdentityPaymentSection({
               )}
             >
               <input
+                ref={backInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif"
                 onChange={(e) => uploadId("back", e.target.files?.[0] || null)}
                 className="hidden"
                 id={`${idPrefix}-idBack`}
               />
-              <label htmlFor={`${idPrefix}-idBack`} className="cursor-pointer">
+              <label htmlFor={`${idPrefix}-idBack`} className="cursor-pointer block">
                 {values.idBackUploading ? (
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -156,6 +173,9 @@ export function IntakeIdentityPaymentSection({
                 )}
               </label>
             </div>
+            {uploadErrors.back && (
+              <p className="text-sm text-destructive">{uploadErrors.back}</p>
+            )}
           </div>
         </div>
       </div>

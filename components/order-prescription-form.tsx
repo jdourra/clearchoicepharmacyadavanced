@@ -11,6 +11,9 @@ import { authFetch } from "@/lib/session"
 import type { OrderPrescriptionDetails, PrescriptionMethod } from "@/lib/order-prescription"
 import { prescriptionMethodLabel } from "@/lib/order-prescription"
 import toast from "react-hot-toast"
+import { isAllowedUploadFile } from "@/lib/upload-mime"
+
+const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
 type OrderPrescriptionFormProps = {
   orderId: string
@@ -45,8 +48,7 @@ export function OrderPrescriptionForm({ orderId, prescription, onUpdated }: Orde
       toast.error("File must be under 10MB")
       return
     }
-    const validTypes = ["image/jpeg", "image/png", "application/pdf"]
-    if (!validTypes.includes(file.type)) {
+    if (!isAllowedUploadFile(file, PRESCRIPTION_UPLOAD_TYPES)) {
       toast.error("Please upload a JPG, PNG, or PDF")
       return
     }

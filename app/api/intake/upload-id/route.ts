@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { storeIdDocument } from "@/lib/intake-id-storage"
+import { resolveUploadMimeType } from "@/lib/upload-mime"
 
-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"])
+const ALLOWED_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+])
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,9 +25,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "side must be front or back" }, { status: 400 })
     }
 
-    const contentType = file.type || "image/jpeg"
-    if (!ALLOWED_TYPES.has(contentType)) {
-      return NextResponse.json({ error: "Only JPEG, PNG, or WebP images are allowed" }, { status: 400 })
+    const contentType = resolveUploadMimeType(file, ALLOWED_TYPES, "image/jpeg")
+    if (!contentType) {
+      return NextResponse.json(
+        { error: "Only JPEG, PNG, WebP, or HEIC license photos are allowed" },
+        { status: 400 }
+      )
     }
 
     const buffer = Buffer.from(await file.arrayBuffer())

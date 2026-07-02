@@ -3,6 +3,7 @@ import { orders, staffAuth } from "@/lib/auth"
 import { savePrescriptionUpload } from "@/lib/order-prescription-admin"
 import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { storeOrderPrescription } from "@/lib/order-prescription-storage"
+import { resolveUploadMimeType } from "@/lib/upload-mime"
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -28,8 +29,8 @@ export async function POST(
       return NextResponse.json({ error: "File is required" }, { status: 400 })
     }
 
-    const contentType = file.type || "application/pdf"
-    if (!ALLOWED_TYPES.has(contentType)) {
+    const contentType = resolveUploadMimeType(file, ALLOWED_TYPES)
+    if (!contentType) {
       return NextResponse.json({ error: "Only JPEG, PNG, or PDF files are allowed" }, { status: 400 })
     }
 

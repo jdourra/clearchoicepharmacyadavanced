@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { storeSpecialtyPrescription } from "@/lib/specialty-prescription-storage"
+import { resolveUploadMimeType } from "@/lib/upload-mime"
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -13,8 +14,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File is required" }, { status: 400 })
     }
 
-    const contentType = file.type || "application/pdf"
-    if (!ALLOWED_TYPES.has(contentType)) {
+    const contentType = resolveUploadMimeType(file, ALLOWED_TYPES)
+    if (!contentType) {
       return NextResponse.json({ error: "Only JPEG, PNG, or PDF files are allowed" }, { status: 400 })
     }
 

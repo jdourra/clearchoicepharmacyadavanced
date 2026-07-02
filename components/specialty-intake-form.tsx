@@ -22,6 +22,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
+import { isAllowedUploadFile } from "@/lib/upload-mime"
+
+const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 import {
   COMMON_SPECIALTY_MEDICATIONS,
   SPECIALTY_FULFILLMENT_OPTIONS,
@@ -148,8 +151,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
       setError("File size must be less than 10MB")
       return
     }
-    const validTypes = ["image/jpeg", "image/png", "application/pdf"]
-    if (!validTypes.includes(file.type)) {
+    if (!isAllowedUploadFile(file, PRESCRIPTION_UPLOAD_TYPES)) {
       setError("Please upload a JPG, PNG, or PDF file")
       return
     }

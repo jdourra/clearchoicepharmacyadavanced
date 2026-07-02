@@ -14,6 +14,9 @@ import Link from "next/link"
 import { authFetch } from "@/lib/session"
 import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { hydrateCartItems, type CartItem } from "@/lib/cart"
+import { isAllowedUploadFile } from "@/lib/upload-mime"
+
+const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
 export default function CheckoutPage() {
   const [step, setStep] = useState(1)
@@ -160,8 +163,7 @@ export default function CheckoutPage() {
         alert("File size must be less than 10MB")
         return
       }
-      const validTypes = ["image/jpeg", "image/png", "application/pdf"]
-      if (!validTypes.includes(file.type)) {
+      if (!isAllowedUploadFile(file, PRESCRIPTION_UPLOAD_TYPES)) {
         alert("Please upload a JPG, PNG, or PDF file")
         return
       }
