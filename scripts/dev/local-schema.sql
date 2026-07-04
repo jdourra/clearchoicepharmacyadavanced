@@ -77,8 +77,9 @@ CREATE TABLE medications (
   days_supply INTEGER,
   category TEXT,
   description TEXT,
-  active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT now()
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE INDEX idx_medications_name ON medications (LOWER(name));
