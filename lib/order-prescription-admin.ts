@@ -26,7 +26,7 @@ export async function getOrderPrescriptionDetails(
   }))
 
   const intakes = await sql(
-    `SELECT id, status, created_at
+    `SELECT id, status, created_at, intake_type, submitted_at, intake_data
      FROM prescription_order_intakes
      WHERE order_id = $1
      LIMIT 1`,
@@ -39,6 +39,12 @@ export async function getOrderPrescriptionDetails(
       id: String(row.id),
       status: String(row.status),
       created_at: String(row.created_at),
+      intake_type: row.intake_type != null ? String(row.intake_type) : null,
+      submitted_at: row.submitted_at != null ? String(row.submitted_at) : null,
+      intake_data:
+        row.intake_data && typeof row.intake_data === "object"
+          ? (row.intake_data as Record<string, unknown>)
+          : null,
     }
     if (details.method === "unknown") {
       details.method = "telemedicine"
@@ -50,17 +56,40 @@ export async function getOrderPrescriptionDetails(
 
 export async function createTelemedicineIntakeForOrder(
   orderId: string,
-  patientId: string | null
+  patientId: string | null,
+  intakeType?: string | null
 ): Promise<string | null> {
   const rows = await sql(
-    `INSERT INTO prescription_order_intakes (order_id, patient_id, status)
-     VALUES ($1, $2, 'pending_provider_review')
-     ON CONFLICT (order_id) DO UPDATE SET updated_at = now()
+    `INSERT INTO prescription_order_intakes (order_id, patient_id, status, intake_type)
+     VALUES ($1, $2, 'pending_intake', $3)
+     ON CONFLICT (order_id) DO UPDATE SET
+       intake_type = COALESCE(EXCLUDED.intake_type, prescription_order_intakes.intake_type),
+       updated_at = now()
      RETURNING id`,
-    [orderId, patientId]
+    [orderId, patientId, intakeType || null]
   ).catch(() => [])
 
   return rows.length > 0 ? String(rows[0].id) : null
+}
+
+export async function savePrescriptionTelemedicineIntake(
+  orderId: string,
+  intakeType: string,
+  intakeData: Record<string, unknown>
+): Promise<boolean> {
+  const rows = await sql(
+    `UPDATE prescription_order_intakes
+     SET intake_type = $2,
+         intake_data = $3::jsonb,
+         status = 'pending_provider_review',
+         submitted_at = NOW(),
+         updated_at = NOW()
+     WHERE order_id = $1
+     RETURNING id`,
+    [orderId, intakeType, JSON.stringify(intakeData)]
+  ).catch(() => [])
+
+  return rows.length > 0
 }
 
 export async function savePrescriptionUpload(params: {

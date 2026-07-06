@@ -12,6 +12,9 @@ export interface OrderTelemedicineIntake {
   id: string
   status: string
   created_at: string
+  intake_type?: string | null
+  submitted_at?: string | null
+  intake_data?: Record<string, unknown> | null
 }
 
 export interface OrderPrescriptionDetails {

@@ -300,8 +300,30 @@ export function AdminOrderPrescriptionPanel({
             {prescription.telemedicineIntake && (
               <Badge variant="secondary">
                 Status: {formatPortalStatus(prescription.telemedicineIntake.status)}
+                {prescription.telemedicineIntake.intake_type
+                  ? ` · ${prescription.telemedicineIntake.intake_type.replace("_", " ")}`
+                  : ""}
               </Badge>
             )}
+            {prescription.telemedicineIntake?.intake_data && (
+              <div className="rounded-lg border bg-muted/30 p-4 text-sm space-y-2">
+                <p className="font-semibold">Submitted intake summary</p>
+                {prescription.telemedicineIntake.submitted_at && (
+                  <p className="text-xs text-muted-foreground">
+                    Submitted {new Date(prescription.telemedicineIntake.submitted_at).toLocaleString()}
+                  </p>
+                )}
+                <pre className="text-xs whitespace-pre-wrap overflow-x-auto max-h-64">
+                  {JSON.stringify(prescription.telemedicineIntake.intake_data, null, 2)}
+                </pre>
+              </div>
+            )}
+            {prescription.telemedicineIntake &&
+              prescription.telemedicineIntake.status === "pending_intake" && (
+                <p className="text-sm text-amber-700">
+                  Patient has not completed the telemedicine intake form yet.
+                </p>
+              )}
           </div>
         )}
 

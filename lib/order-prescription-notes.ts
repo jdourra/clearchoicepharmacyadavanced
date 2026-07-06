@@ -1,4 +1,5 @@
 import type { PrescriptionMethod } from "@/lib/order-prescription"
+import { TELEMEDICINE_VISIT_FEE } from "@/lib/prescription-telemedicine"
 
 export type PrescriptionNotesInput = {
   doctorName?: string
@@ -34,7 +35,7 @@ export function buildPrescriptionNotes(
   }
 
   if (prescriptionMethod === "telemedicine") {
-    return `Delivery: ${deliveryMethod}, Prescription: Telemedicine`
+    return `Delivery: ${deliveryMethod}, Prescription: Telemedicine ($${TELEMEDICINE_VISIT_FEE} visit fee)`
   }
 
   return `Delivery: ${deliveryMethod}, Prescription: Upload`

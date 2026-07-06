@@ -17,6 +17,8 @@ type IntakeIdentityPaymentProps = {
   intakePrefix?: string
   invalidFields?: Set<string>
   idPrefix?: string
+  /** When false, only ID upload is shown (e.g. telemedicine linked to an existing cash-pay order). */
+  showPayment?: boolean
 }
 
 function fieldInvalid(invalidFields: Set<string> | undefined, field: string) {
@@ -32,6 +34,7 @@ export function IntakeIdentityPaymentSection({
   intakePrefix = "draft",
   invalidFields,
   idPrefix = "intake",
+  showPayment = true,
 }: IntakeIdentityPaymentProps) {
   const isInvalid = (field: string) => fieldInvalid(invalidFields, field)
   const frontInputRef = useRef<HTMLInputElement>(null)
@@ -180,39 +183,41 @@ export function IntakeIdentityPaymentSection({
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 border-b pb-2">
-          <CreditCard className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Payment Authorization</h3>
-        </div>
-
-        <Alert>
-          <CreditCard className="h-4 w-4" />
-          <AlertTitle>Authorization hold — ${totalBilled}</AlertTitle>
-          <AlertDescription>
-            Your card will be authorized for <strong>${totalBilled}</strong>. Funds are captured only after provider
-            clinical approval.
-          </AlertDescription>
-        </Alert>
-
-        {values.paymentAuthorized && values.stripePaymentIntentId ? (
-          <div className="flex items-center gap-2 text-green-600 text-sm rounded-lg border border-green-200 bg-green-50 p-3">
-            <CheckCircle2 className="h-5 w-5 shrink-0" />
-            Payment hold authorized. You can submit your intake.
+      {showPayment && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b pb-2">
+            <CreditCard className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold">Payment Authorization</h3>
           </div>
-        ) : (
-          <StripePaymentHold
-            amount={totalBilled}
-            email={patientEmail}
-            serviceType={serviceType}
-            invalid={isInvalid("stripePayment")}
-            onAuthorized={(paymentIntentId) => {
-              onChange("stripePaymentIntentId", paymentIntentId)
-              onChange("paymentAuthorized", true)
-            }}
-          />
-        )}
-      </div>
+
+          <Alert>
+            <CreditCard className="h-4 w-4" />
+            <AlertTitle>Authorization hold — ${totalBilled}</AlertTitle>
+            <AlertDescription>
+              Your card will be authorized for <strong>${totalBilled}</strong>. Funds are captured only after provider
+              clinical approval.
+            </AlertDescription>
+          </Alert>
+
+          {values.paymentAuthorized && values.stripePaymentIntentId ? (
+            <div className="flex items-center gap-2 text-green-600 text-sm rounded-lg border border-green-200 bg-green-50 p-3">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              Payment hold authorized. You can submit your intake.
+            </div>
+          ) : (
+            <StripePaymentHold
+              amount={totalBilled}
+              email={patientEmail}
+              serviceType={serviceType}
+              invalid={isInvalid("stripePayment")}
+              onAuthorized={(paymentIntentId) => {
+                onChange("stripePaymentIntentId", paymentIntentId)
+                onChange("paymentAuthorized", true)
+              }}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

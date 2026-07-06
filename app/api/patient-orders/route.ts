@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { orders } from "@/lib/auth"
 import { createTelemedicineIntakeForOrder } from "@/lib/order-prescription-admin"
+import { resolveTelemedicineIntakeRouteFromOrderItems } from "@/lib/prescription-telemedicine"
 import { getUserIdFromRequest } from "@/lib/server-session"
 
 export async function POST(request: Request) {
@@ -23,7 +24,10 @@ export async function POST(request: Request) {
     )
 
     if (order && method === "telemedicine") {
-      await createTelemedicineIntakeForOrder(order.id, userId)
+      const route = resolveTelemedicineIntakeRouteFromOrderItems(orderItems)
+      const intakeType =
+        route.type === "ed_troche" ? "ed_troche" : route.type === "ed_tablet" ? "ed_tablet" : "general"
+      await createTelemedicineIntakeForOrder(order.id, userId, intakeType)
     }
 
     return NextResponse.json({ order })

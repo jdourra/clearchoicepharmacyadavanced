@@ -14,6 +14,11 @@ import Link from "next/link"
 import { authFetch } from "@/lib/session"
 import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { hydrateCartItems, type CartItem } from "@/lib/cart"
+import {
+  buildTelemedicineIntakeUrl,
+  resolveTelemedicineIntakeRoute,
+  TELEMEDICINE_VISIT_FEE,
+} from "@/lib/prescription-telemedicine"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
@@ -93,8 +98,9 @@ export default function CheckoutPage() {
   }
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price || 0), 0)
+  const telemedicineFee = prescriptionMethod === "telemedicine" ? TELEMEDICINE_VISIT_FEE : 0
   const deliveryFee = deliveryMethod === "delivery" ? 5 : 0
-  const total = subtotal + deliveryFee
+  const total = subtotal + deliveryFee + telemedicineFee
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -148,6 +154,13 @@ export default function CheckoutPage() {
         }
       }
       window.sessionStorage.removeItem("cart")
+
+      if (prescriptionMethod === "telemedicine") {
+        const route = resolveTelemedicineIntakeRoute(cartItems)
+        router.push(buildTelemedicineIntakeUrl(data.order.id, route))
+        return
+      }
+
       router.push(`/confirmation?orderId=${data.order.id}&orderNumber=${data.order.order_number}`)
     } catch (err: any) {
       console.log("[v0] Order error:", err.message)
@@ -698,6 +711,12 @@ export default function CheckoutPage() {
                     <span>Delivery:</span>
                     <span className="font-medium">{deliveryFee === 0 ? "Free" : `$${deliveryFee.toFixed(2)}`}</span>
                   </div>
+                  {telemedicineFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span>Telemedicine visit:</span>
+                      <span className="font-medium">${telemedicineFee.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-lg font-bold border-t pt-2">
                     <span>Total:</span>
                     <span>${total.toFixed(2)}</span>

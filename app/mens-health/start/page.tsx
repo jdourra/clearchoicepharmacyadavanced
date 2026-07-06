@@ -50,12 +50,13 @@ const processSteps = [
 ]
 
 type PageProps = {
-  searchParams: Promise<{ product?: string; addons?: string; plan?: string }>
+  searchParams: Promise<{ product?: string; addons?: string; plan?: string; orderId?: string }>
 }
 
 export default async function MensHealthStartPage({ searchParams }: PageProps) {
   const params = await searchParams
   const productId = params.product?.trim() || ""
+  const linkedOrderId = params.orderId?.trim() || ""
   const initialProduct = productId && getEdTrocheProduct(productId) ? productId : undefined
   const initialAddOns = parseEdAddOns(params.addons)
   const planParam = params.plan as EdBillingPlan | undefined
@@ -78,6 +79,12 @@ export default async function MensHealthStartPage({ searchParams }: PageProps) {
                   Finish your secure intake for custom compounded ED troches. A licensed provider reviews your
                   information before Clear Choice Pharmacy prepares your prescription.
                 </p>
+                {linkedOrderId ? (
+                  <p className="mt-3 text-sm rounded-lg border border-sky-200 bg-sky-50 text-sky-900 px-4 py-3">
+                    Linked to prescription order <span className="font-mono font-medium">{linkedOrderId}</span>.
+                    Complete this intake so our physician can review your troche request.
+                  </p>
+                ) : null}
               </div>
 
               <ClinicalIntakeForm
