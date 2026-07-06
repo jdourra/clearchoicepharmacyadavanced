@@ -10,7 +10,7 @@ import {
 } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Clear Choice IV & Rejuvenation | Premium Mobile IV Therapy Metro Detroit",
+  title: "IV Rejuvenation",
   description:
     "Premium mobile IV therapy delivered to your door in Metro Detroit. Myers' Cocktail, NAD+, hydration, immunity drips, and symptom relief. Pharmacy-formulated, licensed RNs, upfront pricing.",
   keywords: [

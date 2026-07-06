@@ -29,7 +29,7 @@ import {
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Medical Weight Loss & GLP Therapy | Clear Choice Pharmacy",
+  title: "Weight Loss & GLP-1",
   description:
     "Semaglutide and Tirzepatide medical weight management in Novi, MI. Custom GLP-1 formulations with transparent pricing. Buy online with provider review.",
   keywords: [

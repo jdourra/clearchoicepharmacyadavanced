@@ -3,20 +3,23 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "react-hot-toast"
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  SITE_URL,
+  buildSiteNavigationJsonLd,
+} from "@/lib/clinical-seo"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Clear Choice Pharmacy | Cheap Prescription Medications - Affordable Cash-Pay Pharmacy in Novi, MI",
-    template: "%s | Clear Choice Pharmacy - Affordable Prescriptions",
+    default: HOME_TITLE,
+    template: "%s | Clear Choice Pharmacy",
   },
-  description:
-    "Buy cheap prescription medications at Clear Choice Pharmacy in Novi, MI. Affordable prescription drugs at true cost with no insurance needed. Save up to 80% on generic drugs. Simple pricing: Drug Cost + 15% + $5 dispensing fee. Compare prescription drug prices and pay cash for prescriptions.",
+  description: HOME_DESCRIPTION,
   keywords: [
     "cheap prescription medications",
     "affordable prescription drugs",
@@ -70,31 +73,26 @@ export const metadata: Metadata = {
     address: true,
     telephone: true,
   },
-  alternates: {
-    canonical: SITE_URL,
-  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
     siteName: "Clear Choice Pharmacy",
-    title: "Clear Choice Pharmacy | Cheap Prescription Medications - Save Up to 80%",
-    description:
-      "Buy affordable prescription drugs at true cost. No insurance needed. Cheap generic drugs with transparent pricing. Drug Cost + 15% + $5. Compare prescription drug prices instantly.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy - Affordable Prescription Medications at True Cost",
+        alt: "Clear Choice Pharmacy — prescriptions, weight loss, IV therapy, and men's health in Novi, MI",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Clear Choice Pharmacy | Cheap Prescription Medications",
-    description:
-      "Save up to 80% on prescription drugs. No insurance needed. Transparent cash-pay pricing on 1,600+ medications.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -149,8 +147,7 @@ export default function RootLayout({
     url: SITE_URL,
     logo: `${SITE_URL}/icon.svg`,
     image: `${SITE_URL}/og-image.jpg`,
-    description:
-      "Affordable cash-pay pharmacy offering cheap prescription medications at true cost. No insurance needed. Save up to 80% on generic drugs with our transparent pricing formula: Drug Cost + 15% + $5 dispensing fee.",
+    description: HOME_DESCRIPTION,
     telephone: "+1-248-987-6182",
     faxNumber: "+1-248-987-4963",
     address: {
@@ -194,23 +191,39 @@ export default function RootLayout({
     sameAs: [],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "Prescription Medications",
+      name: "Clear Choice Pharmacy Services",
       itemListElement: [
         {
           "@type": "OfferCatalog",
-          name: "Cheap Generic Drugs",
-          description: "Affordable generic prescription medications at true cost pricing",
-        },
-        {
-          "@type": "OfferCatalog",
-          name: "Brand Name Medications",
-          description: "Discounted brand name prescription drugs",
-        },
-        {
-          "@type": "OfferCatalog",
-          name: "Specialty Pharmacy Services",
+          name: "Low-Cost Prescriptions",
           description:
-            "Specialty and high-cost medication support with all major insurances accepted, in-house prior authorizations, and copay assistance programs",
+            "Transparent cash-pay prescription pricing — Drug Cost + 15% + $5 dispensing fee. No insurance required.",
+          url: `${SITE_URL}/prescriptions`,
+        },
+        {
+          "@type": "OfferCatalog",
+          name: "Weight Loss & GLP-1",
+          description: "Medical weight management with Semaglutide and Tirzepatide GLP-1 therapies",
+          url: `${SITE_URL}/weight-loss`,
+        },
+        {
+          "@type": "OfferCatalog",
+          name: "ED Medications & TRT",
+          description: "Custom sublingual ED troches and physician-supervised testosterone replacement therapy",
+          url: `${SITE_URL}/mens-health`,
+        },
+        {
+          "@type": "OfferCatalog",
+          name: "IV Rejuvenation",
+          description: "Mobile IV therapy and physician-reviewed rejuvenation vials in Metro Detroit",
+          url: `${SITE_URL}/iv-rejuvenation`,
+        },
+        {
+          "@type": "OfferCatalog",
+          name: "Specialty Pharmacy",
+          description:
+            "Specialty medications with all major insurances accepted, in-house prior authorizations, and copay assistance",
+          url: `${SITE_URL}/specialty-pharmacy`,
         },
       ],
     },
@@ -222,8 +235,8 @@ export default function RootLayout({
     name: "Clear Choice Pharmacy",
     alternateName: "Clear Choice Rx",
     url: SITE_URL,
-    description:
-      "Buy cheap prescription medications online. Affordable prescription drugs at true cost. Compare prescription drug prices and save up to 80% without insurance.",
+    description: HOME_DESCRIPTION,
+    hasPart: buildSiteNavigationJsonLd(),
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -264,7 +277,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <link rel="canonical" href={SITE_URL} />
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Information" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>

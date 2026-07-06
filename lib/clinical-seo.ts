@@ -1,5 +1,29 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
+export const HOME_TITLE =
+  "Clear Choice Pharmacy | Prescriptions, Weight Loss, IV & Men's Health | Novi, MI"
+
+export const HOME_DESCRIPTION =
+  "Clear Choice Pharmacy in Novi, MI offers low-cost prescriptions, GLP-1 weight loss, ED medications and TRT, mobile IV rejuvenation, and specialty pharmacy care with prior authorization and copay assistance support."
+
+/** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
+export const SITE_NAV_LINKS = [
+  { name: "Weight Loss & GLP-1", path: "/weight-loss" },
+  { name: "ED Medications & TRT", path: "/mens-health" },
+  { name: "IV Rejuvenation", path: "/iv-rejuvenation" },
+  { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
+  { name: "Low-Cost Prescriptions", path: "/prescriptions" },
+  { name: "Our Services", path: "/services" },
+] as const
+
+export function buildSiteNavigationJsonLd() {
+  return SITE_NAV_LINKS.map((link) => ({
+    "@type": "WebPage" as const,
+    name: link.name,
+    url: `${SITE_URL}${link.path}`,
+  }))
+}
+
 export const PHARMACY_PHONE = "+1-248-987-6182"
 
 export const PHARMACY_ADDRESS = {

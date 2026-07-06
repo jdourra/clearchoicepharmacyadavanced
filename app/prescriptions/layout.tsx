@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Low Cost Prescription Drugs | Clear Choice Pharmacy",
+  title: "Low-Cost Prescriptions",
   description:
     "Affordable cash-pay prescription medications in Novi, MI. Most common meds hover around $5 for a 30-day supply. Transparent pricing: Drug Cost + 15% + $5 dispensing fee. No insurance needed. Save up to 80% on generics.",
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/prescriptions`,
   },
   openGraph: {
-    title: "Low Cost Prescription Drugs | Clear Choice Pharmacy",
+    title: "Low-Cost Prescriptions | Clear Choice Pharmacy",
     description:
       "Most common medications hover around $5. Transparent cash-pay pricing: Drug Cost + 15% + $5. Search 6,000+ medications instantly.",
     url: `${SITE_URL}/prescriptions`,

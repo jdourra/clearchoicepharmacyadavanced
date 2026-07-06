@@ -32,7 +32,7 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
-  title: "Men's Health | ED Troches & TRT | Clear Choice Pharmacy",
+  title: "ED Medications & TRT",
   description:
     "Custom sublingual ED troches and physician-supervised TRT in Novi, MI. Transparent cash-pay pricing for testosterone therapy starting at $109/mo. Buy online with provider review.",
   keywords: [

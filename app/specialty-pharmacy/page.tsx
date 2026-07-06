@@ -17,7 +17,7 @@ import { SITE_URL, AREA_SERVED, PHARMACY_ADDRESS, PHARMACY_PHONE } from "@/lib/c
 import { COMMON_SPECIALTY_MEDICATIONS } from "@/lib/specialty-pharmacy-catalog"
 
 export const metadata: Metadata = {
-  title: "Specialty Medicine Program | All Insurances Accepted - Prior Auth & Copay Support",
+  title: "Specialty Pharmacy",
   description:
     "Clear Choice Pharmacy simplifies specialty medications. All major insurance accepted. In-house Prior Authorization team expedites clinical approvals. Copay assistance programs can lower out-of-pocket costs to as low as $0. Transfer your specialty care to Novi, MI.",
   keywords: [

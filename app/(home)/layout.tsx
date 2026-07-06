@@ -1,62 +1,74 @@
 import type { Metadata } from "next"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+import { buildFaqJsonLd, HOME_DESCRIPTION, HOME_TITLE, SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Clear Choice Pharmacy | Affordable Prescriptions & Pharmacy Care in Novi, MI",
-  description:
-    "Clear Choice Pharmacy in Novi, MI offers low cost prescription drugs, GLP-1 weight loss, men's health, mobile IV therapy, and specialty pharmacy care. Transparent cash-pay pricing and in-house prior authorization support.",
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   keywords: [
     "pharmacy Novi MI",
+    "Clear Choice Pharmacy",
     "low cost prescription drugs",
+    "GLP-1 weight loss Novi",
+    "ED medications Michigan",
+    "TRT Novi MI",
+    "mobile IV therapy Metro Detroit",
     "specialty pharmacy",
-    "GLP-1 weight loss",
-    "cash pay pharmacy",
     "prior authorization pharmacy",
     "copay assistance programs",
+    "cash pay pharmacy",
   ],
   alternates: {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: "Clear Choice Pharmacy | Affordable Prescriptions & Pharmacy Care",
-    description:
-      "Low cost prescriptions, clinical programs, and specialty pharmacy care with transparent pricing and prior authorization support.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     url: SITE_URL,
     type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Clear Choice Pharmacy — prescriptions, weight loss, IV therapy, and men's health in Novi, MI",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: ["/og-image.jpg"],
   },
 }
 
-const specialtyFaqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Does Clear Choice Pharmacy accept insurance for specialty medications?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. Clear Choice Pharmacy accepts all major insurance plans for specialty and high-cost medications, with an in-house Prior Authorization team and copay assistance support.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What specialty pharmacy services does Clear Choice Pharmacy offer?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Clear Choice Pharmacy offers expedited in-house prior authorizations, manufacturer copay assistance enrollment, and fulfillment for specialty therapies in Novi, Michigan.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How do I transfer my specialty prescriptions to Clear Choice Pharmacy?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Call (248) 987-6182 or visit 40890 Grand River Ave, Novi, MI 48375. The pharmacy coordinates with your doctor and current pharmacy to transfer specialty care.",
-      },
-    },
-  ],
-}
+const homeFaqJsonLd = buildFaqJsonLd([
+  {
+    question: "What services does Clear Choice Pharmacy offer?",
+    answer:
+      "Clear Choice Pharmacy in Novi, MI offers low-cost cash-pay prescriptions, GLP-1 medical weight loss, ED medications and TRT, mobile IV rejuvenation, rejuvenation vials, and specialty pharmacy care with prior authorization and copay assistance support.",
+  },
+  {
+    question: "Does Clear Choice Pharmacy offer GLP-1 weight loss in Michigan?",
+    answer:
+      "Yes. Medical weight management with Semaglutide and Tirzepatide is available for qualifying patients in Novi and Metro Detroit with licensed provider review and transparent pricing.",
+  },
+  {
+    question: "Does Clear Choice Pharmacy compound ED medications?",
+    answer:
+      "Yes. Custom sublingual ED troches with Sildenafil and Tadalafil are compounded in-house, plus physician-supervised TRT programs with transparent cash-pay pricing.",
+  },
+  {
+    question: "Does Clear Choice Pharmacy offer mobile IV therapy?",
+    answer:
+      "Yes. Clear Choice IV & Rejuvenation delivers pharmacy-formulated mobile IV therapy across Metro Detroit with licensed RN administration.",
+  },
+  {
+    question: "Does Clear Choice Pharmacy accept insurance for specialty medications?",
+    answer:
+      "Yes. All major insurance plans are accepted for specialty therapies, with an in-house Prior Authorization team and copay assistance programs.",
+  },
+])
 
 export default function HomeLayout({
   children,
@@ -67,7 +79,7 @@ export default function HomeLayout({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(specialtyFaqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaqJsonLd) }}
       />
       {children}
     </>

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Our Services | Clear Choice Pharmacy",
+  title: "Our Services",
   description:
     "Clear Choice Pharmacy services in Novi and Metro Detroit: low cost prescription drugs, GLP-1 weight loss, men's health ED compounding, mobile IV rejuvenation, and specialty pharmacy care with prior authorization support.",
   alternates: {

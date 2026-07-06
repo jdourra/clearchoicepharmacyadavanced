@@ -117,19 +117,27 @@ export default function HomePage() {
                 <ul className="space-y-2 text-sm mb-5">
                   <li className="flex gap-2">
                     <span className="text-primary shrink-0">•</span>
-                    Weight loss (GLP-1)
+                    <Link href="/weight-loss" className="hover:text-primary hover:underline">
+                      Weight loss (GLP-1)
+                    </Link>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary shrink-0">•</span>
-                    Men&apos;s health (ED, TRT &amp; more)
+                    <Link href="/mens-health" className="hover:text-primary hover:underline">
+                      Men&apos;s health (ED, TRT &amp; more)
+                    </Link>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary shrink-0">•</span>
-                    Rejuvenation injections
+                    <Link href="/iv-rejuvenation/vials/start" className="hover:text-primary hover:underline">
+                      Rejuvenation injections
+                    </Link>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary shrink-0">•</span>
-                    Mobile IV therapy
+                    <Link href="/iv-rejuvenation" className="hover:text-primary hover:underline">
+                      Mobile IV therapy
+                    </Link>
                   </li>
                 </ul>
                 <Button asChild size="sm" className="mt-auto w-fit">
@@ -226,7 +234,11 @@ export default function HomePage() {
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Yes. For specialty and high-cost therapies, we accept all major insurance plans. Our in-house Prior
                 Authorization team works with your doctor to expedite clinical approvals, and our clinical advocates
-                help connect you with manufacturer copay assistance programs.
+                help connect you with manufacturer copay assistance programs.{" "}
+                <Link href="/specialty-pharmacy" className="text-primary hover:underline">
+                  Learn about specialty pharmacy
+                </Link>
+                .
               </p>
             </div>
             <div>
