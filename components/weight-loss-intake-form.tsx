@@ -31,7 +31,14 @@ import {
   getInjectionConsentInvalidFields,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
-import { WEIGHT_LOSS_PROGRAMS, type WeightLossBillingPlan } from "@/lib/weight-loss-catalog"
+import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pricing"
+import {
+  WEIGHT_LOSS_PROGRAMS,
+  WEIGHT_LOSS_INTAKE_HOLD_NOTE,
+  formatKitBillingLabel,
+  getWeightLossIntakeHoldQuote,
+  type WeightLossBillingPlan,
+} from "@/lib/weight-loss-catalog"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 
 type BillingPlan = WeightLossBillingPlan
@@ -809,24 +816,40 @@ export function WeightLossIntakeForm({
             </div>
 
             {selectedProgram && (
-              <div className="pt-4 border-t">
-                <Label className="mb-3 block">Billing preference</Label>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {selectedProgram.pricing.map((tier) => (
-                    <button
-                      key={tier.plan}
-                      type="button"
-                      onClick={() => updateFormData("selectedBillingPlan", tier.plan)}
-                      className={`rounded-lg border p-4 text-left ${
-                        formData.selectedBillingPlan === tier.plan ? "border-primary bg-primary/5" : ""
-                      }`}
-                    >
-                      <p className="font-medium capitalize">{tier.plan}</p>
-                      <p className="text-2xl font-bold">${tier.pricePerMonth}<span className="text-sm font-normal">/mo</span></p>
-                      {tier.badge && <span className="text-xs text-primary">{tier.badge}</span>}
-                    </button>
-                  ))}
+              <div className="pt-4 border-t space-y-4">
+                <div>
+                  <Label className="mb-3 block">Billing preference</Label>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {selectedProgram.billingPlans.map((option) => {
+                      const quote = getWeightLossIntakeHoldQuote(selectedProgram, option.plan)
+                      return (
+                        <button
+                          key={option.plan}
+                          type="button"
+                          onClick={() => updateFormData("selectedBillingPlan", option.plan)}
+                          className={`rounded-lg border p-4 text-left ${
+                            formData.selectedBillingPlan === option.plan ? "border-primary bg-primary/5" : ""
+                          }`}
+                        >
+                          <p className="font-medium capitalize">{option.plan}</p>
+                          <p className="text-xs text-muted-foreground">{formatKitBillingLabel(option.plan)}</p>
+                          {quote && (
+                            <p className="text-2xl font-bold mt-2">
+                              ${quote.kitPrice}
+                              <span className="text-sm font-normal text-muted-foreground">/kit · starter</span>
+                            </p>
+                          )}
+                          {option.badge && <span className="text-xs text-primary">{option.badge}</span>}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
+                <WeightLossDoseTierPricing
+                  program={selectedProgram}
+                  billingPlan={formData.selectedBillingPlan}
+                  compact
+                />
               </div>
             )}
           </CardContent>
@@ -845,15 +868,22 @@ export function WeightLossIntakeForm({
             <CardDescription>Tell us about yourself and your current health metrics.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {programPrefilled && selectedProgram && (
+            {programPrefilled && selectedProgram && (() => {
+              const holdQuote = getWeightLossIntakeHoldQuote(selectedProgram, formData.selectedBillingPlan)
+              return (
               <IntakeOrderSummary
                 productName={selectedProgram.name}
                 productSubtitle={selectedProgram.subtitle}
                 billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
-                priceLine={`$${selectedProgram.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.pricePerMonth ?? "—"}/mo`}
+                priceLine={
+                  holdQuote
+                    ? `Starter kit hold: $${holdQuote.totalBilled} · dose-based pricing on refills`
+                    : "Dose-based kit pricing"
+                }
                 changeHref="/weight-loss#programs"
               />
-            )}
+              )
+            })()}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2" data-field="firstName">
                 <Label htmlFor="firstName" className={cn(isFieldInvalid("firstName") && "text-destructive")}>First name *</Label>
@@ -1141,13 +1171,22 @@ export function WeightLossIntakeForm({
           <CardContent className="space-y-6">
             {(() => {
               const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
-              const currentPricing = selectedProgram?.pricing.find((p) => p.plan === formData.selectedBillingPlan)
-              return selectedProgram && currentPricing ? (
-                <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
+              const holdQuote = selectedProgram
+                ? getWeightLossIntakeHoldQuote(selectedProgram, formData.selectedBillingPlan)
+                : undefined
+              return selectedProgram && holdQuote ? (
+                <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-2">
                   <p className="font-semibold">{selectedProgram.name}</p>
                   <p className="text-muted-foreground">{selectedProgram.subtitle}</p>
-                  <p className="text-lg font-bold text-primary mt-2">${currentPricing.pricePerMonth}/mo</p>
-                  <p className="text-sm text-muted-foreground">Total due upon approval: ${currentPricing.totalBilled}</p>
+                  <p className="text-lg font-bold text-primary mt-2">
+                    Authorization hold: ${holdQuote.totalBilled}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.selectedBillingPlan === "monthly"
+                      ? "First 30-day kit (4 weekly injections) at starter dose tier"
+                      : "First shipment — 3 kits, 4 injections each (90 days) at starter dose tier"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
                 </div>
               ) : null
             })()}
@@ -1214,9 +1253,10 @@ export function WeightLossIntakeForm({
               }}
               onChange={updateFormData}
               totalBilled={
-                programs
-                  .find((p) => p.id === formData.selectedProgram)
-                  ?.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.totalBilled ?? 0
+                (() => {
+                  const p = programs.find((prog) => prog.id === formData.selectedProgram)
+                  return p ? getWeightLossIntakeHoldQuote(p, formData.selectedBillingPlan)?.totalBilled ?? 0 : 0
+                })()
               }
               invalidFields={fieldErrors}
             />
@@ -1251,11 +1291,14 @@ export function WeightLossIntakeForm({
                   I authorize a payment hold of{" "}
                   <strong>
                     $
-                    {programs
-                      .find((p) => p.id === formData.selectedProgram)
-                      ?.pricing.find((p) => p.plan === formData.selectedBillingPlan)?.totalBilled ?? 0}
+                    {(() => {
+                      const p = programs.find((prog) => prog.id === formData.selectedProgram)
+                      return p
+                        ? getWeightLossIntakeHoldQuote(p, formData.selectedBillingPlan)?.totalBilled ?? 0
+                        : 0
+                    })()}
                   </strong>{" "}
-                  to be charged only upon prescription approval *
+                  for my first starter-dose kit(s) to be charged only upon prescription approval *
                 </Label>
               </div>
             </div>

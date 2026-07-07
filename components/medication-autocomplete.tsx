@@ -15,6 +15,7 @@ import {
   MIN_SEARCH_LENGTH,
   type MedicationSearchResult,
 } from "@/lib/pharmacy-medication"
+import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
 
 export function MedicationAutocomplete({
   placeholder,
@@ -79,6 +80,11 @@ export function MedicationAutocomplete({
       onSelect(med)
       return
     }
+    const trocheUrl = resolveEdTrocheProductUrl(med.name)
+    if (trocheUrl) {
+      router.push(trocheUrl)
+      return
+    }
     router.push(`/medications/${med.id}`)
   }
 
@@ -89,6 +95,14 @@ export function MedicationAutocomplete({
     if (trimmed.length < MIN_SEARCH_LENGTH) return
 
     setShowSuggestions(false)
+
+    if (!onSelect) {
+      const trocheFromQuery = resolveEdTrocheProductUrl(trimmed)
+      if (trocheFromQuery) {
+        router.push(trocheFromQuery)
+        return
+      }
+    }
 
     if (suggestions.length > 0) {
       handleMedicationPick(suggestions[0])

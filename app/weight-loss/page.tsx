@@ -13,11 +13,10 @@ import {
   SectionIntro,
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
-import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { ServiceBuyButton } from "@/components/service-buy-button"
-import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
-import { buildVialIntakeUrl, buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
+import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS, getWeightLossStartingKitPrice } from "@/lib/weight-loss-catalog"
+import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
   SITE_URL,
@@ -105,7 +104,7 @@ export default function WeightLossPage() {
         />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {WEIGHT_LOSS_PROGRAMS.map((program) => {
-            const pricing = program.pricing.find((p) => p.plan === "monthly") || program.pricing[0]
+            const startingPrice = getWeightLossStartingKitPrice(program)
             return (
               <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -118,19 +117,18 @@ export default function WeightLossPage() {
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
-                </div>
+                <div className="flex items-center gap-2 flex-wrap mb-2" />
                 <h3 className="text-xl font-bold">{program.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
                 <div className="mt-5 pt-4 border-t">
                   <p className="text-3xl font-bold text-primary">
-                    ${pricing.pricePerMonth}
-                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                    ${startingPrice}
+                    <span className="text-base font-normal text-muted-foreground">+</span>
                   </p>
+                  <p className="text-sm text-muted-foreground mt-1">starting at per 30-day kit · 4 weekly injections</p>
                   <div className="mt-4">
-                    <ServiceBuyButton href={buildWeightLossIntakeUrl(program.id, pricing.plan)} fullWidth />
+                    <ServiceBuyButton href={buildWeightLossProductUrl(program.id)} fullWidth label="Shop now" />
                   </div>
                 </div>
                 </div>
@@ -156,8 +154,9 @@ export default function WeightLossPage() {
                 ${MIC_B12_WEIGHT_LOSS.price}
                 <span className="text-base font-normal text-muted-foreground">/kit</span>
               </p>
+              <p className="text-sm text-muted-foreground mt-1">{MIC_B12_WEIGHT_LOSS.supply}</p>
               <div className="mt-4">
-                <ServiceBuyButton href={buildVialIntakeUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth />
+                <ServiceBuyButton href={buildVialProductUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth label="Shop now" />
               </div>
             </div>
             </div>
@@ -246,8 +245,8 @@ export default function WeightLossPage() {
         steps={[
           {
             step: 1,
-            title: "Buy Your Program",
-            description: "Select Semaglutide or Tirzepatide and complete secure checkout with your health profile.",
+            title: "Review Your HomeKit",
+            description: "Explore Semaglutide or Tirzepatide kit details, pricing, and titration — then start your secure intake.",
           },
           {
             step: 2,

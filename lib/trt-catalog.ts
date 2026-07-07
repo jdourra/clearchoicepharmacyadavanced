@@ -7,6 +7,7 @@ export type TrtProgram = {
   description: string
   dosage: string
   frequency: string
+  supplyLabel: string
   features: string[]
   pricing: {
     plan: TrtBillingPlan
@@ -28,6 +29,7 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       "Physician-supervised testosterone replacement with weekly self-injection. Includes syringes, alcohol pads, and step-by-step guidance.",
     dosage: "Custom titrated strength",
     frequency: "Typically 1 injection per week",
+    supplyLabel: "30-day kit · 4 weekly injections",
     features: [
       "Most common TRT protocol",
       "Steady testosterone levels",
@@ -52,6 +54,7 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       "Daily topical testosterone for patients who prefer a needle-free option. Compounded for consistent absorption.",
     dosage: "Custom compounded strength",
     frequency: "Once daily",
+    supplyLabel: "30-day supply · daily topical application",
     features: [
       "No injections required",
       "Easy daily application",
@@ -75,6 +78,7 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       "Oral therapy that stimulates your body’s natural testosterone production—often chosen by men who want to preserve fertility.",
     dosage: "Provider-determined oral protocol",
     frequency: "Daily",
+    supplyLabel: "30-day supply · daily tablets",
     features: [
       "Non-injectable option",
       "May support natural T production",
@@ -94,6 +98,22 @@ export const TRT_PROGRAMS: TrtProgram[] = [
 
 export function getTrtProgram(id: string): TrtProgram | undefined {
   return TRT_PROGRAMS.find((p) => p.id === id)
+}
+
+export const TRT_PROGRAM_IDS = TRT_PROGRAMS.map((p) => p.id)
+
+export function isTrtProgramId(value: string): value is (typeof TRT_PROGRAM_IDS)[number] {
+  return TRT_PROGRAM_IDS.includes(value as (typeof TRT_PROGRAM_IDS)[number])
+}
+
+export function getTrtStartingMonthlyPrice(program: TrtProgram | string): number {
+  const p = typeof program === "string" ? getTrtProgram(program) : program
+  if (!p) return 0
+  return Math.min(...p.pricing.map((tier) => tier.pricePerMonth))
+}
+
+export function formatTrtBillingLabel(plan: TrtBillingPlan): string {
+  return plan === "monthly" ? "Billed monthly" : "Billed every 3 months"
 }
 
 export function getTrtPrice(programId: string, plan: TrtBillingPlan) {

@@ -15,6 +15,7 @@ export type EdTrocheProduct = {
   description: string
   dosage: string
   frequency: string
+  supplyLabel: string
   features: string[]
   highlight?: string
   image: { src: string; alt: string }
@@ -36,6 +37,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
       "Rapid-onset sublingual troche for on-demand use. Dissolves under the tongue for faster absorption than swallowed pills.",
     dosage: "50mg or 100mg",
     frequency: "As needed, 30–60 min before activity",
+    supplyLabel: "30-day supply · 10 sublingual troches",
     features: ["Works in 15–30 minutes", "Lasts 4–6 hours", "Unaffected by food", "Take as needed"],
     image: {
       src: "/images/sildenafil-troches.png",
@@ -55,6 +57,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
       "Long-window sublingual troche for continuous readiness—up to 36 hours of support without timing pressure.",
     dosage: "5mg or 10mg",
     frequency: "As needed or daily",
+    supplyLabel: "30-day supply · 30 sublingual troches",
     features: ["Up to 36-hour window", "Great for spontaneity", "Can take daily", "Unaffected by food"],
     image: {
       src: "/images/tadalafil-troches.png",
@@ -74,6 +77,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
       "Dual-action troche combining fast Sildenafil onset with extended Tadalafil duration in one compounded lozenge.",
     dosage: "Custom compounded strengths",
     frequency: "As directed by physician",
+    supplyLabel: "30-day supply · 10 sublingual troches",
     features: ["Fast onset + long duration", "Dual PDE5 action", "Physician-customized", "Pharmacy compounded"],
     image: {
       src: "/images/combination-troches.png",
@@ -92,6 +96,24 @@ export const ALL_ED_TROCHES = ED_FORMULATIONS
 
 export function getEdTrocheProduct(id: string): EdTrocheProduct | undefined {
   return ED_FORMULATIONS.find((p) => p.id === id)
+}
+
+export const ED_PRODUCT_IDS = ED_FORMULATIONS.map((p) => p.id)
+
+export function isEdProductId(value: string): value is (typeof ED_PRODUCT_IDS)[number] {
+  return ED_PRODUCT_IDS.includes(value as (typeof ED_PRODUCT_IDS)[number])
+}
+
+export function getEdStartingMonthlyPrice(product: EdTrocheProduct | string): number {
+  const p = typeof product === "string" ? getEdTrocheProduct(product) : product
+  if (!p || p.pricing.length === 0) return 0
+  return Math.min(...p.pricing.map((tier) => tier.pricePerMonth))
+}
+
+export function formatEdBillingLabel(plan: EdBillingPlan): string {
+  if (plan === "monthly") return "Billed monthly"
+  if (plan === "quarterly") return "Billed every 3 months"
+  return "Billed annually"
 }
 
 export function getEdPricing(productId: string, billingPlan: EdBillingPlan) {

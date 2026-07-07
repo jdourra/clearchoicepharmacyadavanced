@@ -1,7 +1,24 @@
 import type { MetadataRoute } from "next"
+import { IV_PACKAGE_IDS } from "@/lib/iv-catalog"
+import { VIAL_PRODUCT_IDS } from "@/lib/rejuvenation-vial-catalog"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+  const now = new Date()
+
+  const ivPackagePages: MetadataRoute.Sitemap = IV_PACKAGE_IDS.map((id) => ({
+    url: `${baseUrl}/iv-rejuvenation/packages/${id}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.88,
+  }))
+
+  const vialProductPages: MetadataRoute.Sitemap = VIAL_PRODUCT_IDS.map((id) => ({
+    url: `${baseUrl}/iv-rejuvenation/vials/${id}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.88,
+  }))
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -65,10 +82,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/mens-health/ed/sildenafil-fast`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/mens-health/ed/tadalafil-daily`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/mens-health/ed/combination-troche`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/mens-health/trt/testosterone-cypionate`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/mens-health/trt/testosterone-cream`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/mens-health/trt/enclomiphene`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
       url: `${baseUrl}/weight-loss`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/weight-loss/semaglutide`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
+    },
+    {
+      url: `${baseUrl}/weight-loss/tirzepatide`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.88,
     },
     {
       url: `${baseUrl}/weight-loss/start`,
@@ -130,5 +195,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Failed to load medications from database:", error)
   }
 
-  return [...staticPages, ...medicationPages]
+  return [...staticPages, ...ivPackagePages, ...vialProductPages, ...medicationPages]
 }

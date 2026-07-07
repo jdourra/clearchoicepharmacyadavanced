@@ -1,9 +1,32 @@
 import type { CartItem } from "@/lib/cart"
+import { buildEdProductUrl } from "@/lib/intake-prefill"
 
 export const TELEMEDICINE_VISIT_FEE = 40
 
 const ORAL_ED_DRUG_PATTERN = /sildenafil|tadalafil|vardenafil|avanafil/i
 const TROCHE_PATTERN = /troche/i
+
+export function isEdTrocheMedicationText(name: string, form = "", strength = ""): boolean {
+  const text = `${name} ${form} ${strength}`.toLowerCase()
+  return TROCHE_PATTERN.test(text)
+}
+
+export function mapTrocheProductIdFromName(name: string): string {
+  const n = name.toLowerCase()
+  if (n.includes("sildenafil") && n.includes("tadalafil")) return "combination-troche"
+  if (n.includes("tadalafil")) return "tadalafil-daily"
+  return "sildenafil-fast"
+}
+
+/** PDP URL when a low-cost Rx search targets compounded ED troches; null for oral tablets. */
+export function resolveEdTrocheProductUrl(
+  name: string,
+  form = "",
+  strength = ""
+): string | null {
+  if (!isEdTrocheMedicationText(name, form, strength)) return null
+  return buildEdProductUrl(mapTrocheProductIdFromName(name))
+}
 
 export type TelemedicineIntakeType = "ed_troche" | "ed_tablet" | "general"
 
@@ -22,8 +45,11 @@ export type RxDrugClass =
   | "general"
 
 export function isEdTrocheMedication(item: CartItem): boolean {
-  const text = `${item.medication.name} ${item.medication.form} ${item.medication.strength}`.toLowerCase()
-  return TROCHE_PATTERN.test(text)
+  return isEdTrocheMedicationText(
+    item.medication.name,
+    item.medication.form,
+    item.medication.strength
+  )
 }
 
 export function isOralEdMedication(item: CartItem): boolean {
@@ -32,10 +58,7 @@ export function isOralEdMedication(item: CartItem): boolean {
 }
 
 export function mapTrocheProductId(item: CartItem): string {
-  const name = item.medication.name.toLowerCase()
-  if (name.includes("sildenafil") && name.includes("tadalafil")) return "combination-troche"
-  if (name.includes("tadalafil")) return "tadalafil-daily"
-  return "sildenafil-fast"
+  return mapTrocheProductIdFromName(item.medication.name)
 }
 
 export function resolveTelemedicineIntakeRoute(items: CartItem[]): TelemedicineIntakeRoute {

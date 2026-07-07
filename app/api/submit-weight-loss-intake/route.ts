@@ -152,6 +152,7 @@ ${data.medicalHistory.allergies || "None reported"}
 ───────────────────────────────────────────────────────────────────────────────
 Selected Program:       ${programMap[data.treatmentInfo.selectedProgram] || data.treatmentInfo.selectedProgram}
 Billing Plan:           ${data.treatmentInfo.selectedBillingPlan}
+Pricing Model:          Dose-tier kit pricing (hold at starter tier; refills per prescribed dose)
 Prior GLP Experience:   ${data.treatmentInfo.priorGlpExperience}
 Weight Loss Goals:      ${data.treatmentInfo.weightLossGoals.join(", ") || "Not specified"}
 

@@ -34,6 +34,7 @@ import {
   getEdTrocheProduct,
   type EdBillingPlan,
 } from "@/lib/ed-troche-catalog"
+import { checkBloodPressureHardStop, checkEdContraindicationHardStop } from "@/lib/ed-clinical-intake"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
@@ -78,6 +79,7 @@ type FormData = {
   recentStroke: boolean
   severeHeartFailure: boolean
   unstableAngina: boolean
+  confirmedNoContraindications: boolean
   
   // Step 2: Soft Flags Module
   diabetes: string
@@ -142,6 +144,7 @@ const initialFormData: FormData = {
   recentStroke: false,
   severeHeartFailure: false,
   unstableAngina: false,
+  confirmedNoContraindications: false,
   diabetes: "",
   hypertension: "",
   heartCondition: "",
@@ -184,39 +187,35 @@ const states = [
 // HELPER FUNCTIONS
 // ============================================
 
-function checkBloodPressureHardStop(systolic: number, diastolic: number): { isHardStop: boolean; reason: string } {
-  if (systolic < 90 || diastolic < 50) {
-    return { 
-      isHardStop: true, 
-      reason: "Your blood pressure appears to be dangerously low (below 90/50). ED medications can further lower blood pressure and may not be safe for you."
-    }
+type StepValidation = { valid: boolean; message: string; fields: string[] }
+
+const ED_CONTRAINDICATION_FIELDS = [
+  "takesNitrates",
+  "takesRiociguat",
+  "recentHeartAttack",
+  "recentStroke",
+  "severeHeartFailure",
+  "unstableAngina",
+] as const
+
+function hasAnyEdContraindication(formData: FormData): boolean {
+  return ED_CONTRAINDICATION_FIELDS.some((field) => formData[field])
+}
+
+function getEdContraindicationFlags(formData: FormData) {
+  return {
+    takesNitrates: formData.takesNitrates,
+    takesRiociguat: formData.takesRiociguat,
+    recentHeartAttack: formData.recentHeartAttack,
+    recentStroke: formData.recentStroke,
+    severeHeartFailure: formData.severeHeartFailure,
+    unstableAngina: formData.unstableAngina,
   }
-  if (systolic > 170 || diastolic > 100) {
-    return { 
-      isHardStop: true, 
-      reason: "Your blood pressure appears to be dangerously high (above 170/100). Please seek medical evaluation to manage your blood pressure before considering ED treatment."
-    }
-  }
-  return { isHardStop: false, reason: "" }
 }
 
 function checkContraindicationHardStop(formData: FormData): { isHardStop: boolean; reason: string } {
-  if (formData.takesNitrates) {
-    return {
-      isHardStop: true,
-      reason: "You indicated you take nitrates (such as nitroglycerin). Combining ED medications with nitrates can cause a severe, potentially life-threatening drop in blood pressure."
-    }
-  }
-  if (formData.takesRiociguat) {
-    return {
-      isHardStop: true,
-      reason: "You indicated you take Riociguat (Adempas). This medication is contraindicated with PDE5 inhibitors used in ED treatment."
-    }
-  }
-  return { isHardStop: false, reason: "" }
+  return checkEdContraindicationHardStop(getEdContraindicationFlags(formData))
 }
-
-type StepValidation = { valid: boolean; message: string; fields: string[] }
 
 function getEdStepValidation(formData: FormData, currentStep: number): StepValidation {
   const fields: string[] = []
@@ -256,6 +255,22 @@ function getEdStepValidation(formData: FormData, currentStep: number): StepValid
       if (!formData.edSeverity) add("edSeverity")
       if (fields.length > 0) {
         return { valid: false, message: "Please complete the treatment goals section.", fields }
+      }
+      if (!hasAnyEdContraindication(formData) && !formData.confirmedNoContraindications) {
+        add("confirmedNoContraindications")
+        return {
+          valid: false,
+          message: 'Please check any condition that applies, or confirm "None of the above apply to me".',
+          fields,
+        }
+      }
+      if (hasAnyEdContraindication(formData) && formData.confirmedNoContraindications) {
+        add("confirmedNoContraindications")
+        return {
+          valid: false,
+          message: 'Please uncheck "None of the above apply to me" if any condition applies to you.',
+          fields,
+        }
       }
       return { valid: true, message: "", fields: [] }
     }
@@ -1057,7 +1072,8 @@ export function ClinicalIntakeForm({
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Critical Safety Questions</AlertTitle>
           <AlertDescription>
-            These conditions are absolute contraindications for ED medications. Please answer honestly for your safety.
+            These conditions are absolute contraindications for ED medications. Check any that apply to you. If none
+            apply, check the confirmation at the bottom of this section.
           </AlertDescription>
         </Alert>
         
@@ -1067,13 +1083,17 @@ export function ClinicalIntakeForm({
               id="takesNitrates"
               checked={formData.takesNitrates}
               onCheckedChange={(checked) => {
-                updateFormData("takesNitrates", checked as boolean)
-                if (checked) {
-                  setHardStop({
-                    active: true,
-                    reason: "You indicated you take nitrates (such as nitroglycerin). Combining ED medications with nitrates can cause a severe, potentially life-threatening drop in blood pressure."
-                  })
-                }
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    takesNitrates: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
               }}
             />
             <div className="space-y-1">
@@ -1089,13 +1109,17 @@ export function ClinicalIntakeForm({
               id="takesRiociguat"
               checked={formData.takesRiociguat}
               onCheckedChange={(checked) => {
-                updateFormData("takesRiociguat", checked as boolean)
-                if (checked) {
-                  setHardStop({
-                    active: true,
-                    reason: "You indicated you take Riociguat (Adempas). This medication is contraindicated with PDE5 inhibitors used in ED treatment."
-                  })
-                }
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    takesRiociguat: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
               }}
             />
             <div className="space-y-1">
@@ -1109,7 +1133,19 @@ export function ClinicalIntakeForm({
             <Checkbox
               id="recentHeartAttack"
               checked={formData.recentHeartAttack}
-              onCheckedChange={(checked) => updateFormData("recentHeartAttack", checked as boolean)}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    recentHeartAttack: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
+              }}
             />
             <div className="space-y-1">
               <Label htmlFor="recentHeartAttack" className="font-normal cursor-pointer">
@@ -1122,11 +1158,48 @@ export function ClinicalIntakeForm({
             <Checkbox
               id="recentStroke"
               checked={formData.recentStroke}
-              onCheckedChange={(checked) => updateFormData("recentStroke", checked as boolean)}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    recentStroke: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
+              }}
             />
             <div className="space-y-1">
               <Label htmlFor="recentStroke" className="font-normal cursor-pointer">
                 I have had a stroke in the past 6 months
+              </Label>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id="severeHeartFailure"
+              checked={formData.severeHeartFailure}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    severeHeartFailure: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
+              }}
+            />
+            <div className="space-y-1">
+              <Label htmlFor="severeHeartFailure" className="font-normal cursor-pointer">
+                I have severe heart failure
               </Label>
             </div>
           </div>
@@ -1135,12 +1208,72 @@ export function ClinicalIntakeForm({
             <Checkbox
               id="unstableAngina"
               checked={formData.unstableAngina}
-              onCheckedChange={(checked) => updateFormData("unstableAngina", checked as boolean)}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true
+                setFormData((prev) => {
+                  const updated = {
+                    ...prev,
+                    unstableAngina: isChecked,
+                    confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                  }
+                  const contraCheck = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                  if (contraCheck.isHardStop) setHardStop({ active: true, reason: contraCheck.reason })
+                  return updated
+                })
+              }}
             />
             <div className="space-y-1">
               <Label htmlFor="unstableAngina" className="font-normal cursor-pointer">
                 I have unstable angina or chest pain at rest
               </Label>
+            </div>
+          </div>
+
+          <div
+            data-field="confirmedNoContraindications"
+            className={cn(
+              "flex items-start space-x-3 border-t pt-4 rounded-md transition-colors",
+              isInvalid("confirmedNoContraindications") && "ring-2 ring-destructive bg-destructive/10 p-3 -mx-1"
+            )}
+          >
+            <Checkbox
+              id="confirmedNoContraindications"
+              checked={formData.confirmedNoContraindications}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true
+                setFormData((prev) => ({
+                  ...prev,
+                  confirmedNoContraindications: isChecked,
+                  takesNitrates: isChecked ? false : prev.takesNitrates,
+                  takesRiociguat: isChecked ? false : prev.takesRiociguat,
+                  recentHeartAttack: isChecked ? false : prev.recentHeartAttack,
+                  recentStroke: isChecked ? false : prev.recentStroke,
+                  severeHeartFailure: isChecked ? false : prev.severeHeartFailure,
+                  unstableAngina: isChecked ? false : prev.unstableAngina,
+                }))
+                if (isChecked) {
+                  const systolic = parseInt(formData.systolicBP)
+                  const diastolic = parseInt(formData.diastolicBP)
+                  if (!isNaN(systolic) && !isNaN(diastolic)) {
+                    const bpCheck = checkBloodPressureHardStop(systolic, diastolic)
+                    setHardStop(bpCheck.isHardStop ? { active: true, reason: bpCheck.reason } : { active: false, reason: "" })
+                  } else {
+                    setHardStop({ active: false, reason: "" })
+                  }
+                  clearFieldError("confirmedNoContraindications")
+                }
+              }}
+            />
+            <div>
+              <Label
+                htmlFor="confirmedNoContraindications"
+                className={cn("font-medium cursor-pointer leading-snug", isInvalid("confirmedNoContraindications") && "text-destructive")}
+              >
+                None of the above apply to me *
+              </Label>
+              {isInvalid("confirmedNoContraindications") && (
+                <p className="text-xs text-destructive mt-1">Please confirm if none of these apply to you.</p>
+              )}
             </div>
           </div>
         </div>

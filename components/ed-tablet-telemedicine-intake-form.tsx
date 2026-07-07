@@ -46,6 +46,7 @@ type FormData = {
   recentStroke: boolean
   severeHeartFailure: boolean
   unstableAngina: boolean
+  confirmedNoContraindications: boolean
   diabetes: string
   hypertension: string
   heartCondition: string
@@ -87,6 +88,7 @@ const initialFormData: FormData = {
   recentStroke: false,
   severeHeartFailure: false,
   unstableAngina: false,
+  confirmedNoContraindications: false,
   diabetes: "",
   hypertension: "",
   heartCondition: "",
@@ -101,6 +103,30 @@ const initialFormData: FormData = {
   agreeToTelehealth: false,
   agreeToPrivacy: false,
   ...emptyIntakePaymentValues,
+}
+
+const ED_CONTRAINDICATION_FIELDS = [
+  "takesNitrates",
+  "takesRiociguat",
+  "recentHeartAttack",
+  "recentStroke",
+  "severeHeartFailure",
+  "unstableAngina",
+] as const
+
+function hasAnyEdContraindication(formData: FormData): boolean {
+  return ED_CONTRAINDICATION_FIELDS.some((field) => formData[field])
+}
+
+function getEdContraindicationFlags(formData: FormData) {
+  return {
+    takesNitrates: formData.takesNitrates,
+    takesRiociguat: formData.takesRiociguat,
+    recentHeartAttack: formData.recentHeartAttack,
+    recentStroke: formData.recentStroke,
+    severeHeartFailure: formData.severeHeartFailure,
+    unstableAngina: formData.unstableAngina,
+  }
 }
 
 export function EdTabletTelemedicineIntakeForm({ orderId, orderItems }: EdTabletTelemedicineIntakeFormProps) {
@@ -159,6 +185,18 @@ export function EdTabletTelemedicineIntakeForm({ orderId, orderItems }: EdTablet
     if (!formData.edSeverity) fields.push("edSeverity")
     if (!formData.currentMedications.trim()) fields.push("currentMedications")
     if (!formData.allergies.trim()) fields.push("allergies")
+    if (!hasAnyEdContraindication(formData) && !formData.confirmedNoContraindications) {
+      fields.push("confirmedNoContraindications")
+      setInvalidFields(new Set(fields))
+      scrollToFirstField(fields)
+      return 'Please check any condition that applies, or confirm "None of the above apply to me".'
+    }
+    if (hasAnyEdContraindication(formData) && formData.confirmedNoContraindications) {
+      fields.push("confirmedNoContraindications")
+      setInvalidFields(new Set(fields))
+      scrollToFirstField(fields)
+      return 'Please uncheck "None of the above apply to me" if any condition applies to you.'
+    }
     if (fields.length > 0) {
       setInvalidFields(new Set(fields))
       scrollToFirstField(fields)
@@ -387,8 +425,12 @@ export function EdTabletTelemedicineIntakeForm({ orderId, orderItems }: EdTablet
               </div>
             </div>
 
-            <div className="space-y-3 rounded-lg border p-4">
-              <p className="font-medium">Safety screening</p>
+            <div className="space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+              <p className="font-medium text-destructive">Critical safety questions</p>
+              <p className="text-sm text-muted-foreground">
+                These conditions are absolute contraindications for ED medications. Check any that apply. If none
+                apply, check the confirmation below.
+              </p>
               {[
                 ["takesNitrates", "I take nitrates for chest pain"],
                 ["takesRiociguat", "I take Riociguat (Adempas)"],
@@ -401,13 +443,70 @@ export function EdTabletTelemedicineIntakeForm({ orderId, orderItems }: EdTablet
                   <Checkbox
                     id={key}
                     checked={formData[key as keyof FormData] as boolean}
-                    onCheckedChange={(checked) => updateFormData(key as keyof FormData, checked as boolean)}
+                    onCheckedChange={(checked) => {
+                      const isChecked = checked === true
+                      setFormData((prev) => {
+                        const updated = {
+                          ...prev,
+                          [key]: isChecked,
+                          confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
+                        } as FormData
+                        const contraStop = checkEdContraindicationHardStop(getEdContraindicationFlags(updated))
+                        if (contraStop.isHardStop) setHardStop({ active: true, reason: contraStop.reason })
+                        return updated
+                      })
+                    }}
                   />
-                  <Label htmlFor={key} className="font-normal cursor-pointer">
+                  <Label htmlFor={key} className="font-normal cursor-pointer leading-snug">
                     {label}
                   </Label>
                 </div>
               ))}
+              <div
+                data-field="confirmedNoContraindications"
+                className={cn(
+                  "flex items-start gap-2 border-t border-destructive/20 pt-4",
+                  isInvalid("confirmedNoContraindications") && "ring-2 ring-destructive bg-destructive/10 p-3 -mx-1 rounded-md"
+                )}
+              >
+                <Checkbox
+                  id="confirmedNoContraindications"
+                  checked={formData.confirmedNoContraindications}
+                  onCheckedChange={(checked) => {
+                    const isChecked = checked === true
+                    setFormData((prev) => ({
+                      ...prev,
+                      confirmedNoContraindications: isChecked,
+                      takesNitrates: isChecked ? false : prev.takesNitrates,
+                      takesRiociguat: isChecked ? false : prev.takesRiociguat,
+                      recentHeartAttack: isChecked ? false : prev.recentHeartAttack,
+                      recentStroke: isChecked ? false : prev.recentStroke,
+                      severeHeartFailure: isChecked ? false : prev.severeHeartFailure,
+                      unstableAngina: isChecked ? false : prev.unstableAngina,
+                    }))
+                    if (isChecked) {
+                      const bpStop = checkBloodPressureHardStop(
+                        Number(formData.systolicBP),
+                        Number(formData.diastolicBP)
+                      )
+                      setHardStop(bpStop.isHardStop ? { active: true, reason: bpStop.reason } : { active: false, reason: "" })
+                      setInvalidFields((prev) => {
+                        const next = new Set(prev)
+                        next.delete("confirmedNoContraindications")
+                        return next
+                      })
+                    }
+                  }}
+                />
+                <div>
+                  <Label
+                    htmlFor="confirmedNoContraindications"
+                    className={cn("font-medium cursor-pointer leading-snug", isInvalid("confirmedNoContraindications") && "text-destructive")}
+                  >
+                    None of the above apply to me *
+                  </Label>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2" data-field="currentMedications">

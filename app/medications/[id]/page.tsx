@@ -14,6 +14,7 @@ import { useRouter, useParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { authFetch } from "@/lib/session"
 import { buildCartItem } from "@/lib/cart"
+import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -88,6 +89,16 @@ export default function MedicationDetailPage() {
       .then((d) => setUser(d.user))
       .catch(() => setUser(null))
   }, [])
+
+  useEffect(() => {
+    if (!medication?.name) return
+    const trocheUrl = resolveEdTrocheProductUrl(
+      medication.name,
+      medication.dosage_form,
+      medication.strength
+    )
+    if (trocheUrl) router.replace(trocheUrl)
+  }, [medication?.name, medication?.dosage_form, medication?.strength, router])
 
   useEffect(() => {
     if (medication?.id) {

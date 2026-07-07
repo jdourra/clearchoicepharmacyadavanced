@@ -1,11 +1,9 @@
 "use client"
 
-import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
-  BadgeCheck,
   Check,
   DollarSign,
   FlaskConical,
@@ -25,22 +23,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { IV_BOOSTERS, IV_PACKAGES, IV_TRAVEL_FEE, calculateIvSubtotal, calculateIvTotal, type IvPackage } from "@/lib/iv-catalog"
+import { IV_PACKAGES, IV_TRAVEL_FEE } from "@/lib/iv-catalog"
+import { MIC_B12_WEIGHT_LOSS } from "@/lib/weight-loss-catalog"
 import { REJUVENATION_VIALS, VIAL_CATEGORY_LABELS } from "@/lib/rejuvenation-vial-catalog"
 import { IV_REJUVENATION_FAQS } from "@/lib/clinical-seo"
-import { IvBoosterPicker } from "@/components/iv-booster-picker"
-import { buildIvBookUrl } from "@/lib/intake-prefill"
-
-const BOOSTERS = IV_BOOSTERS
+import { buildIvPackageProductUrl, buildVialProductUrl } from "@/lib/intake-prefill"
 
 const TRUST_ITEMS = [
   {
@@ -111,54 +99,16 @@ const VIAL_STEPS = [
   },
 ]
 
+const VIAL_MENU_ITEMS = [...REJUVENATION_VIALS, MIC_B12_WEIGHT_LOSS]
+
 export function IvRejuvenationPage() {
-  const [selectedPackage, setSelectedPackage] = useState<IvPackage | null>(null)
-  const [selectedBoosters, setSelectedBoosters] = useState<string[]>([])
-  const [sheetOpen, setSheetOpen] = useState(false)
-
-  const subtotalPrice = useMemo(() => {
-    if (!selectedPackage) return 0
-    return calculateIvSubtotal(selectedPackage.id, selectedBoosters)
-  }, [selectedPackage, selectedBoosters])
-
-  const totalPrice = useMemo(() => {
-    if (!selectedPackage) return 0
-    return calculateIvTotal(selectedPackage.id, selectedBoosters)
-  }, [selectedPackage, selectedBoosters])
-
-  const openBooking = (pkg?: IvPackage) => {
-    if (!pkg) {
-      scrollToMenu()
-      return
-    }
-    setSelectedPackage((current) => {
-      if (current?.id !== pkg.id) setSelectedBoosters([])
-      return pkg
-    })
-    setSheetOpen(true)
-  }
-
-  const toggleBooster = (id: string) => {
-    setSelectedBoosters((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    )
-  }
-
   const scrollToMenu = () => {
-    setSheetOpen(false)
     document.getElementById("iv-menu")?.scrollIntoView({ behavior: "smooth" })
   }
 
   const scrollToVialMenu = () => {
     document.getElementById("vial-menu")?.scrollIntoView({ behavior: "smooth" })
   }
-
-  const bookingUrl = useMemo(() => {
-    if (!selectedPackage) return "/iv-rejuvenation/book"
-    const params = new URLSearchParams({ package: selectedPackage.id })
-    if (selectedBoosters.length > 0) params.set("boosters", selectedBoosters.join(","))
-    return `/iv-rejuvenation/book?${params.toString()}`
-  }, [selectedPackage, selectedBoosters])
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -217,7 +167,7 @@ export function IvRejuvenationPage() {
               <p className="text-slate-600 leading-relaxed">
                 Pharmacy-formulated IV packages with transparent pricing. Drip prices do not include the{" "}
                 <strong className="text-slate-800">${IV_TRAVEL_FEE} mobile dispatch fee</strong>, added at checkout.
-                Tap <strong className="text-slate-800">Buy</strong> on a drip to add optional boosters and continue to checkout.
+                Tap <strong className="text-slate-800">Shop now</strong> to view session details, optional boosters, and book.
               </p>
             </div>
 
@@ -225,10 +175,7 @@ export function IvRejuvenationPage() {
               {IV_PACKAGES.map((pkg) => (
                 <Card
                   key={pkg.id}
-                  className={cn(
-                    "flex flex-col overflow-hidden p-0 border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300",
-                    selectedPackage?.id === pkg.id && "ring-2 ring-sky-500 border-sky-300",
-                  )}
+                  className="flex flex-col overflow-hidden p-0 border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300"
                 >
                   <div className="relative aspect-[4/3] w-full bg-slate-50">
                     <Image
@@ -249,6 +196,7 @@ export function IvRejuvenationPage() {
                       )}
                     </div>
                     <p className="text-3xl font-bold text-sky-600">${pkg.price}</p>
+                    <p className="text-xs text-slate-500">{pkg.sessionLabel}</p>
                     <p className="text-xs text-slate-500">+ ${IV_TRAVEL_FEE} mobile dispatch at checkout</p>
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4 px-6">
@@ -272,16 +220,12 @@ export function IvRejuvenationPage() {
                       </p>
                     )}
                   </CardContent>
-                  <CardFooter className="flex flex-col gap-2 px-6 pb-6">
-                    <Button
-                      className="w-full bg-slate-900 hover:bg-slate-800"
-                      onClick={() => openBooking(pkg)}
-                    >
-                      Buy
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" className="w-full" asChild>
-                      <Link href={buildIvBookUrl(pkg.id)}>Skip boosters — checkout now</Link>
+                  <CardFooter className="px-6 pb-6">
+                    <Button className="w-full bg-slate-900 hover:bg-slate-800" asChild>
+                      <Link href={buildIvPackageProductUrl(pkg.id)}>
+                        Shop now
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -305,7 +249,7 @@ export function IvRejuvenationPage() {
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {REJUVENATION_VIALS.map((vial) => (
+              {VIAL_MENU_ITEMS.map((vial) => (
                 <Card key={vial.id} className="flex flex-col overflow-hidden p-0 border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all duration-300">
                   <div className="relative aspect-[4/3] w-full bg-slate-50">
                     <Image
@@ -362,8 +306,8 @@ export function IvRejuvenationPage() {
                   </CardContent>
                   <CardFooter className="px-6 pb-6">
                     <Button className="w-full bg-sky-600 hover:bg-sky-500" asChild>
-                      <Link href={`/iv-rejuvenation/vials/start?vial=${vial.id}`}>
-                        Buy
+                      <Link href={buildVialProductUrl(vial.id)}>
+                        Shop now
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -492,97 +436,6 @@ export function IvRejuvenationPage() {
       </main>
 
       <SiteFooter />
-
-      {/* Booking summary drawer */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md flex flex-col">
-          <SheetHeader>
-            <SheetTitle>Your IV Booking Summary</SheetTitle>
-            <SheetDescription>
-              Review your selections, then complete intake for telehealth provider review. Approved prescriptions
-              are fulfilled by Clear Choice Pharmacy before RN dispatch.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="flex-1 space-y-6 py-4 overflow-y-auto">
-            <div className="rounded-xl border bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Selected Drip</p>
-              {selectedPackage ? (
-                <div>
-                  <p className="font-semibold text-slate-900">{selectedPackage.title}</p>
-                  <p className="text-sky-600 font-bold mt-1">${selectedPackage.price}</p>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-600">No drip selected yet. Choose a package from the IV menu.</p>
-              )}
-            </div>
-
-            {selectedPackage && (
-              <div className="rounded-xl border bg-white p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
-                  Optional Add-On Boosters
-                </p>
-                <p className="text-sm text-slate-600 mb-4">
-                  Enhance your {selectedPackage.title.split("(")[0].trim()} with targeted pharmacy boosters.
-                </p>
-                <IvBoosterPicker
-                  boosters={BOOSTERS}
-                  selectedIds={selectedBoosters}
-                  onToggle={toggleBooster}
-                  compact
-                />
-              </div>
-            )}
-
-            {selectedPackage && (
-              <div className="rounded-xl border bg-slate-50 p-4 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Drip subtotal</span>
-                  <span className="font-medium text-slate-900">${subtotalPrice}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Mobile travel &amp; dispatch</span>
-                  <span className="font-medium text-slate-900">${IV_TRAVEL_FEE}</span>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between border-t pt-4">
-              <span className="font-semibold text-slate-900">Estimated Total</span>
-              <span className="text-2xl font-bold text-sky-600">${totalPrice}</span>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm text-slate-700">
-              <BadgeCheck className="h-5 w-5 text-sky-600 shrink-0 mt-0.5" />
-              <p>
-                100% upfront pricing. A <strong>${IV_TRAVEL_FEE} mobile travel &amp; dispatch fee</strong> is added at
-                checkout for RN home visits. A licensed provider must approve your treatment before Clear Choice
-                Pharmacy prepares your IV.
-              </p>
-            </div>
-          </div>
-
-          <SheetFooter className="flex-col gap-2 sm:flex-col">
-            <Button
-              className="w-full bg-sky-500 hover:bg-sky-400"
-              disabled={!selectedPackage}
-              asChild={!!selectedPackage}
-            >
-              {selectedPackage ? (
-                <Link href={bookingUrl} onClick={() => setSheetOpen(false)}>
-                  Continue to checkout
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              ) : (
-                <span>Select a Drip to Continue</span>
-              )}
-            </Button>
-            <Button variant="outline" className="w-full" onClick={scrollToMenu}>
-              Choose a different drip
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
     </div>
   )
 }

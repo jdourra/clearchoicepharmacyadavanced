@@ -128,6 +128,12 @@ export function getRejuvenationVial(id: string) {
   return REJUVENATION_VIALS.find((v) => v.id === id)
 }
 
+export const VIAL_PRODUCT_IDS = [...REJUVENATION_VIALS.map((v) => v.id), MIC_B12_WEIGHT_LOSS.id]
+
+export function isVialProductId(value: string): value is (typeof VIAL_PRODUCT_IDS)[number] {
+  return VIAL_PRODUCT_IDS.includes(value as (typeof VIAL_PRODUCT_IDS)[number])
+}
+
 export const VIAL_CATEGORY_LABELS: Record<RejuvenationVialCategory, string> = {
   energy: "Energy",
   "anti-aging": "Anti-Aging",

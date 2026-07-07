@@ -7,6 +7,7 @@ export type IvPackage = {
   ingredients: string[]
   description: string
   note?: string
+  sessionLabel: string
   image: { src: string; alt: string }
 }
 
@@ -21,6 +22,8 @@ export type IvBooster = {
 /** Flat mobile RN dispatch & travel fee added at checkout (not included in drip list prices). */
 export const IV_TRAVEL_FEE = 50
 
+export const IV_SESSION_LABEL = "1 mobile IV session · licensed RN at your location"
+
 export const IV_PACKAGES: IvPackage[] = [
   {
     id: "myers",
@@ -31,6 +34,7 @@ export const IV_PACKAGES: IvPackage[] = [
     ingredients: ["Vitamin C", "B-Complex", "Vitamin B12", "Magnesium", "Calcium"],
     description:
       "The gold standard for overall wellness, immune support, chronic fatigue, and rapid cellular hydration.",
+    sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/myers-cocktail-iv.png",
       alt: "Standard Myers Cocktail IV infusion bag with vitamin C, B-complex, and magnesium",
@@ -48,6 +52,7 @@ export const IV_PACKAGES: IvPackage[] = [
     ],
     description:
       "Engineered for rapid relief from migraines, severe hangovers, food poisoning, or flu symptoms.",
+    sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/iv-b-complex.png",
       alt: "IV fluids and B-complex infusion bag for symptom relief and recovery",
@@ -60,6 +65,7 @@ export const IV_PACKAGES: IvPackage[] = [
     ingredients: ["High-dose Vitamin C", "Zinc", "Multi-trace elements", "Glutathione Push"],
     description:
       "Boost your immune defense, enhance skin radiance, and detoxify cells from the inside out.",
+    sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/immunity-max-iv.png",
       alt: "High-dose vitamin C, zinc, and glutathione IV bag for immunity and energy",
@@ -75,6 +81,7 @@ export const IV_PACKAGES: IvPackage[] = [
     description:
       "Advanced cellular repair that boosts cognitive function, accelerates metabolic energy, and fights aging.",
     note: "Requires 2-hour monitored infusion.",
+    sessionLabel: "1 mobile IV session · ~2 hours · licensed RN monitored infusion",
     image: {
       src: "/images/nad-therapy-iv.png",
       alt: "Premium anti-aging NAD+ therapy IV infusion bag",
@@ -86,6 +93,7 @@ export const IV_PACKAGES: IvPackage[] = [
     price: 149,
     ingredients: ["1,000ml Normal Saline or Lactated Ringer's"],
     description: "Pure, rapid fluid restoration for athletes or general dehydration.",
+    sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/basic-hydration-iv.png",
       alt: "Basic hydration IV infusion bag with sterile saline",
@@ -133,6 +141,12 @@ export const IV_BOOSTERS: IvBooster[] = [
 
 export function getIvPackage(id: string) {
   return IV_PACKAGES.find((p) => p.id === id)
+}
+
+export const IV_PACKAGE_IDS = IV_PACKAGES.map((p) => p.id)
+
+export function isIvPackageId(value: string): value is (typeof IV_PACKAGE_IDS)[number] {
+  return IV_PACKAGE_IDS.includes(value as (typeof IV_PACKAGE_IDS)[number])
 }
 
 export function getIvBoosters(ids: string[]) {

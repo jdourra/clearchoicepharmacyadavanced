@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 import {
   ClinicalLandingShell,
   ContentSection,
@@ -13,9 +12,7 @@ import {
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { EdBuyButton } from "@/components/ed-buy-button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   SITE_URL,
@@ -23,9 +20,9 @@ import {
   buildFaqJsonLd,
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
-import { TRT_PROGRAMS } from "@/lib/trt-catalog"
-import { ED_FORMULATIONS } from "@/lib/ed-troche-catalog"
-import { buildTrtIntakeUrl } from "@/lib/intake-prefill"
+import { TRT_PROGRAMS, getTrtStartingMonthlyPrice } from "@/lib/trt-catalog"
+import { ED_FORMULATIONS, getEdStartingMonthlyPrice } from "@/lib/ed-troche-catalog"
+import { buildEdProductUrl, buildTrtProductUrl } from "@/lib/intake-prefill"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 
 const ED_LANDING_URL = "/mens-health#ed-troches"
@@ -96,7 +93,7 @@ export default function MensHealthPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {ED_FORMULATIONS.map((formulation) => {
-            const pricing = formulation.pricing.find((p) => p.plan === "quarterly") || formulation.pricing[0]
+            const startingPrice = getEdStartingMonthlyPrice(formulation)
             return (
               <Card key={formulation.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -111,28 +108,18 @@ export default function MensHealthPage() {
                 <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
                   {formulation.highlight && <Badge variant="secondary">{formulation.highlight}</Badge>}
-                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
                 </div>
                 <h3 className="text-xl font-bold">{formulation.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{formulation.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{formulation.description}</p>
                 <div className="mt-5 pt-4 border-t">
                   <p className="text-3xl font-bold text-primary">
-                    ${pricing.pricePerMonth}
-                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                    ${startingPrice}
+                    <span className="text-base font-normal text-muted-foreground">+</span>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {pricing.plan === "quarterly"
-                      ? `$${pricing.totalBilled} billed quarterly · includes shipping`
-                      : "Monthly billing available"}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">/mo starting at · {formulation.supplyLabel}</p>
                   <div className="mt-4">
-                    <EdBuyButton
-                      productId={formulation.id}
-                      productName={formulation.name}
-                      plan="quarterly"
-                      fullWidth
-                    />
+                    <ServiceBuyButton href={buildEdProductUrl(formulation.id)} fullWidth label="Shop now" />
                   </div>
                 </div>
                 </div>
@@ -154,7 +141,7 @@ export default function MensHealthPage() {
         />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {TRT_PROGRAMS.map((program) => {
-            const pricing = program.pricing.find((p) => p.plan === "quarterly") || program.pricing[0]
+            const startingPrice = getTrtStartingMonthlyPrice(program)
             return (
               <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -169,23 +156,18 @@ export default function MensHealthPage() {
                 <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
                   {program.highlight && <Badge variant="secondary">{program.highlight}</Badge>}
-                  {pricing.badge && <Badge>{pricing.badge}</Badge>}
                 </div>
                 <h3 className="text-xl font-bold">{program.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
                 <div className="mt-5 pt-4 border-t">
                   <p className="text-3xl font-bold text-primary">
-                    ${pricing.pricePerMonth}
-                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                    ${startingPrice}
+                    <span className="text-base font-normal text-muted-foreground">+</span>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {pricing.plan === "quarterly"
-                      ? `$${pricing.totalBilled} billed quarterly · includes shipping`
-                      : "Monthly billing available"}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">/mo starting at · {program.supplyLabel}</p>
                   <div className="mt-4">
-                    <ServiceBuyButton href={buildTrtIntakeUrl(program.id, "quarterly")} fullWidth />
+                    <ServiceBuyButton href={buildTrtProductUrl(program.id)} fullWidth label="Shop now" />
                   </div>
                 </div>
                 </div>
@@ -231,8 +213,8 @@ export default function MensHealthPage() {
         steps={[
           {
             step: 1,
-            title: "Buy Your Program",
-            description: "Select ED troches or TRT, add optional formulation enhancements, and complete secure checkout.",
+            title: "Review Your HomeKit",
+            description: "Explore ED troche or TRT kit details, optional add-ons, and pricing — then start your secure intake.",
           },
           {
             step: 2,

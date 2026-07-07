@@ -36,6 +36,7 @@ import {
   saveQuote,
   type QuoteLine,
 } from "@/lib/medication-quote"
+import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -137,9 +138,27 @@ export function MedicationQuoteBuilder() {
 
   const total = quoteTotal(lines)
 
-  const handleSelectMedication = useCallback((med: MedicationSearchResult) => {
-    setPendingMed(med)
-  }, [])
+  const handleSelectMedication = useCallback(
+    (med: MedicationSearchResult) => {
+      const trocheUrl = resolveEdTrocheProductUrl(med.name)
+      if (trocheUrl) {
+        router.push(trocheUrl)
+        return
+      }
+      setPendingMed(med)
+    },
+    [router]
+  )
+
+  useEffect(() => {
+    if (!medication?.name) return
+    const trocheUrl = resolveEdTrocheProductUrl(
+      medication.name,
+      medication.dosage_form,
+      medication.strength
+    )
+    if (trocheUrl) router.replace(trocheUrl)
+  }, [medication?.name, medication?.dosage_form, medication?.strength, router])
 
   const closePending = () => {
     setPendingMed(null)
