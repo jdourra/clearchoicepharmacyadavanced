@@ -11,7 +11,12 @@ export async function GET(request: Request) {
     }
 
     const sessions = await sql(
-      "SELECT * FROM sessions WHERE id = $1 AND expires_at > now()",
+      `SELECT s.*
+       FROM sessions s
+       INNER JOIN patients p ON p.id = s.user_id
+       WHERE s.id = $1
+         AND s.expires_at > now()
+         AND s.user_type = 'patient'`,
       [sessionId]
     )
 

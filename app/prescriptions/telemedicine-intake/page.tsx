@@ -14,7 +14,11 @@ import {
   orderItemsToCartLike,
   type TelemedicineIntakeType,
 } from "@/lib/prescription-telemedicine"
-import type { CartItem } from "@/lib/cart"
+import { hydrateCartItems, type CartItem } from "@/lib/cart"
+import {
+  readTelemedicineCheckoutContext,
+  type TelemedicineCheckoutContext,
+} from "@/lib/prescription-telemedicine-checkout"
 
 type OrderResponse = {
   order?: {
@@ -28,39 +32,77 @@ type OrderResponse = {
 function TelemedicineIntakeContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("orderId") || ""
+  const fromCheckout = searchParams.get("from") === "checkout"
   const typeParam = (searchParams.get("type") || "general") as TelemedicineIntakeType
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [orderItems, setOrderItems] = useState<CartItem[]>([])
+  const [checkoutContext, setCheckoutContext] = useState<TelemedicineCheckoutContext | null>(null)
 
   useEffect(() => {
-    if (!orderId) {
-      setError("Missing order ID.")
-      setLoading(false)
-      return
-    }
+    async function load() {
+      if (orderId) {
+        try {
+          const res = await fetch(`/api/patient-orders/${orderId}`)
+          const data: OrderResponse = await res.json()
+          if (!data.order) {
+            setError(data.error || "Order not found")
+            return
+          }
+          if (data.order.prescription_method !== "telemedicine") {
+            setError("This order does not require a telemedicine intake.")
+            return
+          }
+          const items = orderItemsToCartLike(data.order.items || [])
+          if (items.length === 0) {
+            setError("No medications found on this order.")
+            return
+          }
+          setOrderItems(items)
+        } catch {
+          setError("Unable to load your order.")
+        } finally {
+          setLoading(false)
+        }
+        return
+      }
 
-    fetch(`/api/patient-orders/${orderId}`)
-      .then((r) => r.json())
-      .then((data: OrderResponse) => {
-        if (!data.order) {
-          setError(data.error || "Order not found")
+      if (!fromCheckout) {
+        setError("Missing checkout session. Please return to checkout and choose telemedicine again.")
+        setLoading(false)
+        return
+      }
+
+      const context = readTelemedicineCheckoutContext()
+      if (!context) {
+        setError("Checkout session expired. Please return to checkout and try again.")
+        setLoading(false)
+        return
+      }
+
+      try {
+        const raw = window.sessionStorage.getItem("cart")
+        if (!raw) {
+          setError("Your cart is empty. Please add medications and checkout again.")
           return
         }
-        if (data.order.prescription_method !== "telemedicine") {
-          setError("This order does not require a telemedicine intake.")
-          return
-        }
-        const items = orderItemsToCartLike(data.order.items || [])
+        const parsed = JSON.parse(raw)
+        const items = await hydrateCartItems(Array.isArray(parsed) ? parsed : [])
         if (items.length === 0) {
-          setError("No medications found on this order.")
+          setError("Your cart is empty. Please add medications and checkout again.")
           return
         }
         setOrderItems(items)
-      })
-      .catch(() => setError("Unable to load your order."))
-      .finally(() => setLoading(false))
-  }, [orderId])
+        setCheckoutContext(context)
+      } catch {
+        setError("Unable to load your cart. Please return to checkout.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    void load()
+  }, [orderId, fromCheckout])
 
   const intakeType: TelemedicineIntakeType =
     typeParam === "ed_tablet" ? "ed_tablet" : "general"
@@ -80,22 +122,29 @@ function TelemedicineIntakeContent() {
           {loading ? (
             <div className="flex items-center justify-center gap-2 py-20 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
-              Loading your order...
+              Loading your intake...
             </div>
           ) : error ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">
               <p className="text-destructive font-medium mb-4">{error}</p>
               <Button asChild variant="outline">
-                <Link href="/prescriptions">Return to prescriptions</Link>
+                <Link href={fromCheckout ? "/checkout" : "/prescriptions"}>
+                  {fromCheckout ? "Return to checkout" : "Return to prescriptions"}
+                </Link>
               </Button>
             </div>
           ) : intakeType === "ed_tablet" ? (
-            <EdTabletTelemedicineIntakeForm orderId={orderId} orderItems={orderItems} />
+            <EdTabletTelemedicineIntakeForm
+              orderId={orderId || undefined}
+              orderItems={orderItems}
+              checkoutContext={checkoutContext}
+            />
           ) : (
             <RxTelemedicineIntakeForm
-              orderId={orderId}
+              orderId={orderId || undefined}
               orderItems={orderItems}
               drugClasses={collectDrugClassesFromCart(orderItems)}
+              checkoutContext={checkoutContext}
             />
           )}
         </div>

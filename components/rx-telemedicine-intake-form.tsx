@@ -17,15 +17,25 @@ import { formatCartMedicationLine, TELEMEDICINE_VISIT_FEE } from "@/lib/prescrip
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
-import { emptyIntakePaymentValues } from "@/lib/intake-payment"
+import { emptyIntakePaymentValues, validateIntakePayment } from "@/lib/intake-payment"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
+import { authFetch } from "@/lib/session"
 import { DrugClassClinicalQuestions } from "@/components/drug-class-clinical-questions"
+import { ConditionClinicalQuestions } from "@/components/condition-clinical-questions"
+import type { TelemedicineCheckoutContext } from "@/lib/prescription-telemedicine-checkout"
+import { clearTelemedicineCheckoutContext } from "@/lib/prescription-telemedicine-checkout"
+import {
+  VISIT_CONDITION_OPTIONS,
+  validateConditionAnswers,
+  type VisitConditionId,
+} from "@/lib/rx-visit-conditions"
 
 type RxTelemedicineIntakeFormProps = {
-  orderId: string
+  orderId?: string
   orderItems: CartItem[]
   drugClasses: RxDrugClass[]
+  checkoutContext?: TelemedicineCheckoutContext | null
 }
 
 type FormData = {
@@ -38,7 +48,9 @@ type FormData = {
   address: string
   city: string
   zipCode: string
-  primaryCondition: string
+  selectedConditions: VisitConditionId[]
+  otherConditionNotes: string
+  conditionAnswers: Record<string, string>
   newOrWorseningSymptoms: string
   symptomDetails: string
   currentMedications: string
@@ -51,6 +63,7 @@ type FormData = {
   agreeToTerms: boolean
   agreeToTelehealth: boolean
   agreeToPrivacy: boolean
+  authorizeHold: boolean
   idFrontFile: File | null
   idBackFile: File | null
   idFrontKey: string | null
@@ -69,7 +82,9 @@ const initialFormData: FormData = {
   address: "",
   city: "",
   zipCode: "",
-  primaryCondition: "",
+  selectedConditions: [],
+  otherConditionNotes: "",
+  conditionAnswers: {},
   newOrWorseningSymptoms: "",
   symptomDetails: "",
   currentMedications: "",
@@ -82,16 +97,27 @@ const initialFormData: FormData = {
   agreeToTerms: false,
   agreeToTelehealth: false,
   agreeToPrivacy: false,
+  authorizeHold: false,
   ...emptyIntakePaymentValues,
 }
 
-export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: RxTelemedicineIntakeFormProps) {
+export function RxTelemedicineIntakeForm({
+  orderId,
+  orderItems,
+  drugClasses,
+  checkoutContext,
+}: RxTelemedicineIntakeFormProps) {
+  const clinicalIntakeMode = !orderId && !!checkoutContext
+  const totalBilled =
+    checkoutContext?.total ??
+    orderItems.reduce((sum, item) => sum + (item.price || 0), 0) + TELEMEDICINE_VISIT_FEE
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [invalidFields, setInvalidFields] = useState<Set<string>>(new Set())
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submissionRef, setSubmissionRef] = useState("")
   const { profile, loaded: profileLoaded } = usePatientProfilePrefill()
 
   useEffect(() => {
@@ -114,6 +140,40 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
       ...prev,
       classAnswers: { ...prev.classAnswers, [key]: value },
     }))
+    setInvalidFields((prev) => {
+      const next = new Set(prev)
+      next.delete(key)
+      return next
+    })
+  }, [])
+
+  const updateConditionAnswer = useCallback((key: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      conditionAnswers: { ...prev.conditionAnswers, [key]: value },
+    }))
+    setInvalidFields((prev) => {
+      const next = new Set(prev)
+      next.delete(key)
+      return next
+    })
+  }, [])
+
+  const toggleCondition = useCallback((id: VisitConditionId, checked: boolean) => {
+    setFormData((prev) => {
+      const next = checked
+        ? prev.selectedConditions.includes(id)
+          ? prev.selectedConditions
+          : [...prev.selectedConditions, id]
+        : prev.selectedConditions.filter((c) => c !== id)
+      return { ...prev, selectedConditions: next }
+    })
+    setInvalidFields((prev) => {
+      const next = new Set(prev)
+      next.delete("selectedConditions")
+      if (id === "other") next.delete("otherConditionNotes")
+      return next
+    })
   }, [])
 
   const identityValues = {
@@ -123,8 +183,8 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
     idBackKey: formData.idBackKey,
     idFrontUploading: formData.idFrontUploading,
     idBackUploading: formData.idBackUploading,
-    stripePaymentIntentId: null,
-    paymentAuthorized: false,
+    stripePaymentIntentId: formData.stripePaymentIntentId,
+    paymentAuthorized: formData.paymentAuthorized,
   }
 
   const onIdentityChange = useCallback(
@@ -141,7 +201,13 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
     if (!formData.email) fields.push("email")
     if (!formData.phone) fields.push("phone")
     if (!formData.dateOfBirth) fields.push("dateOfBirth")
-    if (!formData.primaryCondition.trim()) fields.push("primaryCondition")
+    fields.push(
+      ...validateConditionAnswers(
+        formData.selectedConditions,
+        formData.conditionAnswers,
+        formData.otherConditionNotes
+      )
+    )
     if (!formData.newOrWorseningSymptoms) fields.push("newOrWorseningSymptoms")
     if (!formData.currentMedications.trim()) fields.push("currentMedications")
     if (!formData.allergies.trim()) fields.push("allergies")
@@ -160,10 +226,21 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
     if (!formData.agreeToTerms) fields.push("agreeToTerms")
     if (!formData.agreeToTelehealth) fields.push("agreeToTelehealth")
     if (!formData.agreeToPrivacy) fields.push("agreeToPrivacy")
+
+    if (clinicalIntakeMode) {
+      const paymentCheck = validateIntakePayment(identityValues)
+      if (!paymentCheck.valid) {
+        fields.push(...paymentCheck.fields)
+      }
+      if (!formData.authorizeHold) fields.push("authorizeHold")
+    }
+
     if (fields.length > 0) {
       setInvalidFields(new Set(fields))
       scrollToFirstField(fields)
-      return "Please upload your ID and accept all required consents."
+      return clinicalIntakeMode
+        ? "Please upload your ID, authorize payment, and accept all required consents."
+        : "Please upload your ID and accept all required consents."
     }
     return ""
   }
@@ -178,59 +255,90 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
     setIsSubmitting(true)
     setError("")
     try {
-      const res = await fetch("/api/submit-prescription-telemedicine-intake", {
+      const payload = {
+        requestedMedications: orderItems.map((item) => ({
+          name: item.medication.name,
+          strength: item.medication.strength,
+          form: item.medication.form,
+          quantity: item.quantity,
+          unit_price: item.price || 0,
+        })),
+        patientInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
+          state: formData.state,
+          address: formData.address,
+          city: formData.city,
+          zipCode: formData.zipCode,
+        },
+        clinical: {
+          selectedConditions: formData.selectedConditions,
+          otherConditionNotes: formData.otherConditionNotes,
+          conditionAnswers: formData.conditionAnswers,
+          newOrWorseningSymptoms: formData.newOrWorseningSymptoms,
+          symptomDetails: formData.symptomDetails,
+          currentMedications: formData.currentMedications,
+          allergies: formData.allergies,
+          otherConditions: formData.otherConditions,
+          pregnantOrBreastfeeding: formData.pregnantOrBreastfeeding,
+          recentLabs: formData.recentLabs,
+          labUploadNotes: formData.labUploadNotes,
+          classAnswers: formData.classAnswers,
+        },
+        identity: {
+          idFrontKey: formData.idFrontKey,
+          idBackKey: formData.idBackKey,
+          idFrontUploaded: Boolean(formData.idFrontKey),
+          idBackUploaded: Boolean(formData.idBackKey),
+          paymentOnFile: formData.paymentAuthorized,
+          stripePaymentIntentId: formData.stripePaymentIntentId,
+        },
+        consents: {
+          agreeToTerms: formData.agreeToTerms,
+          agreeToTelehealth: formData.agreeToTelehealth,
+          agreeToPrivacy: formData.agreeToPrivacy,
+          authorizeHold: formData.authorizeHold,
+        },
+      }
+
+      const res = await authFetch("/api/submit-prescription-telemedicine-intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
-          orderId,
+          ...(orderId ? { orderId } : {}),
+          ...(clinicalIntakeMode && checkoutContext
+            ? {
+                checkout: checkoutContext,
+                requestedMedications: payload.requestedMedications,
+                identity: payload.identity,
+                consents: payload.consents,
+              }
+            : {}),
           intakeType: "general",
           payload: {
-            requestedMedications: orderItems.map((item) => ({
-              name: item.medication.name,
-              strength: item.medication.strength,
-              form: item.medication.form,
-              quantity: item.quantity,
-            })),
+            requestedMedications: payload.requestedMedications,
             drugClasses,
-            patientInfo: {
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              email: formData.email,
-              phone: formData.phone,
-              dateOfBirth: formData.dateOfBirth,
-              state: formData.state,
-              address: formData.address,
-              city: formData.city,
-              zipCode: formData.zipCode,
-            },
-            clinical: {
-              primaryCondition: formData.primaryCondition,
-              newOrWorseningSymptoms: formData.newOrWorseningSymptoms,
-              symptomDetails: formData.symptomDetails,
-              currentMedications: formData.currentMedications,
-              allergies: formData.allergies,
-              otherConditions: formData.otherConditions,
-              pregnantOrBreastfeeding: formData.pregnantOrBreastfeeding,
-              recentLabs: formData.recentLabs,
-              labUploadNotes: formData.labUploadNotes,
-              classAnswers: formData.classAnswers,
-            },
-            identity: {
-              idFrontKey: formData.idFrontKey,
-              idBackKey: formData.idBackKey,
-            },
-            consents: {
-              agreeToTerms: formData.agreeToTerms,
-              agreeToTelehealth: formData.agreeToTelehealth,
-              agreeToPrivacy: formData.agreeToPrivacy,
-            },
+            patientInfo: payload.patientInfo,
+            clinical: payload.clinical,
+            identity: payload.identity,
+            consents: payload.consents,
           },
         }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || "Submission failed")
+      if (clinicalIntakeMode) {
+        window.sessionStorage.removeItem("cart")
+        clearTelemedicineCheckoutContext()
+      }
       setSubmitted(true)
+      setSubmissionRef(data.submissionId || data.orderId || "")
     } catch (err) {
+      setInvalidFields(new Set())
       setError(err instanceof Error ? err.message : "Submission failed")
     } finally {
       setIsSubmitting(false)
@@ -242,8 +350,8 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
       <IntakeSuccessPanel
         title="Telemedicine Intake Submitted"
         treatmentLabel={orderItems.map(formatCartMedicationLine).join(", ")}
-        returnHref={`/confirmation?orderId=${orderId}`}
-        returnLabel="View order confirmation"
+        returnHref={clinicalIntakeMode ? "/prescriptions" : `/confirmation?orderId=${orderId}`}
+        returnLabel={clinicalIntakeMode ? "Back to prescriptions" : "View order confirmation"}
       />
     )
   }
@@ -268,7 +376,7 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
         </div>
       </CardHeader>
       <CardContent className="space-y-8">
-        {error && <IntakeValidationAlert message={error} />}
+        {error && <IntakeValidationAlert message={error} fields={Array.from(invalidFields)} />}
 
         <Alert>
           <AlertTriangle className="h-4 w-4" />
@@ -311,17 +419,56 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
               </div>
             </div>
 
-            <div className="space-y-2" data-field="primaryCondition">
-              <Label className={cn(isInvalid("primaryCondition") && "text-destructive")}>
-                What condition is this medication for? *
+            <div
+              className={cn(
+                "space-y-3 rounded-md",
+                isInvalid("selectedConditions") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
+              )}
+              data-field="selectedConditions"
+            >
+              <Label className={cn(isInvalid("selectedConditions") && "text-destructive")}>
+                What condition(s) is this medication for? * (select all that apply)
               </Label>
-              <Textarea
-                value={formData.primaryCondition}
-                onChange={(e) => updateFormData("primaryCondition", e.target.value)}
-                placeholder="e.g. high blood pressure, hypothyroidism, infection..."
-                rows={2}
-              />
+              <div className="grid sm:grid-cols-2 gap-2">
+                {VISIT_CONDITION_OPTIONS.map((item) => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`condition-${item.id}`}
+                      checked={formData.selectedConditions.includes(item.id)}
+                      onCheckedChange={(checked) => toggleCondition(item.id, checked === true)}
+                    />
+                    <Label htmlFor={`condition-${item.id}`} className="font-normal cursor-pointer">
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {isInvalid("selectedConditions") && (
+                <p className="text-xs text-destructive">Select at least one condition.</p>
+              )}
             </div>
+
+            {formData.selectedConditions.includes("other") && (
+              <div className="space-y-2" data-field="otherConditionNotes">
+                <Label className={cn(isInvalid("otherConditionNotes") && "text-destructive")}>
+                  Describe your other condition *
+                </Label>
+                <Textarea
+                  value={formData.otherConditionNotes}
+                  onChange={(e) => updateFormData("otherConditionNotes", e.target.value)}
+                  rows={2}
+                  placeholder="Briefly describe the condition you are being treated for"
+                  className={cn(isInvalid("otherConditionNotes") && "border-destructive")}
+                />
+              </div>
+            )}
+
+            <ConditionClinicalQuestions
+              selectedConditions={formData.selectedConditions}
+              answers={formData.conditionAnswers}
+              onChange={updateConditionAnswer}
+              invalidFields={invalidFields}
+            />
 
             <div className="space-y-2" data-field="newOrWorseningSymptoms">
               <Label className={cn(isInvalid("newOrWorseningSymptoms") && "text-destructive")}>
@@ -398,15 +545,34 @@ export function RxTelemedicineIntakeForm({ orderId, orderItems, drugClasses }: R
             <IntakeIdentityPaymentSection
               values={identityValues}
               onChange={onIdentityChange}
-              totalBilled={0}
+              totalBilled={totalBilled}
               patientEmail={formData.email}
               serviceType="prescription_telemedicine"
-              intakePrefix={`rx-tm-${orderId}`}
+              intakePrefix={`rx-tm-${orderId || "checkout"}`}
               invalidFields={invalidFields}
               idPrefix="rx-tm"
-              showPayment={false}
+              showPayment={clinicalIntakeMode}
             />
             <div className="space-y-3">
+              {clinicalIntakeMode ? (
+                <div
+                  className={cn(
+                    "flex items-start gap-2 rounded-lg border p-3",
+                    invalidFields.has("authorizeHold") && "border-destructive"
+                  )}
+                  data-field="authorizeHold"
+                >
+                  <Checkbox
+                    id="authorizeHold"
+                    checked={formData.authorizeHold}
+                    onCheckedChange={(checked) => updateFormData("authorizeHold", checked === true)}
+                  />
+                  <Label htmlFor="authorizeHold" className="font-normal cursor-pointer leading-snug">
+                    I authorize Clear Choice Pharmacy to place a hold on my card for ${totalBilled.toFixed(2)}.
+                    If approved, payment will be captured; if denied, the hold will be released.
+                  </Label>
+                </div>
+              ) : null}
               {[
                 ["agreeToTerms", "I agree to the Terms of Service"],
                 ["agreeToTelehealth", "I consent to asynchronous telehealth"],

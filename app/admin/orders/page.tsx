@@ -26,6 +26,21 @@ import {
 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import Loading from "./loading"
+import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
+import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
+
+const STATUS_FILTER_OPTIONS = [
+  "active",
+  "awaiting_telehealth",
+  "pending",
+  "processing",
+  "ready",
+  "shipped",
+  "delivered",
+  "completed",
+  "cancelled",
+  "all",
+] as const
 
 export default function AdminOrdersPage() {
   const router = useRouter()
@@ -34,15 +49,33 @@ export default function AdminOrdersPage() {
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("active")
 
   useEffect(() => {
     loadData()
   }, [router])
 
   useEffect(() => {
+    const status = searchParams.get("status")
+    if (status && STATUS_FILTER_OPTIONS.includes(status as (typeof STATUS_FILTER_OPTIONS)[number])) {
+      setStatusFilter(status)
+    } else {
+      setStatusFilter("active")
+    }
+  }, [searchParams])
+
+  useEffect(() => {
     filterOrders()
   }, [searchTerm, statusFilter, allOrders])
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value)
+    if (value === "active") {
+      router.replace("/admin/orders")
+    } else {
+      router.replace(`/admin/orders?status=${value}`)
+    }
+  }
 
   const loadData = async () => {
     try {
@@ -66,7 +99,22 @@ export default function AdminOrdersPage() {
 
   const filterOrders = () => {
     let filtered = [...allOrders]
-    if (statusFilter !== "all") {
+    if (statusFilter === "active") {
+      filtered = filtered.filter((o) => {
+        if (!isActiveOrderStatus(o.status)) return false
+        if (o.prescription_method !== "telemedicine") return true
+        return !isTelemedicineAwaitingApprovalStatus(o.telemedicine_intake_status)
+      })
+    } else if (statusFilter === "awaiting_telehealth") {
+      filtered = filtered.filter(
+        (o) =>
+          isActiveOrderStatus(o.status) &&
+          o.prescription_method === "telemedicine" &&
+          isTelemedicineAwaitingApprovalStatus(o.telemedicine_intake_status)
+      )
+    } else if (statusFilter === "completed") {
+      filtered = filtered.filter((o) => isCompletedOrderStatus(o.status))
+    } else if (statusFilter !== "all") {
       filtered = filtered.filter((o) => o.status === statusFilter)
     }
     if (searchTerm) {
@@ -173,7 +221,11 @@ export default function AdminOrdersPage() {
         <div className="container">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Order Management</h1>
-            <p className="text-muted-foreground mt-1">View and manage all customer orders</p>
+            <p className="text-muted-foreground mt-1">
+              {statusFilter === "active"
+                ? "Active work queue — pending and in-progress orders"
+                : "View and manage customer orders"}
+            </p>
           </div>
 
           <Card className="mb-6">
@@ -188,17 +240,21 @@ export default function AdminOrdersPage() {
                     className="pl-10"
                   />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full md:w-48">
+                <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+                  <SelectTrigger className="w-full md:w-56">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="active">Active queue</SelectItem>
+                    <SelectItem value="awaiting_telehealth">Awaiting telehealth approval</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="ready">Ready</SelectItem>
                     <SelectItem value="shipped">Shipped</SelectItem>
                     <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="completed">Completed (ready, shipped & delivered)</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -220,9 +276,9 @@ export default function AdminOrdersPage() {
                   {filteredOrders.map((order) => (
                     <div
                       key={order.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 hover:border-primary/40 transition-colors"
                     >
-                      <div className="flex-1">
+                      <Link href={`/admin/orders/${order.id}`} className="flex-1 min-w-0 cursor-pointer">
                         <div className="flex items-center gap-3">
                           <span className="font-semibold">#{order.order_number || order.id}</span>
                           <Badge className={getStatusBadge(order.status)}>{order.status}</Badge>
@@ -237,19 +293,27 @@ export default function AdminOrdersPage() {
                         <div className="text-xs text-muted-foreground mt-1">
                           {new Date(order.created_at).toLocaleString()}
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-right mr-4">
+                      </Link>
+                      <div className="flex items-center gap-2 shrink-0 ml-4">
+                        <div className="text-right mr-2">
                           <div className="text-lg font-bold text-primary">${(order.total_amount || 0).toFixed(2)}</div>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => handlePrint(order)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            handlePrint(order)
+                          }}
+                        >
                           <Printer className="h-4 w-4" />
                         </Button>
-                        <Link href={`/admin/orders/${order.id}`}>
-                          <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/admin/orders/${order.id}`}>
                             <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   ))}

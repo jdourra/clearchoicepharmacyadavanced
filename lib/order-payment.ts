@@ -21,6 +21,15 @@ export function isOrderPaid(order: Order): boolean {
   return order.payment_status === "paid"
 }
 
+export function formatOrderPaymentLabel(order: Order): string {
+  if (!isOrderPaid(order)) return "Unpaid"
+  const method = order.payment_method?.toLowerCase()
+  if (method === "phone") return "Paid in full (phone)"
+  if (method === "cash") return "Paid in full (cash)"
+  if (method === "stripe") return "Paid in full (card)"
+  return "Paid in full"
+}
+
 export function buildCheckoutLineItems(order: Order, overrideAmount?: string): OrderCheckoutLineItem[] {
   const items: OrderCheckoutLineItem[] = order.items.map((item) => ({
     name: item.drug_name,

@@ -34,6 +34,9 @@ export interface Order {
   stripe_payment_intent_id?: string | null
   stripe_checkout_session_id?: string | null
   prescription_method?: string | null
+  /** For telemedicine Rx orders: intake status from prescription_order_intakes or prescription_telemedicine_intake. */
+  telemedicine_intake_status?: string | null
+  telemedicine_intake_submitted_at?: string | null
   notes?: string
   created_at: string
 }
@@ -63,4 +66,13 @@ export interface Message {
   is_read: boolean
   order_id?: string | null
   created_at: string
+}
+
+export interface AdminMessageWithContext extends Message {
+  patientName: string | null
+  patientPhone: string | null
+  patientEmail: string | null
+  patientId: string | null
+  orderNumber: string | null
+  orderStatus: string | null
 }

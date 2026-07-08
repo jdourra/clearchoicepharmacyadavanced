@@ -1,4 +1,10 @@
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
+import {
+  formatConditionAnswersForAdmin,
+  formatVisitReason,
+  type VisitConditionId,
+} from "@/lib/rx-visit-conditions"
+import type { RxDrugClass } from "@/lib/prescription-telemedicine"
 
 const HIDDEN_KEYS = new Set([
   "id_front_key",
@@ -9,6 +15,7 @@ const HIDDEN_KEYS = new Set([
   "email",
   "phone",
   "date_of_birth",
+  "intake_data",
 ])
 
 const ADMIN_KEYS = new Set([
@@ -17,6 +24,10 @@ const ADMIN_KEYS = new Set([
   "partner_case_id",
   "partner_status",
   "stripe_payment_intent_id",
+  "delivery_method",
+  "total_amount",
+  "intake_type",
+  "order_id",
   "created_at",
   "updated_at",
   "selected_package",
@@ -109,6 +120,17 @@ const FIELD_LABELS: Record<string, string> = {
   selected_program: "Program ID",
   selected_product: "Product ID",
   selected_billing_plan: "Billing plan",
+  selected_conditions: "Conditions for visit",
+  other_condition_notes: "Other condition details",
+  new_or_worsening_symptoms: "New or worsening symptoms",
+  symptom_details: "Symptom details",
+  other_conditions: "Other medical conditions",
+  recent_labs: "Recent labs",
+  lab_upload_notes: "Lab notes for physician",
+  delivery_method: "Delivery method",
+  total_amount: "Total amount",
+  intake_type: "Intake type",
+  order_id: "Order ID",
 }
 
 const CLINICAL_ORDER: Partial<Record<AdminIntakeServiceType, string[]>> = {
@@ -213,6 +235,17 @@ const CLINICAL_ORDER: Partial<Record<AdminIntakeServiceType, string[]>> = {
     "insurance_plan_name",
     "insurance_member_id",
     "insurance_group_number",
+  ],
+  prescription_telemedicine: [
+    "selected_conditions",
+    "new_or_worsening_symptoms",
+    "symptom_details",
+    "current_medications",
+    "allergies",
+    "other_conditions",
+    "pregnant_or_breastfeeding",
+    "recent_labs",
+    "lab_upload_notes",
   ],
 }
 
@@ -329,6 +362,24 @@ function formatTreatment(serviceType: AdminIntakeServiceType, detail: Record<str
         pick(detail, "selected_medication"),
         pick(detail, "request_type"),
       ])
+    case "prescription_telemedicine": {
+      const meds = detail.requested_medications
+      const medLine =
+        Array.isArray(meds) && meds.length > 0
+          ? meds
+              .map((m) =>
+                m && typeof m === "object" ? String((m as Record<string, unknown>).name ?? "") : ""
+              )
+              .filter(Boolean)
+              .join(", ")
+          : null
+      return joinLine([
+        medLine,
+        pick(detail, "visit_reason") ? `Reason: ${pick(detail, "visit_reason")}` : null,
+        pick(detail, "total_amount") ? `Total: $${pick(detail, "total_amount")}` : null,
+        pick(detail, "delivery_method") ? `Delivery: ${pick(detail, "delivery_method")}` : null,
+      ])
+    }
     default:
       return null
   }
@@ -359,46 +410,194 @@ function buildFieldItems(
   return items
 }
 
+const RX_DRUG_CLASS_LABELS: Record<RxDrugClass, string> = {
+  cardiovascular: "Blood pressure / heart medication",
+  cholesterol: "Cholesterol medication",
+  thyroid: "Thyroid medication",
+  diabetes: "Diabetes medication",
+  antibiotic: "Antibiotic",
+  mental_health: "Mental health medication",
+  general: "Additional clinical questions",
+}
+
+const RX_DRUG_CLASS_QUESTION_LABELS: Record<string, string> = {
+  "cardiovascular-bp": "Most recent blood pressure reading",
+  "cardiovascular-symptoms": "Dizziness, fainting, or swelling",
+  "cholesterol-lipids": "Recent lipid panel / cholesterol",
+  "cholesterol-myalgia": "Muscle pain or weakness on statins",
+  "thyroid-labs": "When thyroid labs were last checked",
+  "diabetes-a1c": "Recent A1c / blood sugar",
+  "diabetes-hypo": "History of low blood sugar symptoms",
+  "antibiotic-infection": "Infection symptoms and duration",
+  "antibiotic-fever": "Fever / systemic symptoms",
+  "mental_health-mood": "Current mood symptoms",
+  "mental_health-safety": "Thoughts of harming yourself or others",
+  "general-rationale": "Why this medication is appropriate today",
+}
+
+function formatRxDrugClassAnswerValue(key: string, raw: string): string {
+  const value = String(raw)
+  if (value === "yes") {
+    if (key === "mental_health-safety") return "Yes — I need urgent help"
+    return "Yes"
+  }
+  if (value === "no") return "No"
+  if (value === "na") return "Not applicable / never tried"
+  if (value === "yes-once") return "Yes — once"
+  if (value === "yes-multiple") return "Yes — multiple times"
+  if (value === "yes-mild") return "Yes — mild new symptoms"
+  if (value === "yes-significant") return "Yes — significant or worsening symptoms"
+  return value
+}
+
+function formatRxDrugClassAnswersForAdmin(
+  selectedClasses: RxDrugClass[],
+  answers: Record<string, string>
+): IntakeReviewField[] {
+  const classSet = new Set<RxDrugClass>(selectedClasses)
+  const items: IntakeReviewField[] = []
+
+  for (const [key, raw] of Object.entries(answers)) {
+    if (!raw || typeof raw !== "string") continue
+    const prefix = key.split("-")[0] as RxDrugClass
+    if (!classSet.has(prefix)) continue
+
+    const labelBase =
+      RX_DRUG_CLASS_QUESTION_LABELS[key] ??
+      key.replace(/_/g, " ").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+
+    const classLabel = RX_DRUG_CLASS_LABELS[prefix] ?? prefix
+    const value = formatRxDrugClassAnswerValue(key, raw)
+    items.push({
+      label: `${classLabel} — ${labelBase}`,
+      value,
+    })
+  }
+
+  return items
+}
+
+function formatRxSymptomStatus(value: unknown): string | null {
+  if (value == null || value === "") return null
+  const raw = String(value)
+  const labels: Record<string, string> = {
+    no: "No — stable / maintenance refill",
+    "yes-mild": "Yes — mild new symptoms",
+    "yes-significant": "Yes — significant or worsening symptoms",
+  }
+  return labels[raw] ?? raw
+}
+
+function mergeRxTelemedicineClinicalDetail(detail: Record<string, unknown>): Record<string, unknown> {
+  const merged = { ...detail }
+  const intakeData = detail.intake_data
+  if (!intakeData || typeof intakeData !== "object") return merged
+
+  const clinical = (intakeData as Record<string, unknown>).clinical as Record<string, unknown> | undefined
+  if (!clinical) return merged
+
+  const selectedIds = (clinical.selectedConditions ?? []) as VisitConditionId[]
+  if (selectedIds.length > 0) {
+    merged.selected_conditions = formatVisitReason(
+      selectedIds,
+      clinical.otherConditionNotes != null ? String(clinical.otherConditionNotes) : undefined
+    )
+  } else if (clinical.primaryCondition != null) {
+    merged.selected_conditions = String(clinical.primaryCondition)
+  }
+
+  const fieldMap: [string, string][] = [
+    ["otherConditionNotes", "other_condition_notes"],
+    ["newOrWorseningSymptoms", "new_or_worsening_symptoms"],
+    ["symptomDetails", "symptom_details"],
+    ["currentMedications", "current_medications"],
+    ["allergies", "allergies"],
+    ["otherConditions", "other_conditions"],
+    ["pregnantOrBreastfeeding", "pregnant_or_breastfeeding"],
+    ["recentLabs", "recent_labs"],
+    ["labUploadNotes", "lab_upload_notes"],
+  ]
+
+  for (const [src, dest] of fieldMap) {
+    const value = clinical[src]
+    if (value != null && value !== "") {
+      merged[dest] =
+        src === "newOrWorseningSymptoms" ? formatRxSymptomStatus(value) : value
+    }
+  }
+
+  return merged
+}
+
 export function buildIntakeReviewLayout(
   serviceType: AdminIntakeServiceType,
   detail: Record<string, unknown>,
   submissionId: string
 ): IntakeReviewLayout {
-  const first = pick(detail, "first_name") ?? ""
-  const last = pick(detail, "last_name") ?? ""
+  const reviewDetail =
+    serviceType === "prescription_telemedicine" ? mergeRxTelemedicineClinicalDetail(detail) : detail
+  const first = pick(reviewDetail, "first_name") ?? ""
+  const last = pick(reviewDetail, "last_name") ?? ""
   const name = `${first} ${last}`.trim() || "Patient"
 
   const patientLine = joinLine([
     name,
-    pick(detail, "email"),
-    pick(detail, "phone"),
-    pick(detail, "date_of_birth") ? `DOB ${pick(detail, "date_of_birth")}` : null,
+    pick(reviewDetail, "email"),
+    pick(reviewDetail, "phone"),
+    pick(reviewDetail, "date_of_birth") ? `DOB ${pick(reviewDetail, "date_of_birth")}` : null,
   ])
 
-  const addressLine = formatAddress(detail)
-  const treatmentLine = formatTreatment(serviceType, detail)
+  const addressLine = formatAddress(reviewDetail)
+  const treatmentLine = formatTreatment(serviceType, reviewDetail)
 
-  const submitted = pick(detail, "created_at")
+  const submitted = pick(reviewDetail, "created_at")
   const metaLine = joinLine([
     submitted ? `Submitted ${submitted}` : null,
     `Ref ${submissionId}`,
-    pick(detail, "status") ? formatPortalStatusSimple(String(detail.status)) : null,
+    pick(reviewDetail, "status") ? formatPortalStatusSimple(String(reviewDetail.status)) : null,
   ])
 
   const used = new Set<string>([...HIDDEN_KEYS, ...ADMIN_KEYS, ...ADDRESS_KEYS, ...TREATMENT_KEYS])
-  const clinicalOrder = CLINICAL_ORDER[serviceType] ?? []
-  const clinicalItems = buildFieldItems(detail, clinicalOrder, used)
+  const clinicalItems: IntakeReviewField[] = []
 
-  for (const [key, raw] of Object.entries(detail)) {
-    if (used.has(key) || HIDDEN_KEYS.has(key) || ADMIN_KEYS.has(key)) continue
-    if (ADDRESS_KEYS.has(key) || TREATMENT_KEYS.has(key)) continue
-    const value = formatValue(raw)
-    if (!value) continue
-    clinicalItems.push({ label: fieldLabel(key), value })
-    used.add(key)
+  if (serviceType === "prescription_telemedicine") {
+    // Physician-facing screening: only the fields needed for approval + the condition-driven Q&A.
+    // Anything billing/order-related goes into adminItems (see ADMIN_KEYS).
+    const clinicalOrder = CLINICAL_ORDER.prescription_telemedicine ?? []
+    clinicalItems.push(...buildFieldItems(reviewDetail, clinicalOrder, used))
+
+    const intakeData = detail.intake_data
+    if (intakeData && typeof intakeData === "object") {
+      const intake = intakeData as Record<string, unknown>
+      const selectedDrugClasses = (intake.drugClasses ?? []) as RxDrugClass[]
+      const clinical = intake.clinical as Record<string, unknown> | undefined
+      const selectedIds = (clinical?.selectedConditions ?? []) as VisitConditionId[]
+      const conditionAnswers = (clinical?.conditionAnswers ?? {}) as Record<string, string>
+      const classAnswers = (clinical?.classAnswers ?? {}) as Record<string, string>
+
+      // Condition-specific screening (only what pertains to the selected condition(s))
+      for (const item of formatConditionAnswersForAdmin(selectedIds, conditionAnswers)) {
+        clinicalItems.push({ label: item.label, value: item.value })
+      }
+
+      // Medication-specific screening (only for drug classes present in cart)
+      clinicalItems.push(...formatRxDrugClassAnswersForAdmin(selectedDrugClasses, classAnswers))
+    }
+  } else {
+    const clinicalOrder = CLINICAL_ORDER[serviceType] ?? []
+    clinicalItems.push(...buildFieldItems(reviewDetail, clinicalOrder, used))
+
+    for (const [key, raw] of Object.entries(reviewDetail)) {
+      if (used.has(key) || HIDDEN_KEYS.has(key) || ADMIN_KEYS.has(key)) continue
+      if (ADDRESS_KEYS.has(key) || TREATMENT_KEYS.has(key)) continue
+      const value = formatValue(raw)
+      if (!value) continue
+      clinicalItems.push({ label: fieldLabel(key), value })
+      used.add(key)
+    }
   }
 
-  const adminItems = buildFieldItems(detail, [...ADMIN_KEYS], new Set())
+  const adminItems = buildFieldItems(reviewDetail, [...ADMIN_KEYS], new Set())
 
   return {
     patientLine,

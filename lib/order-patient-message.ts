@@ -46,10 +46,35 @@ export function buildPaymentOptionsText(orderId: string, baseUrl?: string): stri
   const payUrl = `${root}/account/orders/${orderId}/pay`
   return `Choose how to pay:
 
-• Pay now for faster processing (secure card payment):
+• Pay now on your phone (secure card payment):
   ${payUrl}
 
 • Wait for our pharmacy to call you to collect payment — no action needed. We'll use the phone number on your account.`
+}
+
+/** Short message optimized for email/SMS with a direct mobile payment link. */
+export function buildMobilePayLinkMessage(
+  order: Order,
+  overrideAmount?: string,
+  baseUrl?: string
+): string {
+  const root = resolveMessageBaseUrl(baseUrl)
+  const payUrl = `${root}/account/orders/${order.id}/pay`
+  const total = formatCurrency(resolveOrderTotal(order, overrideAmount))
+  const orderRef = order.order_number || order.id
+
+  return `Hi,
+
+Please complete payment for order #${orderRef} so we can process your prescription.
+
+Pay on your phone (${total}):
+${payUrl}
+
+Open the link above on your phone to pay securely by card. Once payment is received, we'll continue processing your order.
+
+Questions? Call us at ${PHARMACY_PHONE}.
+
+Clear Choice Pharmacy`
 }
 
 export function buildPrescriptionReadyMessage(
@@ -82,4 +107,44 @@ ${summary}
 ${paymentOptions}
 
 Questions? Call us at ${PHARMACY_PHONE}.`
+}
+
+export function buildMissingPrescriptionInfoMessage(
+  order: Order,
+  prescription: { method: string },
+  baseUrl?: string
+): string {
+  const root = resolveMessageBaseUrl(baseUrl)
+  const orderRef = order.order_number || order.id
+  let action = "Please reply with the information we need so we can continue processing your order."
+
+  switch (prescription.method) {
+    case "upload":
+      action = `Please upload a clear photo or PDF of your prescription for order #${orderRef}. You can upload it from your account order page or reply to this email with the file attached.`
+      break
+    case "transfer":
+      action = `Please provide the pharmacy name, phone number, and prescription (RX) number(s) for your transfer request on order #${orderRef}.`
+      break
+    case "eprescribe":
+      action = `Please provide your prescribing doctor's name and office phone number so we can follow up on the e-prescription for order #${orderRef}.`
+      break
+    case "telemedicine":
+      action = `Please complete your telemedicine intake so our physician can review your request for order #${orderRef}.`
+      break
+    default:
+      action = `Please contact us with your prescription details for order #${orderRef}.`
+  }
+
+  return `Hello,
+
+We're ready to help with order #${orderRef}, but we still need prescription information before we can process it.
+
+${action}
+
+View your order: ${root}/account/orders/${order.id}
+
+Questions? Call us at ${PHARMACY_PHONE}.
+
+Thank you,
+Clear Choice Pharmacy`
 }

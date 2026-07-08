@@ -35,23 +35,45 @@ export async function getOrderPrescriptionDetails(
 
   if (intakes.length > 0) {
     const row = intakes[0] as Record<string, unknown>
-    details.telemedicineIntake = {
-      id: String(row.id),
-      status: String(row.status),
-      created_at: String(row.created_at),
-      intake_type: row.intake_type != null ? String(row.intake_type) : null,
-      submitted_at: row.submitted_at != null ? String(row.submitted_at) : null,
-      intake_data:
-        row.intake_data && typeof row.intake_data === "object"
-          ? (row.intake_data as Record<string, unknown>)
-          : null,
-    }
-    if (details.method === "unknown") {
-      details.method = "telemedicine"
+    details.telemedicineIntake = mapTelemedicineIntakeRow(row)
+  } else {
+    const clinicalIntakes = await sql(
+      `SELECT id, status, created_at, intake_type, intake_data
+       FROM prescription_telemedicine_intake
+       WHERE order_id = $1
+       LIMIT 1`,
+      [orderId]
+    ).catch(() => [])
+
+    if (clinicalIntakes.length > 0) {
+      details.telemedicineIntake = mapTelemedicineIntakeRow(clinicalIntakes[0] as Record<string, unknown>)
     }
   }
 
+  if (details.telemedicineIntake && details.method === "unknown") {
+    details.method = "telemedicine"
+  }
+
   return details
+}
+
+function mapTelemedicineIntakeRow(row: Record<string, unknown>) {
+  return {
+    id: String(row.id),
+    status: String(row.status),
+    created_at: String(row.created_at),
+    intake_type: row.intake_type != null ? String(row.intake_type) : null,
+    submitted_at:
+      row.submitted_at != null
+        ? String(row.submitted_at)
+        : row.created_at != null
+          ? String(row.created_at)
+          : null,
+    intake_data:
+      row.intake_data && typeof row.intake_data === "object"
+        ? (row.intake_data as Record<string, unknown>)
+        : null,
+  }
 }
 
 export async function createTelemedicineIntakeForOrder(

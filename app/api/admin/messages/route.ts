@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     if (!staff || staff.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    const messages = await messaging.getAllMessages()
+    const messages = await messaging.getAllMessagesWithContext()
     return NextResponse.json({ messages })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to load messages"

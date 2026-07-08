@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import type { Order, User } from "@/lib/auth-types"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -269,11 +270,14 @@ export default function AdminCustomersPage() {
                   {filteredCustomers.map((customer) => (
                     <div
                       key={customer.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 hover:border-primary/40 transition-colors"
                     >
-                      <div className="flex-1">
+                      <Link
+                        href={`/admin/customers/${customer.id}`}
+                        className="flex-1 min-w-0 cursor-pointer"
+                      >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                             <span className="text-primary font-semibold">
                               {customer.name.charAt(0).toUpperCase()}
                             </span>
@@ -286,8 +290,8 @@ export default function AdminCustomersPage() {
                             </p>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-6">
+                      </Link>
+                      <div className="flex items-center gap-6 shrink-0 ml-4">
                         <div className="text-center">
                           <div className="flex items-center gap-1 text-muted-foreground">
                             <Package className="h-4 w-4" />
@@ -308,7 +312,11 @@ export default function AdminCustomersPage() {
                             variant="outline"
                             size="sm"
                             disabled={sendingPatientId === customer.id}
-                            onClick={() => handleSendFollowupOne(customer.id, customer.email)}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleSendFollowupOne(customer.id, customer.email)
+                            }}
                           >
                             {sendingPatientId === customer.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />

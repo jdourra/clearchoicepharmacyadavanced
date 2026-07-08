@@ -4,18 +4,19 @@ import { labelsForFields } from "@/lib/intake-field-labels"
 
 type IntakeValidationAlertProps = {
   message: string
-  fields: string[]
+  fields?: string[]
 }
 
-export function IntakeValidationAlert({ message, fields }: IntakeValidationAlertProps) {
+export function IntakeValidationAlert({ message, fields = [] }: IntakeValidationAlertProps) {
   if (!message) return null
 
   const labels = labelsForFields(fields)
+  const title = labels.length > 0 ? "Please complete the following" : "Submission failed"
 
   return (
     <Alert variant="destructive" className="mb-6">
       <AlertTriangle className="h-4 w-4" />
-      <AlertTitle>Please complete the following</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="space-y-2">
         <p>{message}</p>
         {labels.length > 0 && (

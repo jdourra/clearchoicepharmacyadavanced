@@ -3,7 +3,7 @@ import { sql } from "@/lib/db"
 import type { ClinicalServiceType } from "@/lib/telehealth/types"
 import { SPECIALTY_INTAKE_STATUS } from "@/lib/specialty-pharmacy-catalog"
 
-export type AdminIntakeServiceType = ClinicalServiceType | "specialty_pharmacy"
+export type AdminIntakeServiceType = ClinicalServiceType | "specialty_pharmacy" | "prescription_telemedicine"
 
 export type IntakeListItem = {
   serviceType: AdminIntakeServiceType
@@ -33,6 +33,19 @@ export const SERVICE_LABELS: Record<AdminIntakeServiceType, string> = {
   iv_rejuvenation: "IV Rejuvenation",
   rejuvenation_vial: "Rejuvenation Vial",
   specialty_pharmacy: "Specialty Pharmacy",
+  prescription_telemedicine: "Low-Cost Rx Telemedicine",
+}
+
+function rxTelemedicineTreatmentLabel(row: Record<string, unknown>): string {
+  const meds = row.requested_medications
+  if (Array.isArray(meds) && meds.length > 0) {
+    return meds
+      .map((m) => (m && typeof m === "object" ? String((m as Record<string, unknown>).name ?? "") : ""))
+      .filter(Boolean)
+      .join(", ")
+  }
+  const reason = row.visit_reason != null ? String(row.visit_reason) : ""
+  return reason || "Telemedicine prescription"
 }
 
 export function isAdminIntakeServiceType(value: string): value is AdminIntakeServiceType {
@@ -104,9 +117,14 @@ export async function listClinicalIntakes(options?: {
        FROM specialty_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
       statusClause
     ).catch(() => []),
+    sql(
+      `SELECT id, first_name, last_name, email, phone, state, status, requested_medications, visit_reason, stripe_payment_intent_id, created_at
+       FROM prescription_telemedicine_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
+      statusClause
+    ).catch(() => []),
   ])
 
-  const [mens, trt, weight, vial, iv, specialty] = queries
+  const [mens, trt, weight, vial, iv, specialty, rxTelemedicine] = queries
 
   const items: IntakeListItem[] = [
     ...mens.map((r: Record<string, unknown>) =>
@@ -126,6 +144,9 @@ export async function listClinicalIntakes(options?: {
     ),
     ...specialty.map((r: Record<string, unknown>) =>
       rowToItem("specialty_pharmacy", r, String(r.selected_medication ?? "Specialty Medication"))
+    ),
+    ...rxTelemedicine.map((r: Record<string, unknown>) =>
+      rowToItem("prescription_telemedicine", r, rxTelemedicineTreatmentLabel(r))
     ),
   ]
 
@@ -157,6 +178,8 @@ function tableForAdminService(serviceType: AdminIntakeServiceType): string {
       return "iv_booking_requests"
     case "specialty_pharmacy":
       return "specialty_intake"
+    case "prescription_telemedicine":
+      return "prescription_telemedicine_intake"
   }
 }
 
@@ -177,6 +200,8 @@ export function treatmentLabelFromDetail(
       return String(detail.selected_package_title ?? detail.selected_package ?? "IV Package")
     case "specialty_pharmacy":
       return String(detail.selected_medication ?? "Specialty Medication")
+    case "prescription_telemedicine":
+      return rxTelemedicineTreatmentLabel(detail)
   }
 }
 

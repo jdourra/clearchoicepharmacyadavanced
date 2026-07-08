@@ -3,20 +3,29 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import type { Message } from "@/lib/auth-types"
-import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
+import type { AdminMessageWithContext } from "@/lib/auth-types"
+import { staffAuthFetch } from "@/lib/staff-session"
+import { AdminHeader } from "@/components/admin-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
-  Pill,
-  LogOut,
   MessageSquare,
+  Phone,
+  User,
+  Package,
+  ArrowRight,
 } from "lucide-react"
+
+function getMessageHref(msg: AdminMessageWithContext): string | null {
+  if (msg.order_id) return `/admin/orders/${msg.order_id}`
+  if (msg.patientId) return `/admin/customers/${msg.patientId}`
+  return null
+}
 
 export default function AdminMessagesPage() {
   const router = useRouter()
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<AdminMessageWithContext[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -33,20 +42,18 @@ export default function AdminMessagesPage() {
       const messagesRes = await staffAuthFetch("/api/admin/messages")
       if (messagesRes.ok) {
         const data = await messagesRes.json()
-        const msgList: Message[] = data.messages || []
-        setMessages(msgList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
+        const msgList: AdminMessageWithContext[] = data.messages || []
+        setMessages(
+          msgList.sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )
+        )
       }
     } catch {
       router.push("/admin/login")
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleSignOut = async () => {
-    await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
-    clearStaffSession()
-    router.push("/admin/login")
   }
 
   if (loading) {
@@ -59,30 +66,15 @@ export default function AdminMessagesPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
-      <header className="sticky top-0 z-50 w-full border-b bg-background">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Pill className="h-6 w-6 text-primary" />
-            <span className="text-lg font-semibold">Clear Choice Pharmacy - Admin</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
-            <Link href="/admin/orders" className="text-sm font-medium hover:text-primary transition-colors">Orders</Link>
-            <Link href="/admin/customers" className="text-sm font-medium hover:text-primary transition-colors">Customers</Link>
-            <Link href="/admin/messages" className="text-sm font-medium text-primary">Messages</Link>
-          </nav>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </header>
+      <AdminHeader />
 
       <main className="flex-1 py-8">
         <div className="container">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Message History</h1>
-            <p className="text-muted-foreground mt-1">View all messages sent to patients</p>
+            <p className="text-muted-foreground mt-1">
+              View messages sent to patients — click a row to open the related order or customer
+            </p>
           </div>
 
           <Card>
@@ -97,29 +89,111 @@ export default function AdminMessagesPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className="p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <MessageSquare className="h-4 w-4" />
-                            {msg.subject && (
-                              <Badge variant="outline">
-                                {msg.subject.replace("_", " ")}
-                              </Badge>
-                            )}
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(msg.created_at).toLocaleString()}
-                            </span>
+                  {messages.map((msg) => {
+                    const href = getMessageHref(msg)
+
+                    return (
+                      <div
+                        key={msg.id}
+                        role={href ? "link" : undefined}
+                        tabIndex={href ? 0 : undefined}
+                        onClick={() => {
+                          if (href) router.push(href)
+                        }}
+                        onKeyDown={(e) => {
+                          if (href && (e.key === "Enter" || e.key === " ")) {
+                            e.preventDefault()
+                            router.push(href)
+                          }
+                        }}
+                        className={`p-4 border rounded-lg transition-colors ${
+                          href
+                            ? "hover:bg-muted/50 hover:border-primary/40 cursor-pointer"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <MessageSquare className="h-4 w-4 shrink-0" />
+                              {msg.subject ? (
+                                <Badge variant="outline">
+                                  {msg.subject.replace(/_/g, " ")}
+                                </Badge>
+                              ) : null}
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(msg.created_at).toLocaleString()}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-3">
+                              {msg.patientName ? (
+                                <span className="flex items-center gap-1 text-foreground font-medium">
+                                  <User className="h-3.5 w-3.5 text-muted-foreground" />
+                                  {msg.patientName}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">Unknown patient</span>
+                              )}
+                              {msg.patientPhone ? (
+                                <a
+                                  href={`tel:${msg.patientPhone}`}
+                                  className="flex items-center gap-1 text-primary hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Phone className="h-3.5 w-3.5" />
+                                  {msg.patientPhone}
+                                </a>
+                              ) : (
+                                <span className="text-muted-foreground">No phone</span>
+                              )}
+                              {msg.order_id && msg.orderNumber ? (
+                                <span className="flex items-center gap-1">
+                                  <Package className="h-3.5 w-3.5 text-muted-foreground" />
+                                  Order #{msg.orderNumber}
+                                  {msg.orderStatus ? (
+                                    <Badge variant="secondary" className="text-xs ml-1">
+                                      {msg.orderStatus}
+                                    </Badge>
+                                  ) : null}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">No linked order</span>
+                              )}
+                            </div>
+
+                            <p className="text-sm text-muted-foreground line-clamp-2">{msg.body}</p>
+
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {msg.order_id ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Link href={`/admin/orders/${msg.order_id}`}>View order</Link>
+                                </Button>
+                              ) : null}
+                              {msg.patientId ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Link href={`/admin/customers/${msg.patientId}`}>View customer</Link>
+                                </Button>
+                              ) : null}
+                            </div>
                           </div>
-                          <p className="text-sm">{msg.body}</p>
+                          {href ? (
+                            <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                          ) : null}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </CardContent>

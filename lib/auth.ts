@@ -6,7 +6,7 @@ import { cookies } from "next/headers"
 export type { User, StaffUser, OrderItem, Order, Message } from "@/lib/auth-types"
 
 // Import types for local use
-import type { User, StaffUser, OrderItem, Order, Message, PatientProfileSummary } from "@/lib/auth-types"
+import type { User, StaffUser, OrderItem, Order, Message, PatientProfileSummary, AdminMessageWithContext } from "@/lib/auth-types"
 
 // ─── Session helpers ─────────────────────────────────────
 
@@ -293,6 +293,10 @@ function mapOrderRow(r: Record<string, unknown>): Order {
     stripe_checkout_session_id:
       r.stripe_checkout_session_id != null ? String(r.stripe_checkout_session_id) : null,
     prescription_method: r.prescription_method != null ? String(r.prescription_method) : null,
+    telemedicine_intake_status:
+      r.telemedicine_intake_status != null ? String(r.telemedicine_intake_status) : null,
+    telemedicine_intake_submitted_at:
+      r.telemedicine_intake_submitted_at != null ? String(r.telemedicine_intake_submitted_at) : null,
     notes: r.notes ? String(r.notes) : "",
     created_at: String(r.created_at),
   }
@@ -342,7 +346,17 @@ export const orders = {
 
   async getAllOrders(limit = 200, offset = 0): Promise<Order[]> {
     const rows = await sql(
-      `SELECT o.*, json_agg(json_build_object('drug_name', oi.medication_name, 'quantity', oi.quantity, 'price', oi.unit_price)) as items
+      `SELECT
+         o.*,
+         json_agg(json_build_object('drug_name', oi.medication_name, 'quantity', oi.quantity, 'price', oi.unit_price)) as items,
+         COALESCE(
+           (SELECT poi.status FROM prescription_order_intakes poi WHERE poi.order_id = o.id LIMIT 1),
+           (SELECT pti.status FROM prescription_telemedicine_intake pti WHERE pti.order_id = o.id LIMIT 1)
+         ) AS telemedicine_intake_status,
+         COALESCE(
+           (SELECT poi.submitted_at FROM prescription_order_intakes poi WHERE poi.order_id = o.id LIMIT 1),
+           (SELECT pti.created_at FROM prescription_telemedicine_intake pti WHERE pti.order_id = o.id LIMIT 1)
+         ) AS telemedicine_intake_submitted_at
        FROM orders o LEFT JOIN order_items oi ON oi.order_id = o.id
        GROUP BY o.id ORDER BY o.created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset]
@@ -393,6 +407,41 @@ export const orders = {
       [orderId, stripePaymentIntentId, stripeCheckoutSessionId || null]
     )
     return rows.length > 0
+  },
+
+  async markOrderPaidManually(
+    orderId: string,
+    method: "phone" | "cash",
+    recordedBy?: string
+  ): Promise<Order | null> {
+    const methodLabel = method === "phone" ? "phone" : "cash"
+    const preference = method === "phone" ? "pay_by_phone" : "pay_now"
+    const auditLine = `Paid in full (${methodLabel})${
+      recordedBy ? ` — recorded by ${recordedBy}` : ""
+    } on ${new Date().toLocaleString()}`
+
+    const rows = await sql(
+      `UPDATE orders SET
+         payment_status = 'paid',
+         payment_method = $2,
+         payment_preference = $3,
+         notes = CASE
+           WHEN COALESCE(notes, '') = '' THEN $4
+           ELSE notes || E'\\n' || $4
+         END,
+         updated_at = now()
+       WHERE id = $1 AND payment_status != 'paid'
+       RETURNING id`,
+      [orderId, methodLabel, preference, auditLine]
+    )
+
+    if (rows.length === 0) {
+      const existing = await orders.getOrderById(orderId)
+      if (existing?.payment_status === "paid") return existing
+      return null
+    }
+
+    return orders.getOrderById(orderId)
   },
 
   async setPaymentPreference(
@@ -481,6 +530,42 @@ export const messaging = {
   async getAllMessages(): Promise<Message[]> {
     const rows = await sql("SELECT * FROM messages ORDER BY created_at DESC", [])
     return rows as Message[]
+  },
+
+  async getAllMessagesWithContext(): Promise<AdminMessageWithContext[]> {
+    const rows = await sql(
+      `SELECT m.*,
+              p.first_name, p.last_name, p.phone, p.email AS patient_email,
+              o.order_number, o.status AS order_status
+       FROM messages m
+       LEFT JOIN patients p ON m.recipient_type = 'patient' AND p.id::text = m.recipient_id
+       LEFT JOIN orders o ON o.id = m.order_id
+       ORDER BY m.created_at DESC`,
+      []
+    )
+    return rows.map((r: Record<string, unknown>) => {
+      const firstName = r.first_name != null ? String(r.first_name) : ""
+      const lastName = r.last_name != null ? String(r.last_name) : ""
+      const patientName = `${firstName} ${lastName}`.trim() || null
+      return {
+        id: String(r.id),
+        sender_type: String(r.sender_type),
+        sender_id: String(r.sender_id),
+        recipient_type: String(r.recipient_type),
+        recipient_id: r.recipient_id != null ? String(r.recipient_id) : null,
+        subject: r.subject != null ? String(r.subject) : null,
+        body: String(r.body),
+        is_read: Boolean(r.is_read),
+        order_id: r.order_id != null ? String(r.order_id) : null,
+        created_at: String(r.created_at),
+        patientName,
+        patientPhone: r.phone != null ? String(r.phone) : null,
+        patientEmail: r.patient_email != null ? String(r.patient_email) : null,
+        patientId: r.recipient_id != null ? String(r.recipient_id) : null,
+        orderNumber: r.order_number != null ? String(r.order_number) : null,
+        orderStatus: r.order_status != null ? String(r.order_status) : null,
+      }
+    })
   },
 
   async markAsRead(messageId: string): Promise<boolean> {

@@ -21,6 +21,8 @@ import { prescriptionMethodLabel } from "@/lib/order-prescription"
 import { PRIMARY_PHYSICIAN, physicianReviewPendingLabel } from "@/lib/clinical-provider"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { staffAuthFetch } from "@/lib/staff-session"
+import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
+import { isTelemedicineApprovedIntakeStatus } from "@/lib/admin-order-processing-rules"
 
 type AdminOrderPrescriptionPanelProps = {
   orderId: string
@@ -113,6 +115,22 @@ export function AdminOrderPrescriptionPanel({
   const handlePrintUpload = (uploadId: string) => {
     void openPrescriptionFile(uploadId, true)
   }
+
+  const telemedicineIntake = prescription.telemedicineIntake
+  const telemedicineSummaryLayout =
+    telemedicineIntake?.intake_data && typeof telemedicineIntake.intake_data === "object"
+      ? buildIntakeReviewLayout(
+          "prescription_telemedicine",
+          {
+            intake_data: telemedicineIntake.intake_data,
+            status: telemedicineIntake.status,
+            created_at: telemedicineIntake.created_at,
+            intake_type: telemedicineIntake.intake_type,
+          },
+          telemedicineIntake.id
+        )
+      : null
+  const telemedicineApproved = isTelemedicineApprovedIntakeStatus(telemedicineIntake?.status)
 
   return (
     <Card className="lg:col-span-2">
@@ -267,15 +285,18 @@ export function AdminOrderPrescriptionPanel({
             <div className="flex items-start gap-3 p-4 rounded-lg border border-primary/20 bg-primary/5">
               <Clock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold">{physicianReviewPendingLabel()}</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Telemedicine intake received. Waiting for physician approval before the prescription can
-                  be filled.
+                <p className="font-semibold">
+                  {telemedicineApproved ? "Physician approved" : physicianReviewPendingLabel()}
                 </p>
-                {prescription.telemedicineIntake && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {telemedicineApproved
+                    ? "Telemedicine intake was approved. This prescription can be filled per pharmacy workflow."
+                    : "Telemedicine intake received. Waiting for physician approval before the prescription can be filled."}
+                </p>
+                {telemedicineIntake && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    Intake ref: {prescription.telemedicineIntake.id} · Submitted{" "}
-                    {new Date(prescription.telemedicineIntake.created_at).toLocaleString()}
+                    Intake ref: {telemedicineIntake.id} · Submitted{" "}
+                    {new Date(telemedicineIntake.created_at).toLocaleString()}
                   </p>
                 )}
               </div>
@@ -297,29 +318,33 @@ export function AdminOrderPrescriptionPanel({
                 </div>
               </div>
             </div>
-            {prescription.telemedicineIntake && (
+            {telemedicineIntake && (
               <Badge variant="secondary">
-                Status: {formatPortalStatus(prescription.telemedicineIntake.status)}
-                {prescription.telemedicineIntake.intake_type
-                  ? ` · ${prescription.telemedicineIntake.intake_type.replace("_", " ")}`
+                Status: {formatPortalStatus(telemedicineIntake.status)}
+                {telemedicineIntake.intake_type
+                  ? ` · ${telemedicineIntake.intake_type.replace("_", " ")}`
                   : ""}
               </Badge>
             )}
-            {prescription.telemedicineIntake?.intake_data && (
-              <div className="rounded-lg border bg-muted/30 p-4 text-sm space-y-2">
+            {telemedicineSummaryLayout && telemedicineSummaryLayout.clinicalItems.length > 0 && (
+              <div className="rounded-lg border bg-muted/30 p-4 text-sm space-y-3">
                 <p className="font-semibold">Submitted intake summary</p>
-                {prescription.telemedicineIntake.submitted_at && (
+                {telemedicineIntake?.submitted_at && (
                   <p className="text-xs text-muted-foreground">
-                    Submitted {new Date(prescription.telemedicineIntake.submitted_at).toLocaleString()}
+                    Submitted {new Date(telemedicineIntake.submitted_at).toLocaleString()}
                   </p>
                 )}
-                <pre className="text-xs whitespace-pre-wrap overflow-x-auto max-h-64">
-                  {JSON.stringify(prescription.telemedicineIntake.intake_data, null, 2)}
-                </pre>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {telemedicineSummaryLayout.clinicalItems.map((item) => (
+                    <div key={item.label} className="rounded-md border bg-background px-3 py-2">
+                      <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
+                      <p className="mt-0.5 break-words whitespace-pre-wrap">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-            {prescription.telemedicineIntake &&
-              prescription.telemedicineIntake.status === "pending_intake" && (
+            {telemedicineIntake && telemedicineIntake.status === "pending_intake" && (
                 <p className="text-sm text-amber-700">
                   Patient has not completed the telemedicine intake form yet.
                 </p>

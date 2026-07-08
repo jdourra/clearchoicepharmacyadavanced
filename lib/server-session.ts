@@ -19,6 +19,14 @@ export function getSessionIdFromRequest(request: Request): string | null {
 export async function getUserIdFromRequest(request: Request): Promise<string | null> {
   const sessionId = getSessionIdFromRequest(request)
   if (!sessionId) return null
-  const rows = await sql("SELECT user_id FROM sessions WHERE id = $1 AND expires_at > now()", [sessionId])
+  const rows = await sql(
+    `SELECT s.user_id
+     FROM sessions s
+     INNER JOIN patients p ON p.id = s.user_id
+     WHERE s.id = $1
+       AND s.expires_at > now()
+       AND s.user_type = 'patient'`,
+    [sessionId]
+  )
   return rows.length > 0 ? rows[0].user_id : null
 }

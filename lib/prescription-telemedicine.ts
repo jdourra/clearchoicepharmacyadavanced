@@ -72,15 +72,22 @@ export function resolveTelemedicineIntakeRoute(items: CartItem[]): TelemedicineI
   return { type: "general" }
 }
 
-export function buildTelemedicineIntakeUrl(orderId: string, route: TelemedicineIntakeRoute): string {
+export function buildTelemedicineIntakeUrl(
+  route: TelemedicineIntakeRoute,
+  options?: { orderId?: string; fromCheckout?: boolean }
+): string {
   if (route.type === "ed_troche") {
-    const params = new URLSearchParams({ orderId, product: route.productId })
+    const params = new URLSearchParams()
+    if (options?.orderId) params.set("orderId", options.orderId)
+    if (options?.fromCheckout) params.set("from", "checkout")
+    params.set("product", route.productId)
     return `/mens-health/start?${params.toString()}`
   }
   const params = new URLSearchParams({
-    orderId,
     type: route.type === "ed_tablet" ? "ed_tablet" : "general",
   })
+  if (options?.orderId) params.set("orderId", options.orderId)
+  if (options?.fromCheckout) params.set("from", "checkout")
   return `/prescriptions/telemedicine-intake?${params.toString()}`
 }
 

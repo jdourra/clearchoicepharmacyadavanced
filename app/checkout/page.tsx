@@ -19,6 +19,7 @@ import {
   resolveTelemedicineIntakeRoute,
   TELEMEDICINE_VISIT_FEE,
 } from "@/lib/prescription-telemedicine"
+import { TELEMEDICINE_CHECKOUT_CONTEXT_KEY } from "@/lib/prescription-telemedicine-checkout"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
@@ -112,22 +113,44 @@ export default function CheckoutPage() {
         unit_price: item.price || 0,
       }))
 
- const res = await authFetch("/api/patient-orders", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
+      const prescriptionNotes = buildPrescriptionNotes(prescriptionMethod, {
+        doctorName,
+        doctorPhone,
+        transferRxNumbers,
+        transferPharmacyName,
+        transferPharmacyPhone,
+        deliveryMethod,
+      })
+
+      if (prescriptionMethod === "telemedicine") {
+        const route = resolveTelemedicineIntakeRoute(cartItems)
+        if (route.type !== "ed_troche") {
+          window.sessionStorage.setItem(
+            TELEMEDICINE_CHECKOUT_CONTEXT_KEY,
+            JSON.stringify({
+              delivery_method: deliveryMethod,
+              subtotal,
+              telemedicine_fee: telemedicineFee,
+              delivery_fee: deliveryFee,
+              total,
+              notes: prescriptionNotes,
+            })
+          )
+          router.push(buildTelemedicineIntakeUrl(route, { fromCheckout: true }))
+          setLoading(false)
+          return
+        }
+      }
+
+      const res = await authFetch("/api/patient-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: orderItems,
           total_amount: total,
           delivery_method: deliveryMethod,
           prescription_method: prescriptionMethod,
-          notes: buildPrescriptionNotes(prescriptionMethod, {
-            doctorName,
-            doctorPhone,
-            transferRxNumbers,
-            transferPharmacyName,
-            transferPharmacyPhone,
-            deliveryMethod,
-          }),
+          notes: prescriptionNotes,
         }),
       })
 
@@ -153,11 +176,12 @@ export default function CheckoutPage() {
           )
         }
       }
+
       window.sessionStorage.removeItem("cart")
 
       if (prescriptionMethod === "telemedicine") {
         const route = resolveTelemedicineIntakeRoute(cartItems)
-        router.push(buildTelemedicineIntakeUrl(data.order.id, route))
+        router.push(buildTelemedicineIntakeUrl(route, { orderId: data.order.id }))
         return
       }
 

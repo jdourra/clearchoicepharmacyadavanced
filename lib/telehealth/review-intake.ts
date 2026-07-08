@@ -4,6 +4,7 @@ import { capturePaymentHold, cancelPaymentHold } from "@/lib/stripe-server"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { notifyPatientIntakeDecision } from "@/lib/telehealth/patient-notify"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { createPharmacyOrderFromPrescriptionTelemedicineIntake } from "@/lib/prescription-telemedicine-clinical-intake"
 import {
   getClinicalIntakeDetail,
   isAdminIntakeServiceType,
@@ -38,6 +39,8 @@ function tableForService(serviceType: AdminIntakeServiceType): string {
       return "iv_booking_requests"
     case "specialty_pharmacy":
       return "specialty_intake"
+    case "prescription_telemedicine":
+      return "prescription_telemedicine_intake"
   }
 }
 
@@ -127,6 +130,17 @@ export async function reviewClinicalIntake(params: {
 
   if (rows.length === 0) {
     return { success: false, error: "Failed to update intake status" }
+  }
+
+  if (serviceType === "prescription_telemedicine" && action === "approve") {
+    const orderResult = await createPharmacyOrderFromPrescriptionTelemedicineIntake(id)
+    if (!orderResult.success) {
+      return {
+        success: false,
+        error: orderResult.error || "Failed to create pharmacy order after approval",
+        paymentAction,
+      }
+    }
   }
 
   const patientEmail = String(detail.email ?? "")

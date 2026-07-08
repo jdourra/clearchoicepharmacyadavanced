@@ -106,7 +106,7 @@ CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_number TEXT UNIQUE NOT NULL,
   patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  status TEXT NOT NULL DEFAULT 'pending_rx' CHECK (status IN ('pending_rx', 'processing', 'ready', 'completed', 'problem', 'cancelled')),
+  status TEXT NOT NULL DEFAULT 'pending_rx' CHECK (status IN ('pending', 'pending_rx', 'processing', 'ready', 'shipped', 'delivered', 'completed', 'problem', 'cancelled')),
   delivery_method TEXT NOT NULL DEFAULT 'pickup',
   delivery_fee DECIMAL(10, 2) DEFAULT 0.00,
   subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,

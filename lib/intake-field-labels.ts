@@ -1,3 +1,7 @@
+import {
+  formatConditionAnswerLabel,
+} from "@/lib/rx-visit-conditions"
+
 /** Human-readable labels for intake validation error lists */
 export const INTAKE_FIELD_LABELS: Record<string, string> = {
   selectedProduct: "Treatment selection",
@@ -46,12 +50,22 @@ export const INTAKE_FIELD_LABELS: Record<string, string> = {
   comorbidities: "Qualifying conditions",
   priorGlpExperience: "Prior GLP experience",
   weightLossGoals: "Weight loss goals",
-  kidneyDisease: "Kidney disease screening",
-  heartCondition: "Heart condition screening",
+  selectedConditions: "Conditions for visit",
+  otherConditionNotes: "Other condition description",
+  primaryCondition: "Reason for visit",
+  newOrWorseningSymptoms: "New or worsening symptoms",
+  currentMedications: "Current medications",
+  allergies: "Allergies",
+  idUploading: "ID upload in progress",
 }
 
 export function labelsForFields(fields: string[]): string[] {
-  return fields.map((f) => INTAKE_FIELD_LABELS[f] ?? f.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()))
+  return fields.map(
+    (f) =>
+      INTAKE_FIELD_LABELS[f] ??
+      (f.includes("-") ? formatConditionAnswerLabel(f) : null) ??
+      f.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())
+  )
 }
 
 export function scrollToFirstField(fields: string[]) {
