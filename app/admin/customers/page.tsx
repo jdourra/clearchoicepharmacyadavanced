@@ -1,26 +1,35 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import type { Order, User } from "@/lib/auth-types"
-import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { staffAuthFetch } from "@/lib/staff-session"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import {
-  Pill,
-  LogOut,
   Search,
   Users,
   Package,
   Mail,
+  Send,
+  Loader2,
+  MessageCircle,
 } from "lucide-react"
+import { AdminHeader } from "@/components/admin-header"
 import Loading from "./loading"
 
 interface CustomerWithOrders extends User {
   orders: Order[]
   totalSpent: number
+}
+
+type FollowupCandidate = {
+  id: string
+  email: string
+  name: string
+  createdAt: string
 }
 
 export default function AdminCustomersPage() {
@@ -29,10 +38,31 @@ export default function AdminCustomersPage() {
   const [filteredCustomers, setFilteredCustomers] = useState<CustomerWithOrders[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [followupCandidates, setFollowupCandidates] = useState<FollowupCandidate[]>([])
+  const [followupLoading, setFollowupLoading] = useState(true)
+  const [sendingFollowup, setSendingFollowup] = useState(false)
+  const [sendingPatientId, setSendingPatientId] = useState<string | null>(null)
+  const [followupMessage, setFollowupMessage] = useState("")
+
+  const loadFollowupCandidates = useCallback(async () => {
+    setFollowupLoading(true)
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/signup-followup")
+      if (res.ok) {
+        const data = await res.json()
+        setFollowupCandidates(data.candidates || [])
+      }
+    } catch {
+      setFollowupCandidates([])
+    } finally {
+      setFollowupLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     loadData()
-  }, [router])
+    loadFollowupCandidates()
+  }, [router, loadFollowupCandidates])
 
   useEffect(() => {
     if (searchTerm) {
@@ -78,10 +108,59 @@ export default function AdminCustomersPage() {
     }
   }
 
-  const handleSignOut = async () => {
-    await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
-    clearStaffSession()
-    router.push("/admin/login")
+  const handleSendFollowupBatch = async () => {
+    if (followupCandidates.length === 0) return
+    const confirmed = window.confirm(
+      `Send a friendly check-in email to ${followupCandidates.length} patient(s) who signed up 3–30 days ago with no orders? Each person will only receive this once.`
+    )
+    if (!confirmed) return
+
+    setSendingFollowup(true)
+    setFollowupMessage("")
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/signup-followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || "Send failed")
+      }
+      setFollowupMessage(
+        `Sent ${data.sent} of ${data.eligible} email(s).${data.failed ? ` ${data.failed} failed — check SES configuration.` : ""}`
+      )
+      await loadFollowupCandidates()
+    } catch (err) {
+      setFollowupMessage(err instanceof Error ? err.message : "Failed to send emails")
+    } finally {
+      setSendingFollowup(false)
+    }
+  }
+
+  const handleSendFollowupOne = async (patientId: string, email: string) => {
+    const confirmed = window.confirm(`Send check-in email to ${email}?`)
+    if (!confirmed) return
+
+    setSendingPatientId(patientId)
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/signup-followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientIds: [patientId] }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.failed > 0) {
+        const err = data.results?.[0]?.error || data.error || "Send failed"
+        throw new Error(err)
+      }
+      setFollowupMessage(`Check-in email sent to ${email}.`)
+      await loadFollowupCandidates()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to send email")
+    } finally {
+      setSendingPatientId(null)
+    }
   }
 
   if (loading) {
@@ -90,24 +169,7 @@ export default function AdminCustomersPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
-      <header className="sticky top-0 z-50 w-full border-b bg-background">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Pill className="h-6 w-6 text-primary" />
-            <span className="text-lg font-semibold">Clear Choice Pharmacy - Admin</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
-            <Link href="/admin/orders" className="text-sm font-medium hover:text-primary transition-colors">Orders</Link>
-            <Link href="/admin/customers" className="text-sm font-medium text-primary">Customers</Link>
-            <Link href="/admin/messages" className="text-sm font-medium hover:text-primary transition-colors">Messages</Link>
-          </nav>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </header>
+      <AdminHeader />
 
       <main className="flex-1 py-8">
         <div className="container">
@@ -115,6 +177,68 @@ export default function AdminCustomersPage() {
             <h1 className="text-3xl font-bold">Customer Management</h1>
             <p className="text-muted-foreground mt-1">View all registered customers and their order history</p>
           </div>
+
+          <Card className="mb-6 border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-primary" />
+                Signup check-in emails
+              </CardTitle>
+              <CardDescription>
+                Send a one-time helpful email to patients who joined 3–30 days ago but have not placed an order yet.
+                Asks if they need help with pricing, transfers, or telemedicine.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {followupLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading eligible patients...
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Badge variant="secondary" className="text-sm px-3 py-1">
+                      {followupCandidates.length} eligible
+                    </Badge>
+                    <Button
+                      onClick={handleSendFollowupBatch}
+                      disabled={followupCandidates.length === 0 || sendingFollowup}
+                    >
+                      {sendingFollowup ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Send check-in to all eligible
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {followupMessage ? (
+                    <p className="text-sm text-foreground rounded-lg border bg-background px-4 py-3">{followupMessage}</p>
+                  ) : null}
+                  {followupCandidates.length > 0 ? (
+                    <ul className="text-sm space-y-2 max-h-40 overflow-y-auto">
+                      {followupCandidates.map((c) => (
+                        <li key={c.id} className="flex justify-between gap-2 text-muted-foreground">
+                          <span>
+                            {c.name || c.email} · {c.email}
+                          </span>
+                          <span className="shrink-0">{new Date(c.createdAt).toLocaleDateString()}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No patients are due for a check-in right now.</p>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           <Card className="mb-6">
             <CardContent className="pt-6">
@@ -179,6 +303,23 @@ export default function AdminCustomersPage() {
                           <p className="text-sm text-muted-foreground">Joined</p>
                           <p className="text-sm">{new Date(customer.created_at).toLocaleDateString()}</p>
                         </div>
+                        {customer.orders.length === 0 ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={sendingPatientId === customer.id}
+                            onClick={() => handleSendFollowupOne(customer.id, customer.email)}
+                          >
+                            {sendingPatientId === customer.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Send className="h-3 w-3 mr-1" />
+                                Check-in
+                              </>
+                            )}
+                          </Button>
+                        ) : null}
                       </div>
                     </div>
                   ))}
