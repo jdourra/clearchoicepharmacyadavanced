@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import {
-  Pill,
   ShoppingCart,
   User,
   Phone,
@@ -10,6 +9,7 @@ import {
   Printer,
   Menu,
 } from "lucide-react"
+import { SiteLogo } from "@/components/site-logo"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import type { User as AuthUser } from "@/lib/auth-types"
@@ -95,7 +95,7 @@ export function SiteHeader() {
           </span>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 flex h-16 items-center justify-between gap-2">
+      <div className="max-w-7xl mx-auto px-4 flex h-[4.5rem] sm:h-20 items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {mounted ? (
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -111,9 +111,10 @@ export function SiteHeader() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[min(100vw-2rem,320px)] p-0">
                 <SheetHeader className="border-b px-4 py-4 text-left">
-                  <SheetTitle className="flex items-center gap-2">
-                    <Pill className="h-5 w-5 text-primary" />
-                    Clear Choice Rx
+                  <SheetTitle asChild>
+                    <div>
+                      <SiteLogo href="/" height={56} />
+                    </div>
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col px-2 py-4 overflow-y-auto max-h-[calc(100vh-5rem)]">
@@ -208,10 +209,7 @@ export function SiteHeader() {
             </Button>
           )}
 
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0">
-            <Pill className="h-6 w-6 shrink-0 text-primary" />
-            <span className="text-base sm:text-lg font-bold truncate">Clear Choice Rx</span>
-          </Link>
+          <SiteLogo href="/" height={64} priority />
         </div>
 
         <nav className="hidden md:flex items-center gap-5">

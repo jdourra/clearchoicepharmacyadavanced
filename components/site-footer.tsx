@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { MapPin, Phone, Printer } from "lucide-react"
+import { SiteLogo } from "@/components/site-logo"
 
 export function SiteFooter() {
   return (
@@ -7,7 +8,7 @@ export function SiteFooter() {
       <div className="container max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Clear Choice Pharmacy</h3>
+            <SiteLogo href="/" height={72} />
             <div className="space-y-2 text-sm text-muted-foreground">
               <a
                 href="https://maps.google.com/?q=40890+Grand+River+Ave,+Novi,+MI+48375"

@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Pill, LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { staffAuthFetch, clearStaffSession } from "@/lib/staff-session"
+import { clearStaffSession } from "@/lib/staff-session"
+import { SiteLogo } from "@/components/site-logo"
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
@@ -28,9 +29,9 @@ export function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Pill className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold">Clear Choice Pharmacy - Admin</span>
+        <div className="flex items-center gap-3">
+          <SiteLogo href="/admin" height={48} />
+          <span className="text-sm font-semibold text-muted-foreground hidden sm:inline">Admin</span>
         </div>
         <nav className="hidden md:flex items-center gap-6">
           {NAV_ITEMS.map((item) => (

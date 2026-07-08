@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Pill, Lock } from "lucide-react"
+import { Lock } from "lucide-react"
 import Link from "next/link"
 import { saveStaffSession } from "@/lib/staff-session"
+import { SiteLogo } from "@/components/site-logo"
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("")
@@ -45,11 +46,8 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <Pill className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Clear Choice Pharmacy</span>
-          </Link>
+        <div className="flex justify-center mb-8">
+          <SiteLogo href="/" height={88} priority />
         </div>
 
         <Card>

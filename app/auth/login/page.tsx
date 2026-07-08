@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
 import { saveSession } from "@/lib/session"
+import { SiteLogo } from "@/components/site-logo"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -42,10 +43,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen w-full items-center justify-center p-6 bg-muted/30">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
-          <div className="text-center">
-            <Link href="/" className="text-2xl font-bold text-primary">
-              Clear Choice Pharmacy
-            </Link>
+          <div className="flex justify-center">
+            <SiteLogo href="/" height={88} priority />
           </div>
           <Card>
             <CardHeader>

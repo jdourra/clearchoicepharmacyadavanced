@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Pill } from "lucide-react"
 import { saveStaffSession } from "@/lib/staff-session"
+import { SiteLogo } from "@/components/site-logo"
 
 export default function StaffLoginPage() {
   const [email, setEmail] = useState("")
@@ -44,9 +44,8 @@ export default function StaffLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <Pill className="h-10 w-10 text-primary" />
-          <h1 className="text-2xl font-bold">Clear Choice Rx</h1>
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <SiteLogo href="/" height={88} priority />
           <p className="text-sm text-muted-foreground">Staff Portal</p>
         </div>
 

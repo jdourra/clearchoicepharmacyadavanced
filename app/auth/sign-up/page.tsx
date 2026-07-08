@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from "next/link"
 import { useState } from "react"
 import { saveSession } from "@/lib/session"
+import { SiteLogo } from "@/components/site-logo"
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -81,10 +82,8 @@ export default function SignUpPage() {
     <div className="flex min-h-screen w-full items-center justify-center p-6 bg-muted/30">
       <div className="w-full max-w-xl">
         <div className="flex flex-col gap-6">
-          <div className="text-center">
-            <Link href="/" className="text-2xl font-bold text-primary">
-              Clear Choice Pharmacy
-            </Link>
+          <div className="flex justify-center">
+            <SiteLogo href="/" height={88} priority />
           </div>
           <Card>
             <CardHeader>
