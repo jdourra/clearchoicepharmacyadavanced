@@ -1,6 +1,10 @@
 import "server-only"
 import { sql } from "@/lib/db"
 import { cookies } from "next/headers"
+import {
+  notifyNewPatientSignupFireAndForget,
+  notifyNewPharmacyOrderFireAndForget,
+} from "@/lib/staff-notify"
 
 // Re-export types so existing server-side imports still work
 export type { User, StaffUser, OrderItem, Order, Message } from "@/lib/auth-types"
@@ -84,9 +88,17 @@ export const auth = {
     )
     const patient = rows[0]
     const sessionId = await createSessionRow(patient.id, "patient")
+    const name = `${patient.first_name} ${patient.last_name}`.trim()
+
+    notifyNewPatientSignupFireAndForget({
+      patientId: patient.id,
+      name,
+      email: patient.email,
+      phone,
+    })
 
     return {
-      user: { id: patient.id, email: patient.email, name: `${patient.first_name} ${patient.last_name}`.trim(), created_at: patient.created_at },
+      user: { id: patient.id, email: patient.email, name, created_at: patient.created_at },
       sessionId,
     }
   },
@@ -328,8 +340,35 @@ export const orders = {
       )
     }
 
+    let patientName: string | null = null
+    let patientEmail: string | null = null
+    if (patientId) {
+      const patients = await sql(
+        "SELECT first_name, last_name, email FROM patients WHERE id = $1 LIMIT 1",
+        [patientId]
+      )
+      if (patients.length > 0) {
+        const p = patients[0] as { first_name: string; last_name: string; email: string }
+        patientName = `${p.first_name} ${p.last_name}`.trim()
+        patientEmail = p.email
+      }
+    }
+
+    const mapped = mapOrderRow(order)
+    notifyNewPharmacyOrderFireAndForget({
+      orderId: mapped.id,
+      orderNumber: mapped.order_number,
+      patientId,
+      patientName,
+      patientEmail,
+      items,
+      total,
+      deliveryMethod,
+      prescriptionMethod,
+    })
+
     return {
-      ...mapOrderRow(order),
+      ...mapped,
       items,
     }
   },

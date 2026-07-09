@@ -7,13 +7,26 @@ export const PRIMARY_PHYSICIAN = {
   pharmacyPhone: "1-248-987-6182",
 } as const
 
-export function getClinicianInboxEmail(): string {
+export function getAdminInboxEmail(): string {
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() || ""
+}
+
+export function getDrDourraInboxEmail(): string {
   return (
-    process.env.TELEHEALTH_CLINICIAN_EMAIL ||
-    process.env.DR_DOURRA_EMAIL ||
-    process.env.ADMIN_EMAIL ||
+    process.env.TELEHEALTH_CLINICIAN_EMAIL?.trim().toLowerCase() ||
+    process.env.DR_DOURRA_EMAIL?.trim().toLowerCase() ||
     ""
   )
+}
+
+/** @deprecated Prefer getDrDourraInboxEmail or getClinicalIntakeRecipientEmails */
+export function getClinicianInboxEmail(): string {
+  return getDrDourraInboxEmail() || getAdminInboxEmail()
+}
+
+/** Admin + Dr. Dourra for new clinical intake alerts (deduped). */
+export function getClinicalIntakeRecipientEmails(): string[] {
+  return [...new Set([getAdminInboxEmail(), getDrDourraInboxEmail()].filter(Boolean))]
 }
 
 export function physicianReviewPendingLabel(): string {
