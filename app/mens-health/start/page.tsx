@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { ClinicalIntakeForm } from "@/components/clinical-intake-form"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
@@ -79,6 +80,9 @@ export default async function MensHealthStartPage({ searchParams }: PageProps) {
                   Finish your secure intake for custom compounded ED troches. A licensed provider reviews your
                   information before Clear Choice Pharmacy prepares your prescription.
                 </p>
+                <div className="mt-4">
+                  <MichiganOnlyNotice />
+                </div>
                 {linkedOrderId ? (
                   <p className="mt-3 text-sm rounded-lg border border-sky-200 bg-sky-50 text-sky-900 px-4 py-3">
                     Linked to prescription order <span className="font-mono font-medium">{linkedOrderId}</span>.

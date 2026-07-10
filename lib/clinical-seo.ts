@@ -1,10 +1,10 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
-  "Clear Choice Pharmacy | Prescriptions, Weight Loss, IV & Men's Health | Novi, MI"
+  "Clear Choice Pharmacy | Michigan Prescriptions, Weight Loss, IV & Men's Health | Novi, MI"
 
 export const HOME_DESCRIPTION =
-  "Clear Choice Pharmacy in Novi, MI offers low-cost prescriptions, GLP-1 weight loss, ED medications and TRT, mobile IV rejuvenation, and specialty pharmacy care with prior authorization and copay assistance support."
+  "Michigan patients only. Clear Choice Pharmacy in Novi, MI offers low-cost cash-pay prescriptions, GLP-1 weight loss, ED medications and TRT, mobile IV rejuvenation across Metro Detroit, and specialty pharmacy care with prior authorization support."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -35,14 +35,52 @@ export const PHARMACY_ADDRESS = {
   addressCountry: "US",
 }
 
-/** Cities and region served — used in JSON-LD for local clinical SEO */
+/** Cities and region served — used in JSON-LD for local clinical SEO (Michigan only). */
 export const AREA_SERVED = [
+  { "@type": "State" as const, name: "Michigan" },
+  { "@type": "AdministrativeArea" as const, name: "Metro Detroit" },
   { "@type": "City" as const, name: "Novi", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Northville", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Farmington Hills", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Wixom", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "South Lyon", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
-  { "@type": "AdministrativeArea" as const, name: "Metro Detroit" },
+  { "@type": "City" as const, name: "Livonia", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "Canton", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "Plymouth", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "Ann Arbor", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "Troy", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "West Bloomfield", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+  { "@type": "City" as const, name: "Commerce Township", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
+]
+
+/** Site-wide keywords focused on Michigan / Metro Detroit intent. */
+export const SITE_KEYWORDS = [
+  "Clear Choice Pharmacy Novi MI",
+  "Michigan cash pay pharmacy",
+  "cheap prescriptions Novi MI",
+  "low cost pharmacy Michigan",
+  "pharmacy without insurance Michigan",
+  "cash pay prescriptions Metro Detroit",
+  "transparent pharmacy pricing Novi",
+  "generic drugs Novi Michigan",
+  "prescription price comparison Michigan",
+  "Michigan patients only pharmacy",
+  "specialty pharmacy Novi MI",
+  "specialty medications Michigan",
+  "prior authorization pharmacy Michigan",
+  "copay assistance Novi MI",
+  "GLP-1 weight loss Michigan",
+  "Semaglutide Novi MI",
+  "Tirzepatide Metro Detroit",
+  "medical weight loss Novi Michigan",
+  "ED troches Michigan",
+  "compounded ED pharmacy Novi",
+  "TRT pharmacy Michigan",
+  "testosterone replacement therapy Novi MI",
+  "men's health pharmacy Michigan",
+  "mobile IV therapy Metro Detroit",
+  "IV hydration Novi MI",
+  "NAD+ IV therapy Michigan",
 ]
 
 export type FaqItem = { question: string; answer: string }
@@ -74,6 +112,11 @@ export function pharmacyProviderSchema() {
 
 export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
+    question: "Do you serve patients outside Michigan?",
+    answer:
+      "Not at this time. Clear Choice Pharmacy is currently licensed to dispense only to Michigan patients. We are expanding with a telehealth partner and will update eligibility when multi-state coverage is available.",
+  },
+  {
     question: "Why choose sublingual troches over regular ED pills?",
     answer:
       "Troches absorb through the oral mucosa, often working in half the time of swallowed tablets. Because they bypass the digestive tract, they are not affected by food or heavy meals.",
@@ -81,12 +124,12 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Does Clear Choice Pharmacy offer TRT in Michigan?",
     answer:
-      "Yes. We offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene options. Programs include telehealth review, pharmacy fulfillment, and transparent cash-pay pricing from $109/mo on quarterly billing.",
+      "Yes. For Michigan patients, we offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene options. Programs include telehealth review, pharmacy fulfillment in Novi, and transparent cash-pay pricing from $109/mo on quarterly billing.",
   },
   {
     question: "How much does TRT cost at Clear Choice Pharmacy?",
     answer:
-      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene oral therapy starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and shipping.",
+      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene oral therapy starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
   },
   {
     question: "Do you offer combination troches for premature ejaculation?",
@@ -101,21 +144,26 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Can you combine Sildenafil and Tadalafil?",
     answer:
-      "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available at retail chains.",
+      "Yes. Our compounding pharmacy in Novi, MI can create dual-action combination troches with tailored strengths that are not available at retail chains.",
   },
   {
     question: "Is the consultation private?",
     answer:
-      "Absolutely. The online consultation is confidential, and your medication is prepared and delivered discreetly through Clear Choice Pharmacy.",
+      "Absolutely. The online consultation is confidential, and your medication is prepared and delivered discreetly through Clear Choice Pharmacy for Michigan patients.",
   },
   {
     question: "Do you offer ED compounding in Novi and Metro Detroit?",
     answer:
-      "Yes. Clear Choice Pharmacy compounds custom sublingual ED troches for patients in Novi, Northville, Farmington Hills, Wixom, South Lyon, and the greater Metro Detroit area.",
+      "Yes. Clear Choice Pharmacy compounds custom sublingual ED troches for Michigan patients in Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, Ann Arbor, Troy, and the greater Metro Detroit area.",
   },
 ]
 
 export const WEIGHT_LOSS_FAQS: FaqItem[] = [
+  {
+    question: "Is medical weight loss available outside Michigan?",
+    answer:
+      "Currently no. GLP-1 and medical weight loss programs through Clear Choice Pharmacy are available to qualifying Michigan patients only, with fulfillment from our Novi pharmacy.",
+  },
   {
     question: "What is the difference between Semaglutide and Tirzepatide?",
     answer:
@@ -129,12 +177,12 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Is pricing transparent for GLP-1 programs?",
     answer:
-      "Yes. Clear Choice Pharmacy offers upfront cash-pay pricing on compounded GLP formulations—no insurance middlemen or hidden fees.",
+      "Yes. Clear Choice Pharmacy offers upfront cash-pay pricing on compounded GLP formulations for Michigan patients—no insurance middlemen or hidden fees.",
   },
   {
     question: "Who is eligible for medical weight loss at Clear Choice Pharmacy?",
     answer:
-      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying patients in Novi, MI and Metro Detroit seeking Semaglutide or Tirzepatide medical weight management.",
+      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients in Novi, Metro Detroit, and statewide seeking Semaglutide or Tirzepatide medical weight management.",
   },
   {
     question: "What is the MIC + B12 skinny shot and how does it help with weight loss?",
@@ -152,7 +200,7 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "What is the difference between mobile IV and rejuvenation vials?",
     answer:
-      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits shipped to your door for self-injection after telehealth approval.",
+      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel in Metro Detroit — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits prepared by Clear Choice Pharmacy for eligible Michigan patients after telehealth approval.",
   },
   {
     question: "Does mobile IV therapy hurt?",
@@ -172,11 +220,29 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "What areas do you serve for mobile IV therapy?",
     answer:
-      "Clear Choice IV & Rejuvenation dispatches licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, and South Lyon. Rejuvenation vial homekits ship nationwide after physician approval.",
+      "Clear Choice IV & Rejuvenation dispatches licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities. Rejuvenation vial homekits are available to Michigan patients after physician approval.",
   },
   {
     question: "Is there a travel fee for mobile IV?",
     answer:
       "Yes. IV drip prices are listed separately from a flat $50 mobile travel and dispatch fee, shown at checkout before you complete your intake.",
+  },
+]
+
+export const PRESCRIPTIONS_FAQS: FaqItem[] = [
+  {
+    question: "Can I order prescriptions if I live outside Michigan?",
+    answer:
+      "Not right now. Clear Choice Pharmacy can currently fill and ship prescriptions only for Michigan patients. Out-of-state patients should use a pharmacy licensed in their state until we expand with our telehealth partner.",
+  },
+  {
+    question: "How do I find low-cost prescription prices in Michigan?",
+    answer:
+      "Search any medication on our prescriptions page to see transparent cash-pay pricing. Pickup is available in Novi, MI, and delivery is available to eligible Michigan addresses.",
+  },
+  {
+    question: "Do I need insurance for Clear Choice Pharmacy?",
+    answer:
+      "No. Our low-cost prescription program is cash-pay with upfront pricing—no insurance required. Specialty pharmacy services can also work with major insurance plans for high-cost medications.",
   },
 ]

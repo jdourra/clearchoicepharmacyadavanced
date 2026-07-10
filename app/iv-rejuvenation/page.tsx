@@ -10,26 +10,26 @@ import {
 } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "IV Rejuvenation",
+  title: "IV Rejuvenation | Metro Detroit & Michigan",
   description:
-    "Premium mobile IV therapy delivered to your door in Metro Detroit. Myers' Cocktail, NAD+, hydration, immunity drips, and symptom relief. Pharmacy-formulated, licensed RNs, upfront pricing.",
+    "Premium mobile IV therapy across Metro Detroit and rejuvenation vials for Michigan patients. Myers' Cocktail, NAD+, hydration, and immunity drips—pharmacy-formulated in Novi, MI.",
   keywords: [
     "mobile IV therapy Metro Detroit",
     "IV hydration Novi MI",
-    "Myers Cocktail IV",
+    "Myers Cocktail IV Michigan",
     "NAD+ IV therapy Michigan",
     "mobile IV nurse Detroit",
-    "IV rejuvenation Novi",
-    "hangover IV therapy",
-    "immune boost IV",
+    "IV rejuvenation Novi Michigan",
+    "hangover IV therapy Metro Detroit",
+    "immune boost IV Novi",
   ],
   alternates: {
     canonical: `${SITE_URL}/iv-rejuvenation`,
   },
   openGraph: {
-    title: "Clear Choice IV & Rejuvenation | Premium Mobile IV Therapy",
+    title: "Clear Choice IV & Rejuvenation | Metro Detroit Mobile IV",
     description:
-      "Hospital-grade mobile IV therapy formulated by Clear Choice Pharmacy. Licensed RNs dispatched across Metro Detroit.",
+      "Hospital-grade mobile IV therapy formulated by Clear Choice Pharmacy in Novi. Licensed RNs dispatched across Metro Detroit. Michigan patients only for vial homekits.",
     url: `${SITE_URL}/iv-rejuvenation`,
     type: "website",
   },

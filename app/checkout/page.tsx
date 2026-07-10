@@ -21,6 +21,13 @@ import {
 } from "@/lib/prescription-telemedicine"
 import { TELEMEDICINE_CHECKOUT_CONTEXT_KEY } from "@/lib/prescription-telemedicine-checkout"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
+import {
+  isMichiganState,
+  MICHIGAN_ONLY_MESSAGE,
+  MICHIGAN_STATE_NAME,
+  requireMichiganState,
+} from "@/lib/michigan-eligibility"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -46,11 +53,12 @@ export default function CheckoutPage() {
     dob: "",
     address: "",
     city: "",
-    state: "",
+    state: MICHIGAN_STATE_NAME,
     zip: "",
   })
 
   const [user, setUser] = useState<any>(null)
+  const [stateError, setStateError] = useState("")
 
   useEffect(() => {
     loadCart()
@@ -60,6 +68,7 @@ export default function CheckoutPage() {
       .then((d) => {
         if (d.user) {
           setUser(d.user)
+          const profileState = d.user.state || ""
           setFormData((prev) => ({
             ...prev,
             firstName: d.user.firstName || d.user.name?.split(" ")[0] || "",
@@ -69,9 +78,12 @@ export default function CheckoutPage() {
             dob: d.user.dob ? d.user.dob.split("T")[0] : prev.dob,
             address: d.user.address || prev.address,
             city: d.user.city || prev.city,
-            state: d.user.state || prev.state,
+            state: isMichiganState(profileState) ? MICHIGAN_STATE_NAME : MICHIGAN_STATE_NAME,
             zip: d.user.zip || prev.zip,
           }))
+          if (profileState && !isMichiganState(profileState)) {
+            setStateError(MICHIGAN_ONLY_MESSAGE)
+          }
         }
       })
       .catch(() => {})
@@ -108,6 +120,15 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
+      const miError = requireMichiganState(formData.state)
+      if (miError) {
+        setStateError(miError)
+        setStep(1)
+        setLoading(false)
+        alert(miError)
+        return
+      }
+
       const orderItems = cartItems.map((item) => ({
         medication_name: item.medication?.name || "Unknown medication",
         quantity: item.quantity || 1,
@@ -152,6 +173,7 @@ export default function CheckoutPage() {
           delivery_method: deliveryMethod,
           prescription_method: prescriptionMethod,
           notes: prescriptionNotes,
+          patient_state: formData.state || MICHIGAN_STATE_NAME,
           ...(prescriptionMethod !== "telemedicine"
             ? { payment_preference: paymentPreference }
             : {}),
@@ -250,7 +272,10 @@ export default function CheckoutPage() {
             </Link>
           </Button>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Checkout</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Checkout</h1>
+          <div className="mb-8">
+            <MichiganOnlyNotice />
+          </div>
 
           {/* Progress steps */}
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -356,10 +381,17 @@ export default function CheckoutPage() {
                         <Label htmlFor="state">State</Label>
                         <Input
                           id="state"
-                          value={formData.state}
-                          onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                          value={MICHIGAN_STATE_NAME}
+                          readOnly
+                          className="bg-muted"
                           required
                         />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Michigan only — we cannot fill prescriptions outside Michigan yet.
+                        </p>
+                        {stateError && (
+                          <p className="text-sm text-destructive mt-2">{stateError}</p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="zip">ZIP Code</Label>
@@ -372,7 +404,20 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
-                    <Button onClick={() => setStep(2)} className="w-full" size="lg">
+                    <Button
+                      onClick={() => {
+                        const miError = requireMichiganState(formData.state || MICHIGAN_STATE_NAME)
+                        if (miError) {
+                          setStateError(miError)
+                          return
+                        }
+                        setStateError("")
+                        setFormData((prev) => ({ ...prev, state: MICHIGAN_STATE_NAME }))
+                        setStep(2)
+                      }}
+                      className="w-full"
+                      size="lg"
+                    >
                       Continue to Prescription
                     </Button>
                   </CardContent>

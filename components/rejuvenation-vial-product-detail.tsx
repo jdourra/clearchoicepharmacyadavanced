@@ -53,7 +53,7 @@ export function RejuvenationVialProductDetail({ vial, content }: RejuvenationVia
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
               <Badge variant="secondary">{VIAL_CATEGORY_LABELS[vial.category]}</Badge>
-              <Badge variant="outline">Ships nationwide</Badge>
+              <Badge variant="outline">Michigan patients only</Badge>
             </div>
             <p className="mt-4">
               <span className="text-3xl font-bold text-sky-600">${vial.price}</span>

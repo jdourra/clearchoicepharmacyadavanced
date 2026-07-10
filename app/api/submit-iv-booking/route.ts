@@ -11,6 +11,7 @@ import {
 } from "@/lib/telehealth/types"
 import { formatPaymentSummary, requireIntakePaymentSubmission } from "@/lib/intake-payment"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -121,6 +122,11 @@ export async function POST(request: NextRequest) {
 
     if (!/^\S+@\S+\.\S+$/.test(data.email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
+    }
+
+    const miError = requireMichiganState(data.serviceState, "Service state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     const paymentError = requireIntakePaymentSubmission(

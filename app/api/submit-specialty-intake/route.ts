@@ -8,6 +8,7 @@ import {
   validateInjectionTelehealthConsents,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 type SpecialtyIntakePayload = {
   patient: {
@@ -243,6 +244,11 @@ export async function POST(request: NextRequest) {
     const validationError = validatePayload(data)
     if (validationError) {
       return NextResponse.json({ error: validationError }, { status: 400 })
+    }
+
+    const miError = requireMichiganState(data.patient.state, "Patient state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     if (!data.injectionConsents) {

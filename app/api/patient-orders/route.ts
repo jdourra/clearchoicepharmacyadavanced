@@ -3,12 +3,27 @@ import { orders } from "@/lib/auth"
 import { createTelemedicineIntakeForOrder } from "@/lib/order-prescription-admin"
 import { resolveTelemedicineIntakeRouteFromOrderItems } from "@/lib/prescription-telemedicine"
 import { getUserIdFromRequest } from "@/lib/server-session"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 export async function POST(request: Request) {
   try {
     const userId = await getUserIdFromRequest(request)
     const body = await request.json()
-    const { items, total_amount, delivery_method, notes, prescription_method, payment_preference } = body
+    const {
+      items,
+      total_amount,
+      delivery_method,
+      notes,
+      prescription_method,
+      payment_preference,
+      patient_state,
+    } = body
+
+    const miError = requireMichiganState(patient_state ?? "Michigan")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
+    }
+
     const orderItems = (items || []).map((item: any) => ({
       drug_name: item.medication_name || item.drug_name || "Unknown",
       quantity: item.quantity || 1,

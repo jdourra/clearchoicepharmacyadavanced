@@ -12,6 +12,7 @@ import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import type { RequestedMedicationLine } from "@/lib/prescription-telemedicine-clinical-intake"
 import { formatVisitReason, type VisitConditionId } from "@/lib/rx-visit-conditions"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 function resolveVisitReason(
   intakeType: string,
@@ -111,6 +112,11 @@ export async function POST(request: Request) {
     const patientInfo = (payload as Record<string, unknown>).patientInfo as Record<string, unknown> | undefined
     if (!patientInfo?.firstName || !patientInfo?.lastName || !patientInfo?.email) {
       return NextResponse.json({ error: "Missing required patient information" }, { status: 400 })
+    }
+
+    const miError = requireMichiganState(patientInfo.state, "Patient state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     const paymentError = requireIntakePaymentSubmission(consents, identity)

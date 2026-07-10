@@ -17,29 +17,26 @@ import { SITE_URL, AREA_SERVED, PHARMACY_ADDRESS, PHARMACY_PHONE } from "@/lib/c
 import { COMMON_SPECIALTY_MEDICATIONS } from "@/lib/specialty-pharmacy-catalog"
 
 export const metadata: Metadata = {
-  title: "Specialty Pharmacy",
+  title: "Specialty Pharmacy in Michigan | Novi, MI",
   description:
-    "Clear Choice Pharmacy simplifies specialty medications. All major insurance accepted. In-house Prior Authorization team expedites clinical approvals. Copay assistance programs can lower out-of-pocket costs to as low as $0. Transfer your specialty care to Novi, MI.",
+    "Specialty medications for Michigan patients. All major insurance accepted. In-house prior authorization and copay assistance from Clear Choice Pharmacy in Novi, MI.",
   keywords: [
-    "specialty pharmacy",
-    "specialty medications",
-    "high-cost prescription medications",
-    "prior authorization pharmacy",
-    "copay assistance programs",
-    "specialty pharmacy insurance accepted",
-    "transfer specialty pharmacy",
-    "clinical prior authorization",
-    "manufacturer copay cards",
-    "specialty drug pharmacy Michigan",
-    "Novi MI specialty pharmacy",
+    "specialty pharmacy Michigan",
+    "specialty medications Novi MI",
+    "high-cost prescription medications Michigan",
+    "prior authorization pharmacy Michigan",
+    "copay assistance programs Novi",
+    "specialty pharmacy insurance Michigan",
+    "transfer specialty pharmacy Novi MI",
+    "specialty drug pharmacy Metro Detroit",
   ],
   alternates: {
     canonical: `${SITE_URL}/specialty-pharmacy`,
   },
   openGraph: {
-    title: "Specialty Medicine Program. All Insurances Accepted.",
+    title: "Specialty Pharmacy | Michigan | Clear Choice Pharmacy",
     description:
-      "Expedited in-house Prior Authorizations & copay support for specialty medications. Transfer your specialty care to Clear Choice Pharmacy.",
+      "Expedited in-house prior authorizations and copay support for specialty medications. Transfer your specialty care to Clear Choice Pharmacy in Novi, MI.",
     url: `${SITE_URL}/specialty-pharmacy`,
     type: "website",
   },

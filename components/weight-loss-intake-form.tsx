@@ -25,6 +25,9 @@ import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -108,7 +111,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: "",
+  state: MICHIGAN_STATE_NAME,
   address: "",
   city: "",
   zipCode: "",
@@ -140,7 +143,7 @@ const initialFormData: FormData = {
   additionalConcerns: "",
   shippingAddress: "",
   shippingCity: "",
-  shippingState: "",
+  shippingState: MICHIGAN_STATE_NAME,
   shippingZip: "",
   sameAsResidential: true,
   idFrontFile: null,
@@ -596,7 +599,7 @@ export function WeightLossIntakeForm({
           email: formData.email,
           phone: formData.phone,
           dateOfBirth: formData.dateOfBirth,
-          state: formData.state,
+          state: MICHIGAN_STATE_NAME,
           address: formData.address,
           city: formData.city,
           zipCode: formData.zipCode,
@@ -639,7 +642,7 @@ export function WeightLossIntakeForm({
         identity: {
           shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
           shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-          shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
+          shippingState: MICHIGAN_STATE_NAME,
           shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
           ...paymentCapturedOnClient({
             idFrontFile: formData.idFrontFile,
@@ -906,21 +909,7 @@ export function WeightLossIntakeForm({
                 <Input id="dob" type="date" className={cn(isFieldInvalid("dateOfBirth") && "border-destructive ring-2 ring-destructive")} value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} />
               </div>
               <div className="space-y-2" data-field="state">
-                <Label htmlFor="state" className={cn(isFieldInvalid("state") && "text-destructive")}>State *</Label>
-                <select
-                  id="state"
-                  className={cn(
-                    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
-                    isFieldInvalid("state") && "border-destructive ring-2 ring-destructive"
-                  )}
-                  value={formData.state}
-                  onChange={(e) => updateFormData("state", e.target.value)}
-                >
-                  <option value="">Select state</option>
-                  {states.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
+                <MichiganStateField id="wl-state" invalid={isFieldInvalid("state")} />
               </div>
             </div>
 
@@ -1226,8 +1215,7 @@ export function WeightLossIntakeForm({
                   <Input className={cn(isFieldInvalid("shippingCity") && "border-destructive ring-2 ring-destructive")} value={formData.shippingCity} onChange={(e) => updateFormData("shippingCity", e.target.value)} />
                 </div>
                 <div className="space-y-2" data-field="shippingState">
-                  <Label className={cn(isFieldInvalid("shippingState") && "text-destructive")}>Shipping state</Label>
-                  <Input className={cn(isFieldInvalid("shippingState") && "border-destructive ring-2 ring-destructive")} value={formData.shippingState} onChange={(e) => updateFormData("shippingState", e.target.value)} />
+                  <MichiganStateField id="wl-shipping-state" label="Shipping state" invalid={isFieldInvalid("shippingState")} />
                 </div>
                 <div className="space-y-2" data-field="shippingZip">
                   <Label className={cn(isFieldInvalid("shippingZip") && "text-destructive")}>Shipping ZIP</Label>

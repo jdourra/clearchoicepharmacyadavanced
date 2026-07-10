@@ -23,6 +23,9 @@ import {
   paymentCapturedOnClient,
   type IntakePaymentValues,
 } from "@/lib/intake-payment"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -59,7 +62,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
   const [phone, setPhone] = useState("")
   const [shippingAddress, setShippingAddress] = useState("")
   const [shippingCity, setShippingCity] = useState("")
-  const [shippingState, setShippingState] = useState("Michigan")
+  const [shippingState, setShippingState] = useState(MICHIGAN_STATE_NAME)
   const [shippingZip, setShippingZip] = useState("")
   const [allergies, setAllergies] = useState("")
   const [currentMedications, setCurrentMedications] = useState("")
@@ -174,7 +177,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
           phone,
           shippingAddress,
           shippingCity,
-          shippingState,
+          shippingState: MICHIGAN_STATE_NAME,
           shippingZip,
           selectedVial: vialId,
           selectedVialTitle: selectedVial.title,
@@ -324,16 +327,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
             <Input className={cn(isInvalid("shippingCity") && "border-destructive ring-2 ring-destructive")} value={shippingCity} onChange={(e) => { setShippingCity(e.target.value); clearError("shippingCity") }} />
           </div>
           <div className="space-y-2" data-field="shippingState">
-            <Label className={cn(isInvalid("shippingState") && "text-destructive")}>State *</Label>
-            <select
-              className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("shippingState") && "border-destructive ring-2 ring-destructive")}
-              value={shippingState}
-              onChange={(e) => { setShippingState(e.target.value); clearError("shippingState") }}
-            >
-              {states.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+            <MichiganStateField id="vial-shipping-state" invalid={isInvalid("shippingState")} />
           </div>
           <div className="space-y-2" data-field="shippingZip">
             <Label className={cn(isInvalid("shippingZip") && "text-destructive")}>ZIP code *</Label>

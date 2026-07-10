@@ -10,6 +10,7 @@ import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -317,6 +318,13 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^\S+@\S+\.\S+$/
     if (!emailRegex.test(data.patientInfo.email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
+    }
+
+    const miError =
+      requireMichiganState(data.patientInfo.state, "Patient state") ||
+      requireMichiganState(data.identity.shippingState, "Shipping state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     if (!data.treatmentInfo.selectedProgram) {

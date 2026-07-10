@@ -18,6 +18,8 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
@@ -87,7 +89,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: "",
+  state: MICHIGAN_STATE_NAME,
   address: "",
   city: "",
   zipCode: "",
@@ -116,7 +118,7 @@ const initialFormData: FormData = {
   additionalConcerns: "",
   shippingAddress: "",
   shippingCity: "",
-  shippingState: "",
+  shippingState: MICHIGAN_STATE_NAME,
   shippingZip: "",
   sameAsResidential: true,
   idFrontFile: null,
@@ -250,7 +252,7 @@ export function TrtIntakeForm({
             email: formData.email,
             phone: formData.phone,
             dateOfBirth: formData.dateOfBirth,
-            state: formData.state,
+            state: MICHIGAN_STATE_NAME,
             address: formData.address,
             city: formData.city,
             zipCode: formData.zipCode,
@@ -290,7 +292,7 @@ export function TrtIntakeForm({
           identity: {
             shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
             shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-            shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
+            shippingState: MICHIGAN_STATE_NAME,
             shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
             ...paymentCapturedOnClient({
               idFrontFile: formData.idFrontFile,
@@ -452,18 +454,7 @@ export function TrtIntakeForm({
                 <Input type="date" value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} required className={cn(isInvalid("dateOfBirth") && "border-destructive")} />
               </div>
               <div className="space-y-2" data-field="state">
-                <Label className={cn(isInvalid("state") && "text-destructive")}>State</Label>
-                <select
-                  className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("state") && "border-destructive")}
-                  value={formData.state}
-                  onChange={(e) => updateFormData("state", e.target.value)}
-                  required
-                >
-                  <option value="">Select state</option>
-                  {states.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
+                <MichiganStateField id="trt-state" invalid={isInvalid("state")} />
               </div>
             </div>
 

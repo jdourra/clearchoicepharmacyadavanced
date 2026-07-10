@@ -29,25 +29,25 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
-  title: "ED Medications & TRT",
+  title: "ED Medications & TRT for Michigan Patients",
   description:
-    "Custom sublingual ED troches and physician-supervised TRT in Novi, MI. Transparent cash-pay pricing for testosterone therapy starting at $109/mo. Buy online with provider review.",
+    "Custom sublingual ED troches and physician-supervised TRT for Michigan patients in Novi and Metro Detroit. Transparent cash-pay testosterone therapy from $109/mo.",
   keywords: [
     "TRT Novi MI",
     "testosterone replacement therapy Michigan",
-    "ED troches Novi MI",
+    "ED troches Michigan",
     "compounding pharmacy Metro Detroit",
-    "Sildenafil sublingual",
-    "testosterone cypionate online",
+    "Sildenafil troche Novi",
+    "testosterone cypionate Michigan",
     "men's health pharmacy Novi MI",
   ],
   alternates: {
     canonical: `${SITE_URL}/mens-health`,
   },
   openGraph: {
-    title: "Men's Health | ED Troches & TRT | Clear Choice Pharmacy",
+    title: "Men's Health | ED Troches & TRT | Michigan | Clear Choice Pharmacy",
     description:
-      "ED troches and testosterone replacement therapy with transparent pricing and discreet pharmacy fulfillment in Novi, MI.",
+      "ED troches and testosterone replacement therapy for Michigan patients, with discreet fulfillment from our Novi pharmacy.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },

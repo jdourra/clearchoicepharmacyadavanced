@@ -28,26 +28,26 @@ import {
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Weight Loss & GLP-1",
+  title: "Weight Loss & GLP-1 for Michigan Patients",
   description:
-    "Semaglutide and Tirzepatide medical weight management in Novi, MI. Custom GLP-1 formulations with transparent pricing. Buy online with provider review.",
+    "Semaglutide and Tirzepatide medical weight management for Michigan patients in Novi and Metro Detroit. Transparent cash-pay GLP-1 pricing with licensed provider review.",
   keywords: [
-    "medical weight loss Novi",
+    "medical weight loss Novi MI",
     "GLP-1 weight loss Michigan",
-    "Semaglutide Novi MI",
+    "Semaglutide Novi Michigan",
     "Tirzepatide Metro Detroit",
-    "compounded weight loss pharmacy",
+    "compounded weight loss pharmacy Michigan",
     "GLP weight management Novi",
-    "medical weight management Michigan",
+    "medical weight management Michigan patients",
     "weight loss clinic Novi MI",
   ],
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
-    title: "Medical Weight Loss & GLP Therapy | Clear Choice Pharmacy",
+    title: "Medical Weight Loss & GLP Therapy | Michigan | Clear Choice Pharmacy",
     description:
-      "Semaglutide and Tirzepatide medical weight management in Novi, MI. Custom GLP-1 formulations with transparent pricing.",
+      "Semaglutide and Tirzepatide for Michigan patients in Novi and Metro Detroit. Custom GLP-1 formulations with transparent pricing.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },

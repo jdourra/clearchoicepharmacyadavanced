@@ -30,10 +30,13 @@ export default function PrescriptionsPage() {
                 Cash-pay prescriptions · Novi, MI
               </p>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance mb-4">
-                Low Cost Prescription Drugs
+                Low-Cost Prescriptions for Michigan Patients
               </h1>
               <p className="text-lg text-muted-foreground text-balance max-w-2xl mx-auto">
-                Look up everyday medication prices with transparent pricing—no insurance, no surprises.
+                Look up everyday medication prices with transparent cash-pay pricing—no insurance, no surprises.
+              </p>
+              <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
+                Michigan patients only — we can currently fill and ship prescriptions only within Michigan.
               </p>
             </div>
 
@@ -172,7 +175,7 @@ export default function PrescriptionsPage() {
         <section className="py-16 bg-background border-t">
           <div className="container max-w-5xl mx-auto px-4">
             <h2 className="text-3xl font-bold mb-8 text-center">
-              Frequently Asked Questions About Cheap Prescription Medications
+              Frequently Asked Questions — Michigan Prescriptions
             </h2>
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
@@ -191,8 +194,8 @@ export default function PrescriptionsPage() {
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes. All our cheap generic drugs meet the same FDA standards for quality, safety, and effectiveness as
-                  their brand-name counterparts. By buying generic drugs online through Clear Choice Pharmacy, you get
-                  the same medication at a fraction of the cost.
+                  their brand-name counterparts. Michigan patients get the same medication at a fraction of the cost
+                  through Clear Choice Pharmacy in Novi.
                 </p>
               </div>
               <div>
@@ -222,11 +225,19 @@ export default function PrescriptionsPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Do you offer online pharmacy discounts for bulk orders?</h3>
+                <h3 className="font-semibold text-lg mb-2">Can I order if I live outside Michigan?</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Not at this time. Clear Choice Pharmacy can currently fill and ship prescriptions only for Michigan
+                  patients. Pickup is available at our Novi location, and delivery is available to eligible Michigan
+                  addresses. We plan to expand with a telehealth partner and will update eligibility when multi-state
+                  coverage is available.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Do you offer discounts for 90-day supplies?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes, ordering a 90-day supply instead of a 30-day supply can significantly reduce your per-pill cost.
-                  Our transparent pricing formula means you can see the exact savings for any quantity. We are committed
-                  to being the best online pharmacy for cheap prescriptions.
+                  Our transparent pricing formula means you can see the exact savings for any quantity before you order.
                 </p>
               </div>
             </div>
@@ -237,19 +248,18 @@ export default function PrescriptionsPage() {
           <div className="container max-w-5xl mx-auto px-4">
             <div className="prose prose-sm max-w-none text-muted-foreground">
               <h2 className="text-2xl font-bold text-foreground mb-4">
-                About Our Low Cost Prescription Service
+                About Our Michigan Low-Cost Prescription Service
               </h2>
               <p className="leading-relaxed mb-4">
-                Clear Choice Pharmacy is a low cost pharmacy located in Novi, Michigan, offering cheap prescription
-                medications at true wholesale cost. As a cash-pay pharmacy, we provide affordable prescription drugs
-                without requiring insurance. Our transparent pricing model—Drug Cost + 15% + $5 dispensing fee—ensures
-                you always know what you will pay. No hidden fees, no PBM middlemen, no surprises.
+                Clear Choice Pharmacy is a cash-pay pharmacy in Novi, Michigan, serving Michigan patients with
+                transparent prescription pricing. Our model—Drug Cost + 15% + $5 dispensing fee—means you always know
+                what you will pay. No hidden fees, no PBM middlemen, no surprises.
               </p>
               <p className="leading-relaxed">
-                Whether you are looking to buy prescription drugs online, compare prescription drug prices, or find a
-                pharmacy without insurance, Clear Choice Pharmacy has you covered. We carry over 1,600 medications
-                including the most commonly prescribed cheap generic drugs, all available at discount prescription drug
-                prices that can save you up to 80% compared to traditional retail pharmacies.
+                Whether you need a pharmacy without insurance in Metro Detroit, want to compare cash-pay prescription
+                prices, or prefer pickup in Novi with Michigan delivery options, Clear Choice Pharmacy has you covered.
+                We carry thousands of commonly prescribed generics at prices that can save you up to 80% compared to
+                traditional retail pharmacies—Michigan patients only.
               </p>
             </div>
           </div>

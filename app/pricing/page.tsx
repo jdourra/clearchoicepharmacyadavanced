@@ -6,16 +6,16 @@ import type { Metadata } from "next"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Prescription Drug Prices Comparison | Transparent Pharmacy Pricing Formula",
+  title: "Prescription Prices in Michigan | Transparent Cash-Pay Formula",
   description:
-    "Compare prescription drug prices at Clear Choice Pharmacy. Our transparent pricing formula: Drug Cost + 15% + $5. Save up to 80% on cheap prescription medications. No insurance needed. Pay cash for prescriptions and save money.",
+    "Compare prescription prices at Clear Choice Pharmacy in Novi, MI. Transparent formula: Drug Cost + 15% + $5. Cash-pay savings for Michigan patients—no insurance required.",
   alternates: {
     canonical: `${SITE_URL}/pricing`,
   },
   openGraph: {
-    title: "Prescription Drug Prices Comparison - Save Up to 80%",
+    title: "Michigan Prescription Prices — Save with Transparent Pricing",
     description:
-      "See exactly how we price affordable prescription drugs. Transparent formula: Drug Cost + 15% + $5. Compare and save on discounted prescription medications.",
+      "See exactly how we price affordable prescriptions for Michigan patients. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
     url: `${SITE_URL}/pricing`,
     type: "website",
   },

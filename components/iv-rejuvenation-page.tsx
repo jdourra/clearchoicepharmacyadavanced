@@ -274,7 +274,7 @@ export function IvRejuvenationPage() {
                         {VIAL_CATEGORY_LABELS[vial.category]}
                       </Badge>
                       <Badge variant="outline" className="text-xs font-normal text-emerald-700 border-emerald-200">
-                        Ships nationwide
+                        Michigan patients only
                       </Badge>
                     </div>
                     <p className="text-3xl font-bold text-sky-600">${vial.price}</p>

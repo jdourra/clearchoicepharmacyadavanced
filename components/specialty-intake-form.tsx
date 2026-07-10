@@ -23,6 +23,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_CODE } from "@/lib/michigan-eligibility"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -75,7 +78,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
   const [dateOfBirth, setDateOfBirth] = useState("")
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
-  const [state, setState] = useState("MI")
+  const [state, setState] = useState(MICHIGAN_STATE_CODE)
   const [zipCode, setZipCode] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -123,7 +126,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
     setDateOfBirth((v) => pickProfile(v, formatDobForInput(profile.dob)))
     setAddress((v) => pickProfile(v, profile.address))
     setCity((v) => pickProfile(v, profile.city))
-    setState((v) => pickProfile(v, stateToCode(profile.state) || "MI"))
+    setState(MICHIGAN_STATE_CODE)
     setZipCode((v) => pickProfile(v, profile.zip))
     setInjectionConsents((prev) => ({
       ...prev,
@@ -308,7 +311,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
             email,
             phone,
             dateOfBirth,
-            state,
+            state: MICHIGAN_STATE_CODE,
             address,
             city,
             zipCode,
@@ -478,20 +481,8 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                   <Label htmlFor="city">City *</Label>
                   <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} required />
                 </div>
-                <div>
-                  <Label htmlFor="state">State *</Label>
-                  <Select value={state} onValueChange={setState}>
-                    <SelectTrigger id="state">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {US_STATES.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div data-field="state">
+                  <MichiganStateField id="specialty-state" format="code" />
                 </div>
                 <div>
                   <Label htmlFor="zip">ZIP *</Label>

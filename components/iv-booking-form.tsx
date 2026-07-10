@@ -23,6 +23,9 @@ import {
   paymentCapturedOnClient,
   type IntakePaymentValues,
 } from "@/lib/intake-payment"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -71,7 +74,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
   const [phone, setPhone] = useState("")
   const [serviceAddress, setServiceAddress] = useState("")
   const [serviceCity, setServiceCity] = useState("")
-  const [serviceState, setServiceState] = useState("Michigan")
+  const [serviceState, setServiceState] = useState(MICHIGAN_STATE_NAME)
   const [serviceZip, setServiceZip] = useState("")
   const [preferredDate, setPreferredDate] = useState("")
   const [preferredTimeWindow, setPreferredTimeWindow] = useState("")
@@ -189,7 +192,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           phone,
           serviceAddress,
           serviceCity,
-          serviceState,
+          serviceState: MICHIGAN_STATE_NAME,
           serviceZip,
           preferredDate,
           preferredTimeWindow,
@@ -358,16 +361,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
             <Input className={cn(isInvalid("serviceCity") && "border-destructive ring-2 ring-destructive")} value={serviceCity} onChange={(e) => { setServiceCity(e.target.value); clearError("serviceCity") }} />
           </div>
           <div className="space-y-2" data-field="serviceState">
-            <Label className={cn(isInvalid("serviceState") && "text-destructive")}>State *</Label>
-            <select
-              className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", isInvalid("serviceState") && "border-destructive ring-2 ring-destructive")}
-              value={serviceState}
-              onChange={(e) => { setServiceState(e.target.value); clearError("serviceState") }}
-            >
-              {states.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+            <MichiganStateField id="iv-service-state" invalid={isInvalid("serviceState")} />
           </div>
           <div className="space-y-2" data-field="serviceZip">
             <Label className={cn(isInvalid("serviceZip") && "text-destructive")}>ZIP code *</Label>

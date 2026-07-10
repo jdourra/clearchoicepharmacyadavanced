@@ -36,6 +36,9 @@ import {
 } from "@/lib/ed-troche-catalog"
 import { checkBloodPressureHardStop, checkEdContraindicationHardStop } from "@/lib/ed-clinical-intake"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MichiganStateField } from "@/components/michigan-state-field"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
@@ -130,7 +133,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: "",
+  state: MICHIGAN_STATE_NAME,
   address: "",
   city: "",
   zipCode: "",
@@ -161,7 +164,7 @@ const initialFormData: FormData = {
   additionalConcerns: "",
   shippingAddress: "",
   shippingCity: "",
-  shippingState: "",
+  shippingState: MICHIGAN_STATE_NAME,
   shippingZip: "",
   sameAsResidential: true,
   idFrontFile: null,
@@ -463,7 +466,7 @@ export function ClinicalIntakeForm({
           email: formData.email,
           phone: formData.phone,
           dateOfBirth: formData.dateOfBirth,
-          state: formData.state,
+          state: MICHIGAN_STATE_NAME,
           address: formData.address,
           city: formData.city,
           zipCode: formData.zipCode,
@@ -492,7 +495,7 @@ export function ClinicalIntakeForm({
         identity: {
           shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
           shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-          shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
+          shippingState: MICHIGAN_STATE_NAME,
           shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
           ...paymentCapturedOnClient({
             idFrontFile: formData.idFrontFile,
@@ -875,6 +878,7 @@ export function ClinicalIntakeForm({
       })()}
       {/* Module 1: Demographics */}
       <div className="space-y-4">
+        <MichiganOnlyNotice className="mb-2" />
         <div className="flex items-center gap-2 border-b pb-2">
           <FileText className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">Demographics</h3>
@@ -940,21 +944,7 @@ export function ClinicalIntakeForm({
             />
           </div>
           <div className="space-y-2" data-field="state">
-            <Label htmlFor="state" className={cn(isInvalid("state") && "text-destructive")}>State *</Label>
-            <select
-              id="state"
-              value={formData.state}
-              onChange={(e) => updateFormData("state", e.target.value)}
-              className={cn(
-                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                isInvalid("state") && "border-destructive"
-              )}
-            >
-              <option value="">Select state</option>
-              {states.map((state) => (
-                <option key={state} value={state}>{state}</option>
-              ))}
-            </select>
+            <MichiganStateField id="state" invalid={isInvalid("state")} />
           </div>
         </div>
         
@@ -1576,19 +1566,8 @@ export function ClinicalIntakeForm({
                     onChange={(e) => updateFormData("shippingCity", e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="shippingState">State *</Label>
-                  <select
-                    id="shippingState"
-                    value={formData.shippingState}
-                    onChange={(e) => updateFormData("shippingState", e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <option value="">Select</option>
-                    {states.map((state) => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
+                <div className="space-y-2" data-field="shippingState">
+                  <MichiganStateField id="shippingState" label="State" invalid={isInvalid("shippingState")} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="shippingZip">ZIP *</Label>

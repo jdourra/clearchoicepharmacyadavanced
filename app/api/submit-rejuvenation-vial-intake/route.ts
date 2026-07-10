@@ -10,6 +10,7 @@ import {
   validateInjectionTelehealthConsents,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 function formatClinicianSummary(data: Record<string, unknown>, submissionId: string): string {
   return `
@@ -89,6 +90,11 @@ export async function POST(request: NextRequest) {
 
     if (!data.shippingAddress || !data.shippingCity || !data.shippingState || !data.shippingZip) {
       return NextResponse.json({ error: "Complete shipping address is required" }, { status: 400 })
+    }
+
+    const miError = requireMichiganState(data.shippingState, "Shipping state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     const paymentError = requireIntakePaymentSubmission(

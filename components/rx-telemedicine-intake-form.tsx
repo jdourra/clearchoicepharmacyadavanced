@@ -18,6 +18,8 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { emptyIntakePaymentValues, validateIntakePayment } from "@/lib/intake-payment"
+import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { authFetch } from "@/lib/session"
@@ -78,7 +80,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: "Michigan",
+  state: MICHIGAN_STATE_NAME,
   address: "",
   city: "",
   zipCode: "",
@@ -269,7 +271,7 @@ export function RxTelemedicineIntakeForm({
           email: formData.email,
           phone: formData.phone,
           dateOfBirth: formData.dateOfBirth,
-          state: formData.state,
+          state: MICHIGAN_STATE_NAME,
           address: formData.address,
           city: formData.city,
           zipCode: formData.zipCode,
@@ -366,6 +368,7 @@ export function RxTelemedicineIntakeForm({
           Complete this health questionnaire so a licensed physician can review your request. Telemedicine visit
           fee: ${TELEMEDICINE_VISIT_FEE}.
         </CardDescription>
+        <MichiganOnlyNotice className="mt-2" />
         <div className="rounded-lg border bg-muted/40 p-4 text-sm space-y-1">
           <p className="font-medium">Medications in your order</p>
           {orderItems.map((item) => (

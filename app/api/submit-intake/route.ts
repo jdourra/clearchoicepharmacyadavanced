@@ -7,6 +7,7 @@ import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 /**
  * Patient Intake API Route
@@ -267,6 +268,13 @@ export async function POST(request: NextRequest) {
 
     if (!data.patientInfo.firstName || !data.patientInfo.lastName || !data.patientInfo.email) {
       return NextResponse.json({ error: "Missing required patient information" }, { status: 400 })
+    }
+
+    const miError =
+      requireMichiganState(data.patientInfo.state, "Patient state") ||
+      requireMichiganState(data.identity.shippingState, "Shipping state")
+    if (miError) {
+      return NextResponse.json({ error: miError }, { status: 403 })
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/

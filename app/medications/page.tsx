@@ -4,16 +4,16 @@ import { MedicationQuoteBuilder } from "@/components/medication-quote-builder"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "See How Much Your Medications Cost | Clear Choice Pharmacy",
+  title: "Medication Prices for Michigan Patients | Clear Choice Pharmacy",
   description:
-    "Build your medication list and see a running total. Search prescriptions, compare cash-pay prices, and order online. Drug cost + 15% + $5 per line—no insurance required.",
+    "Build your medication list and see cash-pay totals for Michigan patients. Search prescriptions, compare transparent prices, and order for pickup in Novi or Michigan delivery.",
   alternates: {
     canonical: `${SITE_URL}/medications`,
   },
   openGraph: {
-    title: "See How Much Your Medications Cost",
+    title: "Medication Prices | Michigan | Clear Choice Pharmacy",
     description:
-      "Add medications to your list and see transparent pricing instantly at Clear Choice Pharmacy.",
+      "Add medications to your list and see transparent cash-pay pricing for Michigan patients at Clear Choice Pharmacy in Novi.",
     url: `${SITE_URL}/medications`,
     type: "website",
   },
