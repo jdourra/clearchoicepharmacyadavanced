@@ -7,7 +7,8 @@ import { getUserIdFromRequest } from "@/lib/server-session"
 export async function POST(request: Request) {
   try {
     const userId = await getUserIdFromRequest(request)
-    const { items, total_amount, delivery_method, notes, prescription_method } = await request.json()
+    const body = await request.json()
+    const { items, total_amount, delivery_method, notes, prescription_method, payment_preference } = body
     const orderItems = (items || []).map((item: any) => ({
       drug_name: item.medication_name || item.drug_name || "Unknown",
       quantity: item.quantity || 1,
@@ -23,7 +24,21 @@ export async function POST(request: Request) {
       method
     )
 
-    if (order && method === "telemedicine") {
+    if (!order) {
+      return NextResponse.json({ error: "Failed to create order" }, { status: 500 })
+    }
+
+    // Telemedicine always requires card payment at intake — do not set pay_by_phone here.
+    if (method !== "telemedicine") {
+      const preference = payment_preference === "pay_now" ? "pay_now" : "pay_by_phone"
+      await orders.setPaymentPreference(order.id, preference)
+      order.payment_preference = preference
+      if (preference === "pay_by_phone") {
+        order.payment_method = "phone"
+      }
+    }
+
+    if (method === "telemedicine") {
       const route = resolveTelemedicineIntakeRouteFromOrderItems(orderItems)
       const intakeType =
         route.type === "ed_troche" ? "ed_troche" : route.type === "ed_tablet" ? "ed_tablet" : "general"
