@@ -27,12 +27,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const program = getTrtProgram(slug)!
-  const content = TRT_PRODUCT_CONTENT[slug]
   const startingPrice = getTrtStartingMonthlyPrice(program)
 
   return {
     title: getTrtProductPageTitle(program),
-    description: `${content.homeKitTitle} — ${program.supplyLabel}. From $${startingPrice}/mo with physician-supervised TRT and pharmacy fulfillment.`,
+    description: `${program.name} for testosterone replacement therapy (TRT). From $${startingPrice}/mo with physician supervision and pharmacy fulfillment. Michigan patients.`,
+    keywords: ["TRT", "testosterone replacement therapy", "testosterone", program.name.toLowerCase(), "low testosterone"],
     alternates: {
       canonical: `${SITE_URL}/mens-health/trt/${slug}`,
     },

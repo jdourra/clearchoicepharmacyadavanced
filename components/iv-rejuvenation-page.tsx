@@ -124,11 +124,11 @@ export function IvRejuvenationPage() {
                 Clear Choice IV &amp; Rejuvenation
               </Badge>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
-                Premium Mobile IV Therapy Delivered to Your Door
+                Mobile IV Therapy: Myers Cocktail, NAD+ &amp; Hydration
               </h1>
               <p className="text-lg md:text-xl text-slate-200 leading-relaxed mb-8 max-w-2xl">
-                Hospital-grade IV hydration, custom vitamins, and symptom relief administered by licensed RNs.
-                Formulated by Clear Choice Pharmacy with transparent, upfront pricing.
+                Book mobile IV therapy across Metro Detroit—Myers&apos; Cocktail, NAD+ IV, hydration, immunity, and
+                hangover drips. Pharmacy-formulated at Clear Choice Pharmacy with licensed RN administration.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button

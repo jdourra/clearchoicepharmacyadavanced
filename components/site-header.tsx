@@ -64,11 +64,11 @@ export function SiteHeader() {
 
   const clinicalLinks = [
     { href: "/services", label: "All services" },
-    { href: "/prescriptions", label: "Low cost prescriptions" },
-    { href: "/weight-loss", label: "GLP-1 weight loss" },
-    { href: "/mens-health", label: "Men's health, ED & TRT" },
-    { href: "/iv-rejuvenation", label: "IV rejuvenation" },
-    { href: "/specialty-pharmacy", label: "Specialty medications" },
+    { href: "/prescriptions", label: "Low cost prescription drugs" },
+    { href: "/weight-loss", label: "Semaglutide & Tirzepatide" },
+    { href: "/mens-health", label: "Tadalafil, Sildenafil & TRT" },
+    { href: "/iv-rejuvenation", label: "Mobile IV therapy" },
+    { href: "/specialty-pharmacy", label: "Specialty pharmacy" },
   ]
 
   return (

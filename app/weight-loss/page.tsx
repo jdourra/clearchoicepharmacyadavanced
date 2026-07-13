@@ -28,26 +28,34 @@ import {
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Weight Loss & GLP-1 for Michigan Patients",
+  title: "Semaglutide & Tirzepatide Weight Loss | GLP-1 Injections",
   description:
-    "Semaglutide and Tirzepatide medical weight management for Michigan patients in Novi and Metro Detroit. Transparent cash-pay GLP-1 pricing with licensed provider review.",
+    "Medical weight loss with Semaglutide and Tirzepatide (GLP-1) injections. Physician-supervised programs for Michigan patients. Transparent cash-pay pricing—compounded alternatives patients compare to Ozempic, Wegovy, and Zepbound.",
   keywords: [
-    "medical weight loss Novi MI",
-    "GLP-1 weight loss Michigan",
-    "Semaglutide Novi Michigan",
-    "Tirzepatide Metro Detroit",
-    "compounded weight loss pharmacy Michigan",
-    "GLP weight management Novi",
-    "medical weight management Michigan patients",
-    "weight loss clinic Novi MI",
+    "semaglutide",
+    "tirzepatide",
+    "ozempic",
+    "wegovy",
+    "zepbound",
+    "GLP-1",
+    "GLP-1 weight loss",
+    "medical weight loss",
+    "weight loss injections",
+    "weight loss clinic",
+    "weight management",
+    "obesity treatment",
+    "prescription weight loss",
+    "telehealth weight loss",
+    "semaglutide Michigan",
+    "tirzepatide Novi",
   ],
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
-    title: "Medical Weight Loss & GLP Therapy | Michigan | Clear Choice Pharmacy",
+    title: "Semaglutide & Tirzepatide Medical Weight Loss | Clear Choice Pharmacy",
     description:
-      "Semaglutide and Tirzepatide for Michigan patients in Novi and Metro Detroit. Custom GLP-1 formulations with transparent pricing.",
+      "Physician-supervised Semaglutide and Tirzepatide GLP-1 weight loss injections with transparent cash-pay pricing in Novi, MI.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -64,13 +72,14 @@ export default function WeightLossPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Medical Weight Loss & GLP Therapy | Clear Choice Pharmacy",
+    name: "Semaglutide & Tirzepatide Medical Weight Loss | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Medical weight management with Semaglutide and Tirzepatide GLP therapies at Clear Choice Pharmacy in Novi, MI.",
+      "Medical weight loss with Semaglutide and Tirzepatide GLP-1 injections at Clear Choice Pharmacy in Novi, MI.",
     about: [
-      { "@type": "MedicalTherapy", name: "Semaglutide Weight Management" },
-      { "@type": "MedicalTherapy", name: "Tirzepatide Weight Management" },
+      { "@type": "MedicalTherapy", name: "Semaglutide Weight Loss" },
+      { "@type": "MedicalTherapy", name: "Tirzepatide Weight Loss" },
+      { "@type": "MedicalTherapy", name: "GLP-1 Weight Loss Injections" },
       { "@type": "MedicalTherapy", name: "MIC + B12 Metabolic Weight Support" },
     ],
     provider: pharmacyProviderSchema(),
@@ -79,28 +88,28 @@ export default function WeightLossPage() {
   return (
     <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(WEIGHT_LOSS_FAQS)]}>
       <PremiumHero
-        badge="Clear Choice Weight Management"
-        headline="Medical Weight Loss & GLP Therapy in Novi, MI"
-        subheadline="Semaglutide and Tirzepatide programs with transparent, upfront pricing."
-        description="Achieving long-term metabolic health requires premium clinical tools. Clear Choice Pharmacy compounds customized GLP-1 formulations designed to match your specific titration schedule—without insurance opacity or PBM middlemen."
-        highlight="📊 Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra"
+        badge="Medical Weight Loss · GLP-1"
+        headline="Semaglutide & Tirzepatide Weight Loss"
+        subheadline="Physician-supervised GLP-1 weight loss injections with transparent cash-pay pricing."
+        description="Looking for medical weight loss, weight loss injections, or alternatives patients compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients."
+        highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
           src: "/images/weight-loss-hero.png",
-          alt: "Woman measuring waist progress during medical weight loss program",
+          alt: "Semaglutide and Tirzepatide medical weight loss program",
         }}
         primaryCta={{
-          label: "Shop GLP Programs",
+          label: "Shop Semaglutide & Tirzepatide",
           href: PROGRAMS_URL,
           scrollTo: "#programs",
         }}
-        secondaryCta={{ label: "Explore GLP Benefits", href: "#benefits", scrollTo: "#benefits" }}
+        secondaryCta={{ label: "How GLP-1 Works", href: "#benefits", scrollTo: "#benefits" }}
       />
 
       <ContentSection id="programs">
         <SectionIntro
-          eyebrow="Choose Your Program"
+          eyebrow="Weight Loss Injections"
           title="Semaglutide, Tirzepatide & MIC + B12"
-          description="Buy online with transparent pricing. Provider review and pharmacy fulfillment included."
+          description="Medical weight loss programs with upfront pricing. Provider review and pharmacy fulfillment included."
         />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {WEIGHT_LOSS_PROGRAMS.map((program) => {
@@ -195,8 +204,8 @@ export default function WeightLossPage() {
       <ContentSection id="benefits">
         <SectionIntro
           eyebrow="GLP-1 Weight Loss"
-          title="Semaglutide & Tirzepatide Medical Programs"
-          description="Complete a secure online intake and access transparently priced GLP-1 programs through Clear Choice Pharmacy."
+          title="Semaglutide & Tirzepatide for Medical Weight Loss"
+          description="Physician-supervised weight loss injections and weight management programs with transparent cash-pay pricing."
         />
         <BenefitList items={glpBenefits} />
       </ContentSection>
@@ -262,8 +271,8 @@ export default function WeightLossPage() {
       />
 
       <FaqSection
-        title="Frequently Asked Questions"
-        subtitle="What to know before starting GLP-1 therapy"
+        title="Semaglutide, Tirzepatide & Weight Loss FAQs"
+        subtitle="Ozempic, Wegovy, Zepbound comparisons, pricing, and eligibility"
         items={WEIGHT_LOSS_FAQS}
       />
 

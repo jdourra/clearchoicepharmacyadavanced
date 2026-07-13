@@ -27,12 +27,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const product = getEdTrocheProduct(slug)!
-  const content = ED_PRODUCT_CONTENT[slug]
   const startingPrice = getEdStartingMonthlyPrice(product)
 
   return {
     title: getEdProductPageTitle(product),
-    description: `${content.homeKitTitle} — ${product.supplyLabel}. From $${startingPrice}/mo with physician review and discreet pharmacy fulfillment.`,
+    description:
+      slug === "tadalafil-daily"
+        ? `Tadalafil ED troches (Cialis active ingredient) from $${startingPrice}/mo. Up to 36-hour support. Physician review and discreet pharmacy fulfillment.`
+        : slug === "sildenafil-fast"
+          ? `Sildenafil ED troches (Viagra active ingredient) from $${startingPrice}/mo. Fast-acting sublingual. Physician review and discreet fulfillment.`
+          : `Sildenafil + Tadalafil combination ED troches from $${startingPrice}/mo. Dual-action support with physician review.`,
+    keywords:
+      slug === "tadalafil-daily"
+        ? ["tadalafil", "cialis", "ED medication", "erectile dysfunction"]
+        : slug === "sildenafil-fast"
+          ? ["sildenafil", "viagra", "ED medication", "erectile dysfunction"]
+          : ["sildenafil", "tadalafil", "ED medication", "combination troche"],
     alternates: {
       canonical: `${SITE_URL}/mens-health/ed/${slug}`,
     },

@@ -27,12 +27,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const program = getWeightLossProgram(slug)!
-  const content = WEIGHT_LOSS_PRODUCT_CONTENT[slug]
   const startingPrice = getWeightLossStartingKitPrice(program)
 
   return {
     title: getWeightLossProductPageTitle(program),
-    description: `${content.homeKitTitle} — ${content.purpose.slice(0, 100)}… Starting at $${startingPrice} per 30-day kit (4 weekly injections) with physician review and pharmacy fulfillment.`,
+    description:
+      slug === "semaglutide"
+        ? `Semaglutide weight loss injections for medical weight management. Compounded GLP-1 starting at $${startingPrice} per 30-day kit (4 weekly injections). Physician review required. Michigan patients.`
+        : `Tirzepatide weight loss injections for medical weight management. Dual GLP-1/GIP therapy starting at $${startingPrice} per 30-day kit. Physician review required. Michigan patients.`,
+    keywords:
+      slug === "semaglutide"
+        ? ["semaglutide", "ozempic", "wegovy", "GLP-1", "weight loss injections", "medical weight loss"]
+        : ["tirzepatide", "zepbound", "mounjaro", "GLP-1", "weight loss injections", "medical weight loss"],
     alternates: {
       canonical: `${SITE_URL}/weight-loss/${slug}`,
     },

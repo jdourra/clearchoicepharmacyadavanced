@@ -17,26 +17,26 @@ import { SITE_URL, AREA_SERVED, PHARMACY_ADDRESS, PHARMACY_PHONE } from "@/lib/c
 import { COMMON_SPECIALTY_MEDICATIONS } from "@/lib/specialty-pharmacy-catalog"
 
 export const metadata: Metadata = {
-  title: "Specialty Pharmacy in Michigan | Novi, MI",
+  title: "Specialty Pharmacy | Prior Authorization & Copay Assistance",
   description:
-    "Specialty medications for Michigan patients. All major insurance accepted. In-house prior authorization and copay assistance from Clear Choice Pharmacy in Novi, MI.",
+    "Specialty pharmacy for high-cost medications. All major insurance accepted. In-house prior authorization and copay assistance. Clear Choice Pharmacy, Novi, MI.",
   keywords: [
+    "specialty pharmacy",
+    "specialty medications",
+    "prior authorization",
+    "copay assistance",
+    "high-cost medications",
+    "specialty drug pharmacy",
+    "transfer specialty pharmacy",
     "specialty pharmacy Michigan",
-    "specialty medications Novi MI",
-    "high-cost prescription medications Michigan",
-    "prior authorization pharmacy Michigan",
-    "copay assistance programs Novi",
-    "specialty pharmacy insurance Michigan",
-    "transfer specialty pharmacy Novi MI",
-    "specialty drug pharmacy Metro Detroit",
   ],
   alternates: {
     canonical: `${SITE_URL}/specialty-pharmacy`,
   },
   openGraph: {
-    title: "Specialty Pharmacy | Michigan | Clear Choice Pharmacy",
+    title: "Specialty Pharmacy | Prior Auth & Copay Help | Clear Choice Pharmacy",
     description:
-      "Expedited in-house prior authorizations and copay support for specialty medications. Transfer your specialty care to Clear Choice Pharmacy in Novi, MI.",
+      "Expedited prior authorizations and copay support for specialty medications. Transfer your specialty care to Clear Choice Pharmacy.",
     url: `${SITE_URL}/specialty-pharmacy`,
     type: "website",
   },
@@ -98,9 +98,9 @@ export default function SpecialtyPharmacyPage() {
   return (
     <ClinicalLandingShell jsonLd={[faqJsonLd, serviceJsonLd]}>
       <PremiumHero
-        badge="Clear Choice Specialty Pharmacy"
-        headline="Specialty Medicine Program. All Insurances Accepted."
-        subheadline="Expedited in-house Prior Authorizations & copay assistance navigation."
+        badge="Specialty Pharmacy"
+        headline="Specialty Pharmacy with Prior Authorization & Copay Help"
+        subheadline="High-cost specialty medications. All major insurance accepted. In-house prior auth and copay assistance."
         description="Getting your specialty medications shouldn't mean fighting with your insurance company or facing massive out-of-pocket costs. We accept all major insurance plans and handle the heavy lifting for you and your doctor."
         highlight="✓ In-house PA team · Copay assistance · All major insurances accepted"
         primaryCta={{ label: "Start Your Transfer", href: "/specialty-pharmacy/start" }}

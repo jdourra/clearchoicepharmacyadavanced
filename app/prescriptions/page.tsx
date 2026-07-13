@@ -30,13 +30,13 @@ export default function PrescriptionsPage() {
                 Cash-pay prescriptions · Novi, MI
               </p>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance mb-4">
-                Low-Cost Prescriptions for Michigan Patients
+                Low Cost Prescription Drugs with Cash-Pay Pricing
               </h1>
               <p className="text-lg text-muted-foreground text-balance max-w-2xl mx-auto">
-                Look up everyday medication prices with transparent cash-pay pricing—no insurance, no surprises.
+                Look up medication prices instantly—no insurance required. Most common meds around $5 for 30 days.
               </p>
               <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
-                Michigan patients only — we can currently fill and ship prescriptions only within Michigan.
+                Michigan patients only — we fill and ship prescriptions within Michigan from our Novi pharmacy.
               </p>
             </div>
 
@@ -180,7 +180,7 @@ export default function PrescriptionsPage() {
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
                 <h3 className="font-semibold text-lg mb-2">
-                  How do I buy cheap prescription medications at Clear Choice Pharmacy?
+                  How do I buy low cost prescription drugs at Clear Choice Pharmacy?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Simply search for your medication using our online tool, compare prescription drug prices, and place
@@ -193,7 +193,7 @@ export default function PrescriptionsPage() {
                   Are your generic drugs as effective as brand-name medications?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. All our cheap generic drugs meet the same FDA standards for quality, safety, and effectiveness as
+                  Yes. All our low cost generic drugs meet the same FDA standards for quality, safety, and effectiveness as
                   their brand-name counterparts. Michigan patients get the same medication at a fraction of the cost
                   through Clear Choice Pharmacy in Novi.
                 </p>
@@ -221,7 +221,7 @@ export default function PrescriptionsPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   The best way to save money on prescriptions is to use a low cost pharmacy like Clear Choice. We offer
                   discount prescription drugs by eliminating insurance middlemen, buying directly from wholesalers, and
-                  passing the savings to you. Choosing cheap generic drugs over brand names saves even more.
+                  passing the savings to you. Choosing low cost generic drugs over brand names saves even more.
                 </p>
               </div>
               <div>

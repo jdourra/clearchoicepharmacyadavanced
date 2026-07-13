@@ -101,5 +101,5 @@ function programBenefits(type: "injectable"): string[] {
 }
 
 export function getTrtProductPageTitle(program: TrtProgram): string {
-  return `${program.name} HomeKit | Clear Choice Pharmacy`
+  return `${program.name} | TRT & Testosterone Therapy | Clear Choice Pharmacy`
 }

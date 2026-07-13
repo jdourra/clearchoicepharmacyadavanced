@@ -1,18 +1,18 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
-  "Clear Choice Pharmacy | Michigan Prescriptions, Weight Loss, IV & Men's Health | Novi, MI"
+  "Clear Choice Pharmacy | Semaglutide, Sildenafil, Tadalafil & Low Cost Prescription Drugs | Novi, MI"
 
 export const HOME_DESCRIPTION =
-  "Michigan patients only. Clear Choice Pharmacy in Novi, MI offers low-cost cash-pay prescriptions, GLP-1 weight loss, ED medications and TRT, mobile IV rejuvenation across Metro Detroit, and specialty pharmacy care with prior authorization support."
+  "Semaglutide & Tirzepatide weight loss (alternatives patients compare to Ozempic & Wegovy), Sildenafil & Tadalafil ED meds (Viagra & Cialis active ingredients), TRT, mobile IV, and low cost prescription drugs. Clear Choice Pharmacy, Novi, MI — Michigan patients only."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
-  { name: "Weight Loss & GLP-1", path: "/weight-loss" },
-  { name: "ED Medications & TRT", path: "/mens-health" },
-  { name: "IV Rejuvenation", path: "/iv-rejuvenation" },
+  { name: "Semaglutide & Tirzepatide Weight Loss", path: "/weight-loss" },
+  { name: "Tadalafil, Sildenafil & TRT", path: "/mens-health" },
+  { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
-  { name: "Low-Cost Prescriptions", path: "/prescriptions" },
+  { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
   { name: "Our Services", path: "/services" },
 ] as const
 
@@ -53,34 +53,34 @@ export const AREA_SERVED = [
   { "@type": "City" as const, name: "Commerce Township", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
 ]
 
-/** Site-wide keywords focused on Michigan / Metro Detroit intent. */
+/** High-intent search terms people actually type, with local support. */
 export const SITE_KEYWORDS = [
-  "Clear Choice Pharmacy Novi MI",
-  "Michigan cash pay pharmacy",
-  "cheap prescriptions Novi MI",
-  "low cost pharmacy Michigan",
-  "pharmacy without insurance Michigan",
-  "cash pay prescriptions Metro Detroit",
-  "transparent pharmacy pricing Novi",
-  "generic drugs Novi Michigan",
-  "prescription price comparison Michigan",
-  "Michigan patients only pharmacy",
-  "specialty pharmacy Novi MI",
-  "specialty medications Michigan",
-  "prior authorization pharmacy Michigan",
-  "copay assistance Novi MI",
-  "GLP-1 weight loss Michigan",
-  "Semaglutide Novi MI",
-  "Tirzepatide Metro Detroit",
-  "medical weight loss Novi Michigan",
-  "ED troches Michigan",
-  "compounded ED pharmacy Novi",
-  "TRT pharmacy Michigan",
-  "testosterone replacement therapy Novi MI",
-  "men's health pharmacy Michigan",
-  "mobile IV therapy Metro Detroit",
-  "IV hydration Novi MI",
-  "NAD+ IV therapy Michigan",
+  "semaglutide",
+  "tirzepatide",
+  "ozempic",
+  "wegovy",
+  "zepbound",
+  "GLP-1",
+  "GLP-1 weight loss",
+  "medical weight loss",
+  "weight loss injections",
+  "weight loss clinic",
+  "tadalafil",
+  "sildenafil",
+  "cialis",
+  "viagra",
+  "ED medication",
+  "TRT",
+  "testosterone replacement therapy",
+  "testosterone cypionate",
+  "mobile IV therapy",
+  "Myers Cocktail",
+  "NAD IV",
+  "specialty pharmacy",
+  "low cost prescription drugs",
+  "cash pay pharmacy",
+  "Clear Choice Pharmacy Novi",
+  "pharmacy Novi MI",
 ]
 
 export type FaqItem = { question: string; answer: string }
@@ -112,9 +112,19 @@ export function pharmacyProviderSchema() {
 
 export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
-    question: "Do you serve patients outside Michigan?",
+    question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      "Not at this time. Clear Choice Pharmacy is currently licensed to dispense only to Michigan patients. We are expanding with a telehealth partner and will update eligibility when multi-state coverage is available.",
+      "Yes. Clear Choice Pharmacy compounds sublingual Tadalafil and Sildenafil troches for qualifying Michigan patients, plus a dual Sildenafil + Tadalafil combination. Pricing starts from $39/mo on quarterly billing for Sildenafil and $49/mo for Tadalafil.",
+  },
+  {
+    question: "Is Tadalafil the same as Cialis?",
+    answer:
+      "Tadalafil is the active ingredient in brand-name Cialis. We compound custom Tadalafil troches pursuant to a provider prescription. We do not sell brand-name Cialis tablets through the men's health program.",
+  },
+  {
+    question: "Is Sildenafil the same as Viagra?",
+    answer:
+      "Sildenafil is the active ingredient in brand-name Viagra. Our men's health program offers compounded Sildenafil troches designed for faster sublingual absorption after physician review.",
   },
   {
     question: "Why choose sublingual troches over regular ED pills?",
@@ -122,85 +132,90 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
       "Troches absorb through the oral mucosa, often working in half the time of swallowed tablets. Because they bypass the digestive tract, they are not affected by food or heavy meals.",
   },
   {
-    question: "Does Clear Choice Pharmacy offer TRT in Michigan?",
+    question: "Does Clear Choice Pharmacy offer TRT?",
     answer:
-      "Yes. For Michigan patients, we offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene options. Programs include telehealth review, pharmacy fulfillment in Novi, and transparent cash-pay pricing from $109/mo on quarterly billing.",
+      "Yes. We offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene. Cash-pay pricing starts from $109/mo on quarterly billing for Michigan patients.",
   },
   {
-    question: "How much does TRT cost at Clear Choice Pharmacy?",
+    question: "How much does TRT cost?",
     answer:
-      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene oral therapy starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
-  },
-  {
-    question: "Do you offer combination troches for premature ejaculation?",
-    answer:
-      "Yes. PE support can be added as an optional enhancement when you checkout with Sildenafil, Tadalafil, or our dual combination troche—pairing PDE5 support with PE-focused adjunct ingredients tailored by your physician.",
-  },
-  {
-    question: "Which ED troche formulations do you offer?",
-    answer:
-      "You can select from three compounded troche options during intake: Sildenafil, Tadalafil, and Sildenafil + Tadalafil combination. Optional add-ons for Oxytocin, Apomorphine, and PE support are available at checkout.",
+      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
   },
   {
     question: "Can you combine Sildenafil and Tadalafil?",
     answer:
-      "Yes. Our compounding pharmacy in Novi, MI can create dual-action combination troches with tailored strengths that are not available at retail chains.",
+      "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available as a single retail tablet.",
+  },
+  {
+    question: "Do you serve patients outside Michigan?",
+    answer:
+      "Not at this time. Clear Choice Pharmacy is currently licensed to dispense only to Michigan patients.",
   },
   {
     question: "Is the consultation private?",
     answer:
-      "Absolutely. The online consultation is confidential, and your medication is prepared and delivered discreetly through Clear Choice Pharmacy for Michigan patients.",
-  },
-  {
-    question: "Do you offer ED compounding in Novi and Metro Detroit?",
-    answer:
-      "Yes. Clear Choice Pharmacy compounds custom sublingual ED troches for Michigan patients in Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, Ann Arbor, Troy, and the greater Metro Detroit area.",
+      "Yes. The online consultation is confidential, and medication is prepared and delivered discreetly from our Novi pharmacy.",
   },
 ]
 
 export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
-    question: "Is medical weight loss available outside Michigan?",
+    question: "Do you offer Semaglutide and Tirzepatide for weight loss?",
     answer:
-      "Currently no. GLP-1 and medical weight loss programs through Clear Choice Pharmacy are available to qualifying Michigan patients only, with fulfillment from our Novi pharmacy.",
+      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Novi, MI.",
+  },
+  {
+    question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
+    answer:
+      "Ozempic and Wegovy are brand-name medications that contain Semaglutide. We compound Semaglutide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Ozempic or Wegovy through this program. Your clinician determines whether compounded Semaglutide is appropriate for you.",
+  },
+  {
+    question: "Is compounded Tirzepatide the same as Zepbound or Mounjaro?",
+    answer:
+      "Zepbound and Mounjaro are brand-name medications that contain Tirzepatide. We compound Tirzepatide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Zepbound or Mounjaro through this program.",
   },
   {
     question: "What is the difference between Semaglutide and Tirzepatide?",
     answer:
-      "Semaglutide is a GLP-1 receptor agonist, while Tirzepatide activates both GLP-1 and GIP pathways. Your provider will recommend the option best suited to your clinical profile and goals.",
+      "Semaglutide is a GLP-1 receptor agonist. Tirzepatide activates both GLP-1 and GIP pathways. Your provider recommends the option best suited to your clinical profile and goals.",
   },
   {
     question: "Do I need a prescription for GLP-1 weight loss therapy?",
     answer:
-      "Yes. GLP-1 therapies require a valid prescription and clinical evaluation. Complete our online intake to begin the provider review process.",
+      "Yes. Semaglutide and Tirzepatide require a valid prescription and clinical evaluation. Complete our online intake to begin provider review.",
   },
   {
-    question: "Is pricing transparent for GLP-1 programs?",
+    question: "How much does medical weight loss cost?",
     answer:
-      "Yes. Clear Choice Pharmacy offers upfront cash-pay pricing on compounded GLP formulations for Michigan patients—no insurance middlemen or hidden fees.",
+      "Compounded Semaglutide kits start at $134–$149 depending on dose tier and billing plan. Tirzepatide kits start higher based on dose. Every 30-day kit includes 4 weekly injections, physician review, compounding, supplies, and shipping for Michigan patients.",
   },
   {
-    question: "Who is eligible for medical weight loss at Clear Choice Pharmacy?",
+    question: "Who is eligible for medical weight loss?",
     answer:
-      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients in Novi, Metro Detroit, and statewide seeking Semaglutide or Tirzepatide medical weight management.",
+      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients seeking Semaglutide or Tirzepatide medical weight management.",
   },
   {
-    question: "What is the MIC + B12 skinny shot and how does it help with weight loss?",
+    question: "What is the MIC + B12 skinny shot?",
     answer:
-      "The MIC + B12 skinny shot is a lipotropic injection blend containing Methionine, Inositol, Choline (MIC), Vitamin B12, and L-Carnitine. MIC nutrients support liver function and fat mobilization, B12 supports energy and metabolism, and L-Carnitine helps transport fatty acids for fuel. It is commonly used weekly as metabolic support alongside diet, exercise, and GLP-1 therapy.",
+      "MIC + B12 is a lipotropic injection blend (Methionine, Inositol, Choline, Vitamin B12, and L-Carnitine) used as metabolic support on its own or alongside Semaglutide or Tirzepatide therapy.",
   },
   {
     question: "Can I use MIC + B12 with GLP-1 therapy?",
     answer:
-      "Many patients use MIC + B12 as complementary metabolic support while on Semaglutide or Tirzepatide. Your provider will review your health profile and confirm whether combining therapies is appropriate for you.",
+      "Many patients use MIC + B12 as complementary metabolic support while on Semaglutide or Tirzepatide. Your provider confirms whether combining therapies is appropriate.",
   },
 ]
 
 export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
+    question: "What mobile IV drips do you offer?",
+    answer:
+      "Clear Choice IV & Rejuvenation offers Myers' Cocktail, NAD+, hydration, immunity, hangover recovery, and other pharmacy-formulated drips administered by licensed RNs across Metro Detroit.",
+  },
+  {
     question: "What is the difference between mobile IV and rejuvenation vials?",
     answer:
-      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel in Metro Detroit — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits prepared by Clear Choice Pharmacy for eligible Michigan patients after telehealth approval.",
+      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel in Metro Detroit — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits for eligible Michigan patients after telehealth approval.",
   },
   {
     question: "Does mobile IV therapy hurt?",
@@ -215,12 +230,12 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "Is mobile IV therapy safe?",
     answer:
-      "Yes. A licensed telehealth provider reviews each request before treatment. Clinical intakes for Michigan patients are reviewed by Dr. Dourra and affiliated physicians. IV bags are prepared at Clear Choice Pharmacy pursuant to a patient-specific prescription, then administered by registered nurses.",
+      "Yes. A licensed telehealth provider reviews each request before treatment. IV bags are prepared at Clear Choice Pharmacy pursuant to a patient-specific prescription, then administered by registered nurses.",
   },
   {
     question: "What areas do you serve for mobile IV therapy?",
     answer:
-      "Clear Choice IV & Rejuvenation dispatches licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities. Rejuvenation vial homekits are available to Michigan patients after physician approval.",
+      "We dispatch licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities.",
   },
   {
     question: "Is there a travel fee for mobile IV?",
@@ -231,18 +246,18 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
 
 export const PRESCRIPTIONS_FAQS: FaqItem[] = [
   {
-    question: "Can I order prescriptions if I live outside Michigan?",
+    question: "How do I find low cost prescription drug prices?",
     answer:
-      "Not right now. Clear Choice Pharmacy can currently fill and ship prescriptions only for Michigan patients. Out-of-state patients should use a pharmacy licensed in their state until we expand with our telehealth partner.",
+      "Search any medication on our prescriptions page to see transparent cash-pay pricing. Most common meds hover around $5 for a 30-day supply. Formula: Drug Cost + 15% + $5 dispensing fee.",
   },
   {
-    question: "How do I find low-cost prescription prices in Michigan?",
-    answer:
-      "Search any medication on our prescriptions page to see transparent cash-pay pricing. Pickup is available in Novi, MI, and delivery is available to eligible Michigan addresses.",
-  },
-  {
-    question: "Do I need insurance for Clear Choice Pharmacy?",
+    question: "Do I need insurance?",
     answer:
       "No. Our low-cost prescription program is cash-pay with upfront pricing—no insurance required. Specialty pharmacy services can also work with major insurance plans for high-cost medications.",
+  },
+  {
+    question: "Can I order prescriptions if I live outside Michigan?",
+    answer:
+      "Not right now. Clear Choice Pharmacy can currently fill and ship prescriptions only for Michigan patients.",
   },
 ]

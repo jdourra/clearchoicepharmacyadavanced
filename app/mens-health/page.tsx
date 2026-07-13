@@ -29,25 +29,32 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
-  title: "ED Medications & TRT for Michigan Patients",
+  title: "Tadalafil, Sildenafil & TRT | ED Medications",
   description:
-    "Custom sublingual ED troches and physician-supervised TRT for Michigan patients in Novi and Metro Detroit. Transparent cash-pay testosterone therapy from $109/mo.",
+    "Tadalafil and Sildenafil ED troches plus physician-supervised TRT and testosterone therapy. Transparent cash-pay pricing from $39/mo ED and $109/mo TRT. Clear Choice Pharmacy, Novi, MI.",
   keywords: [
-    "TRT Novi MI",
-    "testosterone replacement therapy Michigan",
-    "ED troches Michigan",
-    "compounding pharmacy Metro Detroit",
-    "Sildenafil troche Novi",
-    "testosterone cypionate Michigan",
-    "men's health pharmacy Novi MI",
+    "tadalafil",
+    "sildenafil",
+    "cialis",
+    "viagra",
+    "ED medication",
+    "erectile dysfunction",
+    "ED troches",
+    "TRT",
+    "testosterone replacement therapy",
+    "testosterone cypionate",
+    "low testosterone",
+    "men's health",
+    "tadalafil Michigan",
+    "sildenafil Novi",
   ],
   alternates: {
     canonical: `${SITE_URL}/mens-health`,
   },
   openGraph: {
-    title: "Men's Health | ED Troches & TRT | Michigan | Clear Choice Pharmacy",
+    title: "Tadalafil, Sildenafil & TRT | Clear Choice Pharmacy",
     description:
-      "ED troches and testosterone replacement therapy for Michigan patients, with discreet fulfillment from our Novi pharmacy.",
+      "ED medications (Tadalafil, Sildenafil) and testosterone replacement therapy with discreet pharmacy fulfillment in Novi, MI.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -57,12 +64,13 @@ export default function MensHealthPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Men's Health | ED Troches & TRT | Clear Choice Pharmacy",
+    name: "Tadalafil, Sildenafil & TRT | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Custom sublingual ED troches and testosterone replacement therapy at Clear Choice Pharmacy in Novi, MI.",
+      "Tadalafil and Sildenafil ED medications and testosterone replacement therapy at Clear Choice Pharmacy in Novi, MI.",
     about: [
-      { "@type": "MedicalTherapy", name: "Sublingual ED Troches" },
+      { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
+      { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Testosterone Replacement Therapy" },
     ],
     provider: pharmacyProviderSchema(),
@@ -71,13 +79,13 @@ export default function MensHealthPage() {
   return (
     <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(MENS_HEALTH_FAQS)]}>
       <PremiumHero
-        badge="Clear Choice Men's Health"
-        headline="ED Troches & TRT in Novi, MI"
-        subheadline="Custom compounded ED troches and physician-supervised testosterone therapy—with transparent cash-pay pricing."
-        description="Whether you need fast-acting sublingual ED troches or testosterone replacement therapy, Clear Choice Pharmacy delivers pharmacy compounding and upfront pricing—no insurance middlemen."
-        highlight="🔒 Buy online · Provider review · Pharmacy-formulated · Discreet delivery"
+        badge="Men's Health · ED & TRT"
+        headline="Tadalafil, Sildenafil & TRT"
+        subheadline="ED medications and physician-supervised testosterone therapy with transparent cash-pay pricing."
+        description="Get compounded Tadalafil and Sildenafil troches (active ingredients in Cialis and Viagra) or start TRT with testosterone cypionate, cream, or enclomiphene—after provider review for Michigan patients."
+        highlight="Buy online · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
-          label: "Shop ED Troches",
+          label: "Shop Tadalafil & Sildenafil",
           href: ED_LANDING_URL,
           scrollTo: "#ed-troches",
         }}
@@ -86,9 +94,9 @@ export default function MensHealthPage() {
 
       <ContentSection id="ed-troches">
         <SectionIntro
-          eyebrow="Sublingual ED Troches"
-          title="Sildenafil, Tadalafil & Dual Combination"
-          description="Choose a formulation and buy online. Optional add-ons (Oxytocin, Apomorphine, PE support) can be added before checkout. Prescription required after provider review."
+          eyebrow="ED Medications"
+          title="Tadalafil, Sildenafil & Dual Combination"
+          description="Compounded sublingual troches for erectile dysfunction. Optional add-ons available before checkout. Prescription required after provider review."
         />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -135,9 +143,9 @@ export default function MensHealthPage() {
 
       <ContentSection id="trt" tone="muted">
         <SectionIntro
-          eyebrow="Testosterone Replacement Therapy"
-          title="Physician-Supervised TRT With Transparent Pricing"
-          description="Buy a TRT program online. Injectable programs from $109/mo on quarterly billing, including medication, supplies, and shipping. Provider review required."
+          eyebrow="TRT · Testosterone Replacement Therapy"
+          title="Physician-Supervised Testosterone Therapy"
+          description="Injectable testosterone cypionate from $109/mo on quarterly billing, plus cream and enclomiphene options. Provider review required."
         />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {TRT_PROGRAMS.map((program) => {
@@ -230,8 +238,8 @@ export default function MensHealthPage() {
       />
 
       <FaqSection
-        title="Frequently Asked Questions"
-        subtitle="Common questions about ED troches and TRT"
+        title="Tadalafil, Sildenafil & TRT FAQs"
+        subtitle="ED medications, Cialis/Viagra comparisons, and testosterone therapy"
         items={MENS_HEALTH_FAQS}
       />
 

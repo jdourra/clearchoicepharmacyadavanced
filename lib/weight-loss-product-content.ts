@@ -38,10 +38,10 @@ const SHARED_KIT_INCLUDES = [
 
 export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLossProductContent> = {
   semaglutide: {
-    homeKitTitle: "Semaglutide HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    homeKitTitle: "Semaglutide Weight Loss HomeKit",
+    tagline: "Medical weight loss · GLP-1 injections",
     purpose:
-      "Semaglutide is a once-weekly GLP-1 therapy that helps regulate appetite and food intake, supporting sustainable medical weight loss when combined with healthy lifestyle habits. Our compounded formulation is prepared pursuant to your provider's prescription.",
+      "Semaglutide is a once-weekly GLP-1 therapy used for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Our compounded Semaglutide is prepared pursuant to your provider's prescription for qualifying Michigan patients—we do not dispense brand-name Ozempic or Wegovy through this program.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -85,10 +85,10 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     },
   },
   tirzepatide: {
-    homeKitTitle: "Tirzepatide HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    homeKitTitle: "Tirzepatide Weight Loss HomeKit",
+    tagline: "Medical weight loss · dual GLP-1/GIP injections",
     purpose:
-      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy that targets multiple metabolic pathways involved in appetite and weight regulation. It is prescribed for qualifying patients after physician review.",
+      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Our compounded Tirzepatide is prescribed for qualifying Michigan patients after physician review—we do not dispense brand-name Zepbound or Mounjaro through this program.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -134,5 +134,8 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
 }
 
 export function getWeightLossProductPageTitle(program: WeightLossProgram): string {
-  return `${program.id === "semaglutide" ? "Semaglutide" : "Tirzepatide"} HomeKit | Clear Choice Pharmacy`
+  if (program.id === "semaglutide") {
+    return "Semaglutide Weight Loss Injections | Medical GLP-1 | Clear Choice Pharmacy"
+  }
+  return "Tirzepatide Weight Loss Injections | Dual GLP-1/GIP | Clear Choice Pharmacy"
 }

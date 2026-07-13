@@ -34,12 +34,13 @@ export default function HomePage() {
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-sky-200 mb-3">
               Clear Choice Pharmacy · Novi, MI
             </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance max-w-xl mb-3 sm:mb-4">
-              Pharmacy care that puts{" "}
-              <span className="text-sky-300">you first</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance max-w-2xl mb-3 sm:mb-4">
+              Semaglutide, Sildenafil, Tadalafil &amp;{" "}
+              <span className="text-sky-300">low cost prescription drugs</span>
             </h1>
-            <p className="text-base sm:text-lg text-slate-200 text-balance max-w-md mb-6 sm:mb-8 leading-relaxed">
-              Affordable prescriptions and clinical programs—coordinated by your local Novi pharmacy team.
+            <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
+              Medical weight loss patients compare to Ozempic &amp; Wegovy · ED meds with Sildenafil &amp; Tadalafil
+              (Viagra &amp; Cialis active ingredients) · TRT · mobile IV — from your Novi, MI pharmacy.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
               <Button
@@ -194,35 +195,35 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
           <div className="grid gap-6 max-w-3xl mx-auto">
             <div>
-              <h3 className="font-semibold text-lg mb-2">Does Clear Choice Pharmacy offer GLP-1 weight loss in Michigan?</h3>
+              <h3 className="font-semibold text-lg mb-2">Do you offer Semaglutide and Tirzepatide for weight loss?</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Yes. We offer medical weight management with Semaglutide and Tirzepatide GLP-1 therapies for qualifying
-                patients in Novi and Metro Detroit. Programs include licensed provider review, custom titration, and
-                transparent cash-pay pricing.{" "}
+                Yes. We offer physician-supervised medical weight loss with compounded Semaglutide and Tirzepatide
+                (GLP-1) injections—alternatives patients often compare to Ozempic, Wegovy, and Zepbound. Transparent
+                cash-pay pricing for qualifying Michigan patients.{" "}
                 <Link href="/weight-loss" className="text-primary hover:underline">
-                  Learn about our GLP-1 weight loss programs
+                  Shop Semaglutide &amp; Tirzepatide programs
                 </Link>
                 .
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-2">Do you compound custom ED troches in Novi, MI?</h3>
+              <h3 className="font-semibold text-lg mb-2">Do you offer Tadalafil, Sildenafil, and TRT?</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Yes. Clear Choice Pharmacy compounds custom sublingual ED troches with Sildenafil and Tadalafil. Troches
-                absorb faster than standard pills and are not affected by food. Start with a private online consultation.{" "}
+                Yes. Clear Choice Pharmacy compounds Tadalafil and Sildenafil ED troches (active ingredients in Cialis
+                and Viagra) and offers physician-supervised testosterone replacement therapy (TRT).{" "}
                 <Link href="/mens-health" className="text-primary hover:underline">
-                  Explore men&apos;s health and ED compounding
+                  Shop ED medications &amp; TRT
                 </Link>
                 .
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-2">Do you offer mobile IV therapy in Metro Detroit?</h3>
+              <h3 className="font-semibold text-lg mb-2">Do you offer mobile IV therapy near me?</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Yes. Clear Choice IV &amp; Rejuvenation delivers pharmacy-formulated IV therapy to your home or office
-                with licensed RN administration. Myers&apos; Cocktail, NAD+, hydration, and immunity drips available.{" "}
+                Yes. Clear Choice IV &amp; Rejuvenation delivers pharmacy-formulated IV therapy across Metro Detroit with
+                licensed RN administration. Myers&apos; Cocktail, NAD+ IV, hydration, and immunity drips available.{" "}
                 <Link href="/iv-rejuvenation" className="text-primary hover:underline">
-                  View mobile IV therapy options
+                  Book mobile IV therapy
                 </Link>
                 .
               </p>

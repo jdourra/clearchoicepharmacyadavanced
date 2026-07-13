@@ -21,11 +21,11 @@ const SHARED_ED_KIT_INCLUDES = [
 export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
   "sildenafil-fast": {
     homeKitTitle: "Sildenafil Fast-Acting Troche HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "ED medication · Sildenafil (Viagra active ingredient)",
     procedure:
       "Place one troche under your tongue 30–60 minutes before activity. Allow it to dissolve fully — do not chew or swallow whole for fastest absorption.",
     howItWorks:
-      "Sublingual delivery bypasses the digestive tract, so absorption begins in minutes rather than the 30–60 minutes typical of swallowed tablets. Food does not delay onset the way it can with oral pills.",
+      "Sildenafil — the active ingredient in brand-name Viagra — is delivered sublingually so absorption begins in minutes rather than the 30–60 minutes typical of swallowed tablets. Food does not delay onset the way it can with oral pills. This program compounds Sildenafil troches; it does not dispense brand-name Viagra.",
     benefits: [
       "Rapid onset — often 15–30 minutes",
       "Lasts approximately 4–6 hours",
@@ -42,11 +42,11 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
   },
   "tadalafil-daily": {
     homeKitTitle: "Tadalafil Extended-Duration Troche HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "ED medication · Tadalafil (Cialis active ingredient)",
     procedure:
       "Place one troche under your tongue as directed — daily for continuous support or as needed before activity. Allow full sublingual dissolution.",
     howItWorks:
-      "Tadalafil offers an extended window of support — up to 36 hours — reducing timing pressure. Sublingual compounding supports faster absorption than swallowed tablets.",
+      "Tadalafil — the active ingredient in brand-name Cialis — offers an extended window of support up to 36 hours, reducing timing pressure. Sublingual compounding supports faster absorption than swallowed tablets. This program compounds Tadalafil troches; it does not dispense brand-name Cialis.",
     benefits: [
       "Up to 36-hour support window",
       "Ideal for spontaneity",
@@ -85,5 +85,11 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
 }
 
 export function getEdProductPageTitle(product: EdTrocheProduct): string {
-  return `${product.name} Troche HomeKit | Clear Choice Pharmacy`
+  if (product.id === "sildenafil-fast") {
+    return "Sildenafil Troches for ED | Fast-Acting | Clear Choice Pharmacy"
+  }
+  if (product.id === "tadalafil-daily") {
+    return "Tadalafil Troches for ED | Up to 36-Hour Support | Clear Choice Pharmacy"
+  }
+  return "Sildenafil + Tadalafil Combination Troches | Clear Choice Pharmacy"
 }

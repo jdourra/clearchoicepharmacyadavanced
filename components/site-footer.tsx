@@ -65,19 +65,19 @@ export function SiteFooter() {
                 All services
               </Link>
               <Link href="/prescriptions" className="text-muted-foreground hover:text-foreground transition-colors">
-                Low cost prescriptions
+                Low cost prescription drugs
               </Link>
               <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
-                GLP-1 weight loss
+                Semaglutide &amp; Tirzepatide
               </Link>
               <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
-                Men&apos;s health &amp; ED
+                Tadalafil, Sildenafil &amp; TRT
               </Link>
               <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
-                IV rejuvenation
+                Mobile IV therapy
               </Link>
               <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                Specialty medications
+                Specialty pharmacy
               </Link>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed pt-2">

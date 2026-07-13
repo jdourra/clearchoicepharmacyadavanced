@@ -4,16 +4,16 @@ import { MedicationQuoteBuilder } from "@/components/medication-quote-builder"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Medication Prices for Michigan Patients | Clear Choice Pharmacy",
+  title: "Medication Prices | Low Cost Prescription Drug Lookup",
   description:
-    "Build your medication list and see cash-pay totals for Michigan patients. Search prescriptions, compare transparent prices, and order for pickup in Novi or Michigan delivery.",
+    "Search medications and see transparent cash-pay prices. Build your list and order online. Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/medications`,
   },
   openGraph: {
-    title: "Medication Prices | Michigan | Clear Choice Pharmacy",
+    title: "Medication Prices | Clear Choice Pharmacy",
     description:
-      "Add medications to your list and see transparent cash-pay pricing for Michigan patients at Clear Choice Pharmacy in Novi.",
+      "Add medications to your list and see transparent cash-pay pricing at Clear Choice Pharmacy.",
     url: `${SITE_URL}/medications`,
     type: "website",
   },

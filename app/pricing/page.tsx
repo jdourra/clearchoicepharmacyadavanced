@@ -6,16 +6,16 @@ import type { Metadata } from "next"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Prescription Prices in Michigan | Transparent Cash-Pay Formula",
+  title: "Prescription Prices | Low Cost Prescription Drugs Formula",
   description:
-    "Compare prescription prices at Clear Choice Pharmacy in Novi, MI. Transparent formula: Drug Cost + 15% + $5. Cash-pay savings for Michigan patients—no insurance required.",
+    "Compare low cost prescription drug prices. Transparent formula: Drug Cost + 15% + $5. Cash-pay pharmacy—no insurance required. Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/pricing`,
   },
   openGraph: {
-    title: "Michigan Prescription Prices — Save with Transparent Pricing",
+    title: "Low Cost Prescription Drug Prices | Transparent Cash-Pay Formula",
     description:
-      "See exactly how we price affordable prescriptions for Michigan patients. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
+      "See exactly how we price prescriptions. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
     url: `${SITE_URL}/pricing`,
     type: "website",
   },
@@ -28,7 +28,7 @@ export default function PricingTransparencyPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "How much do cheap prescription medications cost at Clear Choice Pharmacy?",
+        name: "How much do low cost prescription drugs cost at Clear Choice Pharmacy?",
         acceptedAnswer: {
           "@type": "Answer",
           text: "Our pricing formula is simple: Drug Cost + 15% markup + $5 dispensing fee. For example, a 30-day supply of Lisinopril 10mg costs just $8.45 compared to $30.00 at typical retail pharmacies. We offer some of the cheapest prescription medications available.",

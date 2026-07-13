@@ -2,26 +2,26 @@ import type { Metadata } from "next"
 import { buildFaqJsonLd, PRESCRIPTIONS_FAQS, SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Low-Cost Prescriptions for Michigan Patients | Novi, MI",
+  title: "Low Cost Prescription Drugs | Cash-Pay Pharmacy Pricing",
   description:
-    "Affordable cash-pay prescriptions for Michigan patients. Clear Choice Pharmacy in Novi, MI — most common meds around $5 for 30 days. Transparent pricing: Drug Cost + 15% + $5. Michigan fill & ship only.",
+    "Low cost prescription drugs with transparent cash-pay pricing. Most common meds around $5 for 30 days. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
   keywords: [
-    "low cost prescriptions Michigan",
-    "cheap prescription medications Novi MI",
-    "cash pay pharmacy Michigan",
-    "affordable prescription drugs Metro Detroit",
-    "pharmacy without insurance Michigan",
-    "discount prescription drugs Novi",
-    "Michigan patients only pharmacy",
-    "Novi MI pharmacy",
+    "low cost prescription drugs",
+    "low cost prescriptions",
+    "cash pay pharmacy",
+    "pharmacy without insurance",
+    "discount prescription drugs",
+    "generic drugs",
+    "prescription prices",
+    "Novi pharmacy",
   ],
   alternates: {
     canonical: `${SITE_URL}/prescriptions`,
   },
   openGraph: {
-    title: "Low-Cost Prescriptions | Michigan | Clear Choice Pharmacy",
+    title: "Low Cost Prescription Drugs | Cash-Pay Pricing | Clear Choice Pharmacy",
     description:
-      "Cash-pay prescriptions for Michigan patients. Most common meds around $5. Transparent pricing: Drug Cost + 15% + $5. Pickup in Novi or Michigan delivery.",
+      "Most common meds around $5. Transparent cash-pay pricing: Drug Cost + 15% + $5. Search medications instantly.",
     url: `${SITE_URL}/prescriptions`,
     type: "website",
   },

@@ -31,9 +31,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/weight-loss",
-    title: "GLP-1 Medical Weight Loss",
+    title: "Semaglutide & Tirzepatide Weight Loss",
     description:
-      "Semaglutide and Tirzepatide programs with custom titration and upfront cash-pay pricing in Novi, MI.",
+      "Medical weight loss with Semaglutide and Tirzepatide (GLP-1) injections. Transparent cash-pay pricing.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",
@@ -45,9 +45,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/mens-health",
-    title: "Men's Health, ED & TRT",
+    title: "Tadalafil, Sildenafil & TRT",
     description:
-      "Custom sublingual ED troches and physician-supervised TRT with transparent cash-pay pricing in Novi, MI.",
+      "ED medications with Tadalafil and Sildenafil troches, plus physician-supervised testosterone therapy.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",
@@ -59,9 +59,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/iv-rejuvenation",
-    title: "Mobile IV Rejuvenation",
+    title: "Mobile IV Therapy",
     description:
-      "Pharmacy-formulated IV therapy with licensed RNs—Myers' Cocktail, NAD+, hydration, and more.",
+      "Myers' Cocktail, NAD+ IV, hydration, and more—licensed RNs across Metro Detroit.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy IV therapy",
@@ -73,9 +73,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/specialty-pharmacy",
-    title: "Specialty Medications",
+    title: "Specialty Pharmacy",
     description:
-      "High-cost therapies with in-house prior authorization and manufacturer copay assistance support.",
+      "High-cost specialty medications with prior authorization and copay assistance. Insurance accepted.",
     pathType: "insurance",
     pathLabel: "Insurance accepted",
     cta: "Transfer specialty care",
