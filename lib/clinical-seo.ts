@@ -13,6 +13,7 @@ export const SITE_NAV_LINKS = [
   { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
   { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
+  { name: "Learn", path: "/learn" },
   { name: "Our Services", path: "/services" },
 ] as const
 

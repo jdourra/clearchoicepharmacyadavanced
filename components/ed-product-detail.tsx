@@ -23,6 +23,7 @@ import {
   type EdBillingPlan,
   type EdTrocheProduct,
 } from "@/lib/ed-troche-catalog"
+import { formatUsd, getEdDosesPerSupply, getEdPricePerDose } from "@/lib/pricing-clarity"
 import { cn } from "@/lib/utils"
 
 type EdProductDetailProps = {
@@ -126,6 +127,10 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
                       <div className="text-right">
                         <p className="text-xl font-bold text-primary">${tier.pricePerMonth}</p>
                         <p className="text-xs text-muted-foreground">/mo</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatUsd(getEdPricePerDose(tier.pricePerMonth, product.id), 2)}/dose ·{" "}
+                          {getEdDosesPerSupply(product.id)} troches
+                        </p>
                         {tier.plan !== "monthly" && (
                           <p className="text-xs text-muted-foreground">${tier.totalBilled} total</p>
                         )}

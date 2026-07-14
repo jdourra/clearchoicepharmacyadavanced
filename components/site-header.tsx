@@ -69,6 +69,7 @@ export function SiteHeader() {
     { href: "/mens-health", label: "Tadalafil, Sildenafil & TRT" },
     { href: "/iv-rejuvenation", label: "Mobile IV therapy" },
     { href: "/specialty-pharmacy", label: "Specialty pharmacy" },
+    { href: "/learn", label: "Learn guides" },
   ]
 
   return (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 import {
   ClinicalLandingShell,
   ContentSection,
@@ -13,6 +14,7 @@ import {
 } from "@/components/clinical-landing-shell"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   SITE_URL,
@@ -21,9 +23,17 @@ import {
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
 import { TRT_PROGRAMS, getTrtStartingMonthlyPrice } from "@/lib/trt-catalog"
-import { ED_FORMULATIONS, getEdStartingMonthlyPrice } from "@/lib/ed-troche-catalog"
+import { ED_FORMULATIONS, getEdStartingMonthlyPrice, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
 import { buildEdProductUrl, buildTrtProductUrl } from "@/lib/intake-prefill"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import {
+  ALL_IN_INCLUSIONS,
+  formatUsd,
+  getBestEdPlan,
+  getEdDosesPerSupply,
+  getEdPricePerDose,
+} from "@/lib/pricing-clarity"
+import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarity"
 
 const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
@@ -96,12 +106,19 @@ export default function MensHealthPage() {
         <SectionIntro
           eyebrow="ED Medications"
           title="Tadalafil, Sildenafil & Dual Combination"
-          description="Compounded sublingual troches for erectile dysfunction. Optional add-ons available before checkout. Prescription required after provider review."
+          description="Compounded sublingual troches with transparent monthly pricing and clear $/dose math. Provider review required."
         />
+        <AllInInclusions items={ALL_IN_INCLUSIONS.ed} className="mt-6" />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {ED_FORMULATIONS.map((formulation) => {
             const startingPrice = getEdStartingMonthlyPrice(formulation)
+            const best = getBestEdPlan(formulation)
+            const doses = getEdDosesPerSupply(formulation.id)
+            const monthlyDosePrice = getEdPricePerDose(
+              formulation.pricing.find((p) => p.plan === "monthly")?.pricePerMonth ?? startingPrice,
+              formulation.id
+            )
             return (
               <Card key={formulation.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -120,12 +137,18 @@ export default function MensHealthPage() {
                 <h3 className="text-xl font-bold">{formulation.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{formulation.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{formulation.description}</p>
-                <div className="mt-5 pt-4 border-t">
+                <div className="mt-5 pt-4 border-t space-y-2">
                   <p className="text-3xl font-bold text-primary">
-                    ${startingPrice}
-                    <span className="text-base font-normal text-muted-foreground">+</span>
+                    {formatUsd(best.pricePerMonth)}
+                    <span className="text-base font-normal text-muted-foreground">/mo all-in</span>
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">/mo starting at · {formulation.supplyLabel}</p>
+                  <p className="text-sm text-muted-foreground">
+                    About {formatUsd(best.pricePerDose, 2)}/dose on {formatEdBillingLabel(best.plan).toLowerCase()} ·{" "}
+                    {doses} troches / 30 days
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Monthly plan from {formatUsd(startingPrice)}/mo ({formatUsd(monthlyDosePrice, 2)}/dose)
+                  </p>
                   <div className="mt-4">
                     <ServiceBuyButton href={buildEdProductUrl(formulation.id)} fullWidth label="Shop now" />
                   </div>
@@ -136,6 +159,12 @@ export default function MensHealthPage() {
           })}
         </div>
 
+        <PricingCompareNote
+          className="mt-8"
+          title="How our ED troches compare"
+          body="National telehealth brands often price generic tablets from ~$2/dose or compounded combo mints around $6–$12/dose. Our sublingual troches are a compounded, food-resistant format with physician review included—priced from about $1.63/dose on quarterly Tadalafil and ~$3.90/dose on quarterly Sildenafil. Prefer plain generic tablets? Use our low cost prescription drugs search for cash-pay tablet pricing."
+        />
+
         <p className="text-xs text-muted-foreground mt-4">
           Prescription required. Payment authorized as a hold and captured only upon provider approval.
         </p>
@@ -145,11 +174,14 @@ export default function MensHealthPage() {
         <SectionIntro
           eyebrow="TRT · Testosterone Replacement Therapy"
           title="Physician-Supervised Testosterone Therapy"
-          description="Injectable testosterone cypionate from $109/mo on quarterly billing, plus cream and enclomiphene options. Provider review required."
+          description="All-in cash-pay programs from $109/mo on quarterly billing—medication, supplies, and Michigan shipping or pickup included."
         />
+        <AllInInclusions items={ALL_IN_INCLUSIONS.trt} className="mt-6" />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {TRT_PROGRAMS.map((program) => {
             const startingPrice = getTrtStartingMonthlyPrice(program)
+            const quarterly = program.pricing.find((p) => p.plan === "quarterly")
+            const monthly = program.pricing.find((p) => p.plan === "monthly")
             return (
               <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -168,12 +200,19 @@ export default function MensHealthPage() {
                 <h3 className="text-xl font-bold">{program.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
-                <div className="mt-5 pt-4 border-t">
+                <div className="mt-5 pt-4 border-t space-y-2">
                   <p className="text-3xl font-bold text-primary">
-                    ${startingPrice}
-                    <span className="text-base font-normal text-muted-foreground">+</span>
+                    {formatUsd(startingPrice)}
+                    <span className="text-base font-normal text-muted-foreground">/mo all-in</span>
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">/mo starting at · {program.supplyLabel}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {monthly ? `${formatUsd(monthly.pricePerMonth)} monthly` : null}
+                    {monthly && quarterly ? " · " : null}
+                    {quarterly ? `${formatUsd(quarterly.pricePerMonth)} quarterly` : null}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Labs may be ordered separately when clinically required—ask during intake.
+                  </p>
                   <div className="mt-4">
                     <ServiceBuyButton href={buildTrtProductUrl(program.id)} fullWidth label="Shop now" />
                   </div>
@@ -183,6 +222,12 @@ export default function MensHealthPage() {
             )
           })}
         </div>
+
+        <PricingCompareNote
+          className="mt-8"
+          title="How our TRT pricing compares"
+          body="Online TRT platforms commonly charge $99–$300/mo. Budget ads near $99 often exclude labs or use thinner monitoring. Our injectable program starts at $109/mo quarterly ($129 monthly) with medication, supplies, and shipping included for Michigan patients after physician review."
+        />
 
         <p className="text-sm text-muted-foreground mt-6 max-w-2xl">
           Unlike nutrient-only hormone balance injections, our TRT programs deliver physician-supervised testosterone
@@ -242,6 +287,28 @@ export default function MensHealthPage() {
         subtitle="ED medications, Cialis/Viagra comparisons, and testosterone therapy"
         items={MENS_HEALTH_FAQS}
       />
+
+      <ContentSection>
+        <SectionIntro
+          eyebrow="Learn"
+          title="Men's Health Guides"
+          description="Educational articles on Tadalafil, Sildenafil, Cialis/Viagra comparisons, and testosterone replacement therapy."
+        />
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button asChild variant="outline">
+            <Link href="/learn/tadalafil-vs-cialis">Tadalafil vs Cialis</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn/sildenafil-vs-viagra">Sildenafil vs Viagra</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn/testosterone-replacement-therapy-trt">TRT guide</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn">All Learn articles</Link>
+          </Button>
+        </div>
+      </ContentSection>
 
       <PremiumDisclaimer>
         Compounded medications are prepared pursuant to a patient-specific prescription. Provider clinical

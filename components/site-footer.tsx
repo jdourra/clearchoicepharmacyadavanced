@@ -79,6 +79,9 @@ export function SiteFooter() {
               <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
                 Specialty pharmacy
               </Link>
+              <Link href="/learn" className="text-muted-foreground hover:text-foreground transition-colors">
+                Learn guides
+              </Link>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed pt-2">
               Transparent pharmacy for everyday prescriptions and specialized clinical care in Novi and Metro Detroit.

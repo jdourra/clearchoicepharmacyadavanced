@@ -165,9 +165,10 @@ export function IvRejuvenationPage() {
                 Choose Your Drip
               </h2>
               <p className="text-slate-600 leading-relaxed">
-                Pharmacy-formulated IV packages with transparent pricing. Drip prices do not include the{" "}
-                <strong className="text-slate-800">${IV_TRAVEL_FEE} mobile dispatch fee</strong>, added at checkout.
-                Tap <strong className="text-slate-800">Shop now</strong> to view session details, optional boosters, and book.
+                Pharmacy-formulated IV packages with transparent all-in visit math. Each card shows drip price and total
+                with the <strong className="text-slate-800">${IV_TRAVEL_FEE} Metro Detroit dispatch fee</strong>. Local
+                Myers Cocktail competitors often land around $200–$300 before extras—our Standard Myers is $
+                {199 + IV_TRAVEL_FEE} total with dispatch.
               </p>
             </div>
 
@@ -196,8 +197,13 @@ export function IvRejuvenationPage() {
                       )}
                     </div>
                     <p className="text-3xl font-bold text-sky-600">${pkg.price}</p>
+                    <p className="text-sm font-semibold text-slate-800">
+                      ${pkg.price + IV_TRAVEL_FEE} total with dispatch
+                    </p>
                     <p className="text-xs text-slate-500">{pkg.sessionLabel}</p>
-                    <p className="text-xs text-slate-500">+ ${IV_TRAVEL_FEE} mobile dispatch at checkout</p>
+                    <p className="text-xs text-slate-500">
+                      Drip ${pkg.price} + ${IV_TRAVEL_FEE} Metro Detroit mobile dispatch
+                    </p>
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4 px-6">
                     <div>
@@ -388,6 +394,13 @@ export function IvRejuvenationPage() {
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
               <p className="text-slate-600">Everything you need to know before your mobile IV appointment</p>
+              <p className="text-sm text-slate-500 mt-3">
+                Prefer a deeper guide?{" "}
+                <Link href="/learn/myers-cocktail-mobile-iv" className="text-sky-700 hover:underline font-medium">
+                  Read our Myers Cocktail &amp; mobile IV article
+                </Link>
+                .
+              </p>
             </div>
             <Accordion type="single" collapsible className="rounded-xl border bg-white px-6">
               {IV_REJUVENATION_FAQS.map((faq) => (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 import {
   BenefitList,
   ClinicalLandingShell,
@@ -14,6 +15,7 @@ import {
   TrustRibbon,
 } from "@/components/clinical-landing-shell"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS, getWeightLossStartingKitPrice } from "@/lib/weight-loss-catalog"
 import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
@@ -24,6 +26,13 @@ import {
   buildFaqJsonLd,
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
+import {
+  ALL_IN_INCLUSIONS,
+  formatUsd,
+  getWeightLossPriceRange,
+  getWeightLossQuarterlySavingsPercent,
+} from "@/lib/pricing-clarity"
+import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarity"
 
 const PROGRAMS_URL = "/weight-loss#programs"
 
@@ -109,11 +118,14 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Weight Loss Injections"
           title="Semaglutide, Tirzepatide & MIC + B12"
-          description="Medical weight loss programs with upfront pricing. Provider review and pharmacy fulfillment included."
+          description="All-in kit pricing — physician review, compounding, supplies, and Michigan shipping or pickup included. No hidden membership fee."
         />
+        <AllInInclusions items={ALL_IN_INCLUSIONS.weightLoss} className="mt-6" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {WEIGHT_LOSS_PROGRAMS.map((program) => {
             const startingPrice = getWeightLossStartingKitPrice(program)
+            const range = getWeightLossPriceRange(program)
+            const savePct = getWeightLossQuarterlySavingsPercent(program)
             return (
               <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -130,12 +142,30 @@ export default function WeightLossPage() {
                 <h3 className="text-xl font-bold">{program.name}</h3>
                 <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
-                <div className="mt-5 pt-4 border-t">
+                <div className="mt-5 pt-4 border-t space-y-2">
                   <p className="text-3xl font-bold text-primary">
-                    ${startingPrice}
-                    <span className="text-base font-normal text-muted-foreground">+</span>
+                    {formatUsd(startingPrice)}
+                    <span className="text-base font-normal text-muted-foreground">/kit all-in</span>
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">starting at per 30-day kit · 4 weekly injections</p>
+                  <p className="text-sm text-muted-foreground">
+                    Starter from {formatUsd(range.fromQuarterly)} quarterly · Maintenance up to{" "}
+                    {formatUsd(range.toMonthly)} monthly
+                  </p>
+                  {savePct > 0 && (
+                    <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                      Save ~{savePct}% on quarterly starter kits
+                    </p>
+                  )}
+                  <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
+                    {program.doseTiers.map((tier) => (
+                      <div key={tier.id} className="flex justify-between gap-2">
+                        <span>{tier.name}</span>
+                        <span className="font-medium text-foreground whitespace-nowrap">
+                          {formatUsd(tier.monthlyKitPrice)}/mo · {formatUsd(tier.quarterlyKitPrice)} qtr
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                   <div className="mt-4">
                     <ServiceBuyButton href={buildWeightLossProductUrl(program.id)} fullWidth label="Shop now" />
                   </div>
@@ -171,8 +201,13 @@ export default function WeightLossPage() {
             </div>
           </Card>
         </div>
+        <PricingCompareNote
+          className="mt-8"
+          title="How we stay competitive on Semaglutide & Tirzepatide"
+          body="Many cash-pay telehealth ads quote $99–$175 starter Semaglutide or $300–$500 Tirzepatide—sometimes with membership fees or prices that rise sharply at maintenance. Our kits show starter-to-maintenance pricing up front, include provider review and supplies, and are compounded in Novi for Michigan patients—no separate membership fee."
+        />
         <p className="text-xs text-muted-foreground mt-4">
-          Prescription required after provider review.
+          Prescription required after provider review. Kit price reflects prescribed dose strength (4 weekly injections).
         </p>
       </ContentSection>
 
@@ -275,6 +310,28 @@ export default function WeightLossPage() {
         subtitle="Ozempic, Wegovy, Zepbound comparisons, pricing, and eligibility"
         items={WEIGHT_LOSS_FAQS}
       />
+
+      <ContentSection>
+        <SectionIntro
+          eyebrow="Learn"
+          title="Weight Loss Guides"
+          description="Read educational articles on Semaglutide, Tirzepatide, and how compounded GLP-1 compares to brand-name options."
+        />
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button asChild variant="outline">
+            <Link href="/learn/semaglutide-weight-loss">Semaglutide guide</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn/tirzepatide-weight-loss">Tirzepatide guide</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn/semaglutide-vs-tirzepatide">Semaglutide vs Tirzepatide</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/learn">All Learn articles</Link>
+          </Button>
+        </div>
+      </ContentSection>
 
       <PremiumDisclaimer>
         GLP-1 therapies require a valid prescription and clinical evaluation. Compounded medications are prepared

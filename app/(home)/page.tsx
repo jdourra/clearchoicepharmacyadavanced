@@ -300,7 +300,11 @@ export default function HomePage() {
               <Link href="/specialty-pharmacy" className="text-primary hover:underline">
                 specialty pharmacy care
               </Link>
-              . All major insurance plans are accepted for specialty therapies, with an in-house Prior Authorization
+              . Read our{" "}
+              <Link href="/learn" className="text-primary hover:underline">
+                Learn guides
+              </Link>{" "}
+              for Semaglutide, Tirzepatide, Tadalafil, Sildenafil, TRT, and more. All major insurance plans are accepted for specialty therapies, with an in-house Prior Authorization
               team and copay assistance support that can reduce out-of-pocket costs to as low as $0.
             </p>
             <p className="leading-relaxed">

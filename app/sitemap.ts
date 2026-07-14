@@ -1,10 +1,26 @@
 import type { MetadataRoute } from "next"
 import { IV_PACKAGE_IDS } from "@/lib/iv-catalog"
 import { VIAL_PRODUCT_IDS } from "@/lib/rejuvenation-vial-catalog"
+import { getLearnArticles } from "@/lib/learn-articles"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
   const now = new Date()
+
+  const learnPages: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/learn`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.86,
+    },
+    ...getLearnArticles().map((article) => ({
+      url: `${baseUrl}/learn/${article.slug}`,
+      lastModified: new Date(article.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+  ]
 
   const ivPackagePages: MetadataRoute.Sitemap = IV_PACKAGE_IDS.map((id) => ({
     url: `${baseUrl}/iv-rejuvenation/packages/${id}`,
@@ -177,7 +193,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     if (!process.env.DATABASE_URL) {
-      return staticPages
+      return [...staticPages, ...learnPages, ...ivPackagePages, ...vialProductPages]
     }
 
     const { sql } = await import("@/lib/db")
@@ -195,5 +211,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Failed to load medications from database:", error)
   }
 
-  return [...staticPages, ...ivPackagePages, ...vialProductPages, ...medicationPages]
+  return [...staticPages, ...learnPages, ...ivPackagePages, ...vialProductPages, ...medicationPages]
 }
