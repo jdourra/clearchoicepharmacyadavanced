@@ -104,6 +104,7 @@ export function isEdProductId(value: string): value is (typeof ED_PRODUCT_IDS)[n
   return ED_PRODUCT_IDS.includes(value as (typeof ED_PRODUCT_IDS)[number])
 }
 
+/** Headline “from” price uses the lowest listed plan (usually quarterly/annual). */
 export function getEdStartingMonthlyPrice(product: EdTrocheProduct | string): number {
   const p = typeof product === "string" ? getEdTrocheProduct(product) : product
   if (!p || p.pricing.length === 0) return 0

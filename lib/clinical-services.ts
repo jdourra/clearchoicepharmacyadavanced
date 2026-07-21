@@ -19,7 +19,7 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     href: "/prescriptions",
     title: "Low Cost Prescription Drugs",
     description:
-      "Most common medications hover around $5 for a 30-day supply. Drug Cost + 15% + $5 dispensing fee—no insurance required.",
+      "Most common medications hover around $5 for a 30-day supply. Cash-pay Sildenafil and Tadalafil tablets too. Drug Cost + 15% + $5—no insurance required.",
     pathType: "cash-pay",
     pathLabel: "Cash pay",
     cta: "Look up prices",
@@ -33,7 +33,7 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     href: "/weight-loss",
     title: "Semaglutide & Tirzepatide Weight Loss",
     description:
-      "Medical weight loss with Semaglutide and Tirzepatide (GLP-1) injections. Transparent cash-pay pricing.",
+      "Semaglutide from $134/mo and Tirzepatide from $179/mo on quarterly starter kits. Physician-supervised GLP-1 weight loss.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",
@@ -47,7 +47,7 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     href: "/mens-health",
     title: "Tadalafil, Sildenafil & TRT",
     description:
-      "ED medications with Tadalafil and Sildenafil troches, plus physician-supervised testosterone therapy.",
+      "Sildenafil from $39/mo, Tadalafil from $49/mo, and TRT from $109/mo with physician review.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",

@@ -22,7 +22,7 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
   {
     id: "b12",
     title: "B12 Injection Homekit",
-    price: 99,
+    price: 119,
     category: "energy",
     badge: "Best Seller",
     badgeClass: "bg-sky-500/10 text-sky-700 border-sky-200",

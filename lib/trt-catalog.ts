@@ -86,8 +86,8 @@ export const TRT_PROGRAMS: TrtProgram[] = [
       "Transparent monthly pricing",
     ],
     pricing: [
-      { plan: "monthly", pricePerMonth: 99, totalBilled: 99 },
-      { plan: "quarterly", pricePerMonth: 79, totalBilled: 237, badge: "Best Value" },
+      { plan: "monthly", pricePerMonth: 119, totalBilled: 119 },
+      { plan: "quarterly", pricePerMonth: 99, totalBilled: 297, badge: "Best Value" },
     ],
     image: {
       src: "/images/enclomiphene-tablets.png",

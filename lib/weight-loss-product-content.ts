@@ -39,7 +39,7 @@ const SHARED_KIT_INCLUDES = [
 export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLossProductContent> = {
   semaglutide: {
     homeKitTitle: "Semaglutide Weight Loss HomeKit",
-    tagline: "Medical weight loss · GLP-1 injections",
+    tagline: "Medical weight loss · from $134/mo",
     purpose:
       "Semaglutide is a once-weekly GLP-1 therapy used for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Our compounded Semaglutide is prepared pursuant to your provider's prescription for qualifying Michigan patients—we do not dispense brand-name Ozempic or Wegovy through this program.",
     procedure:
@@ -86,7 +86,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
   },
   tirzepatide: {
     homeKitTitle: "Tirzepatide Weight Loss HomeKit",
-    tagline: "Medical weight loss · dual GLP-1/GIP injections",
+    tagline: "Medical weight loss · from $179/mo",
     purpose:
       "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Our compounded Tirzepatide is prescribed for qualifying Michigan patients after physician review—we do not dispense brand-name Zepbound or Mounjaro through this program.",
     procedure:
@@ -134,8 +134,21 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
 }
 
 export function getWeightLossProductPageTitle(program: WeightLossProgram): string {
+  const fromPrice =
+    program.doseTiers.find((t) => t.id === "starter")?.quarterlyKitPrice ??
+    program.doseTiers.find((t) => t.id === "starter")?.monthlyKitPrice ??
+    0
   if (program.id === "semaglutide") {
-    return "Semaglutide Weight Loss Injections | Medical GLP-1 | Clear Choice Pharmacy"
+    return `Semaglutide from $${fromPrice}/mo | Michigan Weight Loss | Clear Choice Pharmacy`
   }
-  return "Tirzepatide Weight Loss Injections | Dual GLP-1/GIP | Clear Choice Pharmacy"
+  return `Tirzepatide from $${fromPrice}/mo | Michigan Weight Loss | Clear Choice Pharmacy`
+}
+
+/** Floor “from” price for ads/SEO (quarterly starter kit). */
+export function getWeightLossFromPrice(program: WeightLossProgram): number {
+  return (
+    program.doseTiers.find((t) => t.id === "starter")?.quarterlyKitPrice ??
+    program.doseTiers.find((t) => t.id === "starter")?.monthlyKitPrice ??
+    0
+  )
 }

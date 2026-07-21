@@ -342,59 +342,62 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
   {
     slug: "tadalafil-vs-cialis",
-    title: "Tadalafil vs Cialis: ED Medication Guide for Michigan Patients",
+    title: "Tadalafil vs Cialis: Low Cost Generic Tablets for Michigan Patients",
     description:
-      "Learn how Tadalafil compares to brand-name Cialis, how compounded Tadalafil troches work, duration, dosing styles, and cash-pay options at Clear Choice Pharmacy.",
+      "Learn how Tadalafil compares to brand-name Cialis, how cash-pay generic tablets are priced (Drug Cost + 15% + $5), and how to look up low cost Tadalafil at Clear Choice Pharmacy.",
     keywords: [
       "tadalafil",
       "cialis",
       "tadalafil vs cialis",
-      "ED medication",
-      "erectile dysfunction",
+      "low cost cialis",
+      "generic cialis",
       "cheap cialis",
+      "tadalafil tablets",
+      "ED medication",
     ],
-    category: "mens-health",
-    categoryLabel: "Men's Health",
+    category: "prescriptions",
+    categoryLabel: "Prescriptions",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-07-21",
     readingMinutes: 6,
-    primaryKeyword: "tadalafil vs cialis",
-    serviceHref: "/mens-health/ed/tadalafil-daily",
-    serviceCta: "View Tadalafil troches",
-    relatedSlugs: ["sildenafil-vs-viagra", "testosterone-replacement-therapy-trt"],
+    primaryKeyword: "low cost cialis",
+    serviceHref: "/prescriptions/tadalafil",
+    serviceCta: "Look up low cost Tadalafil tablets",
+    relatedSlugs: ["sildenafil-vs-viagra", "low-cost-prescription-drugs-cash-pay"],
     intro: [
-      "Cialis is one of the most searched erectile dysfunction medications in the world. The active ingredient is Tadalafil. Understanding that distinction helps you evaluate tablets, generics, and compounded options without marketing confusion.",
+      "Cialis is one of the most searched erectile dysfunction medications in the world. The active ingredient is Tadalafil. Patients searching “low cost Cialis” or “cheap Cialis” are usually looking for affordable generic Tadalafil tablets—not the brand-name product.",
     ],
     sections: [
       {
         heading: "Cialis contains Tadalafil",
         paragraphs: [
-          "Cialis is a brand-name product. Tadalafil is the active pharmaceutical ingredient. Patients often search “cheap Cialis” when they really want affordable Tadalafil access after clinical review.",
-          "Clear Choice Pharmacy compounds sublingual Tadalafil troches for qualifying Michigan patients. This men's health program does not dispense brand-name Cialis tablets.",
+          "Cialis is a brand-name product. Tadalafil is the active pharmaceutical ingredient. When a clinician prescribes Tadalafil tablets, you can often fill a generic at cash-pay pricing instead of paying brand retail.",
+          "Clear Choice Pharmacy fills cash-pay generic Tadalafil tablets for qualifying Michigan patients using our transparent formula: Drug Cost + 15% + $5 dispensing fee.",
+        ],
+      },
+      {
+        heading: "Cash-pay tablets vs compounded troches",
+        paragraphs: [
+          "Most patients looking for “low cost Cialis” want standard oral tablets. That is our low cost prescription drugs path—search the strength on your Rx and see the price instantly.",
+          "Compounded sublingual Tadalafil troches are a separate clinical program under Men’s Health when a provider recommends that form. Tablet pricing and troche programs are not the same product.",
+        ],
+        bullets: [
+          "Tablets: cash-pay generic fill via /prescriptions",
+          "Price formula: Drug Cost + 15% + $5",
+          "Troches: clinical compounding program (optional alternative)",
+          "Prescription required either way",
         ],
       },
       {
         heading: "Why Tadalafil is popular",
         paragraphs: [
-          "Tadalafil is known for a longer window of activity—often described as lasting up to about 36 hours for many patients—reducing timing pressure compared with shorter-acting ED options. Some patients use as-needed dosing; others use daily or clinician-directed schedules.",
-        ],
-        bullets: [
-          "Extended duration of effect for many patients",
-          "Flexible as-needed or daily-style plans under supervision",
-          "Can be compounded into sublingual troches",
-          "Requires prescription after clinician review",
-        ],
-      },
-      {
-        heading: "Troches vs swallowed tablets",
-        paragraphs: [
-          "Sublingual Tadalafil troches dissolve under the tongue. That route can support faster absorption and may be less affected by food than some swallowed tablets. Your provider decides whether a troche formulation fits your medical profile.",
+          "Tadalafil is known for a longer window of activity—often described as lasting up to about 36 hours for many patients—reducing timing pressure compared with shorter-acting ED options. Your clinician chooses strength and schedule.",
         ],
       },
       {
         heading: "Getting started in Michigan",
         paragraphs: [
-          "Browse Tadalafil pricing on our men's health pages, complete a private intake, and proceed only after provider approval. Cash-pay plans are listed with transparent monthly and quarterly options.",
+          "Open our low cost Tadalafil page, look up your prescribed strength, then upload a prescription, have your doctor e-prescribe to Clear Choice Pharmacy, or use our $40 telemedicine visit from checkout if you need a new Rx. Dispensing is for Michigan patients only.",
         ],
       },
     ],
@@ -402,70 +405,72 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Tadalafil the same as Cialis?",
         answer:
-          "Tadalafil is the active ingredient in Cialis. Our men's health program compounds Tadalafil troches after provider review and does not dispense brand-name Cialis.",
+          "Tadalafil is the active ingredient in Cialis. We dispense generic Tadalafil tablets at cash-pay pricing when prescribed—not brand-name Cialis.",
       },
       {
-        question: "How long does Tadalafil last?",
+        question: "How do I see the cash price?",
         answer:
-          "Many patients experience a longer window of support—often described as lasting up to about 36 hours—but individual response varies. Follow your prescribed directions.",
+          "Search Tadalafil on our prescriptions tools or open the low cost Tadalafil page. Pricing follows Drug Cost + 15% + $5 for your quantity.",
       },
     ],
     disclaimer: MI_DISCLAIMER,
   },
   {
     slug: "sildenafil-vs-viagra",
-    title: "Sildenafil vs Viagra: Fast-Acting ED Options Explained",
+    title: "Sildenafil vs Viagra: Low Cost Generic Tablets Explained",
     description:
-      "Compare Sildenafil and brand-name Viagra for erectile dysfunction, learn how fast-acting troches work, and see cash-pay options for Michigan patients.",
+      "Compare Sildenafil and brand-name Viagra, learn how cash-pay generic tablets are priced, and look up low cost Sildenafil for Michigan patients at Clear Choice Pharmacy.",
     keywords: [
       "sildenafil",
       "viagra",
       "sildenafil vs viagra",
-      "ED medication",
-      "erectile dysfunction",
+      "low cost sildenafil",
+      "generic viagra",
       "cheap viagra",
+      "sildenafil tablets",
+      "ED medication",
     ],
-    category: "mens-health",
-    categoryLabel: "Men's Health",
+    category: "prescriptions",
+    categoryLabel: "Prescriptions",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-07-21",
     readingMinutes: 6,
-    primaryKeyword: "sildenafil vs viagra",
-    serviceHref: "/mens-health/ed/sildenafil-fast",
-    serviceCta: "View Sildenafil troches",
-    relatedSlugs: ["tadalafil-vs-cialis", "testosterone-replacement-therapy-trt"],
+    primaryKeyword: "low cost sildenafil",
+    serviceHref: "/prescriptions/sildenafil",
+    serviceCta: "Look up low cost Sildenafil tablets",
+    relatedSlugs: ["tadalafil-vs-cialis", "low-cost-prescription-drugs-cash-pay"],
     intro: [
-      "Viagra remains one of the most recognized ED brand names. Its active ingredient is Sildenafil. Patients searching “cheap Viagra” are often looking for accessible Sildenafil therapy after clinician screening.",
+      "Viagra remains one of the most recognized ED brand names. Its active ingredient is Sildenafil. Patients searching “cheap Viagra” or “low cost Viagra” are often looking for accessible generic Sildenafil tablets after clinician screening.",
     ],
     sections: [
       {
         heading: "Viagra contains Sildenafil",
         paragraphs: [
-          "Viagra is brand-name. Sildenafil is the medication itself. Clear Choice Pharmacy compounds fast-acting Sildenafil troches for qualifying Michigan patients after provider review. Brand-name Viagra is not dispensed through this men's health program.",
+          "Viagra is brand-name. Sildenafil is the medication itself. Clear Choice Pharmacy fills cash-pay generic Sildenafil tablets for qualifying Michigan patients—Drug Cost + 15% + $5—when you have a valid prescription.",
         ],
       },
       {
-        heading: "Onset and duration",
+        heading: "Tablets first for “low cost Viagra” searches",
         paragraphs: [
-          "Sildenafil is typically shorter-acting than Tadalafil. Many patients use it as needed before activity. Sublingual troches are designed for dissolution under the tongue and may offer quicker absorption than some swallowed tablets because they bypass more of the digestive tract.",
+          "If your goal is affordable generic tablets, use our low cost prescription drugs lookup. That is separate from compounded Sildenafil troches, which are a Men’s Health clinical option when a provider recommends a sublingual form.",
         ],
         bullets: [
           "Often chosen for as-needed use",
-          "Typical window shorter than Tadalafil for many patients",
-          "Food can delay some oral tablets; troches may reduce that issue",
+          "Cash-pay tablet pricing is transparent before you order",
+          "Food can delay some oral tablets—follow your pharmacist’s guidance",
           "Prescription and medical screening required",
         ],
       },
       {
         heading: "Safety basics",
         paragraphs: [
-          "PDE5 inhibitors are not for everyone. Patients taking nitrates, those with certain cardiovascular conditions, or other contraindications should not use these medications. Always disclose your full medication list during intake.",
+          "PDE5 inhibitors are not for everyone. Patients taking nitrates, those with certain cardiovascular conditions, or other contraindications should not use these medications. Always disclose your full medication list when obtaining a prescription.",
         ],
       },
       {
         heading: "Cash-pay Sildenafil through Clear Choice",
         paragraphs: [
-          "Transparent monthly and quarterly pricing is listed on our Sildenafil product page. Michigan patients complete intake online; medication is compounded only after clinical approval.",
+          "Open our low cost Sildenafil page, confirm your strength and cash price, then complete checkout with an uploaded Rx, e-prescribe, or $40 telemedicine visit if you need a new prescription. Michigan patients only for dispensing.",
         ],
       },
     ],
@@ -473,12 +478,12 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Sildenafil the same as Viagra?",
         answer:
-          "Sildenafil is the active ingredient in Viagra. Our program compounds Sildenafil troches and does not dispense brand-name Viagra.",
+          "Sildenafil is the active ingredient in Viagra. We dispense generic Sildenafil tablets at cash-pay pricing when prescribed—not brand-name Viagra.",
       },
       {
         question: "Can I use Sildenafil and Tadalafil together?",
         answer:
-          "Only if a clinician specifically designs that plan. We also offer a combination troche option for selected patients after review. Never combine products on your own.",
+          "Only if a clinician specifically designs that plan. Never combine products on your own. Ask your prescriber which single therapy is appropriate.",
       },
     ],
     disclaimer: MI_DISCLAIMER,

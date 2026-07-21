@@ -85,11 +85,12 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
 }
 
 export function getEdProductPageTitle(product: EdTrocheProduct): string {
+  const from = Math.min(...product.pricing.map((p) => p.pricePerMonth))
   if (product.id === "sildenafil-fast") {
-    return "Sildenafil Troches for ED | Fast-Acting | Clear Choice Pharmacy"
+    return `Sildenafil Troches from $${from}/mo | ED Medication | Clear Choice Pharmacy`
   }
   if (product.id === "tadalafil-daily") {
-    return "Tadalafil Troches for ED | Up to 36-Hour Support | Clear Choice Pharmacy"
+    return `Tadalafil Troches from $${from}/mo | ED Medication | Clear Choice Pharmacy`
   }
-  return "Sildenafil + Tadalafil Combination Troches | Clear Choice Pharmacy"
+  return `Sildenafil + Tadalafil from $${from}/mo | ED Combination | Clear Choice Pharmacy`
 }

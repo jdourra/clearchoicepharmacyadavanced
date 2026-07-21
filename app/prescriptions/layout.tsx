@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { buildFaqJsonLd, PRESCRIPTIONS_FAQS, SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Low Cost Prescription Drugs | Cash-Pay Pharmacy Pricing",
+  title: "Low Cost Prescription Drugs | Sildenafil, Tadalafil & Cash-Pay Pricing",
   description:
-    "Low cost prescription drugs with transparent cash-pay pricing. Most common meds around $5 for 30 days. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
+    "Low cost prescription drugs with transparent cash-pay pricing. Generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets plus everyday meds around $5. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
   keywords: [
     "low cost prescription drugs",
     "low cost prescriptions",
@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     "generic drugs",
     "prescription prices",
     "Novi pharmacy",
+    "Michigan pharmacy",
+    "transparent pharmacy pricing",
+    "low cost tadalafil",
+    "low cost sildenafil",
+    "low cost cialis",
+    "generic cialis",
+    "generic viagra",
   ],
   alternates: {
     canonical: `${SITE_URL}/prescriptions`,
@@ -21,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Low Cost Prescription Drugs | Cash-Pay Pricing | Clear Choice Pharmacy",
     description:
-      "Most common meds around $5. Transparent cash-pay pricing: Drug Cost + 15% + $5. Search medications instantly.",
+      "Most common meds around $5. Cash-pay generic Sildenafil and Tadalafil tablets. Formula: Drug Cost + 15% + $5.",
     url: `${SITE_URL}/prescriptions`,
     type: "website",
   },

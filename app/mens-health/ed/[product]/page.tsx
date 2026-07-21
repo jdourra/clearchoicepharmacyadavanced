@@ -28,27 +28,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const product = getEdTrocheProduct(slug)!
   const startingPrice = getEdStartingMonthlyPrice(product)
+  const title = getEdProductPageTitle(product)
+  const description =
+    slug === "tadalafil-daily"
+      ? `Tadalafil ED troches (Cialis active ingredient) from $${startingPrice}/mo. Up to 36-hour support. Physician review and discreet pharmacy fulfillment for Michigan patients.`
+      : slug === "sildenafil-fast"
+        ? `Sildenafil ED troches (Viagra active ingredient) from $${startingPrice}/mo. Fast-acting sublingual. Physician review and discreet fulfillment for Michigan patients.`
+        : `Sildenafil + Tadalafil combination ED troches from $${startingPrice}/mo. Dual-action support with physician review for Michigan patients.`
 
   return {
-    title: getEdProductPageTitle(product),
-    description:
-      slug === "tadalafil-daily"
-        ? `Tadalafil ED troches (Cialis active ingredient) from $${startingPrice}/mo. Up to 36-hour support. Physician review and discreet pharmacy fulfillment.`
-        : slug === "sildenafil-fast"
-          ? `Sildenafil ED troches (Viagra active ingredient) from $${startingPrice}/mo. Fast-acting sublingual. Physician review and discreet fulfillment.`
-          : `Sildenafil + Tadalafil combination ED troches from $${startingPrice}/mo. Dual-action support with physician review.`,
+    title,
+    description,
     keywords:
       slug === "tadalafil-daily"
-        ? ["tadalafil", "cialis", "ED medication", "erectile dysfunction"]
+        ? ["tadalafil", "cialis", "ED medication", "erectile dysfunction", "tadalafil cost"]
         : slug === "sildenafil-fast"
-          ? ["sildenafil", "viagra", "ED medication", "erectile dysfunction"]
+          ? ["sildenafil", "viagra", "ED medication", "erectile dysfunction", "sildenafil cost"]
           : ["sildenafil", "tadalafil", "ED medication", "combination troche"],
     alternates: {
       canonical: `${SITE_URL}/mens-health/ed/${slug}`,
     },
     openGraph: {
-      title: getEdProductPageTitle(product),
-      description: product.description,
+      title,
+      description,
       url: `${SITE_URL}/mens-health/ed/${slug}`,
       type: "website",
       images: [{ url: product.image.src, alt: product.image.alt }],
@@ -68,6 +70,8 @@ export default async function EdProductPage({ params }: PageProps) {
   }
 
   const content = ED_PRODUCT_CONTENT[slug]
+  const lowPrice = Math.min(...product.pricing.map((p) => p.pricePerMonth))
+  const highPrice = Math.max(...product.pricing.map((p) => p.pricePerMonth))
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -79,14 +83,23 @@ export default async function EdProductPage({ params }: PageProps) {
       "@type": "Brand",
       name: "Clear Choice Pharmacy",
     },
-    offers: product.pricing.map((tier) => ({
-      "@type": "Offer",
-      price: tier.totalBilled,
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice,
+      highPrice,
       priceCurrency: "USD",
+      offerCount: product.pricing.length,
       availability: "https://schema.org/InStock",
-      name: `${tier.plan} billing`,
       url: `${SITE_URL}/mens-health/ed/${slug}`,
-    })),
+      offers: product.pricing.map((tier) => ({
+        "@type": "Offer",
+        price: tier.pricePerMonth,
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        name: `${tier.plan} billing`,
+        url: `${SITE_URL}/mens-health/ed/${slug}`,
+      })),
+    },
   }
 
   return (

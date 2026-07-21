@@ -195,7 +195,7 @@ export function formatKitBillingLabel(billingPlan: WeightLossBillingPlan): strin
 export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   id: "mic-skinny",
   title: "MIC + B12 Skinny Shot Homekit",
-  price: 99,
+  price: 119,
   category: "metabolic",
   ingredients: ["Methionine, Inositol & Choline (MIC blend)", "Vitamin B12", "L-Carnitine"],
   supply: "30-day kit · 4 weekly injections",

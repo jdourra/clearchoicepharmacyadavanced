@@ -67,8 +67,8 @@ export function TrtProductDetail({ program, content }: TrtProductDetailProps) {
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{content.homeKitTitle}</h1>
             <p className="text-lg text-muted-foreground mt-2">{program.subtitle}</p>
             <p className="mt-4">
-              <span className="text-3xl font-bold text-primary">${startingPrice}</span>
-              <span className="text-muted-foreground ml-1">/mo starting at</span>
+              <span className="text-3xl font-bold text-primary">from ${startingPrice}</span>
+              <span className="text-muted-foreground ml-1">/mo all-in</span>
             </p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
           </div>

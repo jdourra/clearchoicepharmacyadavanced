@@ -23,7 +23,7 @@ import {
   type EdBillingPlan,
   type EdTrocheProduct,
 } from "@/lib/ed-troche-catalog"
-import { formatUsd, getEdDosesPerSupply, getEdPricePerDose } from "@/lib/pricing-clarity"
+import { formatUsd, getBestEdPlan, getEdDosesPerSupply, getEdPricePerDose } from "@/lib/pricing-clarity"
 import { cn } from "@/lib/utils"
 
 type EdProductDetailProps = {
@@ -51,7 +51,8 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
     setAddOns((prev) => (checked ? [...prev, id] : prev.filter((a) => a !== id)))
   }
 
-  const startingPrice = Math.min(...product.pricing.map((p) => p.pricePerMonth))
+  const bestPlan = getBestEdPlan(product)
+  const startingPrice = bestPlan.pricePerMonth
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8 md:py-12">
@@ -82,8 +83,10 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{content.homeKitTitle}</h1>
             <p className="text-lg text-muted-foreground mt-2">{product.subtitle}</p>
             <p className="mt-4">
-              <span className="text-3xl font-bold text-primary">${startingPrice}</span>
-              <span className="text-muted-foreground ml-1">/mo starting at</span>
+              <span className="text-3xl font-bold text-primary">from ${startingPrice}</span>
+              <span className="text-muted-foreground ml-1">
+                /mo · {formatEdBillingLabel(bestPlan.plan).toLowerCase()}
+              </span>
             </p>
             <p className="text-sm font-medium text-foreground mt-1">{product.supplyLabel}</p>
           </div>

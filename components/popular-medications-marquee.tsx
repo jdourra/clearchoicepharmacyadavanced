@@ -5,6 +5,8 @@ import { useEffect, useState } from "react"
 import { fetchPopularMedication, type HomeMedication } from "@/lib/pharmacy-medication"
 
 const POPULAR_QUERIES = [
+  "Sildenafil",
+  "Tadalafil",
   "Lisinopril",
   "Amlodipine",
   "Losartan",

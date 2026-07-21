@@ -101,5 +101,12 @@ function programBenefits(type: "injectable"): string[] {
 }
 
 export function getTrtProductPageTitle(program: TrtProgram): string {
-  return `${program.name} | TRT & Testosterone Therapy | Clear Choice Pharmacy`
+  const from = Math.min(...program.pricing.map((p) => p.pricePerMonth))
+  if (program.id === "testosterone-cypionate") {
+    return `Testosterone Cypionate from $${from}/mo | TRT Michigan | Clear Choice Pharmacy`
+  }
+  if (program.id === "testosterone-cream") {
+    return `Testosterone Cream from $${from}/mo | TRT Michigan | Clear Choice Pharmacy`
+  }
+  return `Enclomiphene from $${from}/mo | TRT Michigan | Clear Choice Pharmacy`
 }

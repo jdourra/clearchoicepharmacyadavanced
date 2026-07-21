@@ -26,13 +26,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const vial = getRejuvenationVial(slug)!
+  const title = getVialProductPageTitle(vial)
+  const description = `${vial.title} for $${vial.price}. ${vial.supply}. Physician review and pharmacy fulfillment for Michigan patients. Clear Choice Pharmacy, Novi.`
   return {
-    title: getVialProductPageTitle(vial),
-    description: `${vial.title} — ${vial.supply}. $${vial.price} per kit with physician review and pharmacy fulfillment.`,
+    title,
+    description,
     alternates: { canonical: `${SITE_URL}/iv-rejuvenation/vials/${slug}` },
     openGraph: {
-      title: getVialProductPageTitle(vial),
-      description: vial.description,
+      title,
+      description,
       url: `${SITE_URL}/iv-rejuvenation/vials/${slug}`,
       type: "website",
       images: [{ url: vial.image.src, alt: vial.image.alt }],

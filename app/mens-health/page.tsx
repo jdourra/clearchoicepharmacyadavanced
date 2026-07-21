@@ -23,7 +23,7 @@ import {
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
 import { TRT_PROGRAMS, getTrtStartingMonthlyPrice } from "@/lib/trt-catalog"
-import { ED_FORMULATIONS, getEdStartingMonthlyPrice, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
+import { ED_FORMULATIONS, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
 import { buildEdProductUrl, buildTrtProductUrl } from "@/lib/intake-prefill"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
@@ -39,9 +39,9 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
-  title: "Tadalafil, Sildenafil & TRT | ED Medications",
+  title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Men's Health",
   description:
-    "Tadalafil and Sildenafil ED troches plus physician-supervised TRT and testosterone therapy. Transparent cash-pay pricing from $39/mo ED and $109/mo TRT. Clear Choice Pharmacy, Novi, MI.",
+    "Sildenafil ED troches from $39/mo, Tadalafil from $49/mo on quarterly billing, and physician-supervised TRT from $109/mo. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Novi.",
   keywords: [
     "tadalafil",
     "sildenafil",
@@ -51,6 +51,7 @@ export const metadata: Metadata = {
     "erectile dysfunction",
     "ED troches",
     "TRT",
+    "TRT cost",
     "testosterone replacement therapy",
     "testosterone cypionate",
     "low testosterone",
@@ -62,9 +63,9 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/mens-health`,
   },
   openGraph: {
-    title: "Tadalafil, Sildenafil & TRT | Clear Choice Pharmacy",
+    title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
     description:
-      "ED medications (Tadalafil, Sildenafil) and testosterone replacement therapy with discreet pharmacy fulfillment in Novi, MI.",
+      "ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo with discreet pharmacy fulfillment in Novi, MI.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -74,10 +75,10 @@ export default function MensHealthPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Tadalafil, Sildenafil & TRT | Clear Choice Pharmacy",
+    name: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Tadalafil and Sildenafil ED medications and testosterone replacement therapy at Clear Choice Pharmacy in Novi, MI.",
+      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo at Clear Choice Pharmacy in Novi, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
@@ -91,7 +92,7 @@ export default function MensHealthPage() {
       <PremiumHero
         badge="Men's Health · ED & TRT"
         headline="Tadalafil, Sildenafil & TRT"
-        subheadline="ED medications and physician-supervised testosterone therapy with transparent cash-pay pricing."
+        subheadline="Sildenafil from $39/mo, Tadalafil from $49/mo on quarterly billing, and TRT from $109/mo—transparent cash-pay pricing."
         description="Get compounded Tadalafil and Sildenafil troches (active ingredients in Cialis and Viagra) or start TRT with testosterone cypionate, cream, or enclomiphene—after provider review for Michigan patients."
         highlight="Buy online · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
@@ -112,11 +113,11 @@ export default function MensHealthPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {ED_FORMULATIONS.map((formulation) => {
-            const startingPrice = getEdStartingMonthlyPrice(formulation)
             const best = getBestEdPlan(formulation)
+            const monthlyPlan = formulation.pricing.find((p) => p.plan === "monthly")
             const doses = getEdDosesPerSupply(formulation.id)
             const monthlyDosePrice = getEdPricePerDose(
-              formulation.pricing.find((p) => p.plan === "monthly")?.pricePerMonth ?? startingPrice,
+              monthlyPlan?.pricePerMonth ?? best.pricePerMonth,
               formulation.id
             )
             return (
@@ -146,9 +147,11 @@ export default function MensHealthPage() {
                     About {formatUsd(best.pricePerDose, 2)}/dose on {formatEdBillingLabel(best.plan).toLowerCase()} ·{" "}
                     {doses} troches / 30 days
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Monthly plan from {formatUsd(startingPrice)}/mo ({formatUsd(monthlyDosePrice, 2)}/dose)
-                  </p>
+                  {monthlyPlan ? (
+                    <p className="text-xs text-muted-foreground">
+                      Monthly plan {formatUsd(monthlyPlan.pricePerMonth)}/mo ({formatUsd(monthlyDosePrice, 2)}/dose)
+                    </p>
+                  ) : null}
                   <div className="mt-4">
                     <ServiceBuyButton href={buildEdProductUrl(formulation.id)} fullWidth label="Shop now" />
                   </div>
@@ -162,7 +165,7 @@ export default function MensHealthPage() {
         <PricingCompareNote
           className="mt-8"
           title="How our ED troches compare"
-          body="National telehealth brands often price generic tablets from ~$2/dose or compounded combo mints around $6–$12/dose. Our sublingual troches are a compounded, food-resistant format with physician review included—priced from about $1.63/dose on quarterly Tadalafil and ~$3.90/dose on quarterly Sildenafil. Prefer plain generic tablets? Use our low cost prescription drugs search for cash-pay tablet pricing."
+          body="National telehealth brands often price generic tablets from ~$2/dose or compounded combo mints around $6–$12/dose. Our sublingual troches are a compounded, food-resistant format with physician review included—from about $39/mo Sildenafil and $49/mo Tadalafil on quarterly billing (~$3.90/dose and ~$1.63/dose). Monthly plans are also available. Prefer plain generic tablets? Use our low cost prescription drugs search for cash-pay tablet pricing."
         />
 
         <p className="text-xs text-muted-foreground mt-4">

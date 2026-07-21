@@ -50,6 +50,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/prescriptions/sildenafil`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.92,
+    },
+    {
+      url: `${baseUrl}/prescriptions/tadalafil`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.92,
+    },
+    {
       url: `${baseUrl}/medications`,
       lastModified: new Date(),
       changeFrequency: "daily",

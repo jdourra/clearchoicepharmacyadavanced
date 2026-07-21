@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MedicationAutocomplete } from "@/components/medication-autocomplete"
 import { PopularMedicationsMarquee } from "@/components/popular-medications-marquee"
+import { CashPayEdTabletsSection } from "@/components/cash-pay-ed-tablets"
 
 export default function PrescriptionsPage() {
   return (
@@ -34,6 +35,7 @@ export default function PrescriptionsPage() {
               </h1>
               <p className="text-lg text-muted-foreground text-balance max-w-2xl mx-auto">
                 Look up medication prices instantly—no insurance required. Most common meds around $5 for 30 days.
+                Also cash-pay generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets.
               </p>
               <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
                 Michigan patients only — we fill and ship prescriptions within Michigan from our Novi pharmacy.
@@ -77,6 +79,8 @@ export default function PrescriptionsPage() {
             </div>
           </div>
         </section>
+
+        <CashPayEdTabletsSection />
 
         <section className="py-16 bg-background border-t">
           <div className="container max-w-5xl mx-auto px-4">
@@ -234,6 +238,23 @@ export default function PrescriptionsPage() {
                 </p>
               </div>
               <div>
+                <h3 className="font-semibold text-lg mb-2">
+                  Do you offer low cost Cialis or Viagra generics?
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Yes. We fill cash-pay generic Tadalafil tablets (the active ingredient in Cialis) and Sildenafil
+                  tablets (the active ingredient in Viagra) using the same Drug Cost + 15% + $5 formula. See{" "}
+                  <Link href="/prescriptions/tadalafil" className="text-primary hover:underline">
+                    low cost Tadalafil
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/prescriptions/sildenafil" className="text-primary hover:underline">
+                    low cost Sildenafil
+                  </Link>
+                  . These are standard tablets—not compounded troches.
+                </p>
+              </div>
+              <div>
                 <h3 className="font-semibold text-lg mb-2">Do you offer discounts for 90-day supplies?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes, ordering a 90-day supply instead of a 30-day supply can significantly reduce your per-pill cost.
@@ -253,7 +274,8 @@ export default function PrescriptionsPage() {
               <p className="leading-relaxed mb-4">
                 Clear Choice Pharmacy is a cash-pay pharmacy in Novi, Michigan, serving Michigan patients with
                 transparent prescription pricing. Our model—Drug Cost + 15% + $5 dispensing fee—means you always know
-                what you will pay. No hidden fees, no PBM middlemen, no surprises.
+                what you will pay. No hidden fees, no PBM middlemen, no surprises. That includes everyday generics and
+                cash-pay ED tablets such as Sildenafil (Viagra generic) and Tadalafil (Cialis generic).
               </p>
               <p className="leading-relaxed">
                 Whether you need a pharmacy without insurance in Metro Detroit, want to compare cash-pay prescription

@@ -1,10 +1,10 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
-  "Clear Choice Pharmacy | Semaglutide, Sildenafil, Tadalafil & Low Cost Prescription Drugs | Novi, MI"
+  "Clear Choice Pharmacy | Semaglutide from $134/mo, Sildenafil, TRT & Low Cost Rx | Novi, MI"
 
 export const HOME_DESCRIPTION =
-  "Semaglutide & Tirzepatide weight loss (alternatives patients compare to Ozempic & Wegovy), Sildenafil & Tadalafil ED meds (Viagra & Cialis active ingredients), TRT, mobile IV, and low cost prescription drugs. Clear Choice Pharmacy, Novi, MI — Michigan patients only."
+  "Semaglutide from $134/mo & Tirzepatide from $179/mo, Sildenafil from $39/mo, TRT from $109/mo, mobile IV, and low cost prescription drugs. Clear Choice Pharmacy, Novi, MI — Michigan patients only."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -115,7 +115,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      "Yes. Clear Choice Pharmacy compounds sublingual Tadalafil and Sildenafil troches for qualifying Michigan patients, plus a dual Sildenafil + Tadalafil combination. Pricing starts from $39/mo on quarterly billing for Sildenafil and $49/mo for Tadalafil.",
+      "Yes. Clear Choice Pharmacy compounds sublingual Tadalafil and Sildenafil troches for qualifying Michigan patients, plus a dual Sildenafil + Tadalafil combination. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing (monthly plans available at higher per-month rates).",
   },
   {
     question: "Is Tadalafil the same as Cialis?",
@@ -140,7 +140,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "How much does TRT cost?",
     answer:
-      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene starts at $99/mo ($79/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
+      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene starts at $119/mo ($99/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
   },
   {
     question: "Can you combine Sildenafil and Tadalafil?",
@@ -188,7 +188,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "How much does medical weight loss cost?",
     answer:
-      "Compounded Semaglutide kits start at $134–$149 depending on dose tier and billing plan. Tirzepatide kits start higher based on dose. Every 30-day kit includes 4 weekly injections, physician review, compounding, supplies, and shipping for Michigan patients.",
+      "Compounded Semaglutide kits start at $134–$149 depending on dose tier and billing plan. Tirzepatide kits start at $179–$199. Every 30-day kit includes 4 weekly injections, physician review, compounding, supplies, and shipping for Michigan patients. MIC + B12 metabolic support kits are $119.",
   },
   {
     question: "Who is eligible for medical weight loss?",
@@ -250,6 +250,11 @@ export const PRESCRIPTIONS_FAQS: FaqItem[] = [
     question: "How do I find low cost prescription drug prices?",
     answer:
       "Search any medication on our prescriptions page to see transparent cash-pay pricing. Most common meds hover around $5 for a 30-day supply. Formula: Drug Cost + 15% + $5 dispensing fee.",
+  },
+  {
+    question: "Do you offer low cost Cialis or Viagra generics?",
+    answer:
+      "Yes. We fill cash-pay generic Tadalafil tablets (Cialis active ingredient) and Sildenafil tablets (Viagra active ingredient) with the same Drug Cost + 15% + $5 formula. See /prescriptions/tadalafil and /prescriptions/sildenafil. These are standard tablets—not compounded troches.",
   },
   {
     question: "Do I need insurance?",

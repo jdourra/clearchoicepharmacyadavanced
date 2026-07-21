@@ -98,7 +98,8 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
 }
 
 export function getVialProductPageTitle(vial: RejuvenationVial): string {
-  return `${vial.title} | Clear Choice Pharmacy`
+  const shortName = vial.title.replace(/\s+Home[Kk]it$/, "").trim()
+  return `${shortName} $${vial.price} | Michigan | Clear Choice Pharmacy`
 }
 
 export function getVialProductContent(vialId: string, vial: RejuvenationVial): VialProductContent {

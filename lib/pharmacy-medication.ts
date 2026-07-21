@@ -171,6 +171,14 @@ export function pickPopularMedication(
 
     const commonStrength = pool.filter((med) => /50\s*mcg|100\s*mcg/.test(medicationSearchText(med)))
     if (commonStrength.length > 0) pool = commonStrength
+  } else if (q === "sildenafil" || q === "tadalafil") {
+    // Prefer solid oral tablets over suspensions/solutions for cash-pay ED lookup cards
+    const tablets = medications.filter((med) => {
+      const text = medicationSearchText(med)
+      if (/\bsuspension\b|\bsoln\b|\bsolution\b|\bml\b/.test(text)) return false
+      return isTablet(text) || isCapsule(text) || /\b\d+\s*mg\b/.test(text)
+    })
+    pool = tablets.length > 0 ? tablets : medications
   }
 
   return [...pool].sort((a, b) => getPerUnitCost(a) - getPerUnitCost(b))[0]

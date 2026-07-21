@@ -28,17 +28,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const program = getTrtProgram(slug)!
   const startingPrice = getTrtStartingMonthlyPrice(program)
+  const title = getTrtProductPageTitle(program)
+  const description = `${program.name} for testosterone replacement therapy (TRT) from $${startingPrice}/mo. Physician supervision, medication, supplies, and Michigan shipping or pickup. Clear Choice Pharmacy, Novi.`
 
   return {
-    title: getTrtProductPageTitle(program),
-    description: `${program.name} for testosterone replacement therapy (TRT). From $${startingPrice}/mo with physician supervision and pharmacy fulfillment. Michigan patients.`,
-    keywords: ["TRT", "testosterone replacement therapy", "testosterone", program.name.toLowerCase(), "low testosterone"],
+    title,
+    description,
+    keywords: [
+      "TRT",
+      "testosterone replacement therapy",
+      "testosterone",
+      "TRT cost",
+      program.name.toLowerCase(),
+      "low testosterone",
+    ],
     alternates: {
       canonical: `${SITE_URL}/mens-health/trt/${slug}`,
     },
     openGraph: {
-      title: getTrtProductPageTitle(program),
-      description: program.description,
+      title,
+      description,
       url: `${SITE_URL}/mens-health/trt/${slug}`,
       type: "website",
       images: [{ url: program.image.src, alt: program.image.alt }],
@@ -58,6 +67,8 @@ export default async function TrtProductPage({ params }: PageProps) {
   }
 
   const content = TRT_PRODUCT_CONTENT[slug]
+  const lowPrice = getTrtStartingMonthlyPrice(program)
+  const highPrice = Math.max(...program.pricing.map((p) => p.pricePerMonth))
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -69,14 +80,23 @@ export default async function TrtProductPage({ params }: PageProps) {
       "@type": "Brand",
       name: "Clear Choice Pharmacy",
     },
-    offers: program.pricing.map((tier) => ({
-      "@type": "Offer",
-      price: tier.totalBilled,
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice,
+      highPrice,
       priceCurrency: "USD",
+      offerCount: program.pricing.length,
       availability: "https://schema.org/InStock",
-      name: `${tier.plan} billing`,
       url: `${SITE_URL}/mens-health/trt/${slug}`,
-    })),
+      offers: program.pricing.map((tier) => ({
+        "@type": "Offer",
+        price: tier.pricePerMonth,
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        name: `${tier.plan} billing`,
+        url: `${SITE_URL}/mens-health/trt/${slug}`,
+      })),
+    },
   }
 
   return (

@@ -32,6 +32,7 @@ import {
   getWeightLossStartingKitPrice,
 } from "@/lib/weight-loss-catalog"
 import type { WeightLossProductContent } from "@/lib/weight-loss-product-content"
+import { getWeightLossFromPrice } from "@/lib/weight-loss-product-content"
 import { buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
 import { cn } from "@/lib/utils"
 
@@ -54,6 +55,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
 
   const intakeUrl = buildWeightLossIntakeUrl(program.id, billingPlan)
   const startingPrice = getWeightLossStartingKitPrice(program)
+  const fromPrice = getWeightLossFromPrice(program)
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8 md:py-12">
@@ -89,8 +91,11 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{content.homeKitTitle}</h1>
             <p className="text-lg text-muted-foreground mt-2">{program.subtitle}</p>
             <p className="mt-4">
-              <span className="text-3xl font-bold text-primary">${startingPrice}</span>
-              <span className="text-muted-foreground ml-1">starting at per 30-day kit</span>
+              <span className="text-3xl font-bold text-primary">from ${fromPrice}</span>
+              <span className="text-muted-foreground ml-1">/mo on quarterly starter kits</span>
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Monthly starter kits from ${startingPrice}/mo · all-in with physician review & supplies
             </p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
           </div>

@@ -3,10 +3,11 @@ import { notFound } from "next/navigation"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { WeightLossProductDetail } from "@/components/weight-loss-product-detail"
-import { getWeightLossProgram, getWeightLossStartingKitPrice, getWeightLossKitQuote } from "@/lib/weight-loss-catalog"
+import { getWeightLossProgram, getWeightLossKitQuote } from "@/lib/weight-loss-catalog"
 import {
   WEIGHT_LOSS_PRODUCT_CONTENT,
   WEIGHT_LOSS_PRODUCT_SLUGS,
+  getWeightLossFromPrice,
   getWeightLossProductPageTitle,
   isWeightLossProductSlug,
 } from "@/lib/weight-loss-product-content"
@@ -27,24 +28,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const program = getWeightLossProgram(slug)!
-  const startingPrice = getWeightLossStartingKitPrice(program)
+  const fromPrice = getWeightLossFromPrice(program)
+  const title = getWeightLossProductPageTitle(program)
+  const description =
+    slug === "semaglutide"
+      ? `Compounded Semaglutide from $${fromPrice}/mo on quarterly starter kits. All-in 30-day kit: physician review, 4 weekly injections, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
+      : `Compounded Tirzepatide from $${fromPrice}/mo on quarterly starter kits. Dual GLP-1/GIP therapy with physician review, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
 
   return {
-    title: getWeightLossProductPageTitle(program),
-    description:
-      slug === "semaglutide"
-        ? `Semaglutide weight loss injections for medical weight management. Compounded GLP-1 starting at $${startingPrice} per 30-day kit (4 weekly injections). Physician review required. Michigan patients.`
-        : `Tirzepatide weight loss injections for medical weight management. Dual GLP-1/GIP therapy starting at $${startingPrice} per 30-day kit. Physician review required. Michigan patients.`,
+    title,
+    description,
     keywords:
       slug === "semaglutide"
-        ? ["semaglutide", "ozempic", "wegovy", "GLP-1", "weight loss injections", "medical weight loss"]
-        : ["tirzepatide", "zepbound", "mounjaro", "GLP-1", "weight loss injections", "medical weight loss"],
+        ? ["semaglutide", "semaglutide cost", "ozempic", "wegovy", "GLP-1", "weight loss injections", "medical weight loss"]
+        : ["tirzepatide", "tirzepatide cost", "zepbound", "mounjaro", "GLP-1", "weight loss injections", "medical weight loss"],
     alternates: {
       canonical: `${SITE_URL}/weight-loss/${slug}`,
     },
     openGraph: {
-      title: getWeightLossProductPageTitle(program),
-      description: program.description,
+      title,
+      description,
       url: `${SITE_URL}/weight-loss/${slug}`,
       type: "website",
       images: [{ url: program.image.src, alt: program.image.alt }],
@@ -64,6 +67,8 @@ export default async function WeightLossProductPage({ params }: PageProps) {
   }
 
   const content = WEIGHT_LOSS_PRODUCT_CONTENT[slug]
+  const fromPrice = getWeightLossFromPrice(program)
+  const highPrice = Math.max(...program.doseTiers.map((t) => t.monthlyKitPrice))
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -75,19 +80,28 @@ export default async function WeightLossProductPage({ params }: PageProps) {
       "@type": "Brand",
       name: "Clear Choice Pharmacy",
     },
-    offers: program.doseTiers.flatMap((tier) =>
-      (["monthly", "quarterly"] as const).map((plan) => {
-        const quote = getWeightLossKitQuote(program, tier.id, plan)!
-        return {
-          "@type": "Offer",
-          price: quote.kitPrice,
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-          name: `${tier.name} dose · ${plan === "monthly" ? "30-day kit" : "per kit (quarterly)"}`,
-          url: `${SITE_URL}/weight-loss/${slug}`,
-        }
-      })
-    ),
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: fromPrice,
+      highPrice,
+      priceCurrency: "USD",
+      offerCount: program.doseTiers.length * 2,
+      availability: "https://schema.org/InStock",
+      url: `${SITE_URL}/weight-loss/${slug}`,
+      offers: program.doseTiers.flatMap((tier) =>
+        (["monthly", "quarterly"] as const).map((plan) => {
+          const quote = getWeightLossKitQuote(program, tier.id, plan)!
+          return {
+            "@type": "Offer",
+            price: quote.kitPrice,
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            name: `${tier.name} dose · ${plan === "monthly" ? "30-day kit" : "per kit (quarterly)"}`,
+            url: `${SITE_URL}/weight-loss/${slug}`,
+          }
+        })
+      ),
+    },
   }
 
   return (

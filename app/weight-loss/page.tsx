@@ -37,12 +37,14 @@ import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarit
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Semaglutide & Tirzepatide Weight Loss | GLP-1 Injections",
+  title: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Michigan Weight Loss",
   description:
-    "Medical weight loss with Semaglutide and Tirzepatide (GLP-1) injections. Physician-supervised programs for Michigan patients. Transparent cash-pay pricing—compounded alternatives patients compare to Ozempic, Wegovy, and Zepbound.",
+    "Compounded Semaglutide from $134/mo and Tirzepatide from $179/mo on quarterly starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
   keywords: [
     "semaglutide",
     "tirzepatide",
+    "semaglutide cost",
+    "tirzepatide cost",
     "ozempic",
     "wegovy",
     "zepbound",
@@ -51,10 +53,7 @@ export const metadata: Metadata = {
     "medical weight loss",
     "weight loss injections",
     "weight loss clinic",
-    "weight management",
-    "obesity treatment",
-    "prescription weight loss",
-    "telehealth weight loss",
+    "Michigan",
     "semaglutide Michigan",
     "tirzepatide Novi",
   ],
@@ -62,9 +61,9 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
-    title: "Semaglutide & Tirzepatide Medical Weight Loss | Clear Choice Pharmacy",
+    title: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Clear Choice Pharmacy",
     description:
-      "Physician-supervised Semaglutide and Tirzepatide GLP-1 weight loss injections with transparent cash-pay pricing in Novi, MI.",
+      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $179/mo on quarterly starter billing.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -81,10 +80,10 @@ export default function WeightLossPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Semaglutide & Tirzepatide Medical Weight Loss | Clear Choice Pharmacy",
+    name: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Medical weight loss with Semaglutide and Tirzepatide GLP-1 injections at Clear Choice Pharmacy in Novi, MI.",
+      "Compounded Semaglutide from $134/mo and Tirzepatide from $179/mo at Clear Choice Pharmacy in Novi, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Semaglutide Weight Loss" },
       { "@type": "MedicalTherapy", name: "Tirzepatide Weight Loss" },
@@ -99,7 +98,7 @@ export default function WeightLossPage() {
       <PremiumHero
         badge="Medical Weight Loss · GLP-1"
         headline="Semaglutide & Tirzepatide Weight Loss"
-        subheadline="Physician-supervised GLP-1 weight loss injections with transparent cash-pay pricing."
+        subheadline="All-in kits from $134/mo Semaglutide and $179/mo Tirzepatide on quarterly starter billing."
         description="Looking for medical weight loss, weight loss injections, or alternatives patients compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients."
         highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
