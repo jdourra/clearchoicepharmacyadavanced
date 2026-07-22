@@ -25,7 +25,8 @@ export function buildSiteNavigationJsonLd() {
   }))
 }
 
-export const PHARMACY_PHONE = "+1-248-987-6182"
+export { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
+import { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
 
 export const PHARMACY_ADDRESS = {
   "@type": "PostalAddress" as const,

@@ -124,7 +124,7 @@ export default function ConfirmationPage() {
           </Suspense>
 
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>Questions? Contact us at (555) 123-4567 or help@clearchoicepharmacy.com</p>
+            <p>Questions? Contact us at (248) 987-6182 or help@clearchoicepharmacy.com</p>
           </div>
         </div>
       </main>

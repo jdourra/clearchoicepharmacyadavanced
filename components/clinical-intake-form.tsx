@@ -45,6 +45,7 @@ import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapture
 import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
+import { formatPhoneInput } from "@/lib/phone"
 
 // ============================================
 // TYPE DEFINITIONS
@@ -740,7 +741,7 @@ export function ClinicalIntakeForm({
                 </a>
                 {" "}or call{" "}
                 <a href="tel:+12489876182" className="text-primary hover:underline">
-                  1-248-987-6182
+                  (248) 987-6182
                 </a>
               </p>
             </div>
@@ -925,7 +926,7 @@ export function ClinicalIntakeForm({
               id="phone"
               type="tel"
               value={formData.phone}
-              onChange={(e) => updateFormData("phone", e.target.value)}
+              onChange={(e) => updateFormData("phone", formatPhoneInput(e.target.value))}
               placeholder="(555) 123-4567"
               className={cn(isInvalid("phone") && "border-destructive")}
             />

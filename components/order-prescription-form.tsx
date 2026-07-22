@@ -12,6 +12,7 @@ import type { OrderPrescriptionDetails, PrescriptionMethod } from "@/lib/order-p
 import { prescriptionMethodLabel } from "@/lib/order-prescription"
 import toast from "react-hot-toast"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
+import { formatPhoneInput } from "@/lib/phone"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -208,7 +209,7 @@ export function OrderPrescriptionForm({ orderId, prescription, onUpdated }: Orde
                     id="doctorPhone"
                     type="tel"
                     value={doctorPhone}
-                    onChange={(e) => setDoctorPhone(e.target.value)}
+                    onChange={(e) => setDoctorPhone(formatPhoneInput(e.target.value))}
                     required
                   />
                 </div>
@@ -254,7 +255,7 @@ export function OrderPrescriptionForm({ orderId, prescription, onUpdated }: Orde
                       id="transferPharmacyPhone"
                       type="tel"
                       value={transferPharmacyPhone}
-                      onChange={(e) => setTransferPharmacyPhone(e.target.value)}
+                      onChange={(e) => setTransferPharmacyPhone(formatPhoneInput(e.target.value))}
                       required
                     />
                   </div>

@@ -10,6 +10,11 @@ import {
   Menu,
 } from "lucide-react"
 import { SiteLogo } from "@/components/site-logo"
+import {
+  PHARMACY_FAX_DISPLAY,
+  PHARMACY_PHONE_DISPLAY,
+  PHARMACY_PHONE_TEL_HREF,
+} from "@/lib/phone"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import type { User as AuthUser } from "@/lib/auth-types"
@@ -86,13 +91,13 @@ export function SiteHeader() {
             <span className="hidden min-[420px]:inline">40890 Grand River Ave, Novi, MI 48375</span>
             <span className="min-[420px]:hidden">Novi, MI</span>
           </a>
-          <a href="tel:248-987-6182" className="flex items-center gap-1.5 hover:underline">
+          <a href={PHARMACY_PHONE_TEL_HREF} className="flex items-center gap-1.5 hover:underline">
             <Phone className="h-3.5 w-3.5 shrink-0" />
-            <span>(248) 987-6182</span>
+            <span>{PHARMACY_PHONE_DISPLAY}</span>
           </a>
           <span className="hidden sm:flex items-center gap-1.5">
             <Printer className="h-3.5 w-3.5 shrink-0" />
-            <span>Fax: (248) 987-4963</span>
+            <span>Fax: {PHARMACY_FAX_DISPLAY}</span>
           </span>
         </div>
       </div>

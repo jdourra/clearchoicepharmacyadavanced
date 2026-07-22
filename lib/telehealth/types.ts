@@ -108,7 +108,7 @@ export const CLEAR_CHOICE_PHARMACY = {
   city: "Novi",
   state: "MI",
   zip: "48375",
-  phone: "+1-248-987-6182",
+  phone: "(248) 987-6182",
   ncpdpEnvKey: "CLEAR_CHOICE_NCPDP_ID",
 } as const
 

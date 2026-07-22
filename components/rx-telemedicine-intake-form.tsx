@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ArrowLeft, ArrowRight, Loader2, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import type { CartItem } from "@/lib/cart"
 import type { RxDrugClass } from "@/lib/prescription-telemedicine"
 import { formatCartMedicationLine, TELEMEDICINE_VISIT_FEE } from "@/lib/prescription-telemedicine"
@@ -414,7 +415,7 @@ export function RxTelemedicineIntakeForm({
               </div>
               <div className="space-y-2" data-field="phone">
                 <Label className={cn(isInvalid("phone") && "text-destructive")}>Phone *</Label>
-                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", e.target.value)} />
+                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", formatPhoneInput(e.target.value))} />
               </div>
               <div className="space-y-2" data-field="dateOfBirth">
                 <Label className={cn(isInvalid("dateOfBirth") && "text-destructive")}>Date of birth *</Label>

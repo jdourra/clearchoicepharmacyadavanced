@@ -14,6 +14,11 @@ import {
   treatmentLabelFromDetail,
   type AdminIntakeServiceType,
 } from "@/lib/telehealth/intake-registry"
+import type { ClinicalRxPayload } from "@/lib/clinical-prescription"
+import {
+  createPrescriptionOnApprove,
+  shouldGeneratePrescription,
+} from "@/lib/clinical-prescription-service"
 
 export type IntakeReviewAction = "approve" | "deny" | "follow_up"
 
@@ -24,6 +29,10 @@ export type IntakeReviewResult = {
   emailSent?: boolean
   emailError?: string
   error?: string
+  prescriptionId?: string
+  prescriptionStatus?: string
+  dropboxSent?: boolean
+  dropboxError?: string
 }
 
 function resolveWeightLossDoseId(detail: Record<string, unknown>): WeightLossDoseId {
@@ -91,11 +100,30 @@ export async function reviewClinicalIntake(params: {
   reviewerName?: string
   /** Weight loss: capture kit + $25 live-visit add-on when monthly billing was authorized. */
   liveVisitRequired?: boolean
+  /** Prescription fields — required when approving a medication program. */
+  prescription?: ClinicalRxPayload
 }): Promise<IntakeReviewResult> {
-  const { serviceType, id, action, note, liveVisitRequired } = params
+  const { serviceType, id, action, note, liveVisitRequired, prescription } = params
 
   if (!isAdminIntakeServiceType(serviceType)) {
     return { success: false, error: "Invalid service type" }
+  }
+
+  if (action === "approve" && shouldGeneratePrescription(serviceType)) {
+    if (!prescription?.medicationName?.trim() || !prescription?.directions?.trim()) {
+      return {
+        success: false,
+        error: "Medication name and directions are required to approve and generate a prescription.",
+      }
+    }
+    const useDropbox = Boolean(process.env.DROPBOX_SIGN_API_KEY?.trim())
+    if (!useDropbox && !prescription.clinicianEsignName?.trim()) {
+      return {
+        success: false,
+        error:
+          "Enter your typed e-signature name, or configure DROPBOX_SIGN_API_KEY to send for remote signature.",
+      }
+    }
   }
 
   const detail = await getClinicalIntakeDetail(serviceType, id)
@@ -202,5 +230,42 @@ export async function reviewClinicalIntake(params: {
     emailError = "Patient email is missing on this intake."
   }
 
-  return { success: true, status: next, paymentAction, emailSent, emailError }
+  let prescriptionId: string | undefined
+  let prescriptionStatus: string | undefined
+  let dropboxSent: boolean | undefined
+  let dropboxError: string | undefined
+
+  if (action === "approve" && shouldGeneratePrescription(serviceType) && prescription) {
+    try {
+      const rxResult = await createPrescriptionOnApprove({
+        serviceType,
+        serviceLabel,
+        intakeId: id,
+        detail,
+        rx: prescription,
+      })
+      prescriptionId = rxResult.prescriptionId
+      prescriptionStatus = rxResult.status
+      dropboxSent = rxResult.dropboxSent
+      dropboxError = rxResult.dropboxError
+    } catch (error) {
+      console.error("[review-intake] prescription generation failed:", error)
+      dropboxError =
+        error instanceof Error
+          ? error.message
+          : "Prescription generation failed after approval"
+    }
+  }
+
+  return {
+    success: true,
+    status: next,
+    paymentAction,
+    emailSent,
+    emailError,
+    prescriptionId,
+    prescriptionStatus,
+    dropboxSent,
+    dropboxError,
+  }
 }

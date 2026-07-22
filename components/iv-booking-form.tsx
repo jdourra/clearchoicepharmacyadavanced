@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { calculateIvSubtotal, calculateIvTotal, getIvBoosters, getIvPackage, IV_TRAVEL_FEE, type IvBooster } from "@/lib/iv-catalog"
@@ -265,7 +266,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         <p className="text-sm">
           Need immediate assistance? Call{" "}
           <a href="tel:+12489876182" className="text-sky-600 font-medium hover:underline">
-            1-248-987-6182
+            (248) 987-6182
           </a>
         </p>
       </IntakeSuccessPanel>
@@ -341,7 +342,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           </div>
           <div className="space-y-2" data-field="phone">
             <Label className={cn(isInvalid("phone") && "text-destructive")}>Mobile phone *</Label>
-            <Input type="tel" className={cn(isInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={phone} onChange={(e) => { setPhone(e.target.value); clearError("phone") }} />
+            <Input type="tel" className={cn(isInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={phone} onChange={(e) => { setPhone(formatPhoneInput(e.target.value)); clearError("phone") }} />
           </div>
         </CardContent>
       </Card>
@@ -477,7 +478,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
           </Button>
           <Button variant="outline" className="w-full" asChild>
             <a href="tel:+12489876182">
-              <Phone className="mr-2 h-4 w-4" /> Prefer to call? 1-248-987-6182
+              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (248) 987-6182
             </a>
           </Button>
         </CardFooter>

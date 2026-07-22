@@ -5,6 +5,7 @@ import {
   type VisitConditionId,
 } from "@/lib/rx-visit-conditions"
 import type { RxDrugClass } from "@/lib/prescription-telemedicine"
+import { formatPhoneDisplay } from "@/lib/phone"
 
 const HIDDEN_KEYS = new Set([
   "id_front_key",
@@ -398,6 +399,15 @@ function formatTimeWindow(value: string): string {
   return labels[value] ?? value.replace(/_/g, " ")
 }
 
+function formatFieldValue(key: string, value: unknown): string | null {
+  const formatted = formatValue(value)
+  if (!formatted) return null
+  if (/phone/i.test(key)) {
+    return formatPhoneDisplay(formatted) || formatted
+  }
+  return formatted
+}
+
 function buildFieldItems(
   detail: Record<string, unknown>,
   keys: string[],
@@ -405,7 +415,7 @@ function buildFieldItems(
 ): IntakeReviewField[] {
   const items: IntakeReviewField[] = []
   for (const key of keys) {
-    const value = formatValue(detail[key])
+    const value = formatFieldValue(key, detail[key])
     if (!value) continue
     used.add(key)
     items.push({ label: fieldLabel(key), value })
@@ -546,7 +556,7 @@ export function buildIntakeReviewLayout(
   const patientLine = joinLine([
     name,
     pick(reviewDetail, "email"),
-    pick(reviewDetail, "phone"),
+    formatPhoneDisplay(pick(reviewDetail, "phone") ?? "") || null,
     pick(reviewDetail, "date_of_birth") ? `DOB ${pick(reviewDetail, "date_of_birth")}` : null,
   ])
 
@@ -593,7 +603,7 @@ export function buildIntakeReviewLayout(
     for (const [key, raw] of Object.entries(reviewDetail)) {
       if (used.has(key) || HIDDEN_KEYS.has(key) || ADMIN_KEYS.has(key)) continue
       if (ADDRESS_KEYS.has(key) || TREATMENT_KEYS.has(key)) continue
-      const value = formatValue(raw)
+      const value = formatFieldValue(key, raw)
       if (!value) continue
       clinicalItems.push({ label: fieldLabel(key), value })
       used.add(key)
@@ -628,6 +638,6 @@ export function intakeDetailEntries(detail: Record<string, unknown>) {
     .map(([key, value]) => ({
       key,
       label: fieldLabel(key),
-      value: formatValue(value) ?? "—",
+      value: formatFieldValue(key, value) ?? "—",
     }))
 }

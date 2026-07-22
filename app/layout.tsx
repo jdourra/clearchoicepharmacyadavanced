@@ -108,8 +108,8 @@ export default function RootLayout({
     logo: `${SITE_URL}/icon.svg`,
     image: `${SITE_URL}/og-image.jpg`,
     description: HOME_DESCRIPTION,
-    telephone: "+1-248-987-6182",
-    faxNumber: "+1-248-987-4963",
+    telephone: "+12489876182",
+    faxNumber: "+12489874963",
     address: {
       "@type": "PostalAddress",
       streetAddress: "40890 Grand River Ave",
@@ -215,7 +215,7 @@ export default function RootLayout({
     logo: `${SITE_URL}/icon.svg`,
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+1-248-987-6182",
+      telephone: "+12489876182",
       contactType: "customer service",
       areaServed: "US",
       availableLanguage: "English",

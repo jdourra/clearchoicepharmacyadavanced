@@ -4,7 +4,7 @@ export const PRIMARY_PHYSICIAN = {
   credentials: "Michigan-Licensed Physician",
   state: "Michigan",
   reviewSla: "2–4 hours during business hours",
-  pharmacyPhone: "1-248-987-6182",
+  pharmacyPhone: "(248) 987-6182",
 } as const
 
 export function getAdminInboxEmail(): string {

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { staffAuthFetch } from "@/lib/staff-session"
+import { formatPhoneDisplay } from "@/lib/phone"
 
 type IntakeRow = {
   serviceType: string
@@ -90,7 +91,7 @@ export default function AdminIntakesPage() {
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
                     {intake.email}
-                    {intake.phone ? ` · ${intake.phone}` : ""}
+                    {intake.phone ? ` · ${formatPhoneDisplay(intake.phone)}` : ""}
                     {intake.state ? ` · ${intake.state}` : ""}
                     {" · "}
                     Submitted {new Date(intake.createdAt).toLocaleString()}

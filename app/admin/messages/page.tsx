@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import type { AdminMessageWithContext } from "@/lib/auth-types"
 import { staffAuthFetch } from "@/lib/staff-session"
+import { formatPhoneDisplay, phoneTelHref } from "@/lib/phone"
 import { AdminHeader } from "@/components/admin-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -137,12 +138,12 @@ export default function AdminMessagesPage() {
                               )}
                               {msg.patientPhone ? (
                                 <a
-                                  href={`tel:${msg.patientPhone}`}
+                                  href={phoneTelHref(msg.patientPhone)}
                                   className="flex items-center gap-1 text-primary hover:underline"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <Phone className="h-3.5 w-3.5" />
-                                  {msg.patientPhone}
+                                  {formatPhoneDisplay(msg.patientPhone)}
                                 </a>
                               ) : (
                                 <span className="text-muted-foreground">No phone</span>

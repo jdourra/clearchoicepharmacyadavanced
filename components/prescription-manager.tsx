@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
+import { formatPhoneDisplay } from "@/lib/phone"
 
 type Prescription = {
   id: string
@@ -124,7 +125,8 @@ export function PrescriptionManager({ prescriptions }: { prescriptions: Prescrip
                         </div>
                         {rx.profiles?.phone && (
                           <div>
-                            <span className="font-medium">Phone:</span> {rx.profiles.phone}
+                            <span className="font-medium">Phone:</span>{" "}
+                            {formatPhoneDisplay(rx.profiles.phone)}
                           </div>
                         )}
                       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { authFetch } from "@/lib/session"
+import { formatPhoneDisplay } from "@/lib/phone"
 
 export type PatientProfileFromApi = {
   id: string
@@ -109,7 +110,7 @@ export async function fetchPatientProfile(): Promise<PatientProfileFromApi | nul
       name: u.name ? String(u.name) : undefined,
       firstName: String(u.firstName || u.name?.split(" ")[0] || ""),
       lastName: String(u.lastName || u.name?.split(" ").slice(1).join(" ") || ""),
-      phone: String(u.phone || ""),
+      phone: formatPhoneDisplay(String(u.phone || "")),
       dob: formatDobForInput(String(u.dob || "")),
       address: String(u.address || ""),
       city: String(u.city || ""),

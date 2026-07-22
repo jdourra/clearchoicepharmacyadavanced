@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -16,6 +17,7 @@ import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
 import { WEIGHT_LOSS_LIVE_VISIT_ADDON } from "@/lib/weight-loss-catalog"
 import { staffAuthFetch } from "@/lib/staff-session"
+import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 import { ExternalLink, ChevronDown, Loader2, Printer } from "lucide-react"
 import {
   Collapsible,
@@ -25,12 +27,27 @@ import {
 
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 
+const RX_SERVICES = new Set([
+  "weight_loss",
+  "trt",
+  "rejuvenation_vial",
+  "mens_health",
+  "prescription_telemedicine",
+])
+
 type AdminIntakeDetailViewProps = {
   serviceType: AdminIntakeServiceType | string
   id: string
   serviceLabel: string
   treatmentLabel: string
   detail: Record<string, unknown>
+  suggestedPrescription?: ClinicalRxPayload
+  existingPrescription?: {
+    id: string
+    status: string
+    medicationName: string
+  } | null
+  dropboxSignConfigured?: boolean
 }
 
 function IdImagePanel({
@@ -139,6 +156,9 @@ export function AdminIntakeDetailView({
   serviceLabel,
   treatmentLabel,
   detail,
+  suggestedPrescription,
+  existingPrescription,
+  dropboxSignConfigured = false,
 }: AdminIntakeDetailViewProps) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState<string | null>(null)
@@ -149,6 +169,12 @@ export function AdminIntakeDetailView({
   const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
   const [sesHint, setSesHint] = useState<string | null>(null)
   const [sesReviewStatus, setSesReviewStatus] = useState<string | null>(null)
+  const [rxMedication, setRxMedication] = useState(suggestedPrescription?.medicationName ?? "")
+  const [rxStrength, setRxStrength] = useState(suggestedPrescription?.strength ?? "")
+  const [rxDirections, setRxDirections] = useState(suggestedPrescription?.directions ?? "")
+  const [rxQuantity, setRxQuantity] = useState(suggestedPrescription?.quantity ?? "")
+  const [rxRefills, setRxRefills] = useState(String(suggestedPrescription?.refills ?? 0))
+  const [clinicianEsignName, setClinicianEsignName] = useState("")
 
   useEffect(() => {
     staffAuthFetch("/api/admin/ses-health")
@@ -173,6 +199,7 @@ export function AdminIntakeDetailView({
   const isWeightLoss = serviceType === "weight_loss"
   const weightLossIsMonthly = String(detail.selected_billing_plan ?? "") === "monthly"
   const canChargeLiveVisit = isWeightLoss && weightLossIsMonthly
+  const needsPrescription = RX_SERVICES.has(String(serviceType))
 
   const handlePrint = () => {
     window.print()
@@ -183,6 +210,27 @@ export function AdminIntakeDetailView({
     setError("")
     setReviewMessage("")
     try {
+      const prescription =
+        action === "approve" && needsPrescription
+          ? {
+              medicationName: rxMedication.trim(),
+              strength: rxStrength.trim(),
+              directions: rxDirections.trim(),
+              quantity: rxQuantity.trim(),
+              refills: Number(rxRefills) || 0,
+              clinicianEsignName: clinicianEsignName.trim() || undefined,
+            }
+          : undefined
+
+      if (action === "approve" && needsPrescription) {
+        if (!prescription?.medicationName || !prescription.directions) {
+          throw new Error("Enter medication name and directions before approving.")
+        }
+        if (!dropboxSignConfigured && !prescription.clinicianEsignName) {
+          throw new Error("Enter your typed e-signature name (or configure Dropbox Sign).")
+        }
+      }
+
       const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -190,6 +238,7 @@ export function AdminIntakeDetailView({
           action,
           note: note || undefined,
           liveVisitRequired: canChargeLiveVisit ? liveVisitRequired : false,
+          prescription,
         }),
       })
       const result = await res.json()
@@ -197,16 +246,26 @@ export function AdminIntakeDetailView({
         throw new Error(result.error || "Review failed")
       }
 
+      const parts: string[] = ["Decision saved."]
       if (result.emailSent) {
-        setReviewMessage(`Decision saved. Confirmation email sent to ${detail.email}.`)
-        setTimeout(() => router.push("/admin/intakes"), 1500)
-      } else {
-        setReviewMessage(
-          result.emailError ||
-            "Decision saved, but the patient confirmation email could not be sent. Check SES configuration."
-        )
-        setTimeout(() => router.push("/admin/intakes"), 3500)
+        parts.push(`Confirmation email sent to ${detail.email}.`)
+      } else if (result.emailError) {
+        parts.push(result.emailError)
       }
+      if (result.prescriptionId) {
+        if (result.dropboxSent) {
+          parts.push("Prescription sent to Dropbox Sign for clinician signature.")
+        } else if (result.prescriptionStatus === "signed_local") {
+          parts.push("Prescription signed locally — admin notified to print.")
+        } else {
+          parts.push(`Prescription created (${result.prescriptionId}).`)
+        }
+      }
+      if (result.dropboxError) {
+        parts.push(`Prescription issue: ${result.dropboxError}`)
+      }
+      setReviewMessage(parts.join(" "))
+      setTimeout(() => router.push("/admin/intakes"), result.emailSent && !result.dropboxError ? 1800 : 4500)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Review failed")
     } finally {
@@ -424,9 +483,110 @@ export function AdminIntakeDetailView({
                     </div>
                   )}
 
+                  {needsPrescription && (
+                    <div className="rounded-lg border p-3 space-y-3">
+                      <div>
+                        <p className="text-sm font-medium">Prescription</p>
+                        <p className="text-xs text-muted-foreground">
+                          {dropboxSignConfigured
+                            ? "On approve, generate Rx PDF and email Dropbox Sign to the clinician for e-signature. Admin is notified when signed and ready to print."
+                            : "Dropbox Sign is not configured — type your e-signature name below. Admin is emailed a printable Rx on approve."}
+                        </p>
+                      </div>
+                      {existingPrescription && (
+                        <Alert>
+                          <AlertDescription className="text-xs space-y-2">
+                            <p>
+                              Existing Rx: {existingPrescription.medicationName} ({existingPrescription.status})
+                            </p>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  const res = await staffAuthFetch(
+                                    `/api/admin/prescriptions/${existingPrescription.id}/pdf`
+                                  )
+                                  if (!res.ok) {
+                                    const data = await res.json().catch(() => ({}))
+                                    throw new Error(data.error || "Could not open PDF")
+                                  }
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  window.open(url, "_blank", "noopener,noreferrer")
+                                } catch (err) {
+                                  setError(err instanceof Error ? err.message : "Could not open PDF")
+                                }
+                              }}
+                            >
+                              Open PDF
+                            </Button>
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="rxMedication">Medication</Label>
+                        <Input
+                          id="rxMedication"
+                          value={rxMedication}
+                          onChange={(e) => setRxMedication(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="rxStrength">Strength</Label>
+                        <Input
+                          id="rxStrength"
+                          value={rxStrength}
+                          onChange={(e) => setRxStrength(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="rxDirections">Directions (SIG)</Label>
+                        <Textarea
+                          id="rxDirections"
+                          value={rxDirections}
+                          onChange={(e) => setRxDirections(e.target.value)}
+                          rows={3}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="rxQuantity">Quantity</Label>
+                          <Input
+                            id="rxQuantity"
+                            value={rxQuantity}
+                            onChange={(e) => setRxQuantity(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="rxRefills">Refills</Label>
+                          <Input
+                            id="rxRefills"
+                            type="number"
+                            min={0}
+                            value={rxRefills}
+                            onChange={(e) => setRxRefills(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="clinicianEsignName">
+                          Clinician e-sign name{dropboxSignConfigured ? " (optional fallback)" : ""}
+                        </Label>
+                        <Input
+                          id="clinicianEsignName"
+                          value={clinicianEsignName}
+                          onChange={(e) => setClinicianEsignName(e.target.value)}
+                          placeholder={PRIMARY_PHYSICIAN.name}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   {reviewMessage && (
-                    <Alert variant={reviewMessage.includes("could not") ? "destructive" : "default"}>
+                    <Alert variant={reviewMessage.includes("could not") || reviewMessage.includes("failed") ? "destructive" : "default"}>
                       <AlertDescription>{reviewMessage}</AlertDescription>
                     </Alert>
                   )}
@@ -440,7 +600,11 @@ export function AdminIntakeDetailView({
                       {submitting === "approve" ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Approve &amp; capture payment
+                      {needsPrescription
+                        ? dropboxSignConfigured
+                          ? "Approve, capture & send for signature"
+                          : "Approve, capture & sign Rx"
+                        : "Approve & capture payment"}
                     </Button>
                     <Button
                       variant="outline"
@@ -451,7 +615,7 @@ export function AdminIntakeDetailView({
                       {submitting === "follow_up" ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Request follow-up
+                      {isWeightLoss ? "Request live visit / follow-up" : "Request follow-up"}
                     </Button>
                     <Button
                       variant="destructive"
@@ -462,7 +626,7 @@ export function AdminIntakeDetailView({
                       {submitting === "deny" ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Deny &amp; release hold
+                      Deny & release hold
                     </Button>
                   </div>
 
@@ -474,7 +638,7 @@ export function AdminIntakeDetailView({
 
                   <p className="text-xs text-muted-foreground">
                     Patient receives an email on approve, deny, or follow-up when SES production access
-                    is enabled.
+                    is enabled. Signed Rxs email the admin inbox for print.
                   </p>
                 </CardContent>
               </Card>

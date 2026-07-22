@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { MichiganStateField } from "@/components/michigan-state-field"
@@ -459,7 +460,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone *</Label>
-                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} required />
                 </div>
               </div>
               <div>
@@ -687,7 +688,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                               id="pharmacyPhone"
                               type="tel"
                               value={transferPharmacyPhone}
-                              onChange={(e) => setTransferPharmacyPhone(e.target.value)}
+                              onChange={(e) => setTransferPharmacyPhone(formatPhoneInput(e.target.value))}
                             />
                           </div>
                         </div>
@@ -764,7 +765,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                               id="doctorPhone"
                               type="tel"
                               value={doctorPhone}
-                              onChange={(e) => setDoctorPhone(e.target.value)}
+                              onChange={(e) => setDoctorPhone(formatPhoneInput(e.target.value))}
                             />
                           </div>
                         </div>
@@ -844,7 +845,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                     id="prescriberPhone"
                     type="tel"
                     value={prescriberPhone}
-                    onChange={(e) => setPrescriberPhone(e.target.value)}
+                    onChange={(e) => setPrescriberPhone(formatPhoneInput(e.target.value))}
                   />
                 </div>
               </div>

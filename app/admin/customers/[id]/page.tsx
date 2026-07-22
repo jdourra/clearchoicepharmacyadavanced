@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import type { Order, PatientProfileSummary, User } from "@/lib/auth-types"
 import { staffAuthFetch } from "@/lib/staff-session"
+import { formatPhoneDisplay, phoneTelHref } from "@/lib/phone"
 import { AdminHeader } from "@/components/admin-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -169,8 +170,8 @@ export default function AdminCustomerDetailPage() {
                 {profile?.phone ? (
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <a href={`tel:${profile.phone}`} className="hover:text-primary">
-                      {profile.phone}
+                    <a href={phoneTelHref(profile.phone)} className="hover:text-primary">
+                      {formatPhoneDisplay(profile.phone)}
                     </a>
                   </div>
                 ) : (

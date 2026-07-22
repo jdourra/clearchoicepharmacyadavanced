@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { authFetch, clearSession } from "@/lib/session"
+import { formatPhoneInput, formatPhoneDisplay } from "@/lib/phone"
 import toast from "react-hot-toast"
 import type { Order, Message } from "@/lib/auth-types"
 import { getOrderPayPath, isOrderPaid } from "@/lib/order-payment"
@@ -608,7 +609,7 @@ function ProfileTab({
     if (!user) return
     setFirstName(user.firstName || user.name?.split(" ")[0] || "")
     setLastName(user.lastName || user.name?.split(" ").slice(1).join(" ") || "")
-    setPhone(user.phone || "")
+    setPhone(formatPhoneDisplay(user.phone || ""))
     setDob(user.dob ? user.dob.split("T")[0] : "")
     setAddress(user.address || "")
     setCity(user.city || "")
@@ -684,7 +685,7 @@ function ProfileTab({
                 id="phone"
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
                 placeholder="(248) 555-0100"
               />
             </div>

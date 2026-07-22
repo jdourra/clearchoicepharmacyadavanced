@@ -33,7 +33,7 @@ export default function TermsPage() {
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>
         Clear Choice Pharmacy · 40890 Grand River Ave, Novi, MI 48375 ·{" "}
-        <a href="tel:+12489876182" className="text-primary hover:underline">1-248-987-6182</a> ·{" "}
+        <a href="tel:+12489876182" className="text-primary hover:underline">(248) 987-6182</a> ·{" "}
         <a href="mailto:info@clearchoicepharmacy.com" className="text-primary hover:underline">
           info@clearchoicepharmacy.com
         </a>

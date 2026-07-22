@@ -7,6 +7,7 @@ import { AdminShell } from "@/components/admin-shell"
 import { Button } from "@/components/ui/button"
 import { AdminIntakeDetailView } from "@/components/admin-intake-detail-view"
 import { staffAuthFetch } from "@/lib/staff-session"
+import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 
 type PageProps = { params: Promise<{ serviceType: string; id: string }> }
 
@@ -20,6 +21,13 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
     serviceLabel: string
     treatmentLabel: string
     detail: Record<string, unknown>
+    suggestedPrescription?: ClinicalRxPayload
+    existingPrescription?: {
+      id: string
+      status: string
+      medicationName: string
+    } | null
+    dropboxSignConfigured?: boolean
   } | null>(null)
 
   useEffect(() => {
@@ -73,6 +81,9 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
       serviceLabel={data.serviceLabel}
       treatmentLabel={data.treatmentLabel}
       detail={data.detail}
+      suggestedPrescription={data.suggestedPrescription}
+      existingPrescription={data.existingPrescription}
+      dropboxSignConfigured={Boolean(data.dropboxSignConfigured)}
     />
   )
 }

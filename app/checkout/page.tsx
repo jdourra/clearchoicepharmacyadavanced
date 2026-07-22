@@ -27,6 +27,7 @@ import {
   MICHIGAN_STATE_NAME,
   requireMichiganState,
 } from "@/lib/michigan-eligibility"
+import { formatPhoneInput } from "@/lib/phone"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
@@ -340,7 +341,7 @@ export default function CheckoutPage() {
                           id="phone"
                           type="tel"
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, phone: formatPhoneInput(e.target.value) })}
                           required
                         />
                       </div>
@@ -520,7 +521,7 @@ export default function CheckoutPage() {
                                       type="tel"
                                       placeholder="(248) 555-0100"
                                       value={doctorPhone}
-                                      onChange={(e) => setDoctorPhone(e.target.value)}
+                                      onChange={(e) => setDoctorPhone(formatPhoneInput(e.target.value))}
                                       required
                                     />
                                   </div>
@@ -580,7 +581,7 @@ export default function CheckoutPage() {
                                       type="tel"
                                       placeholder="(248) 555-0100"
                                       value={transferPharmacyPhone}
-                                      onChange={(e) => setTransferPharmacyPhone(e.target.value)}
+                                      onChange={(e) => setTransferPharmacyPhone(formatPhoneInput(e.target.value))}
                                       required
                                     />
                                   </div>

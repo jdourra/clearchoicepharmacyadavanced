@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import { TRT_PROGRAMS, getTrtProgram, type TrtBillingPlan } from "@/lib/trt-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
@@ -447,7 +448,7 @@ export function TrtIntakeForm({
               </div>
               <div className="space-y-2" data-field="phone">
                 <Label className={cn(isInvalid("phone") && "text-destructive")}>Phone</Label>
-                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", e.target.value)} required className={cn(isInvalid("phone") && "border-destructive")} />
+                <Input type="tel" value={formData.phone} onChange={(e) => updateFormData("phone", formatPhoneInput(e.target.value))} required className={cn(isInvalid("phone") && "border-destructive")} />
               </div>
               <div className="space-y-2" data-field="dateOfBirth">
                 <Label className={cn(isInvalid("dateOfBirth") && "text-destructive")}>Date of birth</Label>

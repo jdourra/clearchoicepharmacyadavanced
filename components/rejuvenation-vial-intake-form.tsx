@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Loader2, AlertTriangle, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import { getRejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import {
@@ -307,7 +308,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
           </div>
           <div className="space-y-2" data-field="phone">
             <Label className={cn(isInvalid("phone") && "text-destructive")}>Mobile phone *</Label>
-            <Input type="tel" className={cn(isInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={phone} onChange={(e) => { setPhone(e.target.value); clearError("phone") }} />
+            <Input type="tel" className={cn(isInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={phone} onChange={(e) => { setPhone(formatPhoneInput(e.target.value)); clearError("phone") }} />
           </div>
         </CardContent>
       </Card>
@@ -420,7 +421,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
           </Button>
           <Button variant="outline" className="w-full" asChild>
             <a href="tel:+12489876182">
-              <Phone className="mr-2 h-4 w-4" /> Prefer to call? 1-248-987-6182
+              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (248) 987-6182
             </a>
           </Button>
         </CardFooter>

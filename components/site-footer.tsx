@@ -1,6 +1,11 @@
 import Link from "next/link"
 import { MapPin, Phone, Printer } from "lucide-react"
 import { SiteLogo } from "@/components/site-logo"
+import {
+  PHARMACY_FAX_DISPLAY,
+  PHARMACY_PHONE_DISPLAY,
+  PHARMACY_PHONE_TEL_HREF,
+} from "@/lib/phone"
 
 export function SiteFooter() {
   return (
@@ -23,13 +28,13 @@ export function SiteFooter() {
                   Novi, MI 48375
                 </span>
               </a>
-              <a href="tel:248-987-6182" className="flex items-center gap-2 hover:text-foreground transition-colors">
+              <a href={PHARMACY_PHONE_TEL_HREF} className="flex items-center gap-2 hover:text-foreground transition-colors">
                 <Phone className="h-4 w-4 shrink-0" />
-                <span>(248) 987-6182</span>
+                <span>{PHARMACY_PHONE_DISPLAY}</span>
               </a>
               <div className="flex items-center gap-2">
                 <Printer className="h-4 w-4 shrink-0" />
-                <span>Fax: (248) 987-4963</span>
+                <span>Fax: {PHARMACY_FAX_DISPLAY}</span>
               </div>
             </div>
           </div>

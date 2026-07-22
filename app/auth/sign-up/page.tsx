@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { saveSession } from "@/lib/session"
 import { SiteLogo } from "@/components/site-logo"
+import { formatPhoneInput } from "@/lib/phone"
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -133,7 +134,7 @@ export default function SignUpPage() {
                         placeholder="(248) 555-0100"
                         required
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
                       />
                     </div>
                     <div className="grid gap-2">

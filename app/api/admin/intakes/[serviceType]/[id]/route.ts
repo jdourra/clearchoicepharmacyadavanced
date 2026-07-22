@@ -6,6 +6,9 @@ import {
   SERVICE_LABELS,
   treatmentLabelFromDetail,
 } from "@/lib/telehealth/intake-registry"
+import { suggestPrescriptionFromIntake } from "@/lib/clinical-prescription"
+import { getLatestPrescriptionForIntake } from "@/lib/clinical-prescription-service"
+import { isDropboxSignConfigured } from "@/lib/dropbox-sign"
 
 type RouteParams = { params: Promise<{ serviceType: string; id: string }> }
 
@@ -26,11 +29,17 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Intake not found" }, { status: 404 })
     }
 
+    const suggestedPrescription = suggestPrescriptionFromIntake(serviceType, detail)
+    const existingPrescription = await getLatestPrescriptionForIntake(serviceType, id)
+
     return NextResponse.json({
       serviceType,
       serviceLabel: SERVICE_LABELS[serviceType],
       treatmentLabel: treatmentLabelFromDetail(serviceType, detail),
       detail,
+      suggestedPrescription,
+      existingPrescription,
+      dropboxSignConfigured: isDropboxSignConfigured(),
     })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to load intake"

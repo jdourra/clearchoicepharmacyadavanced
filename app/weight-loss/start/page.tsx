@@ -119,7 +119,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
                       <Phone className="h-4 w-4" />
-                      1-248-987-6182
+                      (248) 987-6182
                     </a>
                     <a
                       href="mailto:info@clearchoicepharmacy.com"

@@ -20,6 +20,7 @@ import {
   XCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPhoneInput } from "@/lib/phone"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
@@ -826,7 +827,7 @@ export function WeightLossIntakeForm({
               Review My Answers
             </Button>
             <Button asChild>
-              <a href="tel:+12489876182">Call 1-248-987-6182</a>
+              <a href="tel:+12489876182">Call (248) 987-6182</a>
             </Button>
           </div>
         </CardContent>
@@ -1113,7 +1114,7 @@ export function WeightLossIntakeForm({
               </div>
               <div className="space-y-2" data-field="phone">
                 <Label htmlFor="phone" className={cn(isFieldInvalid("phone") && "text-destructive")}>Phone *</Label>
-                <Input id="phone" type="tel" className={cn(isFieldInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={formData.phone} onChange={(e) => updateFormData("phone", e.target.value)} />
+                <Input id="phone" type="tel" className={cn(isFieldInvalid("phone") && "border-destructive ring-2 ring-destructive")} value={formData.phone} onChange={(e) => updateFormData("phone", formatPhoneInput(e.target.value))} />
               </div>
               <div className="space-y-2" data-field="dateOfBirth">
                 <Label htmlFor="dob" className={cn(isFieldInvalid("dateOfBirth") && "text-destructive")}>Date of birth *</Label>
