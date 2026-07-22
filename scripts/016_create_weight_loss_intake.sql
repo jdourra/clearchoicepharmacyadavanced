@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS weight_loss_intake (
   allergies TEXT,
   selected_program TEXT,
   selected_billing_plan TEXT,
+  selected_dose_tier TEXT,
   prior_glp_experience TEXT,
   weight_loss_goals JSONB DEFAULT '[]'::jsonb,
   comorbidities JSONB DEFAULT '[]'::jsonb,

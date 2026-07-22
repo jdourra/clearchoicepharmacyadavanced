@@ -5,6 +5,7 @@ import {
   WEIGHT_LOSS_DOSE_PRICING_NOTE,
   WEIGHT_LOSS_KIT_INJECTIONS_NOTE,
   WEIGHT_LOSS_KIT_SUPPLY,
+  WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
   getWeightLossKitQuote,
 } from "@/lib/weight-loss-catalog"
 import { cn } from "@/lib/utils"
@@ -14,6 +15,7 @@ type WeightLossDoseTierPricingProps = {
   billingPlan: WeightLossBillingPlan
   compact?: boolean
   showNote?: boolean
+  selectedTierId?: string
   className?: string
 }
 
@@ -22,6 +24,7 @@ export function WeightLossDoseTierPricing({
   billingPlan,
   compact = false,
   showNote = true,
+  selectedTierId,
   className,
 }: WeightLossDoseTierPricingProps) {
   return (
@@ -30,8 +33,8 @@ export function WeightLossDoseTierPricing({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/40 text-left">
-              <th className="p-3 font-medium">Dose tier</th>
-              {!compact && <th className="p-3 font-medium hidden sm:table-cell">Typical phase</th>}
+              <th className="p-3 font-medium">Vial strength</th>
+              {!compact && <th className="p-3 font-medium hidden sm:table-cell">Kit</th>}
               <th className="p-3 font-medium text-right">
                 {billingPlan === "monthly" ? "Per 30-day kit" : "Per kit (90-day plan)"}
               </th>
@@ -41,19 +44,26 @@ export function WeightLossDoseTierPricing({
             </tr>
           </thead>
           <tbody>
-            {program.doseTiers.map((tier) => {
-              const quote = getWeightLossKitQuote(program, tier.id, billingPlan)
+            {program.doses.map((dose) => {
+              const quote = getWeightLossKitQuote(program, dose.id, billingPlan)
               if (!quote) return null
+              const selected = selectedTierId === dose.id
               return (
-                <tr key={tier.id} className="border-b last:border-0">
+                <tr
+                  key={dose.id}
+                  className={cn("border-b last:border-0", selected && "bg-primary/5")}
+                >
                   <td className="p-3">
-                    <p className="font-medium">{tier.name}</p>
+                    <p className="font-medium">
+                      {dose.label}
+                      {selected ? " · selected" : ""}
+                    </p>
                     {compact && (
-                      <p className="text-xs text-muted-foreground mt-0.5 sm:hidden">{tier.doseBand}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 sm:hidden">{dose.detail}</p>
                     )}
                   </td>
                   {!compact && (
-                    <td className="p-3 text-muted-foreground hidden sm:table-cell">{tier.doseBand}</td>
+                    <td className="p-3 text-muted-foreground hidden sm:table-cell">{dose.detail}</td>
                   )}
                   <td className="p-3 text-right font-semibold text-primary">${quote.kitPrice}</td>
                   {billingPlan === "quarterly" && (
@@ -69,6 +79,7 @@ export function WeightLossDoseTierPricing({
       </div>
       <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_KIT_SUPPLY}</p>
       <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_KIT_INJECTIONS_NOTE}</p>
+      <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
       {showNote && (
         <p className="text-xs text-muted-foreground leading-relaxed">{WEIGHT_LOSS_DOSE_PRICING_NOTE}</p>
       )}

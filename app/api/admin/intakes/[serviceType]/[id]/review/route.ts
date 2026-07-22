@@ -17,6 +17,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const body = await request.json()
     const action = body.action as IntakeReviewAction
     const note = typeof body.note === "string" ? body.note.trim() : undefined
+    const liveVisitRequired = Boolean(body.liveVisitRequired)
 
     if (!VALID_ACTIONS.includes(action)) {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       id,
       action,
       note,
+      liveVisitRequired: serviceType === "weight_loss" ? liveVisitRequired : undefined,
     })
 
     if (!result.success) {

@@ -1,6 +1,7 @@
 import "server-only"
 import { sql } from "@/lib/db"
 import { capturePaymentHold, cancelPaymentHold } from "@/lib/stripe-server"
+import { getWeightLossDose, getWeightLossIntakeHoldQuote, type WeightLossDoseId } from "@/lib/weight-loss-catalog"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { notifyPatientIntakeDecision } from "@/lib/telehealth/patient-notify"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
@@ -23,6 +24,22 @@ export type IntakeReviewResult = {
   emailSent?: boolean
   emailError?: string
   error?: string
+}
+
+function resolveWeightLossDoseId(detail: Record<string, unknown>): WeightLossDoseId {
+  const programId = String(detail.selected_program ?? "")
+  const raw = String(detail.selected_dose_tier ?? "").trim()
+  if (raw) {
+    const dose = getWeightLossDose(programId, raw)
+    if (dose) return dose.id
+  }
+  const concerns = String(detail.additional_concerns ?? "")
+  const match = concerns.match(/\[selected_dose_tier:([^\]]+)\]/i)
+  if (match?.[1]) {
+    const dose = getWeightLossDose(programId, match[1].trim())
+    if (dose) return dose.id
+  }
+  return getWeightLossDose(programId, "starter")?.id ?? "sema-1mg"
 }
 
 function tableForService(serviceType: AdminIntakeServiceType): string {
@@ -72,8 +89,10 @@ export async function reviewClinicalIntake(params: {
   action: IntakeReviewAction
   note?: string
   reviewerName?: string
+  /** Weight loss: capture kit + $25 live-visit add-on when monthly billing was authorized. */
+  liveVisitRequired?: boolean
 }): Promise<IntakeReviewResult> {
-  const { serviceType, id, action, note } = params
+  const { serviceType, id, action, note, liveVisitRequired } = params
 
   if (!isAdminIntakeServiceType(serviceType)) {
     return { success: false, error: "Invalid service type" }
@@ -96,7 +115,22 @@ export async function reviewClinicalIntake(params: {
 
   if (stripeId && serviceType !== "specialty_pharmacy") {
     if (action === "approve") {
-      const captured = await capturePaymentHold(stripeId)
+      let amountCents: number | undefined
+      if (serviceType === "weight_loss") {
+        const programId = String(detail.selected_program ?? "")
+        const billingPlan =
+          detail.selected_billing_plan === "quarterly" ? "quarterly" : "monthly"
+        const tierId = resolveWeightLossDoseId(detail)
+        const quote = getWeightLossIntakeHoldQuote(programId, billingPlan, tierId)
+        if (quote) {
+          const includeLiveVisit =
+            Boolean(liveVisitRequired) && quote.liveVisitAddon > 0
+          amountCents = Math.round(
+            (includeLiveVisit ? quote.authorizationHold : quote.totalBilled) * 100
+          )
+        }
+      }
+      const captured = await capturePaymentHold(stripeId, amountCents)
       paymentAction = captured ? "captured" : "failed"
       if (!captured) {
         return {

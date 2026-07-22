@@ -30,8 +30,12 @@ export function buildWeightLossProductUrl(programId: string): string {
   return `/weight-loss/${programId}`
 }
 
-export function buildWeightLossIntakeUrl(programId: string, plan: string = "monthly"): string {
-  const params = new URLSearchParams({ program: programId, plan })
+export function buildWeightLossIntakeUrl(
+  programId: string,
+  plan: string = "monthly",
+  doseTier: string = "starter"
+): string {
+  const params = new URLSearchParams({ program: programId, plan, tier: doseTier })
   return `/weight-loss/start?${params.toString()}`
 }
 

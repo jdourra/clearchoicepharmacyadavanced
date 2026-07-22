@@ -28,7 +28,7 @@ export function formatUsd(amount: number, digits = 0): string {
 }
 
 export function getWeightLossQuarterlySavingsPercent(program: WeightLossProgram): number {
-  const starter = program.doseTiers.find((t) => t.id === "starter")
+  const starter = program.doses[0]
   if (!starter || starter.monthlyKitPrice <= 0) return 0
   const saved = starter.monthlyKitPrice - starter.quarterlyKitPrice
   return Math.round((saved / starter.monthlyKitPrice) * 100)
@@ -40,8 +40,8 @@ export function getWeightLossPriceRange(program: WeightLossProgram): {
   fromQuarterly: number
   toQuarterly: number
 } {
-  const monthly = program.doseTiers.map((t) => t.monthlyKitPrice)
-  const quarterly = program.doseTiers.map((t) => t.quarterlyKitPrice)
+  const monthly = program.doses.map((t) => t.monthlyKitPrice)
+  const quarterly = program.doses.map((t) => t.quarterlyKitPrice)
   return {
     fromMonthly: Math.min(...monthly),
     toMonthly: Math.max(...monthly),

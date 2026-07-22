@@ -11,6 +11,7 @@ import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { getWeightLossDose } from "@/lib/weight-loss-catalog"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -59,6 +60,7 @@ type WeightLossIntakePayload = {
   treatmentInfo: {
     selectedProgram: string
     selectedBillingPlan: string
+    selectedDoseTier: string
     priorGlpExperience: string
     weightLossGoals: string[]
     comorbidities: string[]
@@ -153,7 +155,8 @@ ${data.medicalHistory.allergies || "None reported"}
 ───────────────────────────────────────────────────────────────────────────────
 Selected Program:       ${programMap[data.treatmentInfo.selectedProgram] || data.treatmentInfo.selectedProgram}
 Billing Plan:           ${data.treatmentInfo.selectedBillingPlan}
-Pricing Model:          Dose-tier kit pricing (hold at starter tier; refills per prescribed dose)
+Vial Strength:          ${data.treatmentInfo.selectedDoseTier}
+Pricing Model:          Vial-strength kit pricing (hold at selected mg; +$25 live visit on monthly if required, waived on quarterly)
 Prior GLP Experience:   ${data.treatmentInfo.priorGlpExperience}
 Weight Loss Goals:      ${data.treatmentInfo.weightLossGoals.join(", ") || "Not specified"}
 
@@ -237,6 +240,7 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
     treatmentInfo: {
       selectedProgram: String(treatment.selectedProgram || ""),
       selectedBillingPlan: String(treatment.selectedBillingPlan || ""),
+      selectedDoseTier: String(treatment.selectedDoseTier || "starter"),
       priorGlpExperience: String(treatment.priorGlpExperience || ""),
       weightLossGoals: (treatment.weightLossGoals as string[]) || [],
       comorbidities: (treatment.comorbidities as string[]) || [],
@@ -378,27 +382,12 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      await sql(
-        `INSERT INTO weight_loss_intake (
-          id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
-          height_inches, weight_lbs, bmi, goal_weight_lbs, systolic_bp, diastolic_bp,
-          pregnant_or_breastfeeding, mtc_or_men2_history, pancreatitis_history, type1_diabetes,
-          eating_disorder, on_other_glp,
-          type2_diabetes, hypertension, gallbladder_disease, diabetic_retinopathy, bariatric_surgery,
-          sleep_apnea, cardiovascular_disease, current_medications, allergies,
-          selected_program, selected_billing_plan, prior_glp_experience,
-          weight_loss_goals, comorbidities, additional_concerns,
-          shipping_address, shipping_city, shipping_state, shipping_zip,
-          status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-          $11, $12, $13, $14, $15, $16,
-          $17, $18, $19, $20, $21, $22,
-          $23, $24, $25, $26, $27, $28, $29, $30, $31,
-          $32, $33, $34, $35::jsonb, $36::jsonb, $37,
-          $38, $39, $40, $41, $42, $43, $44, $45, $46, $47
-        )`,
-        [
+      const resolved =
+        getWeightLossDose(data.treatmentInfo.selectedProgram, data.treatmentInfo.selectedDoseTier) ||
+        getWeightLossDose(data.treatmentInfo.selectedProgram, "starter")
+      const doseTier = resolved?.id || "sema-1mg"
+
+      const values = [
           submissionId,
           data.patientInfo.firstName,
           data.patientInfo.lastName,
@@ -432,6 +421,7 @@ export async function POST(request: NextRequest) {
           data.medicalHistory.allergies,
           data.treatmentInfo.selectedProgram,
           data.treatmentInfo.selectedBillingPlan,
+          doseTier,
           data.treatmentInfo.priorGlpExperience,
           JSON.stringify(data.treatmentInfo.weightLossGoals),
           JSON.stringify(data.treatmentInfo.comorbidities),
@@ -447,7 +437,108 @@ export async function POST(request: NextRequest) {
           partnerResult.partnerName,
           partnerResult.partnerStatus || "queued_for_manual_review",
         ]
-      )
+
+      try {
+        await sql(
+          `INSERT INTO weight_loss_intake (
+            id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
+            height_inches, weight_lbs, bmi, goal_weight_lbs, systolic_bp, diastolic_bp,
+            pregnant_or_breastfeeding, mtc_or_men2_history, pancreatitis_history, type1_diabetes,
+            eating_disorder, on_other_glp,
+            type2_diabetes, hypertension, gallbladder_disease, diabetic_retinopathy, bariatric_surgery,
+            sleep_apnea, cardiovascular_disease, current_medications, allergies,
+            selected_program, selected_billing_plan, selected_dose_tier, prior_glp_experience,
+            weight_loss_goals, comorbidities, additional_concerns,
+            shipping_address, shipping_city, shipping_state, shipping_zip,
+            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+            $11, $12, $13, $14, $15, $16,
+            $17, $18, $19, $20, $21, $22,
+            $23, $24, $25, $26, $27, $28, $29, $30, $31,
+            $32, $33, $34, $35, $36::jsonb, $37::jsonb, $38,
+            $39, $40, $41, $42, $43, $44, $45, $46, $47, $48
+          )`,
+          values
+        )
+      } catch (columnError) {
+        console.warn(
+          "weight_loss_intake.selected_dose_tier insert failed; retrying without column. Run scripts/031_weight_loss_selected_dose_tier.sql",
+          columnError
+        )
+        const fallbackConcerns =
+          `[selected_dose_tier:${doseTier}] ${data.treatmentInfo.additionalConcerns}`.trim()
+        await sql(
+          `INSERT INTO weight_loss_intake (
+            id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
+            height_inches, weight_lbs, bmi, goal_weight_lbs, systolic_bp, diastolic_bp,
+            pregnant_or_breastfeeding, mtc_or_men2_history, pancreatitis_history, type1_diabetes,
+            eating_disorder, on_other_glp,
+            type2_diabetes, hypertension, gallbladder_disease, diabetic_retinopathy, bariatric_surgery,
+            sleep_apnea, cardiovascular_disease, current_medications, allergies,
+            selected_program, selected_billing_plan, prior_glp_experience,
+            weight_loss_goals, comorbidities, additional_concerns,
+            shipping_address, shipping_city, shipping_state, shipping_zip,
+            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+            $11, $12, $13, $14, $15, $16,
+            $17, $18, $19, $20, $21, $22,
+            $23, $24, $25, $26, $27, $28, $29, $30, $31,
+            $32, $33, $34, $35::jsonb, $36::jsonb, $37,
+            $38, $39, $40, $41, $42, $43, $44, $45, $46, $47
+          )`,
+          [
+            submissionId,
+            data.patientInfo.firstName,
+            data.patientInfo.lastName,
+            data.patientInfo.email,
+            data.patientInfo.phone,
+            data.patientInfo.dateOfBirth,
+            data.patientInfo.state,
+            data.patientInfo.address,
+            data.patientInfo.city,
+            data.patientInfo.zipCode,
+            data.vitals.heightInches,
+            data.vitals.weightLbs,
+            data.vitals.bmi,
+            data.vitals.goalWeightLbs,
+            data.vitals.systolicBP,
+            data.vitals.diastolicBP,
+            data.contraindications.pregnantOrBreastfeeding,
+            data.contraindications.mtcOrMen2History,
+            data.contraindications.pancreatitisHistory,
+            data.contraindications.type1Diabetes,
+            data.contraindications.eatingDisorder,
+            data.contraindications.onOtherGlp,
+            data.medicalHistory.type2Diabetes,
+            data.medicalHistory.hypertension,
+            data.medicalHistory.gallbladderDisease,
+            data.medicalHistory.diabeticRetinopathy,
+            data.medicalHistory.bariatricSurgery,
+            data.medicalHistory.sleepApnea,
+            data.medicalHistory.cardiovascularDisease,
+            data.medicalHistory.currentMedications,
+            data.medicalHistory.allergies,
+            data.treatmentInfo.selectedProgram,
+            data.treatmentInfo.selectedBillingPlan,
+            data.treatmentInfo.priorGlpExperience,
+            JSON.stringify(data.treatmentInfo.weightLossGoals),
+            JSON.stringify(data.treatmentInfo.comorbidities),
+            fallbackConcerns,
+            data.identity.shippingAddress,
+            data.identity.shippingCity,
+            data.identity.shippingState,
+            data.identity.shippingZip,
+            STANDARD_INTAKE_STATUS.pending,
+            data.identity.stripePaymentIntentId,
+            data.identity.idFrontKey,
+            data.identity.idBackKey,
+            partnerResult.partnerName,
+            partnerResult.partnerStatus || "queued_for_manual_review",
+          ]
+        )
+      }
     } catch (dbError) {
       console.error("Failed to persist weight loss intake:", dbError)
       return NextResponse.json(

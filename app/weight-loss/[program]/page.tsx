@@ -68,7 +68,7 @@ export default async function WeightLossProductPage({ params }: PageProps) {
 
   const content = WEIGHT_LOSS_PRODUCT_CONTENT[slug]
   const fromPrice = getWeightLossFromPrice(program)
-  const highPrice = Math.max(...program.doseTiers.map((t) => t.monthlyKitPrice))
+  const highPrice = Math.max(...program.doses.map((t) => t.monthlyKitPrice))
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -85,18 +85,18 @@ export default async function WeightLossProductPage({ params }: PageProps) {
       lowPrice: fromPrice,
       highPrice,
       priceCurrency: "USD",
-      offerCount: program.doseTiers.length * 2,
+      offerCount: program.doses.length * 2,
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/weight-loss/${slug}`,
-      offers: program.doseTiers.flatMap((tier) =>
+      offers: program.doses.flatMap((dose) =>
         (["monthly", "quarterly"] as const).map((plan) => {
-          const quote = getWeightLossKitQuote(program, tier.id, plan)!
+          const quote = getWeightLossKitQuote(program, dose.id, plan)!
           return {
             "@type": "Offer",
             price: quote.kitPrice,
             priceCurrency: "USD",
             availability: "https://schema.org/InStock",
-            name: `${tier.name} dose · ${plan === "monthly" ? "30-day kit" : "per kit (quarterly)"}`,
+            name: `${dose.label} · ${plan === "monthly" ? "30-day kit" : "per kit (quarterly)"}`,
             url: `${SITE_URL}/weight-loss/${slug}`,
           }
         })

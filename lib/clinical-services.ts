@@ -33,7 +33,7 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     href: "/weight-loss",
     title: "Semaglutide & Tirzepatide Weight Loss",
     description:
-      "Semaglutide from $134/mo and Tirzepatide from $179/mo on quarterly starter kits. Physician-supervised GLP-1 weight loss.",
+      "Semaglutide from $134/mo and Tirzepatide from $149/mo on quarterly starter kits. Physician-supervised GLP-1 weight loss.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",

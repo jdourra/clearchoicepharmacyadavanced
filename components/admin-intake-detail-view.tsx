@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
+import { WEIGHT_LOSS_LIVE_VISIT_ADDON } from "@/lib/weight-loss-catalog"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { ExternalLink, ChevronDown, Loader2, Printer } from "lucide-react"
 import {
@@ -143,6 +145,7 @@ export function AdminIntakeDetailView({
   const [note, setNote] = useState("")
   const [error, setError] = useState("")
   const [reviewMessage, setReviewMessage] = useState("")
+  const [liveVisitRequired, setLiveVisitRequired] = useState(false)
   const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
   const [sesHint, setSesHint] = useState<string | null>(null)
   const [sesReviewStatus, setSesReviewStatus] = useState<string | null>(null)
@@ -167,6 +170,9 @@ export function AdminIntakeDetailView({
   )
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
+  const isWeightLoss = serviceType === "weight_loss"
+  const weightLossIsMonthly = String(detail.selected_billing_plan ?? "") === "monthly"
+  const canChargeLiveVisit = isWeightLoss && weightLossIsMonthly
 
   const handlePrint = () => {
     window.print()
@@ -180,7 +186,11 @@ export function AdminIntakeDetailView({
       const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, note: note || undefined }),
+        body: JSON.stringify({
+          action,
+          note: note || undefined,
+          liveVisitRequired: canChargeLiveVisit ? liveVisitRequired : false,
+        }),
       })
       const result = await res.json()
       if (!res.ok) {
@@ -374,7 +384,7 @@ export function AdminIntakeDetailView({
                     <p>
                       <strong>Email:</strong> {String(detail.email ?? "")}
                     </p>
-                    {detail.stripe_payment_intent_id && (
+                    {Boolean(detail.stripe_payment_intent_id) && (
                       <p className="mt-2 font-mono text-xs break-all">
                         Stripe: {String(detail.stripe_payment_intent_id)}
                       </p>
@@ -391,6 +401,28 @@ export function AdminIntakeDetailView({
                       rows={4}
                     />
                   </div>
+
+                  {isWeightLoss && (
+                    <div className="rounded-lg border p-3 space-y-2">
+                      {canChargeLiveVisit ? (
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="liveVisitRequired"
+                            checked={liveVisitRequired}
+                            onCheckedChange={(checked) => setLiveVisitRequired(checked === true)}
+                          />
+                          <Label htmlFor="liveVisitRequired" className="font-normal cursor-pointer leading-snug">
+                            Live visit required — capture +${WEIGHT_LOSS_LIVE_VISIT_ADDON} add-on with kit
+                          </Label>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          Quarterly supply: live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}) is waived. Capture kit
+                          total only.
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   {reviewMessage && (

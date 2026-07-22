@@ -74,10 +74,16 @@ export async function verifyPaymentHoldReady(paymentIntentId: string): Promise<{
   return { ok: false, error: `Payment is not authorized (status: ${intent.status})` }
 }
 
-export async function capturePaymentHold(paymentIntentId: string): Promise<boolean> {
+export async function capturePaymentHold(
+  paymentIntentId: string,
+  amountCents?: number
+): Promise<boolean> {
   if (!isStripeConfigured()) return paymentIntentId.startsWith("dev_mock_")
   const stripe = getStripe()
-  const intent = await stripe.paymentIntents.capture(paymentIntentId)
+  const intent = await stripe.paymentIntents.capture(
+    paymentIntentId,
+    amountCents != null && amountCents > 0 ? { amount_to_capture: amountCents } : undefined
+  )
   return intent.status === "succeeded"
 }
 

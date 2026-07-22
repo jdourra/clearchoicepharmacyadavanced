@@ -120,6 +120,7 @@ const FIELD_LABELS: Record<string, string> = {
   selected_program: "Program ID",
   selected_product: "Product ID",
   selected_billing_plan: "Billing plan",
+  selected_dose_tier: "Vial strength",
   selected_conditions: "Conditions for visit",
   other_condition_notes: "Other condition details",
   new_or_worsening_symptoms: "New or worsening symptoms",
@@ -210,6 +211,7 @@ const CLINICAL_ORDER: Partial<Record<AdminIntakeServiceType, string[]>> = {
     "bariatric_surgery",
     "sleep_apnea",
     "cardiovascular_disease",
+    "selected_dose_tier",
     "comorbidities",
     "prior_glp_experience",
     "weight_loss_goals",
@@ -345,6 +347,7 @@ function formatTreatment(serviceType: AdminIntakeServiceType, detail: Record<str
     case "weight_loss":
       return joinLine([
         pick(detail, "selected_program"),
+        pick(detail, "selected_dose_tier") ? `Dose: ${pick(detail, "selected_dose_tier")}` : null,
         pick(detail, "selected_billing_plan") ? `Plan: ${pick(detail, "selected_billing_plan")}` : null,
       ])
     case "trt":

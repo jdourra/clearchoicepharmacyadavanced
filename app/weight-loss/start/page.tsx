@@ -3,7 +3,13 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
-import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
+import {
+  WEIGHT_LOSS_PROGRAMS,
+  getDefaultWeightLossDoseId,
+  getWeightLossDose,
+  isWeightLossDoseId,
+} from "@/lib/weight-loss-catalog"
+import type { WeightLossDoseId } from "@/lib/weight-loss-catalog"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
@@ -24,7 +30,7 @@ export const metadata: Metadata = {
 }
 
 type PageProps = {
-  searchParams: Promise<{ program?: string; plan?: string }>
+  searchParams: Promise<{ program?: string; plan?: string; tier?: string }>
 }
 
 export default async function WeightLossStartPage({ searchParams }: PageProps) {
@@ -34,6 +40,15 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
     programId && WEIGHT_LOSS_PROGRAMS.some((p) => p.id === programId) ? programId : undefined
   const planParam = params.plan
   const initialBillingPlan = planParam === "quarterly" || planParam === "monthly" ? planParam : "monthly"
+  const tierParam = params.tier?.trim() || ""
+  let initialDoseTier: WeightLossDoseId | undefined
+  if (initialProgram && tierParam && isWeightLossDoseId(initialProgram, tierParam)) {
+    initialDoseTier = tierParam
+  } else if (initialProgram && tierParam && getWeightLossDose(initialProgram, tierParam)) {
+    initialDoseTier = getWeightLossDose(initialProgram, tierParam)!.id
+  } else if (initialProgram) {
+    initialDoseTier = getDefaultWeightLossDoseId(initialProgram)
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -53,7 +68,11 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 </p>
               </div>
 
-              <WeightLossIntakeForm initialProgram={initialProgram} initialBillingPlan={initialBillingPlan} />
+              <WeightLossIntakeForm
+                initialProgram={initialProgram}
+                initialBillingPlan={initialBillingPlan}
+                initialDoseTier={initialDoseTier}
+              />
             </div>
 
             <div className="lg:col-span-2">

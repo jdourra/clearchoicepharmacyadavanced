@@ -17,7 +17,7 @@ import {
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
-import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS, getWeightLossStartingKitPrice } from "@/lib/weight-loss-catalog"
+import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
@@ -37,9 +37,9 @@ import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarit
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Michigan Weight Loss",
+  title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Michigan Weight Loss",
   description:
-    "Compounded Semaglutide from $134/mo and Tirzepatide from $179/mo on quarterly starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
+    "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo on quarterly starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
   keywords: [
     "semaglutide",
     "tirzepatide",
@@ -61,9 +61,9 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
-    title: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Clear Choice Pharmacy",
+    title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Clear Choice Pharmacy",
     description:
-      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $179/mo on quarterly starter billing.",
+      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $149/mo on quarterly starter billing.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -80,10 +80,10 @@ export default function WeightLossPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Semaglutide from $134/mo & Tirzepatide from $179/mo | Clear Choice Pharmacy",
+    name: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Compounded Semaglutide from $134/mo and Tirzepatide from $179/mo at Clear Choice Pharmacy in Novi, MI.",
+      "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo at Clear Choice Pharmacy in Novi, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Semaglutide Weight Loss" },
       { "@type": "MedicalTherapy", name: "Tirzepatide Weight Loss" },
@@ -98,7 +98,7 @@ export default function WeightLossPage() {
       <PremiumHero
         badge="Medical Weight Loss · GLP-1"
         headline="Semaglutide & Tirzepatide Weight Loss"
-        subheadline="All-in kits from $134/mo Semaglutide and $179/mo Tirzepatide on quarterly starter billing."
+        subheadline="All-in kits from $134/mo Semaglutide and $149/mo Tirzepatide on quarterly starter billing."
         description="Looking for medical weight loss, weight loss injections, or alternatives patients compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients."
         highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
@@ -122,7 +122,6 @@ export default function WeightLossPage() {
         <AllInInclusions items={ALL_IN_INCLUSIONS.weightLoss} className="mt-6" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {WEIGHT_LOSS_PROGRAMS.map((program) => {
-            const startingPrice = getWeightLossStartingKitPrice(program)
             const range = getWeightLossPriceRange(program)
             const savePct = getWeightLossQuarterlySavingsPercent(program)
             return (
@@ -143,28 +142,20 @@ export default function WeightLossPage() {
                 <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
                 <div className="mt-5 pt-4 border-t space-y-2">
                   <p className="text-3xl font-bold text-primary">
-                    {formatUsd(startingPrice)}
-                    <span className="text-base font-normal text-muted-foreground">/kit all-in</span>
+                    from {formatUsd(range.fromQuarterly)}
+                    <span className="text-base font-normal text-muted-foreground">/mo quarterly</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Starter from {formatUsd(range.fromQuarterly)} quarterly · Maintenance up to{" "}
-                    {formatUsd(range.toMonthly)} monthly
+                    Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by vial mg
                   </p>
                   {savePct > 0 && (
                     <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                      Save ~{savePct}% on quarterly starter kits
+                      Save ~{savePct}% vs monthly on quarterly starter kits
                     </p>
                   )}
-                  <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
-                    {program.doseTiers.map((tier) => (
-                      <div key={tier.id} className="flex justify-between gap-2">
-                        <span>{tier.name}</span>
-                        <span className="font-medium text-foreground whitespace-nowrap">
-                          {formatUsd(tier.monthlyKitPrice)}/mo · {formatUsd(tier.quarterlyKitPrice)} qtr
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {program.doses.length} vial strengths · choose your mg at checkout
+                  </p>
                   <div className="mt-4">
                     <ServiceBuyButton href={buildWeightLossProductUrl(program.id)} fullWidth label="Shop now" />
                   </div>

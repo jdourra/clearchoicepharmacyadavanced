@@ -24,10 +24,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pricing"
-import type { WeightLossBillingPlan, WeightLossProgram } from "@/lib/weight-loss-catalog"
+import type { WeightLossBillingPlan, WeightLossDoseId, WeightLossProgram } from "@/lib/weight-loss-catalog"
 import {
+  WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
+  WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  formatDoseOptionLabel,
   formatKitBillingLabel,
+  getDefaultWeightLossDoseId,
+  getWeightLossDose,
   getWeightLossIntakeHoldQuote,
   getWeightLossStartingKitPrice,
 } from "@/lib/weight-loss-catalog"
@@ -35,6 +40,13 @@ import type { WeightLossProductContent } from "@/lib/weight-loss-product-content
 import { getWeightLossFromPrice } from "@/lib/weight-loss-product-content"
 import { buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
 import { cn } from "@/lib/utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type WeightLossProductDetailProps = {
   program: WeightLossProgram
@@ -43,17 +55,19 @@ type WeightLossProductDetailProps = {
 
 export function WeightLossProductDetail({ program, content }: WeightLossProductDetailProps) {
   const defaultPlan =
-    program.billingPlans.find((p) => p.badge === "Best Value")?.plan ||
+    program.billingPlans.find((p) => p.badge?.includes("Best Value"))?.plan ||
     program.billingPlans[0]?.plan ||
     "monthly"
   const [billingPlan, setBillingPlan] = useState<WeightLossBillingPlan>(defaultPlan)
+  const [doseId, setDoseId] = useState<WeightLossDoseId>(getDefaultWeightLossDoseId(program))
 
-  const starterQuote = useMemo(
-    () => getWeightLossIntakeHoldQuote(program, billingPlan),
-    [program, billingPlan]
+  const selectedDose = getWeightLossDose(program, doseId)
+  const holdQuote = useMemo(
+    () => getWeightLossIntakeHoldQuote(program, billingPlan, doseId),
+    [program, billingPlan, doseId]
   )
 
-  const intakeUrl = buildWeightLossIntakeUrl(program.id, billingPlan)
+  const intakeUrl = buildWeightLossIntakeUrl(program.id, billingPlan, doseId)
   const startingPrice = getWeightLossStartingKitPrice(program)
   const fromPrice = getWeightLossFromPrice(program)
 
@@ -95,8 +109,9 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               <span className="text-muted-foreground ml-1">/mo on quarterly starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Monthly starter kits from ${startingPrice}/mo · all-in with physician review & supplies
+              Monthly starter kits from ${startingPrice}/mo · intake review, compounding &amp; shipping included
             </p>
+            <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
           </div>
 
@@ -105,14 +120,52 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               In stock
             </Badge>
             <Badge variant="outline">Prescription required</Badge>
-            <Badge variant="outline">Dose-based pricing</Badge>
+            <Badge variant="outline">Priced by vial mg</Badge>
           </div>
 
           <Card>
             <CardContent className="pt-6 space-y-5">
+              <div className="rounded-xl border-2 border-primary bg-primary/5 p-4 space-y-3 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-base font-bold text-foreground tracking-tight">
+                      1. Choose your dose
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
+                  </div>
+                  <Badge className="shrink-0 bg-primary text-primary-foreground hover:bg-primary">
+                    Required
+                  </Badge>
+                </div>
+                <Label htmlFor="dose-select" className="sr-only">
+                  Select your vial strength
+                </Label>
+                <Select value={doseId} onValueChange={setDoseId}>
+                  <SelectTrigger
+                    id="dose-select"
+                    className="w-full h-12 text-base font-medium border-primary/40 bg-background shadow-sm"
+                  >
+                    <SelectValue placeholder="Select vial mg strength" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {program.doses.map((dose) => (
+                      <SelectItem key={dose.id} value={dose.id}>
+                        {formatDoseOptionLabel(dose, billingPlan)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedDose && (
+                  <p className="text-sm font-medium text-foreground">
+                    Selected: {selectedDose.label}
+                    <span className="font-normal text-muted-foreground"> · {selectedDose.detail}</span>
+                  </p>
+                )}
+              </div>
+
               <div>
                 <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                  Choose billing
+                  2. Choose billing
                 </p>
                 <RadioGroup
                   value={billingPlan}
@@ -120,7 +173,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   className="space-y-3"
                 >
                   {program.billingPlans.map((option) => {
-                    const quote = getWeightLossIntakeHoldQuote(program, option.plan)
+                    const quote = getWeightLossIntakeHoldQuote(program, option.plan, doseId)
                     return (
                       <label
                         key={option.plan}
@@ -147,7 +200,9 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                         {quote && (
                           <div className="text-right">
                             <p className="text-xl font-bold text-primary">${quote.kitPrice}</p>
-                            <p className="text-xs text-muted-foreground">/kit · starter dose</p>
+                            <p className="text-xs text-muted-foreground">
+                              /kit · {selectedDose?.label ?? "selected"}
+                            </p>
                             {option.plan === "quarterly" && (
                               <p className="text-xs text-muted-foreground">${quote.totalBilled} for 3 kits</p>
                             )}
@@ -159,16 +214,27 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 </RadioGroup>
               </div>
 
-              {starterQuote && (
+              {holdQuote && (
                 <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
                   <p className="font-medium">
                     {billingPlan === "monthly"
-                      ? `First kit (starter dose, 4 injections): $${starterQuote.totalBilled}`
-                      : `First shipment — 3 starter kits (4 injections each): $${starterQuote.totalBilled}`}
+                      ? `First kit (${selectedDose?.label ?? "selected"}, 4 injections): $${holdQuote.totalBilled}`
+                      : `First shipment — 3 × ${selectedDose?.label ?? "selected"} (4 injections each): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
-                    4 weekly injections · physician review, compounding, syringes, supplies, and shipping included.
+                    4 weekly injections · intake physician review, compounding, syringes, supplies, and shipping
+                    included.
                   </p>
+                  {holdQuote.liveVisitAddon > 0 ? (
+                    <p className="text-muted-foreground">
+                      Card authorization up to ${holdQuote.authorizationHold} (includes up to $
+                      {holdQuote.liveVisitAddon} if a live visit is required).
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground">
+                      Quarterly supply: live visit add-on waived. Authorization hold ${holdQuote.authorizationHold}.
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground pt-1">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
                 </div>
               )}
@@ -182,7 +248,12 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             </CardContent>
           </Card>
 
-          <WeightLossDoseTierPricing program={program} billingPlan={billingPlan} compact />
+          <WeightLossDoseTierPricing
+            program={program}
+            billingPlan={billingPlan}
+            compact
+            selectedTierId={doseId}
+          />
 
           <div>
             <h2 className="font-semibold text-lg mb-3 flex items-center gap-2">
@@ -242,7 +313,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
 
       <div className="mt-10">
         <h2 className="text-xl font-bold mb-4">Kit pricing by dose tier</h2>
-        <WeightLossDoseTierPricing program={program} billingPlan={billingPlan} />
+        <WeightLossDoseTierPricing program={program} billingPlan={billingPlan} selectedTierId={doseId} />
       </div>
 
       <div className="mt-10 grid gap-8 md:grid-cols-2">

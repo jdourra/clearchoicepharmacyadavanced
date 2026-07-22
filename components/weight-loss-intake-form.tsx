@@ -37,11 +37,26 @@ import {
 import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pricing"
 import {
   WEIGHT_LOSS_PROGRAMS,
+  WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
+  WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  formatDoseOptionLabel,
   formatKitBillingLabel,
+  getDefaultWeightLossDoseId,
+  getWeightLossDose,
   getWeightLossIntakeHoldQuote,
+  parseWeeklyDoseMg,
+  suggestWeightLossDoseId,
   type WeightLossBillingPlan,
+  type WeightLossDoseId,
 } from "@/lib/weight-loss-catalog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 
 type BillingPlan = WeightLossBillingPlan
@@ -51,6 +66,7 @@ type ProgramOption = (typeof WEIGHT_LOSS_PROGRAMS)[number]
 type FormData = {
   selectedProgram: string
   selectedBillingPlan: BillingPlan
+  selectedDoseTier: WeightLossDoseId
   firstName: string
   lastName: string
   email: string
@@ -84,6 +100,10 @@ type FormData = {
   currentMedications: string
   allergies: string
   priorGlpExperience: string
+  priorGlpForm: string
+  priorGlpCurrentDose: string
+  priorGlpDuration: string
+  priorGlpTolerability: string
   weightLossGoals: string[]
   additionalConcerns: string
   shippingAddress: string
@@ -106,6 +126,7 @@ type FormData = {
 const initialFormData: FormData = {
   selectedProgram: "",
   selectedBillingPlan: "monthly",
+  selectedDoseTier: "sema-1mg",
   firstName: "",
   lastName: "",
   email: "",
@@ -139,6 +160,10 @@ const initialFormData: FormData = {
   currentMedications: "",
   allergies: "",
   priorGlpExperience: "",
+  priorGlpForm: "",
+  priorGlpCurrentDose: "",
+  priorGlpDuration: "",
+  priorGlpTolerability: "",
   weightLossGoals: [],
   additionalConcerns: "",
   shippingAddress: "",
@@ -202,6 +227,30 @@ function hasAnyContraindication(formData: FormData): boolean {
     formData.eatingDisorder ||
     formData.onOtherGlp
   )
+}
+
+function needsPriorGlpDetails(formData: FormData): boolean {
+  return (
+    (formData.priorGlpExperience !== "" && formData.priorGlpExperience !== "none") || formData.onOtherGlp
+  )
+}
+
+function formatPriorGlpExperience(formData: FormData): string {
+  if (!formData.priorGlpExperience || formData.priorGlpExperience === "none") {
+    return formData.onOtherGlp
+      ? `none listed · currently on another GLP | form: ${formData.priorGlpForm || "n/a"} | dose: ${formData.priorGlpCurrentDose || "n/a"} | duration: ${formData.priorGlpDuration || "n/a"} | tolerability: ${formData.priorGlpTolerability || "n/a"}`
+      : "none"
+  }
+  return [
+    formData.priorGlpExperience,
+    formData.priorGlpForm ? `form: ${formData.priorGlpForm}` : null,
+    formData.priorGlpCurrentDose ? `current dose: ${formData.priorGlpCurrentDose}` : null,
+    formData.priorGlpDuration ? `duration: ${formData.priorGlpDuration}` : null,
+    formData.priorGlpTolerability ? `tolerability: ${formData.priorGlpTolerability}` : null,
+    formData.onOtherGlp ? "currently on another GLP" : null,
+  ]
+    .filter(Boolean)
+    .join(" | ")
 }
 
 function isYesNoAnswered(value: string): boolean {
@@ -271,6 +320,19 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
       if (!formData.priorGlpExperience) {
         return { valid: false, message: "Please indicate your prior GLP-1 experience.", fields: ["priorGlpExperience"] }
       }
+      if (needsPriorGlpDetails(formData)) {
+        if (!formData.priorGlpForm) add("priorGlpForm")
+        if (!formData.priorGlpCurrentDose.trim()) add("priorGlpCurrentDose")
+        if (!formData.priorGlpDuration.trim()) add("priorGlpDuration")
+        if (!formData.priorGlpTolerability) add("priorGlpTolerability")
+        if (fields.length > 0) {
+          return {
+            valid: false,
+            message: "Please share your current or last dose, form, duration, and how you tolerated it.",
+            fields,
+          }
+        }
+      }
       if (formData.weightLossGoals.length === 0) {
         return { valid: false, message: "Please select at least one weight loss goal.", fields: ["weightLossGoals"] }
       }
@@ -314,6 +376,21 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
           fields,
         }
       }
+
+      if (formData.onOtherGlp) {
+        if (!formData.priorGlpForm) add("priorGlpForm")
+        if (!formData.priorGlpCurrentDose.trim()) add("priorGlpCurrentDose")
+        if (!formData.priorGlpDuration.trim()) add("priorGlpDuration")
+        if (!formData.priorGlpTolerability) add("priorGlpTolerability")
+        if (fields.length > 0) {
+          return {
+            valid: false,
+            message: "Since you are on another GLP-1, please provide dose, form, duration, and tolerability.",
+            fields,
+          }
+        }
+      }
+
       return { valid: true, message: "", fields: [] }
     }
 
@@ -440,20 +517,26 @@ function YesNoField({
 export type WeightLossIntakeFormProps = {
   initialProgram?: string
   initialBillingPlan?: BillingPlan
+  initialDoseTier?: WeightLossDoseId
 }
 
 export function WeightLossIntakeForm({
   initialProgram,
   initialBillingPlan = "monthly",
+  initialDoseTier,
 }: WeightLossIntakeFormProps = {}) {
   const programPrefilled = Boolean(initialProgram && programs.some((p) => p.id === initialProgram))
   const minStep = programPrefilled ? 2 : 1
+  const resolvedInitialDose =
+    initialDoseTier ||
+    (initialProgram ? getDefaultWeightLossDoseId(initialProgram) : getDefaultWeightLossDoseId("semaglutide"))
 
   const [step, setStep] = useState(programPrefilled ? 2 : 1)
   const [formData, setFormData] = useState<FormData>({
     ...initialFormData,
     selectedProgram: initialProgram || "",
     selectedBillingPlan: initialBillingPlan,
+    selectedDoseTier: resolvedInitialDose,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
@@ -466,6 +549,28 @@ export function WeightLossIntakeForm({
 
   const totalSteps = 4
   const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
+  const selectedTierMeta = selectedProgram
+    ? getWeightLossDose(selectedProgram, formData.selectedDoseTier)
+    : undefined
+  const holdQuote = selectedProgram
+    ? getWeightLossIntakeHoldQuote(
+        selectedProgram,
+        formData.selectedBillingPlan,
+        formData.selectedDoseTier
+      )
+    : undefined
+  const suggestedDoseTier = useMemo(() => {
+    if (!formData.selectedProgram) return null
+    if (formData.priorGlpExperience === "none" && !formData.onOtherGlp) return null
+    const mg = parseWeeklyDoseMg(formData.priorGlpCurrentDose)
+    if (mg == null) return null
+    return suggestWeightLossDoseId(formData.selectedProgram, mg)
+  }, [
+    formData.selectedProgram,
+    formData.priorGlpCurrentDose,
+    formData.priorGlpExperience,
+    formData.onOtherGlp,
+  ])
   const bmi = useMemo(
     () => calculateBmi(formData.heightFeet, formData.heightInches, formData.weightLbs),
     [formData.heightFeet, formData.heightInches, formData.weightLbs]
@@ -634,7 +739,8 @@ export function WeightLossIntakeForm({
         treatment: {
           selectedProgram: formData.selectedProgram,
           selectedBillingPlan: formData.selectedBillingPlan,
-          priorGlpExperience: formData.priorGlpExperience,
+          selectedDoseTier: formData.selectedDoseTier,
+          priorGlpExperience: formatPriorGlpExperience(formData),
           weightLossGoals: formData.weightLossGoals,
           comorbidities: formData.comorbidities,
           additionalConcerns: formData.additionalConcerns,
@@ -790,7 +896,17 @@ export function WeightLossIntakeForm({
                   formData.selectedProgram === program.id ? "border-primary bg-primary/5" : "border-border",
                   isFieldInvalid("selectedProgram") && "border-destructive"
                 )}
-                onClick={() => updateFormData("selectedProgram", program.id)}
+                onClick={() => {
+                  updateFormData("selectedProgram", program.id)
+                  const defaultDose = getDefaultWeightLossDoseId(program.id)
+                  setFormData((prev) => ({
+                    ...prev,
+                    selectedProgram: program.id,
+                    selectedDoseTier: getWeightLossDose(program, prev.selectedDoseTier)
+                      ? prev.selectedDoseTier
+                      : defaultDose,
+                  }))
+                }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -805,7 +921,16 @@ export function WeightLossIntakeForm({
                   </div>
                   <RadioGroup
                     value={formData.selectedProgram}
-                    onValueChange={(v) => updateFormData("selectedProgram", v)}
+                    onValueChange={(v) => {
+                      const defaultDose = getDefaultWeightLossDoseId(v)
+                      setFormData((prev) => ({
+                        ...prev,
+                        selectedProgram: v,
+                        selectedDoseTier: getWeightLossDose(v, prev.selectedDoseTier)
+                          ? prev.selectedDoseTier
+                          : defaultDose,
+                      }))
+                    }}
                   >
                     <RadioGroupItem value={program.id} id={program.id} />
                   </RadioGroup>
@@ -820,11 +945,47 @@ export function WeightLossIntakeForm({
 
             {selectedProgram && (
               <div className="pt-4 border-t space-y-4">
+                <div className="rounded-xl border-2 border-primary bg-primary/5 p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Label className="text-base font-bold text-foreground">1. Choose your dose *</Label>
+                      <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
+                    </div>
+                    <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                      Required
+                    </span>
+                  </div>
+                  <Select
+                    value={formData.selectedDoseTier}
+                    onValueChange={(v) => updateFormData("selectedDoseTier", v)}
+                  >
+                    <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
+                      <SelectValue placeholder="Select vial mg strength" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedProgram.doses.map((dose) => (
+                        <SelectItem key={dose.id} value={dose.id}>
+                          {formatDoseOptionLabel(dose, formData.selectedBillingPlan)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedTierMeta && (
+                    <p className="text-sm font-medium text-foreground">
+                      Selected: {selectedTierMeta.label}
+                      <span className="font-normal text-muted-foreground"> · {selectedTierMeta.detail}</span>
+                    </p>
+                  )}
+                </div>
                 <div>
-                  <Label className="mb-3 block">Billing preference</Label>
+                  <Label className="mb-3 block">2. Billing preference</Label>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {selectedProgram.billingPlans.map((option) => {
-                      const quote = getWeightLossIntakeHoldQuote(selectedProgram, option.plan)
+                      const quote = getWeightLossIntakeHoldQuote(
+                        selectedProgram,
+                        option.plan,
+                        formData.selectedDoseTier
+                      )
                       return (
                         <button
                           key={option.plan}
@@ -839,10 +1000,20 @@ export function WeightLossIntakeForm({
                           {quote && (
                             <p className="text-2xl font-bold mt-2">
                               ${quote.kitPrice}
-                              <span className="text-sm font-normal text-muted-foreground">/kit · starter</span>
+                              <span className="text-sm font-normal text-muted-foreground">
+                                /kit · {selectedTierMeta?.label ?? "selected"}
+                              </span>
                             </p>
                           )}
                           {option.badge && <span className="text-xs text-primary">{option.badge}</span>}
+                          {option.plan === "quarterly" && (
+                            <p className="text-xs text-muted-foreground mt-1">Live visit $25 add-on waived</p>
+                          )}
+                          {option.plan === "monthly" && quote && quote.liveVisitAddon > 0 && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              +${quote.liveVisitAddon} if live visit required
+                            </p>
+                          )}
                         </button>
                       )
                     })}
@@ -852,6 +1023,7 @@ export function WeightLossIntakeForm({
                   program={selectedProgram}
                   billingPlan={formData.selectedBillingPlan}
                   compact
+                  selectedTierId={formData.selectedDoseTier}
                 />
               </div>
             )}
@@ -871,22 +1043,61 @@ export function WeightLossIntakeForm({
             <CardDescription>Tell us about yourself and your current health metrics.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {programPrefilled && selectedProgram && (() => {
-              const holdQuote = getWeightLossIntakeHoldQuote(selectedProgram, formData.selectedBillingPlan)
-              return (
-              <IntakeOrderSummary
-                productName={selectedProgram.name}
-                productSubtitle={selectedProgram.subtitle}
-                billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
-                priceLine={
-                  holdQuote
-                    ? `Starter kit hold: $${holdQuote.totalBilled} · dose-based pricing on refills`
-                    : "Dose-based kit pricing"
-                }
-                changeHref="/weight-loss#programs"
-              />
-              )
-            })()}
+            {programPrefilled && selectedProgram && holdQuote && (
+              <div className="space-y-4">
+                <IntakeOrderSummary
+                  productName={selectedProgram.name}
+                  productSubtitle={`${selectedProgram.subtitle} · ${selectedTierMeta?.label ?? "Selected"}`}
+                  billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
+                  priceLine={`Kit: $${holdQuote.totalBilled} · auth up to $${holdQuote.authorizationHold}`}
+                  changeHref="/weight-loss#programs"
+                />
+                <div className="space-y-2 rounded-xl border-2 border-primary bg-primary/5 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <Label className="text-base font-bold text-foreground">Confirm your dose</Label>
+                    <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                      Required
+                    </span>
+                  </div>
+                  <Select
+                    value={formData.selectedDoseTier}
+                    onValueChange={(v) => updateFormData("selectedDoseTier", v)}
+                  >
+                    <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
+                      <SelectValue placeholder="Select vial mg strength" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedProgram.doses.map((dose) => (
+                        <SelectItem key={dose.id} value={dose.id}>
+                          {formatDoseOptionLabel(dose, formData.selectedBillingPlan)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {suggestedDoseTier && suggestedDoseTier !== formData.selectedDoseTier && (
+                    <div className="mt-1 rounded-md border border-amber-200 bg-amber-50/60 p-3 text-sm">
+                      <p className="text-amber-950">
+                        Based on your reported dose,{" "}
+                        <span className="font-medium">
+                          {getWeightLossDose(selectedProgram, suggestedDoseTier)?.label ?? suggestedDoseTier}
+                        </span>{" "}
+                        may be a better match.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => updateFormData("selectedDoseTier", suggestedDoseTier)}
+                      >
+                        Switch to {getWeightLossDose(selectedProgram, suggestedDoseTier)?.label ?? suggestedDoseTier}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2" data-field="firstName">
                 <Label htmlFor="firstName" className={cn(isFieldInvalid("firstName") && "text-destructive")}>First name *</Label>
@@ -1001,6 +1212,135 @@ export function WeightLossIntakeForm({
               )}
             </div>
 
+            {(needsPriorGlpDetails(formData) && formData.priorGlpExperience !== "none") && (
+              <div className="rounded-lg border p-4 space-y-4 bg-muted/20">
+                <p className="text-sm font-medium">Prior / current GLP-1 details</p>
+                <p className="text-xs text-muted-foreground">
+                  Helps your provider match your current dose instead of restarting at the lowest starter kit when
+                  appropriate.
+                </p>
+                <div
+                  data-field="priorGlpForm"
+                  className={cn(
+                    "space-y-2 rounded-md",
+                    isFieldInvalid("priorGlpForm") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
+                  )}
+                >
+                  <Label className={cn(isFieldInvalid("priorGlpForm") && "text-destructive")}>Form *</Label>
+                  <RadioGroup
+                    value={formData.priorGlpForm}
+                    onValueChange={(v) => updateFormData("priorGlpForm", v)}
+                    className="grid sm:grid-cols-2 gap-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="injectable" id="glp-form-inj" />
+                      <Label htmlFor="glp-form-inj" className="font-normal">
+                        Injectable
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="oral" id="glp-form-oral" />
+                      <Label htmlFor="glp-form-oral" className="font-normal">
+                        Oral / ODT
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2" data-field="priorGlpCurrentDose">
+                    <Label
+                      htmlFor="priorGlpCurrentDose"
+                      className={cn(isFieldInvalid("priorGlpCurrentDose") && "text-destructive")}
+                    >
+                      Current or last weekly dose *
+                    </Label>
+                    <Input
+                      id="priorGlpCurrentDose"
+                      className={cn(isFieldInvalid("priorGlpCurrentDose") && "border-destructive ring-2 ring-destructive")}
+                      value={formData.priorGlpCurrentDose}
+                      onChange={(e) => updateFormData("priorGlpCurrentDose", e.target.value)}
+                      placeholder="e.g. 5 mg weekly, 12.5 mg, 2 mg"
+                    />
+                  </div>
+                  <div className="space-y-2" data-field="priorGlpDuration">
+                    <Label
+                      htmlFor="priorGlpDuration"
+                      className={cn(isFieldInvalid("priorGlpDuration") && "text-destructive")}
+                    >
+                      How long on this therapy *
+                    </Label>
+                    <Input
+                      id="priorGlpDuration"
+                      className={cn(isFieldInvalid("priorGlpDuration") && "border-destructive ring-2 ring-destructive")}
+                      value={formData.priorGlpDuration}
+                      onChange={(e) => updateFormData("priorGlpDuration", e.target.value)}
+                      placeholder="e.g. 3 months"
+                    />
+                  </div>
+                </div>
+                {suggestedDoseTier && suggestedDoseTier !== formData.selectedDoseTier && (
+                  <div className="rounded-md border border-amber-200 bg-amber-50/60 p-3 text-sm">
+                    <p className="text-amber-950">
+                      Suggested vial for this dose:{" "}
+                      <span className="font-medium">
+                        {selectedProgram
+                          ? getWeightLossDose(selectedProgram, suggestedDoseTier)?.label
+                          : suggestedDoseTier}
+                      </span>{" "}
+                      (currently {selectedTierMeta?.label ?? formData.selectedDoseTier}).
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => updateFormData("selectedDoseTier", suggestedDoseTier)}
+                    >
+                      Use{" "}
+                      {selectedProgram
+                        ? getWeightLossDose(selectedProgram, suggestedDoseTier)?.label
+                        : suggestedDoseTier}{" "}
+                      pricing
+                    </Button>
+                  </div>
+                )}
+                <div
+                  data-field="priorGlpTolerability"
+                  className={cn(
+                    "space-y-2 rounded-md",
+                    isFieldInvalid("priorGlpTolerability") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
+                  )}
+                >
+                  <Label className={cn(isFieldInvalid("priorGlpTolerability") && "text-destructive")}>
+                    Tolerability *
+                  </Label>
+                  <RadioGroup
+                    value={formData.priorGlpTolerability}
+                    onValueChange={(v) => updateFormData("priorGlpTolerability", v)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="well" id="glp-tol-well" />
+                      <Label htmlFor="glp-tol-well" className="font-normal">
+                        Tolerating well
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="mild-side-effects" id="glp-tol-mild" />
+                      <Label htmlFor="glp-tol-mild" className="font-normal">
+                        Mild side effects
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="significant-side-effects" id="glp-tol-sig" />
+                      <Label htmlFor="glp-tol-sig" className="font-normal">
+                        Significant side effects
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+            )}
+
             <div
               data-field="weightLossGoals"
               className={cn(
@@ -1076,6 +1416,78 @@ export function WeightLossIntakeForm({
                   <Label htmlFor={field} className="font-normal cursor-pointer leading-snug">{label}</Label>
                 </div>
               ))}
+              {formData.onOtherGlp && formData.priorGlpExperience === "none" && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4 space-y-3">
+                  <p className="text-sm font-medium text-amber-950">Current GLP-1 details required</p>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-2" data-field="priorGlpCurrentDose">
+                      <Label>Current weekly dose *</Label>
+                      <Input
+                        value={formData.priorGlpCurrentDose}
+                        onChange={(e) => updateFormData("priorGlpCurrentDose", e.target.value)}
+                        placeholder="e.g. 10 mg weekly"
+                        className={cn(isFieldInvalid("priorGlpCurrentDose") && "border-destructive")}
+                      />
+                    </div>
+                    <div className="space-y-2" data-field="priorGlpDuration">
+                      <Label>Duration *</Label>
+                      <Input
+                        value={formData.priorGlpDuration}
+                        onChange={(e) => updateFormData("priorGlpDuration", e.target.value)}
+                        placeholder="e.g. 4 months"
+                        className={cn(isFieldInvalid("priorGlpDuration") && "border-destructive")}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2" data-field="priorGlpForm">
+                    <Label>Form *</Label>
+                    <RadioGroup
+                      value={formData.priorGlpForm}
+                      onValueChange={(v) => updateFormData("priorGlpForm", v)}
+                      className="flex flex-wrap gap-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="injectable" id="glp-form-inj-s3" />
+                        <Label htmlFor="glp-form-inj-s3" className="font-normal">
+                          Injectable
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="oral" id="glp-form-oral-s3" />
+                        <Label htmlFor="glp-form-oral-s3" className="font-normal">
+                          Oral / ODT
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="space-y-2" data-field="priorGlpTolerability">
+                    <Label>Tolerability *</Label>
+                    <RadioGroup
+                      value={formData.priorGlpTolerability}
+                      onValueChange={(v) => updateFormData("priorGlpTolerability", v)}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="well" id="glp-tol-well-s3" />
+                        <Label htmlFor="glp-tol-well-s3" className="font-normal">
+                          Tolerating well
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="mild-side-effects" id="glp-tol-mild-s3" />
+                        <Label htmlFor="glp-tol-mild-s3" className="font-normal">
+                          Mild side effects
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="significant-side-effects" id="glp-tol-sig-s3" />
+                        <Label htmlFor="glp-tol-sig-s3" className="font-normal">
+                          Significant side effects
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+              )}
               <div
                 data-field="confirmedNoContraindications"
                 className={cn(
@@ -1158,27 +1570,30 @@ export function WeightLossIntakeForm({
             <CardDescription>Verify your identity, authorize payment, and complete consent.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {(() => {
-              const selectedProgram = programs.find((p) => p.id === formData.selectedProgram)
-              const holdQuote = selectedProgram
-                ? getWeightLossIntakeHoldQuote(selectedProgram, formData.selectedBillingPlan)
-                : undefined
-              return selectedProgram && holdQuote ? (
+            {selectedProgram && holdQuote ? (
                 <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-2">
                   <p className="font-semibold">{selectedProgram.name}</p>
-                  <p className="text-muted-foreground">{selectedProgram.subtitle}</p>
+                  <p className="text-muted-foreground">
+                    {selectedProgram.subtitle} · {selectedTierMeta?.label ?? "Selected"}
+                  </p>
                   <p className="text-lg font-bold text-primary mt-2">
-                    Authorization hold: ${holdQuote.totalBilled}
+                    Kit total: ${holdQuote.totalBilled}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Authorization hold up to ${holdQuote.authorizationHold}
+                    {holdQuote.liveVisitAddon > 0
+                      ? ` (includes up to $${holdQuote.liveVisitAddon} if a live visit is required)`
+                      : " · live visit add-on waived on quarterly"}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {formData.selectedBillingPlan === "monthly"
-                      ? "First 30-day kit (4 weekly injections) at starter dose tier"
-                      : "First shipment — 3 kits, 4 injections each (90 days) at starter dose tier"}
+                      ? `First 30-day kit (4 weekly injections) · ${selectedTierMeta?.label ?? "selected"}`
+                      : `First shipment — 3 kits, 4 injections each (90 days) · ${selectedTierMeta?.label ?? "selected"}`}
                   </p>
+                  <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
                   <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
                 </div>
-              ) : null
-            })()}
+              ) : null}
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2 sm:col-span-2">
@@ -1240,12 +1655,7 @@ export function WeightLossIntakeForm({
                 paymentAuthorized: formData.paymentAuthorized,
               }}
               onChange={updateFormData}
-              totalBilled={
-                (() => {
-                  const p = programs.find((prog) => prog.id === formData.selectedProgram)
-                  return p ? getWeightLossIntakeHoldQuote(p, formData.selectedBillingPlan)?.totalBilled ?? 0 : 0
-                })()
-              }
+              totalBilled={holdQuote?.authorizationHold ?? 0}
               invalidFields={fieldErrors}
             />
 
@@ -1276,17 +1686,13 @@ export function WeightLossIntakeForm({
                   htmlFor="authorizeHold"
                   className={cn("font-normal cursor-pointer leading-snug", isFieldInvalid("authorizeHold") && "text-destructive")}
                 >
-                  I authorize a payment hold of{" "}
-                  <strong>
-                    $
-                    {(() => {
-                      const p = programs.find((prog) => prog.id === formData.selectedProgram)
-                      return p
-                        ? getWeightLossIntakeHoldQuote(p, formData.selectedBillingPlan)?.totalBilled ?? 0
-                        : 0
-                    })()}
-                  </strong>{" "}
-                  for my first starter-dose kit(s) to be charged only upon prescription approval *
+                  I authorize a payment hold of up to{" "}
+                  <strong>${holdQuote?.authorizationHold ?? 0}</strong>{" "}
+                  for my first {selectedTierMeta?.label ?? "selected"} kit(s)
+                  {formData.selectedBillingPlan === "monthly"
+                    ? " (including up to $25 if a live visit is required)"
+                    : " (live visit add-on waived on quarterly)"}{" "}
+                  to be charged only upon prescription approval *
                 </Label>
               </div>
             </div>
