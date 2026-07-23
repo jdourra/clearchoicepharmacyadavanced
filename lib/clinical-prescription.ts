@@ -63,7 +63,9 @@ export function suggestPrescriptionFromIntake(
       programId === "tirzepatide"
         ? "Compounded Tirzepatide injection"
         : "Compounded Semaglutide injection"
-    const strength = dose ? `${dose.vialMg} mg vial` : doseId || "per protocol"
+    const strength = dose
+      ? `${dose.weeklyMg} mg weekly (${dose.vialMg} mg / 30-day vial)`
+      : doseId || "per protocol"
     return {
       medicationName: drug,
       strength,

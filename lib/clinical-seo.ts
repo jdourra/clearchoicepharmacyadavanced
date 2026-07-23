@@ -189,7 +189,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "How much does medical weight loss cost?",
     answer:
-      "Compounded Semaglutide kits are priced by vial strength from $134–$229 depending on mg and billing plan. Tirzepatide kits range from $149–$339 by vial mg. Every 30-day kit includes 4 weekly injections, intake physician review, compounding, supplies, and shipping for Michigan patients. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply. MIC + B12 metabolic support kits are $119.",
+      "Compounded Semaglutide kits are priced by weekly injection dose from $134–$229 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, intake physician review, compounding, supplies, and shipping for Michigan patients. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply. MIC + B12 metabolic support kits are $119.",
   },
   {
     question: "Who is eligible for medical weight loss?",

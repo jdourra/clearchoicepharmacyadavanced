@@ -2,13 +2,13 @@ import type { RejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
 
 export type WeightLossBillingPlan = "monthly" | "quarterly"
 
-/** Vial strength id, e.g. sema-1mg / tirz-72mg */
+/** Dose option id, e.g. sema-1mg / tirz-10mg (vial totals; labels show weekly dose). */
 export type WeightLossDoseId = string
 
 export const WEIGHT_LOSS_KIT_SUPPLY = "30-day kit · 4 weekly injections"
 
 export const WEIGHT_LOSS_KIT_INJECTIONS_NOTE =
-  "Every kit includes 4 once-weekly injections drawn from your selected vial strength. Price is for that vial kit — not the number of injections."
+  "Every kit includes 4 once-weekly injections at your selected weekly dose. Price is for the 30-day kit — not per injection."
 
 /** Charged only when the provider requires a live visit (waived on quarterly billing). */
 export const WEIGHT_LOSS_LIVE_VISIT_ADDON = 25
@@ -27,8 +27,11 @@ export type WeightLossKitQuote = {
 
 export type WeightLossDoseOption = {
   id: WeightLossDoseId
+  /** Once-weekly injection dose patients take (mg). */
+  weeklyMg: number
+  /** Total vial content for a 30-day kit (typically 4 × weeklyMg). */
   vialMg: number
-  /** Short label shown in dropdown, e.g. "1 mg vial" */
+  /** Short label shown in dropdown, e.g. "0.25 mg weekly" */
   label: string
   /** Supporting line under the label */
   detail: string
@@ -61,16 +64,16 @@ export type WeightLossProgram = {
 }
 
 export const WEIGHT_LOSS_DOSE_PRICING_NOTE =
-  "Each 30-day home kit includes 4 weekly injections and is priced by vial strength (mg). Choose the mg that matches your current or starting dose. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply."
+  "Each 30-day home kit includes 4 once-weekly injections at the weekly dose you select. Kits are priced by weekly strength. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply."
 
 export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
   "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with quarterly supply."
 
 export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
-  "Your card is authorized for the vial strength you select (plus up to $25 on monthly billing if a live visit is required). Quarterly supply waives the live-visit add-on. If your provider changes the prescribed strength, we confirm the exact amount before capture."
+  "Your card is authorized for the weekly dose kit you select (plus up to $25 on monthly billing if a live visit is required). Quarterly supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
 
 export const WEIGHT_LOSS_DOSE_SELECT_HINT =
-  "Already on GLP-1? Choose the vial mg closest to what you take now. New patients typically start at the lowest strength."
+  "Already on GLP-1? Choose the weekly injection dose closest to what you take now. New patients typically start at the lowest weekly dose."
 
 const QUARTERLY_KITS = 3
 
@@ -82,103 +85,108 @@ function q(monthly: number) {
   return Math.round(monthly * 0.9)
 }
 
+/** Semaglutide — weekly injection titration (Wegovy-aligned). Vial = 4 weeks. */
 const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
   {
     id: "sema-1mg",
+    weeklyMg: 0.25,
     vialMg: 1,
-    label: "1 mg vial",
-    detail: "Starter · 30-day kit",
+    label: "0.25 mg weekly",
+    detail: "Starter · 30-day kit (1 mg vial)",
     monthlyKitPrice: 149,
     quarterlyKitPrice: 134,
   },
   {
     id: "sema-2mg",
+    weeklyMg: 0.5,
     vialMg: 2,
-    label: "2 mg vial",
-    detail: "Early titration · 30-day kit",
+    label: "0.5 mg weekly",
+    detail: "Early titration · 30-day kit (2 mg vial)",
     monthlyKitPrice: 169,
     quarterlyKitPrice: q(169),
   },
   {
     id: "sema-4mg",
+    weeklyMg: 1,
     vialMg: 4,
-    label: "4 mg vial",
-    detail: "Mid titration · 30-day kit",
+    label: "1 mg weekly",
+    detail: "Mid titration · 30-day kit (4 mg vial)",
     monthlyKitPrice: 189,
     quarterlyKitPrice: q(189),
   },
   {
     id: "sema-7mg",
-    vialMg: 7,
-    label: "7 mg vial",
-    detail: "Higher titration · 30-day kit",
+    weeklyMg: 1.7,
+    vialMg: 6.8,
+    label: "1.7 mg weekly",
+    detail: "Higher titration · 30-day kit (6.8 mg vial)",
     monthlyKitPrice: 219,
     quarterlyKitPrice: q(219),
   },
   {
     id: "sema-10mg",
-    vialMg: 10,
-    label: "10 mg vial",
-    detail: "Maintenance · 30-day kit",
+    weeklyMg: 2.4,
+    vialMg: 9.6,
+    label: "2.4 mg weekly",
+    detail: "Maintenance · 30-day kit (9.6 mg vial)",
     monthlyKitPrice: 229,
     quarterlyKitPrice: q(229),
   },
 ]
 
+/** Tirzepatide — weekly injection titration (Zepbound-aligned). Vial = 4 weeks. */
 const TIRZEPATIDE_DOSES: WeightLossDoseOption[] = [
   {
-    id: "tirz-9mg",
-    vialMg: 9,
-    label: "9 mg vial",
-    detail: "Starter · 30-day kit",
+    id: "tirz-10mg",
+    weeklyMg: 2.5,
+    vialMg: 10,
+    label: "2.5 mg weekly",
+    detail: "Starter · 30-day kit (10 mg vial)",
     monthlyKitPrice: 159,
     quarterlyKitPrice: 149,
   },
   {
-    id: "tirz-18mg",
-    vialMg: 18,
-    label: "18 mg vial",
-    detail: "Early titration · 30-day kit",
-    monthlyKitPrice: 249,
-    quarterlyKitPrice: q(249),
+    id: "tirz-20mg",
+    weeklyMg: 5,
+    vialMg: 20,
+    label: "5 mg weekly",
+    detail: "Early titration · 30-day kit (20 mg vial)",
+    monthlyKitPrice: 229,
+    quarterlyKitPrice: q(229),
   },
   {
-    id: "tirz-27mg",
-    vialMg: 27,
-    label: "27 mg vial",
-    detail: "Mid titration · 30-day kit",
+    id: "tirz-30mg",
+    weeklyMg: 7.5,
+    vialMg: 30,
+    label: "7.5 mg weekly",
+    detail: "Mid titration · 30-day kit (30 mg vial)",
+    monthlyKitPrice: 259,
+    quarterlyKitPrice: q(259),
+  },
+  {
+    id: "tirz-40mg",
+    weeklyMg: 10,
+    vialMg: 40,
+    label: "10 mg weekly",
+    detail: "Higher titration · 30-day kit (40 mg vial)",
     monthlyKitPrice: 279,
     quarterlyKitPrice: q(279),
   },
   {
-    id: "tirz-36mg",
-    vialMg: 36,
-    label: "36 mg vial",
-    detail: "Higher titration · 30-day kit",
+    id: "tirz-50mg",
+    weeklyMg: 12.5,
+    vialMg: 50,
+    label: "12.5 mg weekly",
+    detail: "High dose · 30-day kit (50 mg vial)",
     monthlyKitPrice: 299,
     quarterlyKitPrice: q(299),
   },
   {
-    id: "tirz-45mg",
-    vialMg: 45,
-    label: "45 mg vial",
-    detail: "High dose · 30-day kit",
-    monthlyKitPrice: 319,
-    quarterlyKitPrice: q(319),
-  },
-  {
-    id: "tirz-54mg",
-    vialMg: 54,
-    label: "54 mg vial",
-    detail: "Maintenance · 30-day kit",
-    monthlyKitPrice: 339,
-    quarterlyKitPrice: q(339),
-  },
-  {
-    id: "tirz-72mg",
-    vialMg: 72,
-    label: "72 mg vial",
-    detail: "Max strength · 30-day kit",
+    id: "tirz-60mg",
+    weeklyMg: 15,
+    vialMg: 60,
+    label: "15 mg weekly",
+    detail: "Maintenance · 30-day kit (60 mg vial)",
     monthlyKitPrice: 319,
     quarterlyKitPrice: q(319),
   },
@@ -257,7 +265,7 @@ export function getWeightLossDoseTier(
   return getWeightLossDose(program, tierId)
 }
 
-/** Map old 3-tier ids + bare mg strings onto vial options. */
+/** Map old 3-tier ids, old vial ids, and bare mg strings onto weekly dose options. */
 function resolveLegacyDoseId(
   program: WeightLossProgram,
   raw: string
@@ -268,14 +276,41 @@ function resolveLegacyDoseId(
     if (id === "titration") return program.doses[Math.min(2, program.doses.length - 1)]
     return program.doses[program.doses.length - 1]
   }
+
+  // Previous tirz vial-total ids → current weekly-aligned options
+  const legacyMap: Record<string, string> = {
+    "tirz-9mg": "tirz-10mg",
+    "tirz-18mg": "tirz-20mg",
+    "tirz-27mg": "tirz-30mg",
+    "tirz-36mg": "tirz-40mg",
+    "tirz-45mg": "tirz-50mg",
+    "tirz-54mg": "tirz-60mg",
+    "tirz-72mg": "tirz-60mg",
+    "tirz-2.5mg": "tirz-10mg",
+    "tirz-5mg": "tirz-20mg",
+    "tirz-7.5mg": "tirz-30mg",
+    "tirz-12.5mg": "tirz-50mg",
+    "tirz-15mg": "tirz-60mg",
+    "sema-0.25mg": "sema-1mg",
+    "sema-0.5mg": "sema-2mg",
+    "sema-1.7mg": "sema-7mg",
+    "sema-2.4mg": "sema-10mg",
+  }
+  if (legacyMap[id]) {
+    return program.doses.find((d) => d.id === legacyMap[id])
+  }
+
   const mgMatch = id.match(/(\d+(?:\.\d+)?)\s*mg/) || id.match(/^(\d+(?:\.\d+)?)$/)
   if (mgMatch) {
     const mg = Number(mgMatch[1])
-    const exact = program.doses.find((d) => d.vialMg === mg)
-    if (exact) return exact
-    // Closest vial at or above stated weekly/vial mg
-    const sorted = [...program.doses].sort((a, b) => a.vialMg - b.vialMg)
-    return sorted.find((d) => d.vialMg >= mg) ?? sorted[sorted.length - 1]
+    const byWeekly = program.doses.find((d) => d.weeklyMg === mg)
+    if (byWeekly) return byWeekly
+    const byVial = program.doses.find((d) => d.vialMg === mg)
+    if (byVial) return byVial
+    // Closest weekly dose at or above stated mg (treat large values as vial totals)
+    const weeklyGuess = mg >= 9 ? mg / 4 : mg
+    const sorted = [...program.doses].sort((a, b) => a.weeklyMg - b.weeklyMg)
+    return sorted.find((d) => d.weeklyMg >= weeklyGuess) ?? sorted[sorted.length - 1]
   }
   return undefined
 }
@@ -344,7 +379,7 @@ export function getWeightLossStartingKitPrice(program: WeightLossProgram | strin
   return p?.doses[0]?.monthlyKitPrice ?? 0
 }
 
-/** Map a patient's stated dose (mg) to the closest vial option. */
+/** Map a patient's stated weekly dose (mg) to the closest catalog option. */
 export function suggestWeightLossDoseId(
   programId: string,
   doseMg: number
@@ -354,21 +389,10 @@ export function suggestWeightLossDoseId(
     return getDefaultWeightLossDoseId(programId)
   }
 
-  if (programId === "tirzepatide") {
-    // Stated values are often weekly brand doses; map roughly to monthly vial content (×4)
-    // or treat as vial mg if already large (>=9).
-    const vialGuess = doseMg >= 9 ? doseMg : doseMg * 4
-    const sorted = [...program.doses].sort((a, b) => a.vialMg - b.vialMg)
-    return (sorted.find((d) => d.vialMg >= vialGuess) ?? sorted[sorted.length - 1]).id
-  }
-
-  // Semaglutide: weekly brand doses are small; vial options are 1–10 mg total
-  const sorted = [...program.doses].sort((a, b) => a.vialMg - b.vialMg)
-  if (doseMg <= 0.5) return sorted[0].id
-  if (doseMg <= 1) return sorted.find((d) => d.vialMg >= 2)?.id ?? sorted[0].id
-  if (doseMg <= 1.7) return sorted.find((d) => d.vialMg >= 4)?.id ?? sorted[0].id
-  if (doseMg <= 2.4) return sorted.find((d) => d.vialMg >= 7)?.id ?? sorted[0].id
-  return sorted[sorted.length - 1].id
+  // Large values are often vial totals; convert to weekly equivalent
+  const weeklyGuess = doseMg >= 9 ? doseMg / 4 : doseMg
+  const sorted = [...program.doses].sort((a, b) => a.weeklyMg - b.weeklyMg)
+  return (sorted.find((d) => d.weeklyMg >= weeklyGuess) ?? sorted[sorted.length - 1]).id
 }
 
 /** @deprecated Prefer suggestWeightLossDoseId */

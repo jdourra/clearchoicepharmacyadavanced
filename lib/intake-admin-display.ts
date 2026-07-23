@@ -121,7 +121,7 @@ const FIELD_LABELS: Record<string, string> = {
   selected_program: "Program ID",
   selected_product: "Product ID",
   selected_billing_plan: "Billing plan",
-  selected_dose_tier: "Vial strength",
+  selected_dose_tier: "Weekly dose",
   selected_conditions: "Conditions for visit",
   other_condition_notes: "Other condition details",
   new_or_worsening_symptoms: "New or worsening symptoms",

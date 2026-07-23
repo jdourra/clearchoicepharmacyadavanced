@@ -120,7 +120,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               In stock
             </Badge>
             <Badge variant="outline">Prescription required</Badge>
-            <Badge variant="outline">Priced by vial mg</Badge>
+            <Badge variant="outline">Priced by weekly dose</Badge>
           </div>
 
           <Card>
@@ -129,7 +129,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-bold text-foreground tracking-tight">
-                      1. Choose your dose
+                      1. Choose your weekly dose
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
                   </div>
@@ -138,14 +138,14 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   </Badge>
                 </div>
                 <Label htmlFor="dose-select" className="sr-only">
-                  Select your vial strength
+                  Select your weekly injection dose
                 </Label>
                 <Select value={doseId} onValueChange={setDoseId}>
                   <SelectTrigger
                     id="dose-select"
                     className="w-full h-12 text-base font-medium border-primary/40 bg-background shadow-sm"
                   >
-                    <SelectValue placeholder="Select vial mg strength" />
+                    <SelectValue placeholder="Select weekly dose" />
                   </SelectTrigger>
                   <SelectContent>
                     {program.doses.map((dose) => (

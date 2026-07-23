@@ -949,7 +949,7 @@ export function WeightLossIntakeForm({
                 <div className="rounded-xl border-2 border-primary bg-primary/5 p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <Label className="text-base font-bold text-foreground">1. Choose your dose *</Label>
+                      <Label className="text-base font-bold text-foreground">1. Choose your weekly dose *</Label>
                       <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
                     </div>
                     <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
@@ -961,7 +961,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select vial mg strength" />
+                      <SelectValue placeholder="Select weekly dose" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (
@@ -1065,7 +1065,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select vial mg strength" />
+                      <SelectValue placeholder="Select weekly dose" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (
@@ -1282,7 +1282,7 @@ export function WeightLossIntakeForm({
                 {suggestedDoseTier && suggestedDoseTier !== formData.selectedDoseTier && (
                   <div className="rounded-md border border-amber-200 bg-amber-50/60 p-3 text-sm">
                     <p className="text-amber-950">
-                      Suggested vial for this dose:{" "}
+                      Suggested weekly dose:{" "}
                       <span className="font-medium">
                         {selectedProgram
                           ? getWeightLossDose(selectedProgram, suggestedDoseTier)?.label

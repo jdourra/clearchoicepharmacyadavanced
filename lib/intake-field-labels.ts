@@ -48,7 +48,7 @@ export const INTAKE_FIELD_LABELS: Record<string, string> = {
   weightLbs: "Current weight",
   goalWeightLbs: "Goal weight",
   comorbidities: "Qualifying conditions",
-  selectedDoseTier: "Vial strength",
+  selectedDoseTier: "Weekly dose",
   priorGlpExperience: "Prior GLP experience",
   priorGlpForm: "Prior GLP form",
   priorGlpCurrentDose: "Prior GLP current dose",

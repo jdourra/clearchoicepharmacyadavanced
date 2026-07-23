@@ -33,7 +33,7 @@ export function WeightLossDoseTierPricing({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/40 text-left">
-              <th className="p-3 font-medium">Vial strength</th>
+              <th className="p-3 font-medium">Weekly dose</th>
               {!compact && <th className="p-3 font-medium hidden sm:table-cell">Kit</th>}
               <th className="p-3 font-medium text-right">
                 {billingPlan === "monthly" ? "Per 30-day kit" : "Per kit (90-day plan)"}

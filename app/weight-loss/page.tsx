@@ -146,7 +146,7 @@ export default function WeightLossPage() {
                     <span className="text-base font-normal text-muted-foreground">/mo quarterly</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by vial mg
+                    Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by weekly dose
                   </p>
                   {savePct > 0 && (
                     <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
