@@ -75,7 +75,7 @@ export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
 export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
 
 export const WEIGHT_LOSS_DOSE_SELECT_HINT =
-  "Dose = how much you inject each week. Price = your 30-day home kit (4 injections), not a weekly price. Already on GLP-1? Pick the weekly amount closest to what you take now. New patients typically start at the lowest option."
+  "Already on GLP-1? Pick the closest weekly amount. New patients usually start at the lowest option."
 
 export const WEIGHT_LOSS_PRICE_PERIOD_BADGE = "Price is per 30-day kit"
 
