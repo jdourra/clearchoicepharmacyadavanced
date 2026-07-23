@@ -39,7 +39,7 @@ const SHARED_KIT_INCLUDES = [
 export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLossProductContent> = {
   semaglutide: {
     homeKitTitle: "Semaglutide Weight Loss HomeKit",
-    tagline: "Medical weight loss · from $134/mo by weekly dose",
+    tagline: "Medical weight loss · from $134/mo per 30-day kit",
     purpose:
       "Semaglutide is a once-weekly GLP-1 therapy used for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Our compounded Semaglutide is prepared pursuant to your provider's prescription for qualifying Michigan patients—we do not dispense brand-name Ozempic or Wegovy through this program.",
     procedure:
@@ -86,7 +86,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
   },
   tirzepatide: {
     homeKitTitle: "Tirzepatide Weight Loss HomeKit",
-    tagline: "Medical weight loss · from $149/mo by weekly dose",
+    tagline: "Medical weight loss · from $149/mo per 30-day kit",
     purpose:
       "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Our compounded Tirzepatide is prescribed for qualifying Michigan patients after physician review—we do not dispense brand-name Zepbound or Mounjaro through this program.",
     procedure:

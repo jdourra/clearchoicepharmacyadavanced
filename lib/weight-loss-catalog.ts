@@ -8,7 +8,7 @@ export type WeightLossDoseId = string
 export const WEIGHT_LOSS_KIT_SUPPLY = "30-day kit · 4 weekly injections"
 
 export const WEIGHT_LOSS_KIT_INJECTIONS_NOTE =
-  "Every kit includes 4 once-weekly injections at your selected weekly dose. Price is for the 30-day kit — not per injection."
+  "Every kit includes 4 once-weekly injections at your selected weekly amount. The price shown is always for the full 30-day kit — not a weekly price and not per injection."
 
 /** Charged only when the provider requires a live visit (waived on quarterly billing). */
 export const WEIGHT_LOSS_LIVE_VISIT_ADDON = 25
@@ -64,16 +64,20 @@ export type WeightLossProgram = {
 }
 
 export const WEIGHT_LOSS_DOSE_PRICING_NOTE =
-  "Each 30-day home kit includes 4 once-weekly injections at the weekly dose you select. Kits are priced by weekly strength. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply."
+  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply."
 
 export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
   "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with quarterly supply."
 
 export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
-  "Your card is authorized for the weekly dose kit you select (plus up to $25 on monthly billing if a live visit is required). Quarterly supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
+  "Your card is authorized for the 30-day kit at the weekly injection amount you select (plus up to $25 on monthly billing if a live visit is required). Quarterly supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
+
+export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
 
 export const WEIGHT_LOSS_DOSE_SELECT_HINT =
-  "Already on GLP-1? Choose the weekly injection dose closest to what you take now. New patients typically start at the lowest weekly dose."
+  "Dose = how much you inject each week. Price = your 30-day home kit (4 injections), not a weekly price. Already on GLP-1? Pick the weekly amount closest to what you take now. New patients typically start at the lowest option."
+
+export const WEIGHT_LOSS_PRICE_PERIOD_BADGE = "Price is per 30-day kit"
 
 const QUARTERLY_KITS = 3
 
@@ -409,11 +413,25 @@ export function parseWeeklyDoseMg(raw: string): number | null {
 
 export function formatDoseOptionLabel(dose: WeightLossDoseOption, billingPlan: WeightLossBillingPlan): string {
   const price = billingPlan === "monthly" ? dose.monthlyKitPrice : dose.quarterlyKitPrice
-  return `${dose.label} — $${price}/kit`
+  return `${dose.weeklyMg} mg once weekly · $${price} per 30-day kit`
+}
+
+export function formatSelectedDoseSummary(
+  dose: WeightLossDoseOption,
+  billingPlan: WeightLossBillingPlan
+): string {
+  const price = billingPlan === "monthly" ? dose.monthlyKitPrice : dose.quarterlyKitPrice
+  return `Selected dose: ${dose.weeklyMg} mg/week · Kit price: $${price}/mo (4 injections)`
+}
+
+export function formatKitPriceCaption(doseLabel: string): string {
+  return `/mo · 30-day kit · ${doseLabel}`
 }
 
 export function formatKitBillingLabel(billingPlan: WeightLossBillingPlan): string {
-  return billingPlan === "monthly" ? "Billed per kit, monthly" : "Billed per 3-kit shipment (90 days)"
+  return billingPlan === "monthly"
+    ? "Billed monthly per 30-day kit"
+    : "Billed per 3-kit shipment (90 days)"
 }
 
 /** MIC + B12 skinny shot — sold via weight loss landing; intake uses rejuvenation vial flow. */

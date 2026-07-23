@@ -27,10 +27,14 @@ import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pr
 import type { WeightLossBillingPlan, WeightLossDoseId, WeightLossProgram } from "@/lib/weight-loss-catalog"
 import {
   WEIGHT_LOSS_DOSE_SELECT_HINT,
+  WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  WEIGHT_LOSS_PRICE_PERIOD_BADGE,
   formatDoseOptionLabel,
   formatKitBillingLabel,
+  formatKitPriceCaption,
+  formatSelectedDoseSummary,
   getDefaultWeightLossDoseId,
   getWeightLossDose,
   getWeightLossIntakeHoldQuote,
@@ -120,7 +124,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               In stock
             </Badge>
             <Badge variant="outline">Prescription required</Badge>
-            <Badge variant="outline">Priced by weekly dose</Badge>
+            <Badge variant="outline">{WEIGHT_LOSS_PRICE_PERIOD_BADGE}</Badge>
           </div>
 
           <Card>
@@ -129,7 +133,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-bold text-foreground tracking-tight">
-                      1. Choose your weekly dose
+                      {WEIGHT_LOSS_DOSE_SELECT_TITLE}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
                   </div>
@@ -138,14 +142,14 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   </Badge>
                 </div>
                 <Label htmlFor="dose-select" className="sr-only">
-                  Select your weekly injection dose
+                  Select your weekly injection amount
                 </Label>
                 <Select value={doseId} onValueChange={setDoseId}>
                   <SelectTrigger
                     id="dose-select"
                     className="w-full h-12 text-base font-medium border-primary/40 bg-background shadow-sm"
                   >
-                    <SelectValue placeholder="Select weekly dose" />
+                    <SelectValue placeholder="Select weekly injection amount" />
                   </SelectTrigger>
                   <SelectContent>
                     {program.doses.map((dose) => (
@@ -157,7 +161,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 </Select>
                 {selectedDose && (
                   <p className="text-sm font-medium text-foreground">
-                    Selected: {selectedDose.label}
+                    {formatSelectedDoseSummary(selectedDose, billingPlan)}
                     <span className="font-normal text-muted-foreground"> · {selectedDose.detail}</span>
                   </p>
                 )}
@@ -201,7 +205,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                           <div className="text-right">
                             <p className="text-xl font-bold text-primary">${quote.kitPrice}</p>
                             <p className="text-xs text-muted-foreground">
-                              /kit · {selectedDose?.label ?? "selected"}
+                              {formatKitPriceCaption(selectedDose?.label ?? "selected")}
                             </p>
                             {option.plan === "quarterly" && (
                               <p className="text-xs text-muted-foreground">${quote.totalBilled} for 3 kits</p>
@@ -218,12 +222,12 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
                   <p className="font-medium">
                     {billingPlan === "monthly"
-                      ? `First kit (${selectedDose?.label ?? "selected"}, 4 injections): $${holdQuote.totalBilled}`
-                      : `First shipment — 3 × ${selectedDose?.label ?? "selected"} (4 injections each): $${holdQuote.totalBilled}`}
+                      ? `First 30-day kit (${selectedDose?.label ?? "selected"}, 4 injections): $${holdQuote.totalBilled}/mo`
+                      : `First shipment — 3 × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
-                    4 weekly injections · intake physician review, compounding, syringes, supplies, and shipping
-                    included.
+                    Price is for the full kit, not per week. Intake physician review, compounding, syringes, supplies,
+                    and shipping included.
                   </p>
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">

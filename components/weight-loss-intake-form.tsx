@@ -39,10 +39,13 @@ import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pr
 import {
   WEIGHT_LOSS_PROGRAMS,
   WEIGHT_LOSS_DOSE_SELECT_HINT,
+  WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
   formatDoseOptionLabel,
   formatKitBillingLabel,
+  formatKitPriceCaption,
+  formatSelectedDoseSummary,
   getDefaultWeightLossDoseId,
   getWeightLossDose,
   getWeightLossIntakeHoldQuote,
@@ -949,7 +952,9 @@ export function WeightLossIntakeForm({
                 <div className="rounded-xl border-2 border-primary bg-primary/5 p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <Label className="text-base font-bold text-foreground">1. Choose your weekly dose *</Label>
+                      <Label className="text-base font-bold text-foreground">
+                        {WEIGHT_LOSS_DOSE_SELECT_TITLE} *
+                      </Label>
                       <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
                     </div>
                     <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
@@ -961,7 +966,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select weekly dose" />
+                      <SelectValue placeholder="Select weekly injection amount" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (
@@ -973,7 +978,7 @@ export function WeightLossIntakeForm({
                   </Select>
                   {selectedTierMeta && (
                     <p className="text-sm font-medium text-foreground">
-                      Selected: {selectedTierMeta.label}
+                      {formatSelectedDoseSummary(selectedTierMeta, formData.selectedBillingPlan)}
                       <span className="font-normal text-muted-foreground"> · {selectedTierMeta.detail}</span>
                     </p>
                   )}
@@ -1002,7 +1007,8 @@ export function WeightLossIntakeForm({
                             <p className="text-2xl font-bold mt-2">
                               ${quote.kitPrice}
                               <span className="text-sm font-normal text-muted-foreground">
-                                /kit · {selectedTierMeta?.label ?? "selected"}
+                                {" "}
+                                {formatKitPriceCaption(selectedTierMeta?.label ?? "selected")}
                               </span>
                             </p>
                           )}
@@ -1065,7 +1071,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select weekly dose" />
+                      <SelectValue placeholder="Select weekly injection amount" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (
