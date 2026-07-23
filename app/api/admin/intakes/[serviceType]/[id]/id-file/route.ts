@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
+import { canReviewClinicalIntakesStaff } from "@/lib/staff-roles"
 import { fetchIdDocument, idFileFetchErrorMessage } from "@/lib/intake-id-storage"
 import { getClinicalIntakeDetail, isAdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 
@@ -8,7 +9,7 @@ type RouteParams = { params: Promise<{ serviceType: string; id: string }> }
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const staff = await staffAuth.getCurrentStaff(request)
-    if (!staff || staff.role !== "admin") {
+    if (!canReviewClinicalIntakesStaff(staff)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

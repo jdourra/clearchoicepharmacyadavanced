@@ -61,7 +61,7 @@ export async function notifyClinicalIntakeAlert(params: {
   body: string
 }): Promise<StaffNotifyResult> {
   const recipients = getClinicalIntakeRecipientEmails()
-  const text = `Assigned reviewer: ${PRIMARY_PHYSICIAN.name} (${PRIMARY_PHYSICIAN.credentials})\nReview in admin: ${SITE_URL}/admin/intakes\n\n${params.body}`
+  const text = `Assigned reviewer: ${PRIMARY_PHYSICIAN.name} (${PRIMARY_PHYSICIAN.credentials})\nReview intakes: ${SITE_URL}/doctor/intakes\n\n${params.body}`
 
   return sendToRecipients(
     recipients,

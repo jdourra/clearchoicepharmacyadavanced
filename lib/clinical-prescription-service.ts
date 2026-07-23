@@ -238,7 +238,8 @@ export async function createPrescriptionOnApprove(params: {
         `Intake: ${params.intakeId}`,
         "",
         `Print (after signed): ${SITE_URL}/api/admin/prescriptions/${prescriptionId}/pdf`,
-        `Review intake: ${SITE_URL}/admin/intakes/${params.serviceType}/${params.intakeId}`,
+        `Review intake: ${SITE_URL}/doctor/intakes/${params.serviceType}/${params.intakeId}`,
+        `(Pharmacy admin: ${SITE_URL}/admin/intakes/${params.serviceType}/${params.intakeId})`,
       ].join("\n"),
     }).catch((err) => console.error("[clinical-rx] admin alert failed:", err))
   }
@@ -311,7 +312,8 @@ async function notifyAdminRxReady(params: {
       `Signature: ${params.mode === "dropbox" ? "Dropbox Sign" : "Typed clinician e-sign"}`,
       "",
       `Download / print PDF: ${SITE_URL}/api/admin/prescriptions/${params.prescriptionId}/pdf`,
-      `Intake: ${SITE_URL}/admin/intakes/${params.serviceType}/${params.intakeId}`,
+      `Clinician intake: ${SITE_URL}/doctor/intakes/${params.serviceType}/${params.intakeId}`,
+      `Pharmacy admin: ${SITE_URL}/admin/intakes/${params.serviceType}/${params.intakeId}`,
     ].join("\n"),
   })
 }

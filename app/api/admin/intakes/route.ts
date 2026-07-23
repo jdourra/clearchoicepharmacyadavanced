@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
+import { canReviewClinicalIntakesStaff } from "@/lib/staff-roles"
 import { listClinicalIntakes } from "@/lib/telehealth/intake-registry"
 
 export async function GET(request: Request) {
   try {
     const staff = await staffAuth.getCurrentStaff(request)
-    if (!staff || staff.role !== "admin") {
+    if (!canReviewClinicalIntakesStaff(staff)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

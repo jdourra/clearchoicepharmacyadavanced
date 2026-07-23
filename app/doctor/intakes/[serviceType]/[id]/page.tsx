@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { AdminShell } from "@/components/admin-shell"
+import { DoctorShell } from "@/components/doctor-shell"
 import { Button } from "@/components/ui/button"
 import { AdminIntakeDetailView } from "@/components/admin-intake-detail-view"
 import { staffAuthFetch } from "@/lib/staff-session"
@@ -11,7 +11,7 @@ import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 
 type PageProps = { params: Promise<{ serviceType: string; id: string }> }
 
-export default function AdminIntakeDetailPage({ params }: PageProps) {
+export default function DoctorIntakeDetailPage({ params }: PageProps) {
   const router = useRouter()
   const [serviceType, setServiceType] = useState("")
   const [id, setId] = useState("")
@@ -37,7 +37,7 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
       staffAuthFetch(`/api/admin/intakes/${st}/${intakeId}`)
         .then(async (res) => {
           if (res.status === 401) {
-            router.push("/admin/login")
+            router.push("/doctor/login")
             return
           }
           if (!res.ok) {
@@ -55,22 +55,22 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <AdminShell title="Intake Review" description="Loading…">
+      <DoctorShell title="Intake review" description="Loading…">
         <p>Loading intake…</p>
-      </AdminShell>
+      </DoctorShell>
     )
   }
 
   if (!data) {
     return (
-      <AdminShell title="Intake Review" description="Unable to load intake">
+      <DoctorShell title="Intake review" description="Unable to load intake">
         <div className="space-y-4">
           <p className="text-destructive">{error || "Intake not found."}</p>
           <Button variant="outline" asChild>
-            <Link href="/admin/intakes">← Back to queue</Link>
+            <Link href="/doctor/intakes">← Back to queue</Link>
           </Button>
         </div>
-      </AdminShell>
+      </DoctorShell>
     )
   }
 
@@ -84,7 +84,7 @@ export default function AdminIntakeDetailPage({ params }: PageProps) {
       suggestedPrescription={data.suggestedPrescription}
       existingPrescription={data.existingPrescription}
       dropboxSignConfigured={Boolean(data.dropboxSignConfigured)}
-      portal="admin"
+      portal="doctor"
     />
   )
 }

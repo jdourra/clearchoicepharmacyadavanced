@@ -227,6 +227,43 @@ export const staffAuth = {
     if (sessionId) await deleteSession(sessionId)
   },
 
+  /** Verify current password and set a new one for the logged-in staff user. */
+  async changePassword(params: {
+    staffId: string
+    currentPassword: string
+    newPassword: string
+  }): Promise<{ success: true } | { success: false; error: string }> {
+    const newPassword = params.newPassword
+    if (newPassword.length < 8) {
+      return { success: false, error: "New password must be at least 8 characters." }
+    }
+    if (newPassword.length > 128) {
+      return { success: false, error: "New password is too long." }
+    }
+    if (newPassword === params.currentPassword) {
+      return { success: false, error: "New password must be different from the current password." }
+    }
+
+    const match = await sql(
+      `SELECT id FROM staff_users
+       WHERE id = $1 AND is_active = true
+         AND password_hash = crypt($2, password_hash)`,
+      [params.staffId, params.currentPassword]
+    )
+    if (match.length === 0) {
+      return { success: false, error: "Current password is incorrect." }
+    }
+
+    await sql(
+      `UPDATE staff_users
+       SET password_hash = crypt($1, gen_salt('bf'))
+       WHERE id = $2 AND is_active = true`,
+      [newPassword, params.staffId]
+    )
+
+    return { success: true }
+  },
+
   STAFF_SESSION_COOKIE,
   buildCookieHeader: (sessionId: string) => buildCookieHeader(STAFF_SESSION_COOKIE, sessionId, 30 * 24 * 60 * 60),
   buildDeleteCookieHeader: () => buildDeleteCookieHeader(STAFF_SESSION_COOKIE),

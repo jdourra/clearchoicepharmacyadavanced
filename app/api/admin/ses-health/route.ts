@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
+import { canReviewClinicalIntakesStaff } from "@/lib/staff-roles"
 import { getSesAccountStatus, sesReviewHint } from "@/lib/ses-account-status"
 import { looksLikeSesSandbox, sesConfigStatus } from "@/lib/ses-env"
 
 export async function GET(request: Request) {
   try {
     const staff = await staffAuth.getCurrentStaff(request)
-    if (!staff || staff.role !== "admin") {
+    if (!canReviewClinicalIntakesStaff(staff)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

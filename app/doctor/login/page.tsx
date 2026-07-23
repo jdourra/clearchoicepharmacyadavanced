@@ -1,17 +1,18 @@
 "use client"
 
-import React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Lock } from "lucide-react"
+import { Stethoscope } from "lucide-react"
 import Link from "next/link"
-import { saveStaffSession } from "@/lib/staff-session"
+import { saveStaffSession, clearStaffSession } from "@/lib/staff-session"
 import { SiteLogo } from "@/components/site-logo"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { isClinicianRole } from "@/lib/staff-roles"
 
-export default function AdminLoginPage() {
+export default function DoctorLoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -33,17 +34,23 @@ export default function AdminLoginPage() {
       if (!res.ok) {
         throw new Error(data.error || "Invalid email or password")
       }
+
+      if (!isClinicianRole(data.staff?.role)) {
+        clearStaffSession()
+        await fetch("/api/auth/staff-signout", { method: "POST", credentials: "include" })
+        throw new Error(
+          data.staff?.role === "admin"
+            ? "This is the clinician portal. Pharmacy staff should use Admin Login."
+            : "This account is not authorized for clinician access."
+        )
+      }
+
       if (data.sessionId) {
         saveStaffSession(data.sessionId)
       }
-      // Clinicians belong in the doctor portal
-      if (data.staff?.role === "clinician" || data.staff?.role === "doctor") {
-        window.location.href = "/doctor/intakes"
-        return
-      }
-      window.location.href = "/admin"
-    } catch (err: any) {
-      setError(err.message)
+      window.location.href = "/doctor/intakes"
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Sign in failed")
       setLoading(false)
     }
   }
@@ -58,17 +65,17 @@ export default function AdminLoginPage() {
         <Card>
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Lock className="h-6 w-6 text-primary" />
+              <Stethoscope className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>Access the pharmacy admin dashboard</CardDescription>
+            <CardTitle className="text-2xl">Clinician Login</CardTitle>
+            <CardDescription>
+              Review patient intakes for {PRIMARY_PHYSICIAN.name}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg">
-                  {error}
-                </div>
+                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg">{error}</div>
               )}
 
               <div className="flex flex-col gap-2">
@@ -76,7 +83,7 @@ export default function AdminLoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@clearchoicepharmacy.com"
+                  placeholder="doctor@clearchoicepharmacy.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -88,7 +95,7 @@ export default function AdminLoginPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter admin password"
+                  placeholder="Enter clinician password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -102,9 +109,9 @@ export default function AdminLoginPage() {
 
             <div className="mt-4 space-y-2 text-center text-sm text-muted-foreground">
               <p>
-                Clinician?{" "}
-                <Link href="/doctor/login" className="text-primary hover:underline">
-                  Doctor login
+                Pharmacy staff?{" "}
+                <Link href="/admin/login" className="text-primary hover:underline">
+                  Admin login
                 </Link>
               </p>
               <Link href="/" className="block hover:text-primary">

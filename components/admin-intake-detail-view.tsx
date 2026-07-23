@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AdminShell } from "@/components/admin-shell"
+import { DoctorShell } from "@/components/doctor-shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -48,6 +49,8 @@ type AdminIntakeDetailViewProps = {
     medicationName: string
   } | null
   dropboxSignConfigured?: boolean
+  /** Which staff portal is hosting this review UI. */
+  portal?: "admin" | "doctor"
 }
 
 function IdImagePanel({
@@ -159,8 +162,11 @@ export function AdminIntakeDetailView({
   suggestedPrescription,
   existingPrescription,
   dropboxSignConfigured = false,
+  portal = "admin",
 }: AdminIntakeDetailViewProps) {
   const router = useRouter()
+  const queueHref = portal === "doctor" ? "/doctor/intakes" : "/admin/intakes"
+  const Shell = portal === "doctor" ? DoctorShell : AdminShell
   const [submitting, setSubmitting] = useState<string | null>(null)
   const [note, setNote] = useState("")
   const [error, setError] = useState("")
@@ -265,7 +271,7 @@ export function AdminIntakeDetailView({
         parts.push(`Prescription issue: ${result.dropboxError}`)
       }
       setReviewMessage(parts.join(" "))
-      setTimeout(() => router.push("/admin/intakes"), result.emailSent && !result.dropboxError ? 1800 : 4500)
+      setTimeout(() => router.push(queueHref), result.emailSent && !result.dropboxError ? 1800 : 4500)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Review failed")
     } finally {
@@ -297,13 +303,13 @@ export function AdminIntakeDetailView({
         }
       `}</style>
 
-      <AdminShell
+      <Shell
         title="Intake Review"
         description={`${serviceLabel} — ${patientName}`}
       >
         <div className="no-print mb-4 flex flex-wrap items-center gap-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/admin/intakes">← Back to queue</Link>
+            <Link href={queueHref}>← Back to queue</Link>
           </Button>
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
@@ -645,7 +651,7 @@ export function AdminIntakeDetailView({
             </div>
           </div>
         </div>
-      </AdminShell>
+      </Shell>
     </>
   )
 }
