@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import type { Order, PatientProfileSummary, User } from "@/lib/auth-types"
+import type { CustomerClinicalProgram } from "@/lib/admin-customer-programs"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { formatPhoneDisplay, phoneTelHref } from "@/lib/phone"
 import { AdminHeader } from "@/components/admin-header"
@@ -22,6 +23,7 @@ import {
   Package,
   User as UserIcon,
   Play,
+  Stethoscope,
 } from "lucide-react"
 
 export default function AdminCustomerDetailPage() {
@@ -32,6 +34,7 @@ export default function AdminCustomerDetailPage() {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<PatientProfileSummary | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
+  const [clinicalPrograms, setClinicalPrograms] = useState<CustomerClinicalProgram[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set())
 
@@ -53,6 +56,7 @@ export default function AdminCustomerDetailPage() {
         setUser(data.user || null)
         setProfile(data.profile || null)
         setOrders(data.orders || [])
+        setClinicalPrograms(data.clinicalPrograms || [])
       }
     } catch {
       router.push("/admin/login")
@@ -191,10 +195,14 @@ export default function AdminCustomerDetailPage() {
                 <CardTitle className="text-lg">Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                   <div>
                     <p className="text-sm text-muted-foreground">Orders</p>
                     <p className="text-2xl font-bold">{orders.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Clinical programs</p>
+                    <p className="text-2xl font-bold">{clinicalPrograms.length}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Total Spent</p>
@@ -212,6 +220,63 @@ export default function AdminCustomerDetailPage() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5" />
+                Clinical programs ({clinicalPrograms.length})
+              </CardTitle>
+              <CardDescription>
+                Medication and service intakes — transaction stage and payment status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {clinicalPrograms.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  No clinical intakes for this customer yet.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {clinicalPrograms.map((program) => (
+                    <Link
+                      key={`${program.serviceType}-${program.id}`}
+                      href={program.reviewHref}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="min-w-0 space-y-1">
+                        <p className="font-medium">
+                          {program.serviceLabel}
+                          <span className="text-muted-foreground font-normal"> · {program.treatmentLabel}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {program.id} · Submitted {new Date(program.createdAt).toLocaleString()}
+                          {program.stripePaymentIntentId
+                            ? ` · Stripe ${program.stripePaymentIntentId}`
+                            : ""}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <Badge variant="outline">{program.statusLabel}</Badge>
+                        <Badge
+                          variant={
+                            program.paymentStatus === "captured"
+                              ? "default"
+                              : program.paymentStatus === "failed"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {program.paymentStatusLabel}
+                        </Badge>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>

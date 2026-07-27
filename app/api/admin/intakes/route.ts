@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status") || "pending"
-    const intakes = await listClinicalIntakes({ status: status === "all" ? undefined : status })
+    const intakes = await listClinicalIntakes({ status })
 
     return NextResponse.json({ intakes })
   } catch (error: unknown) {

@@ -140,6 +140,8 @@ export async function reviewClinicalIntake(params: {
     detail.stripe_payment_intent_id != null ? String(detail.stripe_payment_intent_id) : null
 
   let paymentAction: IntakeReviewResult["paymentAction"] = "none"
+  let paymentStatus =
+    detail.payment_status != null ? String(detail.payment_status) : stripeId ? "authorized" : "none"
 
   if (stripeId && serviceType !== "specialty_pharmacy") {
     if (action === "approve") {
@@ -160,7 +162,12 @@ export async function reviewClinicalIntake(params: {
       }
       const captured = await capturePaymentHold(stripeId, amountCents)
       paymentAction = captured ? "captured" : "failed"
+      paymentStatus = captured ? "captured" : "failed"
       if (!captured) {
+        await sql(
+          `UPDATE ${table} SET payment_status = $1, updated_at = NOW() WHERE id = $2`,
+          ["failed", id]
+        ).catch(() => [])
         return {
           success: false,
           error: "Failed to capture payment hold. Check Stripe dashboard and retry.",
@@ -170,24 +177,26 @@ export async function reviewClinicalIntake(params: {
     } else if (action === "deny") {
       const released = await cancelPaymentHold(stripeId)
       paymentAction = released ? "released" : "failed"
+      paymentStatus = released ? "released" : "failed"
     }
   }
 
   const rows =
     serviceType === "specialty_pharmacy"
       ? await sql(
-          `UPDATE specialty_intake SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING id`,
-          [next, id]
+          `UPDATE specialty_intake SET status = $1, payment_status = COALESCE($2, payment_status), updated_at = NOW() WHERE id = $3 RETURNING id`,
+          [next, paymentStatus, id]
         ).catch(() => [])
       : await sql(
           `UPDATE ${table}
      SET status = $1,
          partner_name = $2,
          partner_status = $3,
+         payment_status = $4,
          updated_at = NOW()
-     WHERE id = $4
+     WHERE id = $5
      RETURNING id`,
-          [next, "manual", partnerStatus, id]
+          [next, "manual", partnerStatus, paymentStatus, id]
         ).catch(() => [])
 
   if (rows.length === 0) {

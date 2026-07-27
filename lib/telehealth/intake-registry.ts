@@ -17,6 +17,8 @@ export type IntakeListItem = {
   status: string
   treatmentLabel: string
   stripePaymentIntentId: string | null
+  paymentStatus: string | null
+  patientId: string | null
   createdAt: string
 }
 
@@ -24,6 +26,19 @@ export const PENDING_INTAKE_STATUSES = [
   "pending_provider_review",
   "pending_review",
   "provider_follow_up",
+] as const
+
+export const APPROVED_INTAKE_STATUSES = [
+  "rx_at_pharmacy",
+  "preparing",
+  "shipped",
+  "completed",
+  "ready_for_fulfillment",
+  "ready_for_dispatch",
+  "dispatched",
+  "coordinating_transfer",
+  "prior_auth_in_progress",
+  "copay_assistance",
 ] as const
 
 export const SERVICE_LABELS: Record<AdminIntakeServiceType, string> = {
@@ -70,6 +85,8 @@ function rowToItem(
     treatmentLabel,
     stripePaymentIntentId:
       row.stripe_payment_intent_id != null ? String(row.stripe_payment_intent_id) : null,
+    paymentStatus: row.payment_status != null ? String(row.payment_status) : null,
+    patientId: row.patient_id != null ? String(row.patient_id) : null,
     createdAt: String(row.created_at ?? new Date().toISOString()),
   }
 }
@@ -81,46 +98,58 @@ export async function listClinicalIntakes(options?: {
   const limit = Math.min(options?.limit ?? 100, 200)
   const statusFilter = options?.status
 
-  const pendingOnly = !statusFilter || statusFilter === "pending"
-  const statusClause = pendingOnly ? [...PENDING_INTAKE_STATUSES] : [statusFilter]
+  let statusClause: string[] | null = null
+  if (!statusFilter || statusFilter === "pending") {
+    statusClause = [...PENDING_INTAKE_STATUSES]
+  } else if (statusFilter === "approved") {
+    statusClause = [...APPROVED_INTAKE_STATUSES]
+  } else if (statusFilter === "all") {
+    statusClause = null
+  } else {
+    statusClause = [statusFilter]
+  }
 
-  const placeholders = statusClause.map((_, i) => `$${i + 1}`).join(", ")
+  const statusSql =
+    statusClause == null
+      ? ""
+      : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})`
+  const statusParams = statusClause ?? []
 
   const queries = await Promise.all([
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_product, stripe_payment_intent_id, created_at
-       FROM patient_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_product, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM patient_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, created_at
-       FROM trt_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM trt_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, created_at
-       FROM weight_loss_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM weight_loss_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, shipping_state AS state, status, selected_vial_title, stripe_payment_intent_id, created_at
-       FROM rejuvenation_vial_intakes WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, shipping_state AS state, status, selected_vial_title, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM rejuvenation_vial_intakes ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, service_state AS state, status, selected_package_title, stripe_payment_intent_id, created_at
-       FROM iv_booking_requests WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, service_state AS state, status, selected_package_title, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM iv_booking_requests ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_medication, created_at
-       FROM specialty_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_medication, payment_status, patient_id, created_at
+       FROM specialty_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, requested_medications, visit_reason, stripe_payment_intent_id, created_at
-       FROM prescription_telemedicine_intake WHERE status IN (${placeholders}) ORDER BY created_at DESC LIMIT ${limit}`,
-      statusClause
+      `SELECT id, first_name, last_name, email, phone, state, status, requested_medications, visit_reason, stripe_payment_intent_id, payment_status, patient_id, created_at
+       FROM prescription_telemedicine_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
+      statusParams
     ).catch(() => []),
   ])
 

@@ -17,6 +17,10 @@ import {
   validateInjectionTelehealthConsents,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import {
+  ensurePatientFromIntake,
+  paymentStatusFromHold,
+} from "@/lib/ensure-patient-from-intake"
 
 type WeightLossIntakePayload = {
   patientInfo: {
@@ -387,6 +391,19 @@ export async function POST(request: NextRequest) {
         getWeightLossDose(data.treatmentInfo.selectedProgram, "starter")
       const doseTier = resolved?.id || "sema-1mg"
 
+      const { patientId } = await ensurePatientFromIntake({
+        email: data.patientInfo.email,
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        phone: data.patientInfo.phone,
+        dateOfBirth: data.patientInfo.dateOfBirth,
+        address: data.patientInfo.address,
+        city: data.patientInfo.city,
+        state: data.patientInfo.state,
+        zip: data.patientInfo.zipCode,
+      })
+      const paymentStatus = paymentStatusFromHold(data.identity.stripePaymentIntentId)
+
       const values = [
           submissionId,
           data.patientInfo.firstName,
@@ -436,6 +453,8 @@ export async function POST(request: NextRequest) {
           data.identity.idBackKey,
           partnerResult.partnerName,
           partnerResult.partnerStatus || "queued_for_manual_review",
+          patientId,
+          paymentStatus,
         ]
 
       try {
@@ -450,20 +469,21 @@ export async function POST(request: NextRequest) {
             selected_program, selected_billing_plan, selected_dose_tier, prior_glp_experience,
             weight_loss_goals, comorbidities, additional_concerns,
             shipping_address, shipping_city, shipping_state, shipping_zip,
-            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
+            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status,
+            patient_id, payment_status
           ) VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
             $11, $12, $13, $14, $15, $16,
             $17, $18, $19, $20, $21, $22,
             $23, $24, $25, $26, $27, $28, $29, $30, $31,
             $32, $33, $34, $35, $36::jsonb, $37::jsonb, $38,
-            $39, $40, $41, $42, $43, $44, $45, $46, $47, $48
+            $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50
           )`,
           values
         )
       } catch (columnError) {
         console.warn(
-          "weight_loss_intake.selected_dose_tier insert failed; retrying without column. Run scripts/031_weight_loss_selected_dose_tier.sql",
+          "weight_loss_intake insert with patient_id/payment_status/selected_dose_tier failed; retrying legacy columns. Run scripts/031 and scripts/034.",
           columnError
         )
         const fallbackConcerns =
@@ -538,6 +558,10 @@ export async function POST(request: NextRequest) {
             partnerResult.partnerStatus || "queued_for_manual_review",
           ]
         )
+        await sql(
+          `UPDATE weight_loss_intake SET patient_id = $1, payment_status = $2 WHERE id = $3`,
+          [patientId, paymentStatus, submissionId]
+        ).catch(() => {})
       }
     } catch (dbError) {
       console.error("Failed to persist weight loss intake:", dbError)

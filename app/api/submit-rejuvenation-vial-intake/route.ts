@@ -11,6 +11,7 @@ import {
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 function formatClinicianSummary(data: Record<string, unknown>, submissionId: string): string {
   return `
@@ -195,6 +196,22 @@ export async function POST(request: NextRequest) {
       console.error("Failed to save vial intake:", dbError)
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
+
+    await linkIntakePatientAndPayment({
+      table: "rejuvenation_vial_intakes",
+      intakeId: submissionId,
+      identity: {
+        email: String(data.email),
+        firstName: String(data.firstName),
+        lastName: String(data.lastName),
+        phone: data.phone ? String(data.phone) : null,
+        address: data.shippingAddress ? String(data.shippingAddress) : null,
+        city: data.shippingCity ? String(data.shippingCity) : null,
+        state: data.shippingState ? String(data.shippingState) : null,
+        zip: data.shippingZip ? String(data.shippingZip) : null,
+      },
+      stripePaymentIntentId: data.payment?.stripePaymentIntentId,
+    })
 
     return NextResponse.json({
       success: true,

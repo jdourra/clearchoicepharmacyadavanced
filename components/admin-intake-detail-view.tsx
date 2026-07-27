@@ -454,7 +454,30 @@ export function AdminIntakeDetailView({
                         Stripe: {String(detail.stripe_payment_intent_id)}
                       </p>
                     )}
-                  </div>
+                    {detail.payment_status != null && String(detail.payment_status).trim() !== "" && (
+                      <p className="mt-1 text-sm">
+                        <strong>Payment:</strong>{" "}
+                        {String(detail.payment_status) === "captured"
+                          ? "Paid (captured)"
+                          : String(detail.payment_status) === "authorized"
+                            ? "Authorized (hold)"
+                            : String(detail.payment_status) === "released"
+                              ? "Hold released"
+                              : String(detail.payment_status) === "failed"
+                                ? "Payment failed"
+                                : String(detail.payment_status)}
+                      </p>
+                    )}
+                    {detail.patient_id != null && String(detail.patient_id).trim() !== "" && (
+                      <p className="mt-1 text-sm">
+                        <Link
+                          href={`/admin/customers/${String(detail.patient_id)}`}
+                          className="text-primary underline-offset-2 hover:underline"
+                        >
+                          Open customer profile
+                        </Link>
+                      </p>
+                    )}                  </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="note">Note to patient (optional)</Label>

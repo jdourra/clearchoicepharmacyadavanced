@@ -8,6 +8,7 @@ import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 /**
  * Patient Intake API Route
@@ -413,6 +414,23 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    await linkIntakePatientAndPayment({
+      table: "patient_intake",
+      intakeId: submissionId,
+      identity: {
+        email: data.patientInfo.email,
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        phone: data.patientInfo.phone,
+        dateOfBirth: data.patientInfo.dateOfBirth,
+        address: data.patientInfo.address,
+        city: data.patientInfo.city,
+        state: data.patientInfo.state,
+        zip: data.patientInfo.zipCode,
+      },
+      stripePaymentIntentId: data.identity.stripePaymentIntentId,
+    })
 
     return NextResponse.json(
       {

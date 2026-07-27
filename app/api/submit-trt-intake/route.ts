@@ -11,6 +11,7 @@ import {
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 type TrtIntakePayload = {
   patientInfo: {
@@ -267,6 +268,23 @@ export async function POST(request: NextRequest) {
       console.error("[trt-intake] Database error:", dbError)
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
+
+    await linkIntakePatientAndPayment({
+      table: "trt_intake",
+      intakeId: submissionId,
+      identity: {
+        email: data.patientInfo.email,
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        phone: data.patientInfo.phone,
+        dateOfBirth: data.patientInfo.dateOfBirth,
+        address: data.patientInfo.address,
+        city: data.patientInfo.city,
+        state: data.patientInfo.state,
+        zip: data.patientInfo.zipCode,
+      },
+      stripePaymentIntentId: data.identity.stripePaymentIntentId,
+    })
 
     return NextResponse.json({ success: true, submissionId })
   } catch (error) {

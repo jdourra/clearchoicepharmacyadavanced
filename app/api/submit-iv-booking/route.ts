@@ -12,6 +12,7 @@ import {
 import { formatPaymentSummary, requireIntakePaymentSubmission } from "@/lib/intake-payment"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -286,6 +287,22 @@ export async function POST(request: NextRequest) {
       console.error("Failed to save IV booking:", dbError)
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })
     }
+
+    await linkIntakePatientAndPayment({
+      table: "iv_booking_requests",
+      intakeId: submissionId,
+      identity: {
+        email: String(data.email),
+        firstName: String(data.firstName),
+        lastName: String(data.lastName),
+        phone: data.phone ? String(data.phone) : null,
+        address: data.serviceAddress ? String(data.serviceAddress) : null,
+        city: data.serviceCity ? String(data.serviceCity) : null,
+        state: data.serviceState ? String(data.serviceState) : null,
+        zip: data.serviceZip ? String(data.serviceZip) : null,
+      },
+      stripePaymentIntentId: data.payment?.stripePaymentIntentId,
+    })
 
     return NextResponse.json({
       success: true,
