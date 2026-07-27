@@ -11,7 +11,7 @@ export function isClinicianRole(role: string | null | undefined): boolean {
   return role === CLINICIAN_ROLE || role === "doctor"
 }
 
-/** Admin pharmacy staff or clinician can review clinical intakes / Rx PDFs. */
+/** Admin pharmacy staff or clinician can view clinical intakes / Rx PDFs. */
 export function canReviewClinicalIntakes(role: string | null | undefined): boolean {
   return isAdminRole(role) || isClinicianRole(role)
 }
@@ -20,4 +20,15 @@ export function canReviewClinicalIntakesStaff(
   staff: Pick<StaffUser, "role"> | null | undefined
 ): boolean {
   return Boolean(staff && canReviewClinicalIntakes(staff.role))
+}
+
+/** Only clinicians may approve, deny, or request follow-up. */
+export function canDecideClinicalIntakes(role: string | null | undefined): boolean {
+  return isClinicianRole(role)
+}
+
+export function canDecideClinicalIntakesStaff(
+  staff: Pick<StaffUser, "role"> | null | undefined
+): boolean {
+  return Boolean(staff && canDecideClinicalIntakes(staff.role))
 }

@@ -167,6 +167,7 @@ export function AdminIntakeDetailView({
   const router = useRouter()
   const queueHref = portal === "doctor" ? "/doctor/intakes" : "/admin/intakes"
   const Shell = portal === "doctor" ? DoctorShell : AdminShell
+  const canDecide = portal === "doctor"
   const [submitting, setSubmitting] = useState<string | null>(null)
   const [note, setNote] = useState("")
   const [error, setError] = useState("")
@@ -212,6 +213,10 @@ export function AdminIntakeDetailView({
   }
 
   const submitReview = async (action: "approve" | "deny" | "follow_up") => {
+    if (!canDecide) {
+      setError("Only the clinician can approve, deny, or request follow-up.")
+      return
+    }
     setSubmitting(action)
     setError("")
     setReviewMessage("")
@@ -439,7 +444,11 @@ export function AdminIntakeDetailView({
               )}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">{PRIMARY_PHYSICIAN.name}&apos;s Decision</CardTitle>
+                  <CardTitle className="text-base">
+                    {canDecide
+                      ? `${PRIMARY_PHYSICIAN.name}'s Decision`
+                      : "Clinical decision (clinician only)"}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-sm text-muted-foreground">
@@ -477,8 +486,46 @@ export function AdminIntakeDetailView({
                           Open customer profile
                         </Link>
                       </p>
-                    )}                  </div>
+                    )}
+                  </div>
 
+                  {!canDecide ? (
+                    <Alert>
+                      <AlertDescription className="text-sm space-y-2">
+                        <p>
+                          Pharmacy admin can view this intake, payment status, ID, and signed Rx PDFs.
+                          Approve, deny, and follow-up are only available in the doctor portal.
+                        </p>
+                        {existingPrescription ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                const res = await staffAuthFetch(
+                                  `/api/admin/prescriptions/${existingPrescription.id}/pdf`
+                                )
+                                if (!res.ok) {
+                                  const data = await res.json().catch(() => ({}))
+                                  throw new Error(data.error || "Could not open PDF")
+                                }
+                                const blob = await res.blob()
+                                const url = URL.createObjectURL(blob)
+                                window.open(url, "_blank", "noopener,noreferrer")
+                              } catch (err) {
+                                setError(err instanceof Error ? err.message : "Could not open PDF")
+                              }
+                            }}
+                          >
+                            Open Rx PDF ({existingPrescription.medicationName})
+                          </Button>
+                        ) : null}
+                        {error ? <p className="text-destructive">{error}</p> : null}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <>
                   <div className="space-y-2">
                     <Label htmlFor="note">Note to patient (optional)</Label>
                     <Textarea
@@ -669,6 +716,8 @@ export function AdminIntakeDetailView({
                     Patient receives an email on approve, deny, or follow-up when SES production access
                     is enabled. Signed Rxs email the admin inbox for print.
                   </p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
