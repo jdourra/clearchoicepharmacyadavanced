@@ -26,11 +26,16 @@ export async function POST(request: Request) {
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object
-      const orderId = session.metadata?.order_id
-      if (orderId && session.payment_status === "paid") {
-        const paymentIntentId = getPaymentIntentIdFromSession(session)
-        if (paymentIntentId) {
-          await orders.markOrderPaid(orderId, paymentIntentId, session.id)
+      if (session.metadata?.payment_type === "balance_request") {
+        const { markBalanceRequestPaidFromSession } = await import("@/lib/patient-balance")
+        await markBalanceRequestPaidFromSession(session)
+      } else {
+        const orderId = session.metadata?.order_id
+        if (orderId && session.payment_status === "paid") {
+          const paymentIntentId = getPaymentIntentIdFromSession(session)
+          if (paymentIntentId) {
+            await orders.markOrderPaid(orderId, paymentIntentId, session.id)
+          }
         }
       }
     }

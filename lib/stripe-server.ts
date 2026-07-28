@@ -135,6 +135,48 @@ export async function createOrderCheckoutSession(params: {
   return { sessionId: session.id, url: session.url }
 }
 
+/** One-time payment link for collecting remaining patient balance. */
+export async function createBalanceCheckoutSession(params: {
+  balanceRequestId: string
+  patientId: string
+  email: string
+  amountCents: number
+  description: string
+  successUrl: string
+  cancelUrl: string
+}): Promise<{ sessionId: string; url: string }> {
+  const stripe = getStripe()
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: params.email,
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: params.amountCents,
+          product_data: {
+            name: params.description.slice(0, 120) || "Balance due",
+          },
+        },
+      },
+    ],
+    success_url: params.successUrl,
+    cancel_url: params.cancelUrl,
+    metadata: {
+      payment_type: "balance_request",
+      balance_request_id: params.balanceRequestId,
+      patient_id: params.patientId,
+    },
+  })
+
+  if (!session.url) {
+    throw new Error("Stripe did not return a checkout URL")
+  }
+
+  return { sessionId: session.id, url: session.url }
+}
+
 export async function retrieveCheckoutSession(sessionId: string) {
   const stripe = getStripe()
   return stripe.checkout.sessions.retrieve(sessionId, {

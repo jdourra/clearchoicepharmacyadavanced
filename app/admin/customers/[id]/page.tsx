@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import type { Order, PatientProfileSummary, User } from "@/lib/auth-types"
 import type { CustomerClinicalProgram } from "@/lib/admin-customer-programs"
+import type { PatientBalanceRequest, PatientLedgerEntry } from "@/lib/patient-balance-types"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { formatPhoneDisplay, phoneTelHref } from "@/lib/phone"
 import { AdminHeader } from "@/components/admin-header"
@@ -12,6 +13,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { getOrderStatusBadgeClass } from "@/lib/admin-order-status"
 import { buildBatchProcessUrl, isOrderBatchSelectable } from "@/lib/admin-order-batch"
 import {
@@ -24,7 +28,16 @@ import {
   User as UserIcon,
   Play,
   Stethoscope,
+  DollarSign,
+  Loader2,
 } from "lucide-react"
+
+type PaymentSummary = {
+  totalReceived: number
+  pendingRequested: number
+  balanceRequests: PatientBalanceRequest[]
+  ledger: PatientLedgerEntry[]
+}
 
 export default function AdminCustomerDetailPage() {
   const router = useRouter()
@@ -35,8 +48,22 @@ export default function AdminCustomerDetailPage() {
   const [profile, setProfile] = useState<PatientProfileSummary | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
   const [clinicalPrograms, setClinicalPrograms] = useState<CustomerClinicalProgram[]>([])
+  const [payments, setPayments] = useState<PaymentSummary>({
+    totalReceived: 0,
+    pendingRequested: 0,
+    balanceRequests: [],
+    ledger: [],
+  })
   const [loading, setLoading] = useState(true)
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set())
+  const [requestAmount, setRequestAmount] = useState("")
+  const [requestDescription, setRequestDescription] = useState("Remaining balance due")
+  const [recordAmount, setRecordAmount] = useState("")
+  const [recordNote, setRecordNote] = useState("Prior payment recorded by staff")
+  const [recordPi, setRecordPi] = useState("")
+  const [paymentBusy, setPaymentBusy] = useState<"request" | "record" | null>(null)
+  const [paymentMessage, setPaymentMessage] = useState("")
+  const [paymentError, setPaymentError] = useState("")
 
   useEffect(() => {
     loadData()
@@ -57,11 +84,83 @@ export default function AdminCustomerDetailPage() {
         setProfile(data.profile || null)
         setOrders(data.orders || [])
         setClinicalPrograms(data.clinicalPrograms || [])
+        if (data.payments) {
+          setPayments({
+            totalReceived: Number(data.payments.totalReceived || 0),
+            pendingRequested: Number(data.payments.pendingRequested || 0),
+            balanceRequests: data.payments.balanceRequests || [],
+            ledger: data.payments.ledger || [],
+          })
+        }
       }
     } catch {
       router.push("/admin/login")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const refreshPayments = (data: Record<string, unknown>) => {
+    setPayments({
+      totalReceived: Number(data.totalReceived || 0),
+      pendingRequested: Number(data.pendingRequested || 0),
+      balanceRequests: (data.balanceRequests as PatientBalanceRequest[]) || [],
+      ledger: (data.ledger as PatientLedgerEntry[]) || [],
+    })
+  }
+
+  const submitBalanceRequest = async () => {
+    setPaymentBusy("request")
+    setPaymentError("")
+    setPaymentMessage("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/customers/${customerId}/balance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "request",
+          amount: Number(requestAmount),
+          description: requestDescription,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to send payment request")
+      refreshPayments(data)
+      setPaymentMessage(
+        data.emailSent
+          ? `Payment request emailed. Link: ${data.paymentUrl || "created"}`
+          : `Payment link created, but email failed: ${data.emailError || "unknown error"}. Link: ${data.paymentUrl || ""}`
+      )
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Failed to send payment request")
+    } finally {
+      setPaymentBusy(null)
+    }
+  }
+
+  const submitRecordPayment = async () => {
+    setPaymentBusy("record")
+    setPaymentError("")
+    setPaymentMessage("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/customers/${customerId}/balance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "record",
+          amount: Number(recordAmount),
+          note: recordNote,
+          stripePaymentIntentId: recordPi || null,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to record payment")
+      refreshPayments(data)
+      setPaymentMessage(`Recorded $${Number(recordAmount).toFixed(2)} on patient ledger.`)
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Failed to record payment")
+    } finally {
+      setPaymentBusy(null)
     }
   }
 
@@ -98,6 +197,7 @@ export default function AdminCustomerDetailPage() {
   }
 
   const totalSpent = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0)
+  const combinedReceived = totalSpent + payments.totalReceived
 
   const formatAddress = () => {
     if (!profile) return null
@@ -205,21 +305,175 @@ export default function AdminCustomerDetailPage() {
                     <p className="text-2xl font-bold">{clinicalPrograms.length}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Spent</p>
+                    <p className="text-sm text-muted-foreground">Orders total</p>
                     <p className="text-2xl font-bold text-primary">${totalSpent.toFixed(2)}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Last Order</p>
-                    <p className="text-sm font-medium mt-1">
-                      {orders.length > 0
-                        ? new Date(orders[0].created_at).toLocaleDateString()
-                        : "—"}
-                    </p>
+                    <p className="text-sm text-muted-foreground">Payments received</p>
+                    <p className="text-2xl font-bold text-primary">${combinedReceived.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Pending requests</p>
+                    <p className="text-2xl font-bold">${payments.pendingRequested.toFixed(2)}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                Payments &amp; balance requests
+              </CardTitle>
+              <CardDescription>
+                Record prior payments (including old Stripe charges) and email a Stripe checkout link for remaining balance.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-3 rounded-lg border p-4">
+                  <p className="font-medium">Request remaining balance</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="requestAmount">Amount (USD)</Label>
+                    <Input
+                      id="requestAmount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      value={requestAmount}
+                      onChange={(e) => setRequestAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="requestDescription">Description</Label>
+                    <Textarea
+                      id="requestDescription"
+                      rows={2}
+                      value={requestDescription}
+                      onChange={(e) => setRequestDescription(e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    onClick={submitBalanceRequest}
+                    disabled={paymentBusy !== null}
+                    className="w-full"
+                  >
+                    {paymentBusy === "request" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Email Stripe payment link
+                  </Button>
+                </div>
+
+                <div className="space-y-3 rounded-lg border p-4">
+                  <p className="font-medium">Record prior payment</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="recordAmount">Amount (USD)</Label>
+                    <Input
+                      id="recordAmount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      value={recordAmount}
+                      onChange={(e) => setRecordAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="recordNote">Note</Label>
+                    <Textarea
+                      id="recordNote"
+                      rows={2}
+                      value={recordNote}
+                      onChange={(e) => setRecordNote(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="recordPi">Stripe PaymentIntent (optional)</Label>
+                    <Input
+                      id="recordPi"
+                      value={recordPi}
+                      onChange={(e) => setRecordPi(e.target.value)}
+                      placeholder="pi_..."
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={submitRecordPayment}
+                    disabled={paymentBusy !== null}
+                    className="w-full"
+                  >
+                    {paymentBusy === "record" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Save on patient ledger
+                  </Button>
+                </div>
+              </div>
+
+              {paymentError ? <p className="text-sm text-destructive">{paymentError}</p> : null}
+              {paymentMessage ? <p className="text-sm text-emerald-700 break-all">{paymentMessage}</p> : null}
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <p className="text-sm font-medium mb-2">Payment requests</p>
+                  {payments.balanceRequests.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No balance requests yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {payments.balanceRequests.map((req) => (
+                        <div key={req.id} className="rounded-lg border p-3 text-sm">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="font-medium">${req.amount.toFixed(2)}</span>
+                            <Badge variant={req.status === "paid" ? "default" : "secondary"}>
+                              {req.status}
+                            </Badge>
+                          </div>
+                          <p className="text-muted-foreground mt-1">{req.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {req.id} · {new Date(req.createdAt).toLocaleString()}
+                          </p>
+                          {req.paymentUrl ? (
+                            <a
+                              href={req.paymentUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-primary underline-offset-2 hover:underline break-all"
+                            >
+                              Open payment link
+                            </a>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-2">Payment ledger</p>
+                  {payments.ledger.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No recorded payments yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {payments.ledger.map((entry) => (
+                        <div key={entry.id} className="rounded-lg border p-3 text-sm">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="font-medium text-primary">${entry.amount.toFixed(2)}</span>
+                            <Badge variant="outline">{entry.source}</Badge>
+                          </div>
+                          {entry.note ? <p className="text-muted-foreground mt-1">{entry.note}</p> : null}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(entry.createdAt).toLocaleString()}
+                            {entry.stripePaymentIntentId ? ` · ${entry.stripePaymentIntentId}` : ""}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card className="mb-8">
             <CardHeader>
