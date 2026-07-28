@@ -71,8 +71,8 @@ export function suggestPrescriptionFromIntake(
       strength,
       directions:
         "Inject subcutaneously once weekly as directed by prescribing physician. Use each vial as a 30-day supply (4 weekly injections).",
-      quantity: billing === "quarterly" ? "3 kits (90-day supply)" : "1 kit (30-day supply)",
-      refills: defaultRefills,
+      quantity: billing === "quarterly" ? "2 kits (60-day supply)" : "1 kit (30-day supply)",
+      refills: billing === "quarterly" ? 1 : 0,
     }
   }
 

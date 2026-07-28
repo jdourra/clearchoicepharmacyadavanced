@@ -1001,7 +1001,9 @@ export function WeightLossIntakeForm({
                             formData.selectedBillingPlan === option.plan ? "border-primary bg-primary/5" : ""
                           }`}
                         >
-                          <p className="font-medium capitalize">{option.plan}</p>
+                          <p className="font-medium">
+                            {option.plan === "monthly" ? "Monthly" : "60-day (2-kit)"}
+                          </p>
                           <p className="text-xs text-muted-foreground">{formatKitBillingLabel(option.plan)}</p>
                           {quote && (
                             <p className="text-2xl font-bold mt-2">
@@ -1055,7 +1057,7 @@ export function WeightLossIntakeForm({
                 <IntakeOrderSummary
                   productName={selectedProgram.name}
                   productSubtitle={`${selectedProgram.subtitle} · ${selectedTierMeta?.label ?? "Selected"}`}
-                  billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "Quarterly"}
+                  billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "60-day (2-kit)"}
                   priceLine={`Kit: $${holdQuote.totalBilled} · auth up to $${holdQuote.authorizationHold}`}
                   changeHref="/weight-loss#programs"
                 />
@@ -1590,12 +1592,12 @@ export function WeightLossIntakeForm({
                     Authorization hold up to ${holdQuote.authorizationHold}
                     {holdQuote.liveVisitAddon > 0
                       ? ` (includes up to $${holdQuote.liveVisitAddon} if a live visit is required)`
-                      : " · live visit add-on waived on quarterly"}
+                      : " · live visit add-on waived on 60-day supply"}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {formData.selectedBillingPlan === "monthly"
                       ? `First 30-day kit (4 weekly injections) · ${selectedTierMeta?.label ?? "selected"}`
-                      : `First shipment — 3 kits, 4 injections each (90 days) · ${selectedTierMeta?.label ?? "selected"}`}
+                      : `First shipment — 2 kits, 4 injections each (60 days) · ${selectedTierMeta?.label ?? "selected"}`}
                   </p>
                   <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
                   <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
@@ -1698,7 +1700,7 @@ export function WeightLossIntakeForm({
                   for my first {selectedTierMeta?.label ?? "selected"} kit(s)
                   {formData.selectedBillingPlan === "monthly"
                     ? " (including up to $25 if a live visit is required)"
-                    : " (live visit add-on waived on quarterly)"}{" "}
+                    : " (live visit add-on waived on 60-day supply)"}{" "}
                   to be charged only upon prescription approval *
                 </Label>
               </div>

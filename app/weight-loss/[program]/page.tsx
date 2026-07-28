@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = getWeightLossProductPageTitle(program)
   const description =
     slug === "semaglutide"
-      ? `Compounded Semaglutide from $${fromPrice}/mo on quarterly starter kits. All-in 30-day kit: physician review, 4 weekly injections, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
-      : `Compounded Tirzepatide from $${fromPrice}/mo on quarterly starter kits. Dual GLP-1/GIP therapy with physician review, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
+      ? `Compounded Semaglutide from $${fromPrice}/mo on 60-day starter kits. All-in 30-day kit: physician review, 4 weekly injections, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
+      : `Compounded Tirzepatide from $${fromPrice}/mo on 60-day starter kits. Dual GLP-1/GIP therapy with physician review, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
 
   return {
     title,
@@ -96,7 +96,7 @@ export default async function WeightLossProductPage({ params }: PageProps) {
             price: quote.kitPrice,
             priceCurrency: "USD",
             availability: "https://schema.org/InStock",
-            name: `${dose.label} · ${plan === "monthly" ? "30-day kit" : "per kit (quarterly)"}`,
+            name: `${dose.label} · ${plan === "monthly" ? "30-day kit" : "per kit (60-day supply)"}`,
             url: `${SITE_URL}/weight-loss/${slug}`,
           }
         })

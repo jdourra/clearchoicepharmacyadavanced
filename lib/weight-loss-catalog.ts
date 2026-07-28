@@ -10,16 +10,16 @@ export const WEIGHT_LOSS_KIT_SUPPLY = "30-day kit · 4 weekly injections"
 export const WEIGHT_LOSS_KIT_INJECTIONS_NOTE =
   "Every kit includes 4 once-weekly injections at your selected weekly amount. The price shown is always for the full 30-day kit — not a weekly price and not per injection."
 
-/** Charged only when the provider requires a live visit (waived on quarterly billing). */
+/** Charged only when the provider requires a live visit (waived on 60-day / 2-kit billing). */
 export const WEIGHT_LOSS_LIVE_VISIT_ADDON = 25
 
 export type WeightLossKitQuote = {
   kitPrice: number
-  /** Kit-only total for the selected billing plan (1 kit or 3-kit shipment). */
+  /** Kit-only total for the selected billing plan (1 kit or 2-kit shipment). */
   totalBilled: number
   monthlyEquivalent: number
   kitsIncluded: number
-  /** $25 on monthly if a live visit is required; $0 on quarterly (waived). */
+  /** $25 on monthly if a live visit is required; $0 on multi-kit (60-day) billing. */
   liveVisitAddon: number
   /** Max card authorization: kit total + possible live-visit add-on. */
   authorizationHold: number
@@ -64,13 +64,13 @@ export type WeightLossProgram = {
 }
 
 export const WEIGHT_LOSS_DOSE_PRICING_NOTE =
-  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with quarterly supply."
+  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 60-day (2-kit) supply. Multi-kit shipments stay within typical compounded GLP beyond-use dating."
 
 export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
-  "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with quarterly supply."
+  "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with 60-day (2-kit) supply."
 
 export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
-  "Your card is authorized for the 30-day kit at the weekly injection amount you select (plus up to $25 on monthly billing if a live visit is required). Quarterly supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
+  "Your card is authorized for the 30-day kit at the weekly injection amount you select (plus up to $25 on monthly billing if a live visit is required). The 60-day supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
 
 export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
 
@@ -79,7 +79,10 @@ export const WEIGHT_LOSS_DOSE_SELECT_HINT =
 
 export const WEIGHT_LOSS_PRICE_PERIOD_BADGE = "Price is per 30-day kit"
 
-const QUARTERLY_KITS = 3
+/** Multi-kit GLP plan length (2 × 30-day kits = 60 days) to stay within typical compounded BUD. */
+export const WEIGHT_LOSS_MULTI_KIT_COUNT = 2
+
+const QUARTERLY_KITS = WEIGHT_LOSS_MULTI_KIT_COUNT
 
 function quarterlyTotal(kitPrice: number) {
   return kitPrice * QUARTERLY_KITS
@@ -211,7 +214,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     supplyLabel: WEIGHT_LOSS_KIT_SUPPLY,
     billingPlans: [
       { plan: "monthly" },
-      { plan: "quarterly", badge: "Best Value · Live visit fee waived" },
+      { plan: "quarterly", badge: "Best Value · 60-day · Live visit waived" },
     ],
     doses: SEMAGLUTIDE_DOSES,
     doseTiers: SEMAGLUTIDE_DOSES,
@@ -230,7 +233,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     supplyLabel: WEIGHT_LOSS_KIT_SUPPLY,
     billingPlans: [
       { plan: "monthly" },
-      { plan: "quarterly", badge: "Best Value · Live visit fee waived" },
+      { plan: "quarterly", badge: "Best Value · 60-day · Live visit waived" },
     ],
     doses: TIRZEPATIDE_DOSES,
     doseTiers: TIRZEPATIDE_DOSES,
@@ -431,7 +434,12 @@ export function formatKitPriceCaption(doseLabel: string): string {
 export function formatKitBillingLabel(billingPlan: WeightLossBillingPlan): string {
   return billingPlan === "monthly"
     ? "Billed monthly per 30-day kit"
-    : "Billed per 3-kit shipment (90 days)"
+    : "Billed per 2-kit shipment (60 days)"
+}
+
+/** UI label for the multi-kit plan (plan id remains "quarterly" for DB/URL compatibility). */
+export function formatWeightLossBillingPlanTitle(billingPlan: WeightLossBillingPlan): string {
+  return billingPlan === "monthly" ? "Monthly billing" : "60-day (2-kit) supply"
 }
 
 /** MIC + B12 skinny shot — sold via weight loss landing; intake uses rejuvenation vial flow. */

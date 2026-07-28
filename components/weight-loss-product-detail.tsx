@@ -110,7 +110,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             <p className="text-lg text-muted-foreground mt-2">{program.subtitle}</p>
             <p className="mt-4">
               <span className="text-3xl font-bold text-primary">from ${fromPrice}</span>
-              <span className="text-muted-foreground ml-1">/mo on quarterly starter kits</span>
+              <span className="text-muted-foreground ml-1">/mo on 60-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               Monthly starter kits from ${startingPrice}/mo · intake review, compounding &amp; shipping included
@@ -190,8 +190,8 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                         <div className="flex items-center gap-3">
                           <RadioGroupItem value={option.plan} id={`plan-${option.plan}`} />
                           <div>
-                            <Label htmlFor={`plan-${option.plan}`} className="font-medium cursor-pointer capitalize">
-                              {option.plan === "monthly" ? "Monthly billing" : "Quarterly billing"}
+                            <Label htmlFor={`plan-${option.plan}`} className="font-medium cursor-pointer">
+                              {option.plan === "monthly" ? "Monthly billing" : "60-day (2-kit) supply"}
                             </Label>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {formatKitBillingLabel(option.plan)}
@@ -208,7 +208,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                               {formatKitPriceCaption(selectedDose?.label ?? "selected")}
                             </p>
                             {option.plan === "quarterly" && (
-                              <p className="text-xs text-muted-foreground">${quote.totalBilled} for 3 kits</p>
+                              <p className="text-xs text-muted-foreground">${quote.totalBilled} for 2 kits</p>
                             )}
                           </div>
                         )}
@@ -223,7 +223,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   <p className="font-medium">
                     {billingPlan === "monthly"
                       ? `First 30-day kit (${selectedDose?.label ?? "selected"}, 4 injections): $${holdQuote.totalBilled}/mo`
-                      : `First shipment — 3 × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each): $${holdQuote.totalBilled}`}
+                      : `First shipment — 2 × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
                     Price is for the full kit, not per week. Intake physician review, compounding, syringes, supplies,
@@ -236,7 +236,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
-                      Quarterly supply: live visit add-on waived. Authorization hold ${holdQuote.authorizationHold}.
+                      60-day supply: live visit add-on waived. Authorization hold ${holdQuote.authorizationHold}.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground pt-1">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>

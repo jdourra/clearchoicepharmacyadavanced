@@ -552,7 +552,7 @@ export function AdminIntakeDetailView({
                         </div>
                       ) : (
                         <p className="text-xs text-muted-foreground">
-                          Quarterly supply: live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}) is waived. Capture kit
+                          60-day (2-kit) supply: live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}) is waived. Capture kit
                           total only.
                         </p>
                       )}

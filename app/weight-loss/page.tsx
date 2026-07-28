@@ -39,7 +39,7 @@ const PROGRAMS_URL = "/weight-loss#programs"
 export const metadata: Metadata = {
   title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Michigan Weight Loss",
   description:
-    "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo on quarterly starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
+    "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
   keywords: [
     "semaglutide",
     "tirzepatide",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Clear Choice Pharmacy",
     description:
-      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $149/mo on quarterly starter billing.",
+      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $149/mo on 60-day starter billing.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -98,7 +98,7 @@ export default function WeightLossPage() {
       <PremiumHero
         badge="Medical Weight Loss · GLP-1"
         headline="Semaglutide & Tirzepatide Weight Loss"
-        subheadline="All-in kits from $134/mo Semaglutide and $149/mo Tirzepatide on quarterly starter billing."
+        subheadline="All-in kits from $134/mo Semaglutide and $149/mo Tirzepatide on 60-day starter billing."
         description="Looking for medical weight loss, weight loss injections, or alternatives patients compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients."
         highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
@@ -143,14 +143,14 @@ export default function WeightLossPage() {
                 <div className="mt-5 pt-4 border-t space-y-2">
                   <p className="text-3xl font-bold text-primary">
                     from {formatUsd(range.fromQuarterly)}
-                    <span className="text-base font-normal text-muted-foreground">/mo quarterly</span>
+                    <span className="text-base font-normal text-muted-foreground">/mo · 60-day</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by weekly dose
                   </p>
                   {savePct > 0 && (
                     <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                      Save ~{savePct}% vs monthly on quarterly starter kits
+                      Save ~{savePct}% vs monthly on 60-day starter kits
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

@@ -142,7 +142,7 @@ export function getWeightLossProductPageTitle(program: WeightLossProgram): strin
   return `Tirzepatide from $${fromPrice}/mo | Michigan Weight Loss | Clear Choice Pharmacy`
 }
 
-/** Floor “from” price for ads/SEO (quarterly starter kit). */
+/** Floor “from” price for ads/SEO (60-day / multi-kit starter kit price). */
 export function getWeightLossFromPrice(program: WeightLossProgram): number {
   return program.doses[0]?.quarterlyKitPrice ?? program.doses[0]?.monthlyKitPrice ?? 0
 }

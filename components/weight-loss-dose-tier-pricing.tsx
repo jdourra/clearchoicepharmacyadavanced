@@ -36,10 +36,10 @@ export function WeightLossDoseTierPricing({
               <th className="p-3 font-medium">Weekly dose</th>
               {!compact && <th className="p-3 font-medium hidden sm:table-cell">Kit</th>}
               <th className="p-3 font-medium text-right">
-                {billingPlan === "monthly" ? "Per 30-day kit" : "Per kit (90-day plan)"}
+                {billingPlan === "monthly" ? "Per 30-day kit" : "Per kit (60-day plan)"}
               </th>
               {billingPlan === "quarterly" && (
-                <th className="p-3 font-medium text-right hidden sm:table-cell">3-kit total</th>
+                <th className="p-3 font-medium text-right hidden sm:table-cell">2-kit total</th>
               )}
             </tr>
           </thead>

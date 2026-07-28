@@ -160,7 +160,7 @@ ${data.medicalHistory.allergies || "None reported"}
 Selected Program:       ${programMap[data.treatmentInfo.selectedProgram] || data.treatmentInfo.selectedProgram}
 Billing Plan:           ${data.treatmentInfo.selectedBillingPlan}
 Vial Strength:          ${data.treatmentInfo.selectedDoseTier}
-Pricing Model:          Vial-strength kit pricing (hold at selected mg; +$25 live visit on monthly if required, waived on quarterly)
+Pricing Model:          Vial-strength kit pricing (hold at selected mg; +$25 live visit on monthly if required, waived on 60-day / 2-kit supply)
 Prior GLP Experience:   ${data.treatmentInfo.priorGlpExperience}
 Weight Loss Goals:      ${data.treatmentInfo.weightLossGoals.join(", ") || "Not specified"}
 
