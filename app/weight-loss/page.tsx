@@ -99,7 +99,9 @@ export default function WeightLossPage() {
         badge="Provider-Guided Weight Management · GLP-1"
         headline="Semaglutide & Tirzepatide Weight Management"
         subheadline="All-in kits from $134/mo Semaglutide and $149/mo Tirzepatide on 60-day starter billing."
-        description="Looking for provider-guided weight management, weight management injections, or treatment options patients often compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients. Compounded medications are not the FDA-approved brand products.",
+        description={
+          "Looking for provider-guided weight management, weight management injections, or treatment options patients often compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review - for qualifying Michigan patients. Compounded medications are not the FDA-approved brand products."
+        }
         highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
           src: "/images/weight-loss-hero.png",
