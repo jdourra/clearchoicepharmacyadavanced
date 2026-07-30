@@ -156,7 +156,7 @@ const goalOptions = [
   "Build muscle",
   "Improve mood",
   "Better sleep",
-  "Overall hormone optimization",
+  "Overall hormone support",
 ]
 
 function hasHardStopContraindication(formData: FormData) {

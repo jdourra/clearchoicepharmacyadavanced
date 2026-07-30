@@ -234,7 +234,7 @@ export default function MensHealthPage() {
 
         <p className="text-sm text-muted-foreground mt-6 max-w-2xl">
           Unlike nutrient-only hormone balance injections, our TRT programs deliver physician-supervised testosterone
-          therapy with pharmacy fulfillment—designed for men seeking real hormone optimization with upfront pricing.
+          therapy with pharmacy fulfillment—designed for men seeking provider-guided hormone support with upfront pricing.
         </p>
       </ContentSection>
 

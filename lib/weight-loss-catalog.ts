@@ -205,7 +205,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     name: "Semaglutide Program",
     subtitle: "GLP-1 Therapy",
     description:
-      "Physician-guided compounded semaglutide with a structured titration schedule tailored to your metabolic goals.",
+      "Physician-guided compounded semaglutide with a structured titration schedule tailored to your weight management goals.",
     features: ["Weekly dosing protocol", "Structured titration", "Ongoing provider oversight", "Pharmacy fulfillment"],
     image: {
       src: "/images/semaglutide-vial.png",
@@ -442,10 +442,10 @@ export function formatWeightLossBillingPlanTitle(billingPlan: WeightLossBillingP
   return billingPlan === "monthly" ? "Monthly billing" : "60-day (2-kit) supply"
 }
 
-/** MIC + B12 skinny shot — sold via weight loss landing; intake uses rejuvenation vial flow. */
+/** MIC + B12 metabolic support — sold via weight loss landing; intake uses rejuvenation vial flow. */
 export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   id: "mic-skinny",
-  title: "MIC + B12 Skinny Shot Homekit",
+  title: "MIC + B12 Metabolic Support Homekit",
   price: 119,
   category: "metabolic",
   ingredients: ["Methionine, Inositol & Choline (MIC blend)", "Vitamin B12", "L-Carnitine"],
@@ -453,10 +453,10 @@ export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   route: "Intramuscular self-injection",
   frequency: "Once per week",
   description:
-    "Physician-reviewed lipotropic injection kit for metabolic support, energy, and fat metabolism — compounded at Clear Choice Pharmacy.",
+    "Physician-reviewed lipotropic injection kit for metabolic support and energy — compounded at Clear Choice Pharmacy.",
   image: {
     src: "/images/mic-b12-vial.png",
-    alt: "MIC + B12 lipotropic injection vial",
+    alt: "MIC + B12 lipotropic injection vial for metabolic support",
   },
 } satisfies RejuvenationVial & { image: { src: string; alt: string } }
 
@@ -465,19 +465,19 @@ export const MIC_B12_HOW_IT_WORKS = [
     icon: "flask-conical" as const,
     title: "MIC Lipotropic Support",
     description:
-      "The MIC blend (Methionine, Inositol, and Choline) supports liver function and helps your body process and mobilize stored fat for energy.",
+      "The MIC blend (Methionine, Inositol, and Choline) supports liver function and metabolic wellness as part of a provider-guided plan.",
   },
   {
     icon: "activity" as const,
     title: "B12 for Energy & Metabolism",
     description:
-      "Vitamin B12 supports cellular energy production and a healthy metabolism — helping you stay active while working toward weight-loss goals.",
+      "Vitamin B12 supports cellular energy production and a healthy metabolism — helping you stay active while working toward wellness goals.",
   },
   {
     icon: "scale" as const,
-    title: "L-Carnitine Fat Transport",
+    title: "L-Carnitine Metabolic Support",
     description:
-      "L-Carnitine helps transport fatty acids into cells where they can be used for fuel, supporting fat metabolism alongside diet and exercise.",
+      "L-Carnitine helps transport fatty acids into cells where they can be used for fuel, supporting metabolic wellness alongside diet and exercise.",
   },
   {
     icon: "shield" as const,

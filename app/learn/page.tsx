@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "TRT",
     "Myers Cocktail",
     "low cost prescription drugs",
-    "medical weight loss guide",
+    "provider-guided weight management guide",
   ],
   alternates: {
     canonical: `${SITE_URL}/learn`,

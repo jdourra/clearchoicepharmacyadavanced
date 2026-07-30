@@ -290,7 +290,7 @@ function checkEligibility(data: WeightLossIntakePayload): { hardStop: boolean; e
     return {
       hardStop: true,
       error:
-        "GLP-1 medical weight loss typically requires a BMI of 27+ with a related condition, or 30+. Please consult your primary care provider.",
+        "GLP-1 provider-guided weight management typically requires a BMI of 27+ with a related condition, or 30+. Please consult your primary care provider.",
     }
   }
 

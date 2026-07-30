@@ -34,7 +34,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Does Clear Choice Pharmacy offer Semaglutide and Tirzepatide?",
     answer:
-      "Yes. Physician-supervised medical weight loss with compounded Semaglutide and Tirzepatide (GLP-1) is available for qualifying Michigan patients with transparent cash-pay pricing.",
+      "Yes. Provider-guided weight management with compounded Semaglutide and Tirzepatide (GLP-1) is available for qualifying Michigan patients with transparent cash-pay pricing. Individual results may vary.",
   },
   {
     question: "Do you offer Tadalafil, Sildenafil, and TRT?",
@@ -44,7 +44,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "What services does Clear Choice Pharmacy offer?",
     answer:
-      "Low cost prescription drugs, Semaglutide and Tirzepatide weight loss, Tadalafil and Sildenafil ED medications, TRT, mobile IV therapy (Myers' Cocktail, NAD+), and specialty pharmacy with prior authorization support—from our Novi, MI pharmacy.",
+      "Low cost prescription drugs, Semaglutide and Tirzepatide provider-guided weight management, Tadalafil and Sildenafil ED medications, TRT, mobile IV therapy (Myers' Cocktail, NAD+), and specialty pharmacy with prior authorization support—from our Novi, MI pharmacy.",
   },
   {
     question: "Do you offer mobile IV therapy?",

@@ -16,7 +16,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
   description:
-    "Complete secure checkout for medical weight loss with Semaglutide or Tirzepatide. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
+    "Complete secure checkout for provider-guided weight management with Semaglutide or Tirzepatide. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
   },

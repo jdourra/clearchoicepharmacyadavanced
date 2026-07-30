@@ -8,7 +8,7 @@ export const HOME_DESCRIPTION =
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
-  { name: "Semaglutide & Tirzepatide Weight Loss", path: "/weight-loss" },
+  { name: "Semaglutide & Tirzepatide Weight Management", path: "/weight-loss" },
   { name: "Tadalafil, Sildenafil & TRT", path: "/mens-health" },
   { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
@@ -63,10 +63,10 @@ export const SITE_KEYWORDS = [
   "wegovy",
   "zepbound",
   "GLP-1",
-  "GLP-1 weight loss",
-  "medical weight loss",
-  "weight loss injections",
-  "weight loss clinic",
+  "GLP-1 weight management",
+  "provider-guided weight management",
+  "weight management injections",
+  "weight management clinic",
   "tadalafil",
   "sildenafil",
   "cialis",
@@ -162,9 +162,9 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
 
 export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
-    question: "Do you offer Semaglutide and Tirzepatide for weight loss?",
+    question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Novi, MI.",
+      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Novi, MI. Individual results may vary.",
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
@@ -187,19 +187,19 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
       "Yes. Semaglutide and Tirzepatide require a valid prescription and clinical evaluation. Complete our online intake to begin provider review.",
   },
   {
-    question: "How much does medical weight loss cost?",
+    question: "How much does provider-guided weight management cost?",
     answer:
       "Compounded Semaglutide kits are priced by weekly injection dose from $134–$229 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, intake physician review, compounding, supplies, and shipping for Michigan patients. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 60-day (2-kit) supply. MIC + B12 metabolic support kits are $119.",
   },
   {
-    question: "Who is eligible for medical weight loss?",
+    question: "Who is eligible for provider-guided weight management?",
     answer:
-      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients seeking Semaglutide or Tirzepatide medical weight management.",
+      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients seeking Semaglutide or Tirzepatide provider-guided weight management.",
   },
   {
-    question: "What is the MIC + B12 skinny shot?",
+    question: "What is the MIC + B12 metabolic support kit?",
     answer:
-      "MIC + B12 is a lipotropic injection blend (Methionine, Inositol, Choline, Vitamin B12, and L-Carnitine) used as metabolic support on its own or alongside Semaglutide or Tirzepatide therapy.",
+      "MIC + B12 is a lipotropic injection blend (Methionine, Inositol, Choline, Vitamin B12, and L-Carnitine) used as provider-guided metabolic support on its own or alongside Semaglutide or Tirzepatide therapy.",
   },
   {
     question: "Can I use MIC + B12 with GLP-1 therapy?",

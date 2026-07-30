@@ -39,8 +39,8 @@ export default function HomePage() {
               <span className="text-sky-300">low cost prescription drugs</span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
-              Medical weight loss patients compare to Ozempic &amp; Wegovy · ED meds with Sildenafil &amp; Tadalafil
-              (Viagra &amp; Cialis active ingredients) · TRT · mobile IV — from your Novi, MI pharmacy.
+              Provider-guided weight management patients often compare to Ozempic &amp; Wegovy · ED meds with Sildenafil
+              &amp; Tadalafil (Viagra &amp; Cialis active ingredients) · TRT · mobile IV — from your Novi, MI pharmacy.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
               <Button
@@ -195,11 +195,13 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
           <div className="grid gap-6 max-w-3xl mx-auto">
             <div>
-              <h3 className="font-semibold text-lg mb-2">Do you offer Semaglutide and Tirzepatide for weight loss?</h3>
+              <h3 className="font-semibold text-lg mb-2">
+                Do you offer Semaglutide and Tirzepatide for weight management?
+              </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Yes. We offer physician-supervised medical weight loss with compounded Semaglutide and Tirzepatide
-                (GLP-1) injections—alternatives patients often compare to Ozempic, Wegovy, and Zepbound. Transparent
-                cash-pay pricing for qualifying Michigan patients.{" "}
+                Yes. We offer provider-guided weight management with compounded Semaglutide and Tirzepatide (GLP-1)
+                injections—treatment options patients often compare to Ozempic, Wegovy, and Zepbound. Transparent
+                cash-pay pricing for qualifying Michigan patients. Individual results may vary.{" "}
                 <Link href="/weight-loss" className="text-primary hover:underline">
                   Shop Semaglutide &amp; Tirzepatide programs
                 </Link>
@@ -286,7 +288,7 @@ export default function HomePage() {
             <p className="leading-relaxed mb-4">
               Our services include{" "}
               <Link href="/weight-loss" className="text-primary hover:underline">
-                GLP-1 medical weight loss
+                provider-guided GLP-1 weight management
               </Link>
               ,{" "}
               <Link href="/mens-health" className="text-primary hover:underline">
@@ -294,7 +296,7 @@ export default function HomePage() {
               </Link>
               ,{" "}
               <Link href="/iv-rejuvenation" className="text-primary hover:underline">
-                mobile IV rejuvenation
+                mobile IV wellness therapy
               </Link>
               , and{" "}
               <Link href="/specialty-pharmacy" className="text-primary hover:underline">

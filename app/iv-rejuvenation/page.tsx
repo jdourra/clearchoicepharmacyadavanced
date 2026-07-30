@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     "NAD+ IV therapy",
     "IV hydration",
     "hangover IV",
-    "immune boost IV",
+    "immune support IV",
     "mobile IV Metro Detroit",
     "IV therapy Novi",
   ],

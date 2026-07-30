@@ -31,9 +31,9 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/weight-loss",
-    title: "Semaglutide & Tirzepatide Weight Loss",
+    title: "Semaglutide & Tirzepatide Weight Management",
     description:
-      "Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Physician-supervised GLP-1 weight loss.",
+      "Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Provider-guided GLP-1 weight management.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Buy now",

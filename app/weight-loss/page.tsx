@@ -37,9 +37,9 @@ import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarit
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Michigan Weight Loss",
+  title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Weight Management",
   description:
-    "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Physician-supervised GLP-1 programs for Michigan patients—all-in kits with review, supplies, and shipping.",
+    "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Provider-guided GLP-1 weight management for Michigan patients—all-in kits with review, supplies, and shipping.",
   keywords: [
     "semaglutide",
     "tirzepatide",
@@ -49,10 +49,10 @@ export const metadata: Metadata = {
     "wegovy",
     "zepbound",
     "GLP-1",
-    "GLP-1 weight loss",
-    "medical weight loss",
-    "weight loss injections",
-    "weight loss clinic",
+    "GLP-1 weight management",
+    "provider-guided weight management",
+    "weight management injections",
+    "weight management clinic",
     "Michigan",
     "semaglutide Michigan",
     "tirzepatide Novi",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Semaglutide from $134/mo & Tirzepatide from $149/mo | Clear Choice Pharmacy",
     description:
-      "All-in medical weight loss kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $149/mo on 60-day starter billing.",
+      "All-in provider-guided weight management kits for Michigan patients. Semaglutide from $134/mo, Tirzepatide from $149/mo on 60-day starter billing.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -73,7 +73,7 @@ const glpBenefits = [
   "Custom Titration: Semaglutide and Tirzepatide formulations compounded to match your specific titration schedule and clinical goals.",
   "Transparent Pricing: Bypass insurance restrictions and access high-quality metabolic therapies with clear, upfront cash-pay pricing.",
   "Licensed Provider Review: Complete a secure online intake reviewed by a licensed clinician before compounding.",
-  "Long-Term Metabolic Support: Structured medical weight management designed for sustainable results—not quick-fix retail programs.",
+  "Long-Term Metabolic Support: Structured provider-guided weight management designed to support healthy habits—not quick-fix retail programs.",
 ]
 
 export default function WeightLossPage() {
@@ -85,9 +85,9 @@ export default function WeightLossPage() {
     description:
       "Compounded Semaglutide from $134/mo and Tirzepatide from $149/mo at Clear Choice Pharmacy in Novi, MI.",
     about: [
-      { "@type": "MedicalTherapy", name: "Semaglutide Weight Loss" },
-      { "@type": "MedicalTherapy", name: "Tirzepatide Weight Loss" },
-      { "@type": "MedicalTherapy", name: "GLP-1 Weight Loss Injections" },
+      { "@type": "MedicalTherapy", name: "Semaglutide Weight Management" },
+      { "@type": "MedicalTherapy", name: "Tirzepatide Weight Management" },
+      { "@type": "MedicalTherapy", name: "GLP-1 Weight Management Injections" },
       { "@type": "MedicalTherapy", name: "MIC + B12 Metabolic Weight Support" },
     ],
     provider: pharmacyProviderSchema(),
@@ -96,14 +96,14 @@ export default function WeightLossPage() {
   return (
     <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(WEIGHT_LOSS_FAQS)]}>
       <PremiumHero
-        badge="Medical Weight Loss · GLP-1"
-        headline="Semaglutide & Tirzepatide Weight Loss"
+        badge="Provider-Guided Weight Management · GLP-1"
+        headline="Semaglutide & Tirzepatide Weight Management"
         subheadline="All-in kits from $134/mo Semaglutide and $149/mo Tirzepatide on 60-day starter billing."
-        description="Looking for medical weight loss, weight loss injections, or alternatives patients compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients."
+        description="Looking for provider-guided weight management, weight management injections, or treatment options patients often compare to Ozempic, Wegovy, and Zepbound? Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review—for qualifying Michigan patients. Compounded medications are not the FDA-approved brand products.",
         highlight="Custom titration · Pharmacy-compounded · Reviewed by Dr. Dourra · Michigan patients"
         heroImage={{
           src: "/images/weight-loss-hero.png",
-          alt: "Semaglutide and Tirzepatide medical weight loss program",
+          alt: "Semaglutide and Tirzepatide provider-guided weight management program",
         }}
         primaryCta={{
           label: "Shop Semaglutide & Tirzepatide",
@@ -115,9 +115,9 @@ export default function WeightLossPage() {
 
       <ContentSection id="programs">
         <SectionIntro
-          eyebrow="Weight Loss Injections"
+          eyebrow="Weight Management Injections"
           title="Semaglutide, Tirzepatide & MIC + B12"
-          description="All-in kit pricing — physician review, compounding, supplies, and Michigan shipping or pickup included. No hidden membership fee."
+          description="All-in kit pricing — physician review, compounding, supplies, and Michigan shipping or pickup included. No hidden membership fee. Individual results may vary."
         />
         <AllInInclusions items={ALL_IN_INCLUSIONS.weightLoss} className="mt-6" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -175,7 +175,7 @@ export default function WeightLossPage() {
               />
             </div>
             <div className="p-6 flex flex-col flex-1">
-            <h3 className="text-xl font-bold">MIC + B12 Skinny Shot</h3>
+            <h3 className="text-xl font-bold">MIC + B12 Metabolic Support</h3>
             <p className="text-sm text-primary font-medium mt-1">Lipotropic Metabolic Support</p>
             <p className="text-sm text-muted-foreground mt-3 flex-1">{MIC_B12_WEIGHT_LOSS.description}</p>
             <div className="mt-5 pt-4 border-t">
@@ -228,9 +228,9 @@ export default function WeightLossPage() {
 
       <ContentSection id="benefits">
         <SectionIntro
-          eyebrow="GLP-1 Weight Loss"
-          title="Semaglutide & Tirzepatide for Medical Weight Loss"
-          description="Physician-supervised weight loss injections and weight management programs with transparent cash-pay pricing."
+          eyebrow="GLP-1 Weight Management"
+          title="Semaglutide & Tirzepatide for Provider-Guided Weight Management"
+          description="Physician-supervised weight management injections with transparent cash-pay pricing. Individual results may vary."
         />
         <BenefitList items={glpBenefits} />
       </ContentSection>
@@ -238,8 +238,8 @@ export default function WeightLossPage() {
       <ContentSection id="mic-b12" tone="muted">
         <SectionIntro
           eyebrow="Metabolic Support"
-          title="How MIC + B12 Supports Weight Loss"
-          description="A lipotropic injection kit that supports fat metabolism, energy, and metabolic health — ideal on its own or alongside GLP-1 therapy."
+          title="How MIC + B12 Supports Weight Management"
+          description="A lipotropic injection kit that supports metabolic wellness and energy — on its own or alongside GLP-1 therapy under provider guidance."
         />
         <BenefitList
           items={MIC_B12_HOW_IT_WORKS.map(({ title, description }) => `${title}: ${description}`)}
@@ -249,8 +249,8 @@ export default function WeightLossPage() {
       <ContentSection>
         <SectionIntro
           eyebrow="Why Clear Choice"
-          title="Premium Clinical Tools for Lasting Results"
-          description="We pair specialized compounding expertise with a transparent pricing model—giving you access to medical weight management without retail or PBM-driven opacity."
+          title="Premium Clinical Tools for Provider-Guided Support"
+          description="We pair specialized compounding expertise with a transparent pricing model—giving you access to provider-guided weight management without retail or PBM-driven opacity."
         />
         <FeatureGrid
           items={[
@@ -275,7 +275,7 @@ export default function WeightLossPage() {
 
       <ProcessSteps
         title="How It Works"
-        subtitle="Three steps to start your medical weight loss journey"
+        subtitle="Three steps to start provider-guided weight management"
         steps={[
           {
             step: 1,
@@ -296,7 +296,7 @@ export default function WeightLossPage() {
       />
 
       <FaqSection
-        title="Semaglutide, Tirzepatide & Weight Loss FAQs"
+        title="Semaglutide, Tirzepatide & Weight Management FAQs"
         subtitle="Ozempic, Wegovy, Zepbound comparisons, pricing, and eligibility"
         items={WEIGHT_LOSS_FAQS}
       />
@@ -304,7 +304,7 @@ export default function WeightLossPage() {
       <ContentSection>
         <SectionIntro
           eyebrow="Learn"
-          title="Weight Loss Guides"
+          title="Weight Management Guides"
           description="Read educational articles on Semaglutide, Tirzepatide, and how compounded GLP-1 compares to brand-name options."
         />
         <div className="mt-6 flex flex-wrap gap-3">
@@ -332,7 +332,7 @@ export default function WeightLossPage() {
       <PremiumCta
         icon="scale"
         title="Ready to Begin Your Journey?"
-        description="Buy Semaglutide or Tirzepatide medical weight loss through Clear Choice Pharmacy."
+        description="Buy Semaglutide or Tirzepatide for provider-guided weight management through Clear Choice Pharmacy."
         primaryCta={{
           label: "Shop GLP Programs",
           href: PROGRAMS_URL,

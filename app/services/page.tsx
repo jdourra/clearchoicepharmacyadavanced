@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Pharmacy Services | Weight Loss, ED, IV, Specialty & Prescriptions",
+  title: "Pharmacy Services | Weight Management, ED, IV, Specialty & Prescriptions",
   description:
-    "Semaglutide and Tirzepatide weight loss, Tadalafil and Sildenafil ED meds, TRT, mobile IV therapy, specialty pharmacy, and low cost prescription drugs—Clear Choice Pharmacy, Novi, MI.",
+    "Semaglutide and Tirzepatide provider-guided weight management, Tadalafil and Sildenafil ED meds, TRT, mobile IV therapy, specialty pharmacy, and low cost prescription drugs—Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/services`,
   },
   openGraph: {
     title: "Pharmacy Services | Clear Choice Pharmacy",
     description:
-      "GLP-1 weight loss, ED medications, TRT, mobile IV, specialty meds, and low-cost prescriptions from Clear Choice Pharmacy in Novi, MI.",
+      "GLP-1 provider-guided weight management, ED medications, TRT, mobile IV, specialty meds, and low-cost prescriptions from Clear Choice Pharmacy in Novi, MI.",
     url: `${SITE_URL}/services`,
     type: "website",
   },

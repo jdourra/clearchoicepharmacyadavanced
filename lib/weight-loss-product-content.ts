@@ -38,17 +38,17 @@ const SHARED_KIT_INCLUDES = [
 
 export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLossProductContent> = {
   semaglutide: {
-    homeKitTitle: "Semaglutide Weight Loss HomeKit",
-    tagline: "Medical weight loss · from $134/mo per 30-day kit",
+    homeKitTitle: "Semaglutide Weight Management HomeKit",
+    tagline: "Provider-guided weight management · from $134/mo per 30-day kit",
     purpose:
-      "Semaglutide is a once-weekly GLP-1 therapy used for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Our compounded Semaglutide is prepared pursuant to your provider's prescription for qualifying Michigan patients—we do not dispense brand-name Ozempic or Wegovy through this program.",
+      "Semaglutide is a once-weekly GLP-1 therapy used for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Our compounded Semaglutide is prepared pursuant to your provider's prescription for qualifying Michigan patients—we do not dispense brand-name Ozempic or Wegovy through this program.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
       "Once per week — same day each week, any time of day, with or without food. Your provider will personalize your starting dose and titration schedule.",
     dietExercise: "Healthy eating and regular activity are recommended alongside therapy.",
     benefits: [
-      "Medical weight management support",
+      "Provider-guided weight management support",
       "May support healthier blood pressure",
       "May support improved cholesterol markers",
       "May support blood sugar regulation",
@@ -79,16 +79,16 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       ...SHARED_KIT_INCLUDES,
     ],
     optionalAddon: {
-      label: "MIC + B12 Skinny Shot HomeKit",
+      label: "MIC + B12 Metabolic Support HomeKit",
       description: "Optional lipotropic metabolic support alongside GLP-1 therapy.",
       href: "/iv-rejuvenation/vials/start?vial=mic-skinny",
     },
   },
   tirzepatide: {
-    homeKitTitle: "Tirzepatide Weight Loss HomeKit",
-    tagline: "Medical weight loss · from $149/mo per 30-day kit",
+    homeKitTitle: "Tirzepatide Weight Management HomeKit",
+    tagline: "Provider-guided weight management · from $149/mo per 30-day kit",
     purpose:
-      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for medical weight loss and weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Our compounded Tirzepatide is prescribed for qualifying Michigan patients after physician review—we do not dispense brand-name Zepbound or Mounjaro through this program.",
+      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Our compounded Tirzepatide is prescribed for qualifying Michigan patients after physician review—we do not dispense brand-name Zepbound or Mounjaro through this program.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -96,7 +96,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     dietExercise: "Healthy eating and regular activity are recommended alongside therapy.",
     benefits: [
       "Advanced dual-pathway metabolic support",
-      "Medical weight management for qualifying patients",
+      "Provider-guided weight management for qualifying patients",
       "Provider-guided titration and ongoing oversight",
       "Pharmacy-compounded fulfillment",
     ],
@@ -126,7 +126,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       ...SHARED_KIT_INCLUDES,
     ],
     optionalAddon: {
-      label: "MIC + B12 Skinny Shot HomeKit",
+      label: "MIC + B12 Metabolic Support HomeKit",
       description: "Optional lipotropic metabolic support alongside GLP-1/GIP therapy.",
       href: "/iv-rejuvenation/vials/start?vial=mic-skinny",
     },
@@ -137,9 +137,9 @@ export function getWeightLossProductPageTitle(program: WeightLossProgram): strin
   const fromPrice =
     program.doses[0]?.quarterlyKitPrice ?? program.doses[0]?.monthlyKitPrice ?? 0
   if (program.id === "semaglutide") {
-    return `Semaglutide from $${fromPrice}/mo | Michigan Weight Loss | Clear Choice Pharmacy`
+    return `Semaglutide from $${fromPrice}/mo | Weight Management | Clear Choice Pharmacy`
   }
-  return `Tirzepatide from $${fromPrice}/mo | Michigan Weight Loss | Clear Choice Pharmacy`
+  return `Tirzepatide from $${fromPrice}/mo | Weight Management | Clear Choice Pharmacy`
 }
 
 /** Floor “from” price for ads/SEO (60-day / multi-kit starter kit price). */

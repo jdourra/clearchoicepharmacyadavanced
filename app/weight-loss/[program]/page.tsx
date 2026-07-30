@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description,
     keywords:
       slug === "semaglutide"
-        ? ["semaglutide", "semaglutide cost", "ozempic", "wegovy", "GLP-1", "weight loss injections", "medical weight loss"]
-        : ["tirzepatide", "tirzepatide cost", "zepbound", "mounjaro", "GLP-1", "weight loss injections", "medical weight loss"],
+        ? ["semaglutide", "semaglutide cost", "ozempic", "wegovy", "GLP-1", "weight management injections", "provider-guided weight management"]
+        : ["tirzepatide", "tirzepatide cost", "zepbound", "mounjaro", "GLP-1", "weight management injections", "provider-guided weight management"],
     alternates: {
       canonical: `${SITE_URL}/weight-loss/${slug}`,
     },

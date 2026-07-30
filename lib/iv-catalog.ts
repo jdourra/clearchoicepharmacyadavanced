@@ -33,7 +33,7 @@ export const IV_PACKAGES: IvPackage[] = [
     badgeClass: "bg-sky-500/10 text-sky-700 border-sky-200",
     ingredients: ["Vitamin C", "B-Complex", "Vitamin B12", "Magnesium", "Calcium"],
     description:
-      "The gold standard for overall wellness, immune support, chronic fatigue, and rapid cellular hydration.",
+      "A classic wellness IV for immune support, energy support, and hydration — administered after provider review.",
     sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/myers-cocktail-iv.png",
@@ -51,7 +51,7 @@ export const IV_PACKAGES: IvPackage[] = [
       "Choice of Rx Add-in (Ondansetron for nausea OR Toradol for pain)",
     ],
     description:
-      "Engineered for rapid relief from migraines, severe hangovers, food poisoning, or flu symptoms.",
+      "Hydration and provider-selected Rx add-ins for recovery support during migraine, hangover, or illness-related discomfort.",
     sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/iv-b-complex.png",
@@ -64,7 +64,7 @@ export const IV_PACKAGES: IvPackage[] = [
     price: 249,
     ingredients: ["High-dose Vitamin C", "Zinc", "Multi-trace elements", "Glutathione Push"],
     description:
-      "Boost your immune defense, enhance skin radiance, and detoxify cells from the inside out.",
+      "High-dose nutrient support for immune defense, skin radiance, and restorative wellness.",
     sessionLabel: IV_SESSION_LABEL,
     image: {
       src: "/images/immunity-max-iv.png",
@@ -73,18 +73,18 @@ export const IV_PACKAGES: IvPackage[] = [
   },
   {
     id: "nad",
-    title: "Premium Anti-Aging (NAD+ Therapy)",
+    title: "Premium NAD+ Therapy",
     price: 379,
-    badge: "Longevity",
+    badge: "Healthy Aging",
     badgeClass: "bg-slate-800/10 text-slate-800 border-slate-300",
     ingredients: ["250mg pure NAD+ (Nicotinamide Adenine Dinucleotide) in Normal Saline"],
     description:
-      "Advanced cellular repair that boosts cognitive function, accelerates metabolic energy, and fights aging.",
+      "Provider-guided NAD+ infusion for cellular health support, focus, and energy — a restorative wellness option.",
     note: "Requires 2-hour monitored infusion.",
     sessionLabel: "1 mobile IV session · ~2 hours · licensed RN monitored infusion",
     image: {
       src: "/images/nad-therapy-iv.png",
-      alt: "Premium anti-aging NAD+ therapy IV infusion bag",
+      alt: "Premium NAD+ therapy IV infusion bag for cellular health support",
     },
   },
   {
@@ -106,36 +106,36 @@ export const IV_BOOSTERS: IvBooster[] = [
     id: "glutathione",
     name: "Glutathione Push",
     price: 30,
-    benefit: "Master antioxidant for detox, brighter skin, and immune support.",
-    bestFor: "Detox & glow",
+    benefit: "Antioxidant support for wellness, skin radiance, and immune health.",
+    bestFor: "Antioxidant support",
   },
   {
     id: "b12",
     name: "Vitamin B12 Shot",
     price: 25,
-    benefit: "Supports energy, metabolism, mood, and mental clarity — ideal for fatigue.",
-    bestFor: "Energy",
+    benefit: "Supports energy, metabolism, mood, and mental clarity.",
+    bestFor: "Energy support",
   },
   {
     id: "d3",
     name: "Vitamin D3 Boost",
     price: 35,
-    benefit: "Promotes bone health, immunity, and mood — especially helpful in low-sun seasons.",
-    bestFor: "Immunity",
+    benefit: "Supports bone health, immunity, and mood — especially helpful in low-sun seasons.",
+    bestFor: "Immunity support",
   },
   {
     id: "zinc",
     name: "Zinc Supplement",
     price: 25,
-    benefit: "Strengthens immune defense, wound healing, and post-illness recovery.",
-    bestFor: "Recovery",
+    benefit: "Supports immune defense and post-illness recovery.",
+    bestFor: "Recovery support",
   },
   {
     id: "toradol",
     name: "Toradol Pain Relief",
     price: 35,
-    benefit: "Fast anti-inflammatory relief for headaches, body aches, and soreness.",
-    bestFor: "Pain relief",
+    benefit: "Provider-selected anti-inflammatory support for headaches, body aches, and soreness.",
+    bestFor: "Comfort support",
   },
 ]
 

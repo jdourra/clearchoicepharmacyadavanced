@@ -31,7 +31,7 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     route: "Intramuscular self-injection",
     frequency: "Twice per week",
     description:
-      "Improve energy, metabolism, mood, and sleep. Physician-reviewed kit with syringes, alcohol pads, and injection tutorial.",
+      "Supports energy, metabolism, mood, and sleep. Physician-reviewed kit with syringes, alcohol pads, and injection tutorial.",
     image: {
       src: "/images/b12-vial.png",
       alt: "Vitamin B12 injection homekit vial",
@@ -42,14 +42,14 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     title: "Glutathione Injection Homekit",
     price: 129,
     category: "skin",
-    badge: "Detox",
+    badge: "Antioxidant",
     badgeClass: "bg-emerald-500/10 text-emerald-800 border-emerald-200",
     ingredients: ["Reduced glutathione (GSH)"],
     supply: "30-day kit",
     route: "Subcutaneous or IM self-injection",
     frequency: "As directed by physician",
     description:
-      "Master antioxidant for detox, skin radiance, and immune support. Shipped after telehealth physician approval.",
+      "Master antioxidant support for restorative wellness, skin radiance, and immune health. Shipped after telehealth physician approval.",
     image: {
       src: "/images/glutathione-vial.png",
       alt: "Glutathione injection homekit vial",
@@ -65,7 +65,7 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     route: "Intramuscular self-injection",
     frequency: "As directed by physician",
     description:
-      "High-potency vitamin C for immune defense, collagen support, and recovery — bypasses GI absorption limits.",
+      "High-potency vitamin C for immune defense support, collagen support, and recovery support — bypasses GI absorption limits.",
     image: {
       src: "/images/vitamin-c-vial.png",
       alt: "Vitamin C injection homekit vial",
@@ -76,14 +76,14 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     title: "NAD+ Injection Homekit",
     price: 379,
     category: "anti-aging",
-    badge: "Longevity",
+    badge: "Healthy Aging",
     badgeClass: "bg-slate-800/10 text-slate-800 border-slate-300",
     ingredients: ["NAD+ (Nicotinamide Adenine Dinucleotide)"],
     supply: "30-day kit",
     route: "Subcutaneous self-injection",
     frequency: "As directed by physician",
     description:
-      "Cellular energy and anti-aging support for focus, stamina, and recovery. Includes supplies and physician access.",
+      "Cellular health support for focus, stamina, and recovery. Includes supplies and physician access.",
     shippingNote: "Shipped cold — refrigerate upon arrival.",
     image: {
       src: "/images/nad-vial.png",
@@ -115,7 +115,7 @@ export const REJUVENATION_VIALS: RejuvenationVial[] = [
     route: "Intramuscular self-injection",
     frequency: "As directed by physician",
     description:
-      "Supports detox pathways, respiratory wellness, mood, and inflammation — physician-reviewed before shipping.",
+      "Supports detox pathways, respiratory wellness, mood, and inflammation balance — physician-reviewed before shipping.",
     image: {
       src: "/images/nac-vial.png",
       alt: "NAC injection homekit vial",
@@ -135,9 +135,9 @@ export function isVialProductId(value: string): value is (typeof VIAL_PRODUCT_ID
 }
 
 export const VIAL_CATEGORY_LABELS: Record<RejuvenationVialCategory, string> = {
-  energy: "Energy",
-  "anti-aging": "Anti-Aging",
-  immunity: "Immunity",
-  skin: "Skin & Detox",
-  metabolic: "Metabolic",
+  energy: "Energy Support",
+  "anti-aging": "Healthy Aging",
+  immunity: "Immunity Support",
+  skin: "Skin & Wellness",
+  metabolic: "Metabolic Support",
 }

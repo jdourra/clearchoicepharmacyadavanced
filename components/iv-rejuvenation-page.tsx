@@ -44,11 +44,11 @@ const TRUST_ITEMS = [
   {
     icon: Syringe,
     title: "Licensed RNs Only",
-    description: "Safe, professional in-home administration",
+    description: "Safe, professional in-home administration by licensed nurses",
   },
   {
     icon: DollarSign,
-    title: "100% Upfront Pricing",
+    title: "Transparent Upfront Pricing",
     description: "Drip prices shown separately; $50 flat mobile dispatch fee at checkout",
   },
 ]
@@ -80,7 +80,7 @@ const VIAL_STEPS = [
   {
     step: 1,
     title: "Choose Your Kit",
-    description: "Select a physician-reviewed injectable vial homekit from our rejuvenation menu.",
+    description: "Select a physician-reviewed injectable vial homekit from our wellness menu.",
   },
   {
     step: 2,

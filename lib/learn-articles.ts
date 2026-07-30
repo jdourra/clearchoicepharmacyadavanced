@@ -8,13 +8,13 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     slug: "semaglutide-weight-loss",
     title: "Semaglutide for Weight Loss: What Michigan Patients Should Know",
     description:
-      "Learn how Semaglutide works for medical weight loss, how it compares to Ozempic and Wegovy, dosing basics, side effects, and cash-pay options at Clear Choice Pharmacy in Novi, MI.",
+      "Learn how Semaglutide works for provider-guided weight management, how it compares to Ozempic and Wegovy, dosing basics, side effects, and cash-pay options at Clear Choice Pharmacy in Novi, MI.",
     keywords: [
       "semaglutide",
       "semaglutide weight loss",
       "semaglutide injections",
       "GLP-1",
-      "medical weight loss",
+      "provider-guided weight management",
       "ozempic",
       "wegovy",
     ],
@@ -32,8 +32,8 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "Semaglutide is one of the most searched medical weight loss therapies in the United States. Patients looking for Semaglutide, Ozempic, or Wegovy want clear answers: how it works, who it may help, what side effects to expect, and what it costs without insurance games.",
-      "At Clear Choice Pharmacy in Novi, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide as part of a structured medical weight loss program—with transparent cash-pay kit pricing.",
+      "Semaglutide is one of the most searched provider-guided weight management therapies in the United States. Patients looking for Semaglutide, Ozempic, or Wegovy want clear answers: how it works, who it may help, what side effects to expect, and what it costs without insurance games.",
+      "At Clear Choice Pharmacy in Novi, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide as part of a structured provider-guided weight management program—with transparent cash-pay kit pricing.",
     ],
     sections: [
       {
@@ -47,13 +47,13 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "How Semaglutide weight loss injections work",
         paragraphs: [
           "Semaglutide is typically given as a subcutaneous injection once per week. Dosing usually starts low and titrates upward under clinical supervision to improve tolerance and find an effective maintenance dose.",
-          "Medical weight loss is not only the medication. A complete plan includes eligibility screening, titration support, nutrition and activity guidance, and follow-up when side effects or plateaus appear.",
+          "Provider-guided weight management is not only the medication. A complete plan includes eligibility screening, titration support, nutrition and activity guidance, and follow-up when side effects or plateaus appear.",
         ],
         bullets: [
           "Once-weekly injection schedule",
           "Gradual titration under provider oversight",
           "Appetite and intake regulation support",
-          "Best results with healthy eating and activity habits",
+          "Best outcomes when combined with healthy eating and activity habits",
         ],
       },
       {
@@ -67,13 +67,13 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "Common side effects and expectations",
         paragraphs: [
           "The most common Semaglutide side effects are gastrointestinal: nausea, fullness, constipation, diarrhea, or reflux—especially during dose increases. Many patients improve as titration continues. Serious risks are uncommon but require medical evaluation if concerning symptoms develop.",
-          "Set realistic goals. Semaglutide can support meaningful weight reduction for qualifying patients, but outcomes vary and lifestyle habits still matter.",
+          "Set realistic goals. Semaglutide may support weight management for qualifying patients, but outcomes vary and lifestyle habits still matter.",
         ],
       },
       {
         heading: "Cash-pay Semaglutide in Novi, MI",
         paragraphs: [
-          "Insurance coverage for GLP-1 weight loss can be limited, delayed, or denied. Clear Choice Pharmacy offers transparent cash-pay Semaglutide kits for qualifying Michigan patients after provider approval. Each 30-day kit includes four weekly injections priced by dose tier—physician review, compounding, supplies, and shipping included.",
+          "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy offers transparent cash-pay Semaglutide kits for qualifying Michigan patients after provider approval. Each 30-day kit includes four weekly injections priced by dose tier—physician review, compounding, supplies, and shipping included.",
           "If you have been comparing Semaglutide clinics, telehealth brands, or compounded options near Metro Detroit, start with our Semaglutide program page for current pricing and intake steps.",
         ],
       },
@@ -82,7 +82,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide the same as Ozempic?",
         answer:
-          "Ozempic contains Semaglutide as its active ingredient. Our program compounds Semaglutide pursuant to a patient-specific prescription. We do not dispense brand-name Ozempic through this medical weight loss program.",
+          "Ozempic contains Semaglutide as its active ingredient. Our program compounds Semaglutide pursuant to a patient-specific prescription. We do not dispense brand-name Ozempic through this provider-guided weight management program.",
       },
       {
         question: "Do I need a prescription for Semaglutide?",
@@ -92,7 +92,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide available to Michigan patients only?",
         answer:
-          "Yes. Clear Choice Pharmacy currently fulfills medical weight loss programs for qualifying Michigan patients only.",
+          "Yes. Clear Choice Pharmacy currently fulfills provider-guided weight management programs for qualifying Michigan patients only.",
       },
     ],
     disclaimer: MI_DISCLAIMER,
@@ -101,7 +101,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     slug: "tirzepatide-weight-loss",
     title: "Tirzepatide for Weight Loss: Dual GLP-1/GIP Therapy Explained",
     description:
-      "Learn how Tirzepatide works for medical weight loss, how it compares to Zepbound and Mounjaro, side effects, and cash-pay options for Michigan patients at Clear Choice Pharmacy.",
+      "Learn how Tirzepatide works for provider-guided weight management, how it compares to Zepbound and Mounjaro, side effects, and cash-pay options for Michigan patients at Clear Choice Pharmacy.",
     keywords: [
       "tirzepatide",
       "tirzepatide weight loss",
@@ -109,7 +109,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "mounjaro",
       "GLP-1",
       "weight loss injections",
-      "medical weight loss",
+      "provider-guided weight management",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
@@ -125,7 +125,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "Tirzepatide has become a leading option for patients searching medical weight loss injections, especially those comparing Zepbound, Mounjaro, and dual-pathway GLP-1/GIP therapy.",
+      "Tirzepatide has become a leading option for patients searching provider-guided weight management injections, especially those comparing Zepbound, Mounjaro, and dual-pathway GLP-1/GIP therapy.",
       "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients, with transparent cash-pay kit pricing from our Novi pharmacy.",
     ],
     sections: [
@@ -140,7 +140,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "How Tirzepatide weight loss therapy is used",
         paragraphs: [
           "Like Semaglutide, Tirzepatide is typically injected once weekly and titrated carefully. Providers choose starting and maintenance doses based on clinical response, tolerance, and goals.",
-          "A complete medical weight loss plan includes eligibility screening, side-effect coaching, lifestyle support, and refill adjustments as your dose changes.",
+          "A complete provider-guided weight management plan includes eligibility screening, side-effect coaching, lifestyle support, and refill adjustments as your dose changes.",
         ],
         bullets: [
           "Once-weekly dual GLP-1/GIP injection",
@@ -193,14 +193,14 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     slug: "semaglutide-vs-tirzepatide",
     title: "Semaglutide vs Tirzepatide: Which Weight Loss Injection Is Right?",
     description:
-      "Compare Semaglutide and Tirzepatide for medical weight loss—mechanism, dosing, side effects, and how Michigan patients choose between GLP-1 and dual GLP-1/GIP therapy.",
+      "Compare Semaglutide and Tirzepatide for provider-guided weight management—mechanism, dosing, side effects, and how Michigan patients choose between GLP-1 and dual GLP-1/GIP therapy.",
     keywords: [
       "semaglutide vs tirzepatide",
       "semaglutide",
       "tirzepatide",
       "GLP-1 weight loss",
       "weight loss injections",
-      "medical weight loss",
+      "provider-guided weight management",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
@@ -216,7 +216,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "If you are researching medical weight loss, you have likely asked: Semaglutide or Tirzepatide? Both are once-weekly injectable options used under clinician supervision. The best choice depends on your health profile, prior response, tolerance, and goals—not a social-media ranking.",
+      "If you are researching provider-guided weight management, you have likely asked: Semaglutide or Tirzepatide? Both are once-weekly injectable options used under clinician supervision. The best choice depends on your health profile, prior response, tolerance, and goals—not a social-media ranking.",
     ],
     sections: [
       {
@@ -275,7 +275,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "wegovy",
       "semaglutide vs ozempic",
       "GLP-1 weight loss",
-      "medical weight loss",
+      "provider-guided weight management",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
@@ -284,7 +284,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     readingMinutes: 7,
     primaryKeyword: "compounded semaglutide vs ozempic",
     serviceHref: "/weight-loss",
-    serviceCta: "Explore medical weight loss",
+    serviceCta: "Explore provider-guided weight management",
     relatedSlugs: [
       "semaglutide-weight-loss",
       "tirzepatide-weight-loss",
@@ -322,7 +322,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "A transparent Michigan pathway",
         paragraphs: [
-          "If you want physician-supervised medical weight loss with upfront cash-pay pricing, review Clear Choice Pharmacy Semaglutide and Tirzepatide programs, then complete intake for clinical evaluation before any medication is prepared.",
+          "If you want physician-supervised provider-guided weight management with upfront cash-pay pricing, review Clear Choice Pharmacy Semaglutide and Tirzepatide programs, then complete intake for clinical evaluation before any medication is prepared.",
         ],
       },
     ],
@@ -330,7 +330,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Does Clear Choice Pharmacy sell Ozempic?",
         answer:
-          "No. Our medical weight loss program compounds Semaglutide or Tirzepatide pursuant to a patient-specific prescription. Brand-name Ozempic and Wegovy are not dispensed through this program.",
+          "No. Our provider-guided weight management program compounds Semaglutide or Tirzepatide pursuant to a patient-specific prescription. Brand-name Ozempic and Wegovy are not dispensed through this program.",
       },
       {
         question: "Why do patients look at compounded Semaglutide?",
