@@ -11,7 +11,7 @@ import {
   getWeightLossProductPageTitle,
   isWeightLossProductSlug,
 } from "@/lib/weight-loss-product-content"
-import { SITE_URL } from "@/lib/clinical-seo"
+import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 
 type PageProps = {
   params: Promise<{ program: string }>
@@ -36,12 +36,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       : `Compounded Tirzepatide from $${fromPrice}/mo on 60-day starter kits. Dual GLP-1/GIP therapy with physician review, supplies & Michigan shipping. Clear Choice Pharmacy, Novi.`
 
   return {
-    title,
+    title: { absolute: title },
     description,
-    keywords:
-      slug === "semaglutide"
-        ? ["semaglutide", "semaglutide cost", "ozempic", "wegovy", "GLP-1", "weight management injections", "provider-guided weight management"]
-        : ["tirzepatide", "tirzepatide cost", "zepbound", "mounjaro", "GLP-1", "weight management injections", "provider-guided weight management"],
     alternates: {
       canonical: `${SITE_URL}/weight-loss/${slug}`,
     },
@@ -104,11 +100,24 @@ export default async function WeightLossProductPage({ params }: PageProps) {
     },
   }
 
+  const breadcrumbs = buildBreadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Medical Weight Loss", path: "/weight-loss" },
+    {
+      name: slug === "semaglutide" ? "Semaglutide" : "Tirzepatide",
+      path: `/weight-loss/${slug}`,
+    },
+  ])
+
   return (
     <div className="flex min-h-screen flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
       <SiteHeader />
       <main className="flex-1 bg-background">

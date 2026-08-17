@@ -11,7 +11,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t py-10 bg-background">
       <div className="container max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div className="space-y-3">
             <SiteLogo href="/" height={72} />
             <div className="space-y-2 text-sm text-muted-foreground">
@@ -37,60 +37,97 @@ export function SiteFooter() {
                 <span>Fax: {PHARMACY_FAX_DISPLAY}</span>
               </div>
             </div>
+            <p className="text-sm text-muted-foreground leading-relaxed pt-1">
+              Michigan pharmacy focused on provider-guided medical weight management and GLP-1 care, with full-service
+              prescriptions and compounding.
+            </p>
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Patient portal</h3>
-            <div className="flex flex-col gap-2 text-sm mb-4">
-              <Link href="/account" className="text-muted-foreground hover:text-foreground transition-colors">
-                Sign in / My account
-              </Link>
-              <Link href="/auth/sign-up" className="text-muted-foreground hover:text-foreground transition-colors">
-                Create account
-              </Link>
-            </div>
-            <h3 className="font-semibold text-foreground">Prescription prices</h3>
+            <h3 className="font-semibold text-foreground">Medical Weight Loss</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <Link href="/prescriptions" className="text-muted-foreground hover:text-foreground transition-colors">
-                Search medications
+              <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
+                Medical weight loss program
               </Link>
-              <Link href="/medications" className="text-muted-foreground hover:text-foreground transition-colors">
-                See medication costs
+              <Link href="/weight-loss/glp-1" className="text-muted-foreground hover:text-foreground transition-colors">
+                GLP-1 weight management
               </Link>
-              <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                Pricing formula
+              <Link
+                href="/weight-loss/semaglutide"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Semaglutide kits
+              </Link>
+              <Link
+                href="/weight-loss/tirzepatide"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Tirzepatide kits
+              </Link>
+              <Link
+                href="/weight-loss/medications"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Weight loss medications
+              </Link>
+              <Link href="/weight-loss/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                Weight loss FAQ
+              </Link>
+              <Link href="/learn" className="text-muted-foreground hover:text-foreground transition-colors">
+                Weight management guides
               </Link>
             </div>
           </div>
 
-          <div className="space-y-3 md:col-span-1">
-            <h3 className="font-semibold text-foreground">Services</h3>
+          <div className="space-y-3">
+            <h3 className="font-semibold text-foreground">Pharmacy services</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <Link href="/services" className="text-muted-foreground hover:text-foreground transition-colors">
-                All services
-              </Link>
               <Link href="/prescriptions" className="text-muted-foreground hover:text-foreground transition-colors">
                 Low cost prescription drugs
               </Link>
-              <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
-                Semaglutide &amp; Tirzepatide
-              </Link>
-              <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
-                Tadalafil, Sildenafil &amp; TRT
-              </Link>
-              <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
-                Mobile IV therapy
+              <Link href="/compounding" className="text-muted-foreground hover:text-foreground transition-colors">
+                Compounding
               </Link>
               <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
                 Specialty pharmacy
               </Link>
-              <Link href="/learn" className="text-muted-foreground hover:text-foreground transition-colors">
-                Learn guides
+              <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
+                Men&apos;s health
+              </Link>
+              <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
+                Mobile IV therapy
+              </Link>
+              <Link href="/services" className="text-muted-foreground hover:text-foreground transition-colors">
+                All services
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed pt-2">
-              Transparent pharmacy for everyday prescriptions and specialized clinical care in Novi and Metro Detroit.
-            </p>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold text-foreground">About &amp; support</h3>
+            <div className="flex flex-col gap-2 text-sm">
+              <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+                About Clear Choice Pharmacy
+              </Link>
+              <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </Link>
+              <Link href="/account" className="text-muted-foreground hover:text-foreground transition-colors">
+                Patient portal
+              </Link>
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Privacy policy
+              </Link>
+              <Link
+                href="/terms-and-conditions"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Terms
+              </Link>
+              <Link href="/refund-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Refund policy
+              </Link>
+            </div>
           </div>
         </div>
 

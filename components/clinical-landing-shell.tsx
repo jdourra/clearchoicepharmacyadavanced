@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -88,7 +89,7 @@ export function ClinicalLandingShell({ children, jsonLd }: ClinicalLandingShellP
 
 type PremiumHeroProps = {
   badge: string
-  headline: string
+  headline: ReactNode
   subheadline: string
   description?: string
   highlight?: string
@@ -330,14 +331,24 @@ type StepItem = {
   description: string
 }
 
-export function ProcessSteps({ title, subtitle, steps }: { title: string; subtitle: string; steps: StepItem[] }) {
+export function ProcessSteps({
+  title,
+  subtitle,
+  steps,
+  id,
+}: {
+  title: string
+  subtitle: string
+  steps: StepItem[]
+  id?: string
+}) {
   return (
-    <ContentSection tone="muted">
+    <ContentSection tone="muted" id={id}>
       <div className="text-center max-w-2xl mx-auto mb-12">
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{title}</h2>
         <p className="text-slate-600">{subtitle}</p>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
         {steps.map((item) => (
           <div key={item.step} className="text-center">
             <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-sky-500 text-white text-xl font-bold mb-5">
@@ -357,9 +368,19 @@ type FaqItem = {
   answer: string
 }
 
-export function FaqSection({ title, subtitle, items }: { title: string; subtitle: string; items: FaqItem[] }) {
+export function FaqSection({
+  title,
+  subtitle,
+  items,
+  id,
+}: {
+  title: string
+  subtitle: string
+  items: FaqItem[]
+  id?: string
+}) {
   return (
-    <ContentSection tone="muted">
+    <ContentSection tone="muted" id={id}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{title}</h2>

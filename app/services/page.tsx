@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Pharmacy Services | Weight Management, ED, IV, Specialty & Prescriptions",
+  title: "Pharmacy Services | Medical Weight Loss, Prescriptions & More",
   description:
-    "Semaglutide and Tirzepatide provider-guided weight management, Tadalafil and Sildenafil ED meds, TRT, mobile IV therapy, specialty pharmacy, and low cost prescription drugs—Clear Choice Pharmacy, Novi, MI.",
+    "Medical weight loss and GLP-1 care in Michigan, plus low cost prescriptions, compounding, men's health, mobile IV therapy, and specialty pharmacy—Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/services`,
   },
   openGraph: {
     title: "Pharmacy Services | Clear Choice Pharmacy",
     description:
-      "GLP-1 provider-guided weight management, ED medications, TRT, mobile IV, specialty meds, and low-cost prescriptions from Clear Choice Pharmacy in Novi, MI.",
+      "Medical weight management and GLP-1 care, plus prescriptions, compounding, ED/TRT, mobile IV, and specialty meds from Clear Choice Pharmacy in Novi, MI.",
     url: `${SITE_URL}/services`,
     type: "website",
   },
@@ -39,9 +39,24 @@ export default function ServicesPage() {
           <div className="text-center mb-10">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Clear Choice Pharmacy</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              From everyday prescriptions at honest prices to specialized clinical programs—each service has a clear
-              path to care, coordinated by our Novi pharmacy team.
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
+              Our primary clinical focus is{" "}
+              <Link href="/weight-loss" className="text-primary hover:underline">
+                medical weight loss and GLP-1 care
+              </Link>
+              , with full-service pharmacy support for prescriptions, compounding, men&apos;s health, IV therapy, and
+              specialty medications.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Prefer a quick start?{" "}
+              <Link href="/weight-loss" className="text-primary hover:underline">
+                View the weight loss program
+              </Link>{" "}
+              or{" "}
+              <Link href="/compounding" className="text-primary hover:underline">
+                learn about compounding
+              </Link>
+              .
             </p>
           </div>
 

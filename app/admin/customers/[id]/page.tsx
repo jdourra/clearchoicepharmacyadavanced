@@ -128,8 +128,8 @@ export default function AdminCustomerDetailPage() {
       refreshPayments(data)
       setPaymentMessage(
         data.emailSent
-          ? `Payment request emailed. Link: ${data.paymentUrl || "created"}`
-          : `Payment link created, but email failed: ${data.emailError || "unknown error"}. Link: ${data.paymentUrl || ""}`
+          ? "Payment request emailed."
+          : `Payment link created, but email failed: ${data.emailError || "unknown error"}. Use Open payment link below.`
       )
     } catch (err) {
       setPaymentError(err instanceof Error ? err.message : "Failed to send payment request")

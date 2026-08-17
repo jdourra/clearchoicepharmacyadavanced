@@ -65,15 +65,27 @@ export function SiteHeader() {
     { href: "/prescriptions", label: "Low cost prescriptions" },
     { href: "/medications", label: "See how much your medications cost" },
     { href: "/pricing", label: "How pricing works" },
+    { href: "/compounding", label: "Compounding pharmacy" },
+  ]
+
+  const weightLossLinks = [
+    { href: "/weight-loss", label: "Medical weight loss overview" },
+    { href: "/weight-loss/glp-1", label: "GLP-1 weight management" },
+    { href: "/weight-loss/semaglutide", label: "Semaglutide kits" },
+    { href: "/weight-loss/tirzepatide", label: "Tirzepatide kits" },
+    { href: "/weight-loss/medications", label: "Weight loss medications" },
+    { href: "/weight-loss/faq", label: "Weight loss FAQ" },
   ]
 
   const clinicalLinks = [
     { href: "/services", label: "All services" },
     { href: "/prescriptions", label: "Low cost prescription drugs" },
-    { href: "/weight-loss", label: "Semaglutide & Tirzepatide" },
-    { href: "/mens-health", label: "Tadalafil, Sildenafil & TRT" },
-    { href: "/iv-rejuvenation", label: "Mobile IV therapy" },
+    { href: "/compounding", label: "Compounding" },
     { href: "/specialty-pharmacy", label: "Specialty pharmacy" },
+    { href: "/mens-health", label: "Men's health (ED & TRT)" },
+    { href: "/iv-rejuvenation", label: "Mobile IV therapy" },
+    { href: "/about", label: "About us" },
+    { href: "/contact", label: "Contact" },
     { href: "/learn", label: "Learn guides" },
   ]
 
@@ -125,6 +137,20 @@ export function SiteHeader() {
                 </SheetHeader>
                 <nav className="flex flex-col px-2 py-4 overflow-y-auto max-h-[calc(100vh-5rem)]">
                   <div className="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Medical Weight Loss
+                  </div>
+                  {weightLossLinks.map((link) => (
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="rounded-md px-3 py-3 text-sm font-medium hover:bg-muted transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                  ))}
+
+                  <div className="px-3 pt-4 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Prescription prices
                   </div>
                   {medicationLinks.map((link) => (
@@ -139,7 +165,7 @@ export function SiteHeader() {
                   ))}
 
                   <div className="px-3 pt-4 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Services
+                    Pharmacy services
                   </div>
                   {clinicalLinks.map((link) => (
                     <SheetClose asChild key={link.href}>
@@ -219,6 +245,7 @@ export function SiteHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-5">
+          <NavHoverMenu label="Medical Weight Loss" links={weightLossLinks} menuClassName="w-60" />
           <NavHoverMenu label="Medications" links={medicationLinks} menuClassName="w-56" />
           <NavHoverMenu label="Services" links={clinicalLinks} menuClassName="w-56" />
           {mounted && user && (

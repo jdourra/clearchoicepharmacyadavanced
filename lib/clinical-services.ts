@@ -16,6 +16,20 @@ export interface ClinicalService {
 
 export const CLINICAL_SERVICES: ClinicalService[] = [
   {
+    href: "/weight-loss",
+    title: "Medical Weight Loss & GLP-1",
+    description:
+      "Provider-guided Semaglutide and Tirzepatide kits from $134/mo after clinician review. Michigan pharmacy fulfillment.",
+    pathType: "consultation",
+    pathLabel: "Provider review required",
+    cta: "Explore weight loss",
+    icon: Scale,
+    image: {
+      src: "/images/weight-loss-card.png",
+      alt: "Provider-guided medical weight management program",
+    },
+  },
+  {
     href: "/prescriptions",
     title: "Low Cost Prescription Drugs",
     description:
@@ -27,20 +41,6 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     image: {
       src: "/images/low-cost-prescriptions-card.png",
       alt: "Prescription bottle with pills next to a five dollar bill — most meds cost around $5",
-    },
-  },
-  {
-    href: "/weight-loss",
-    title: "Semaglutide & Tirzepatide Weight Management",
-    description:
-      "Semaglutide from $134/mo and Tirzepatide from $149/mo on 60-day starter kits. Provider-guided GLP-1 weight management.",
-    pathType: "consultation",
-    pathLabel: "Provider review required",
-    cta: "Buy now",
-    icon: Scale,
-    image: {
-      src: "/images/weight-loss-card.png",
-      alt: "Patient showing weight loss progress with looser-fitting jeans",
     },
   },
   {

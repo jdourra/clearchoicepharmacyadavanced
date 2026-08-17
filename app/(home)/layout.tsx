@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide, Sildenafil, Tadalafil, TRT, and low cost prescription drugs in Novi, MI",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
       },
     ],
   },
@@ -32,34 +32,24 @@ export const metadata: Metadata = {
 
 const homeFaqJsonLd = buildFaqJsonLd([
   {
-    question: "Does Clear Choice Pharmacy offer Semaglutide and Tirzepatide?",
+    question: "Do you offer Semaglutide and Tirzepatide weight loss in Michigan?",
     answer:
-      "Yes. Provider-guided weight management with compounded Semaglutide and Tirzepatide (GLP-1) is available for qualifying Michigan patients with transparent cash-pay pricing. Individual results may vary.",
+      "Yes. Clear Choice Pharmacy offers provider-guided weight management with compounded Semaglutide and Tirzepatide for qualifying Michigan patients after clinician review. Individual results may vary.",
   },
   {
-    question: "Do you offer Tadalafil, Sildenafil, and TRT?",
+    question: "Is compounded Semaglutide the same as Ozempic?",
     answer:
-      "Yes. We compound Tadalafil and Sildenafil ED troches and offer physician-supervised testosterone replacement therapy (TRT) with transparent cash-pay pricing.",
+      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. We compound Semaglutide pursuant to a patient-specific prescription when a clinician determines it is appropriate. We do not dispense brand-name Ozempic or Wegovy through this program.",
   },
   {
-    question: "What services does Clear Choice Pharmacy offer?",
+    question: "Who evaluates and who fills the medication?",
     answer:
-      "Low cost prescription drugs, Semaglutide and Tirzepatide provider-guided weight management, Tadalafil and Sildenafil ED medications, TRT, mobile IV therapy (Myers' Cocktail, NAD+), and specialty pharmacy with prior authorization support—from our Novi, MI pharmacy.",
+      "A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear Choice Pharmacy compounds and fulfills approved prescriptions for Michigan patients.",
   },
   {
-    question: "Do you offer mobile IV therapy?",
+    question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      "Yes. Clear Choice IV & Rejuvenation delivers pharmacy-formulated mobile IV therapy across Metro Detroit with licensed RN administration.",
-  },
-  {
-    question: "Do you accept insurance for specialty medications?",
-    answer:
-      "Yes. All major insurance plans are accepted for specialty therapies, with an in-house Prior Authorization team and copay assistance programs.",
-  },
-  {
-    question: "Who can use Clear Choice Pharmacy?",
-    answer:
-      "Clear Choice Pharmacy currently serves Michigan patients only for dispensing and clinical programs. Mobile IV serves Metro Detroit.",
+      "After clinician approval, Clear Choice Pharmacy compounds a patient-specific kit with transparent cash-pay pricing. Review dosing, inclusions, and starter options on each program page.",
   },
 ])
 

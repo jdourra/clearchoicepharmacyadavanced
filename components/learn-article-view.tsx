@@ -93,6 +93,27 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
+              {article.category === "weight-loss" && (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Also explore our{" "}
+                  <Link href="/weight-loss" className="text-primary hover:underline">
+                    medical weight loss program
+                  </Link>
+                  ,{" "}
+                  <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
+                    GLP-1 overview
+                  </Link>
+                  ,{" "}
+                  <Link href="/weight-loss/medications" className="text-primary hover:underline">
+                    medication options
+                  </Link>
+                  , and{" "}
+                  <Link href="/weight-loss/faq" className="text-primary hover:underline">
+                    weight loss FAQ
+                  </Link>
+                  .
+                </p>
+              )}
             </div>
 
             <div className="space-y-10">

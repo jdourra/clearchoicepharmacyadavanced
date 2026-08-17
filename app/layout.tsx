@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     address: true,
     telephone: true,
   },
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -45,7 +48,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — prescriptions, weight loss, IV therapy, and men's health in Novi, MI",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
       },
     ],
   },
@@ -78,9 +81,20 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
   },
   category: "health",
-  ...(process.env.GOOGLE_SITE_VERIFICATION
-    ? { other: { "google-site-verification": process.env.GOOGLE_SITE_VERIFICATION } }
-    : {}),
+  classification: "Medical Weight Loss, Semaglutide, Tirzepatide, Compounding Pharmacy",
+  other: {
+    "geo.region": "US-MI",
+    "geo.placename": "Novi",
+    "geo.position": "42.4806;-83.4755",
+    ICBM: "42.4806, -83.4755",
+    subject:
+      "Semaglutide and Tirzepatide medical weight loss in Michigan | Clear Choice Pharmacy Novi",
+    topic: "Medical Weight Loss",
+    coverage: "Michigan",
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { "google-site-verification": process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+  },
 }
 
 export const viewport: Viewport = {
@@ -155,6 +169,13 @@ export default function RootLayout({
       itemListElement: [
         {
           "@type": "OfferCatalog",
+          name: "Semaglutide & Tirzepatide Weight Loss",
+          description:
+            "Provider-guided weight management with compounded Semaglutide and Tirzepatide after clinician review",
+          url: `${SITE_URL}/weight-loss`,
+        },
+        {
+          "@type": "OfferCatalog",
           name: "Low-Cost Prescriptions",
           description:
             "Transparent cash-pay prescription pricing — Drug Cost + 15% + $5 dispensing fee. No insurance required.",
@@ -162,9 +183,9 @@ export default function RootLayout({
         },
         {
           "@type": "OfferCatalog",
-          name: "Weight Loss & GLP-1",
-          description: "Medical weight management with Semaglutide and Tirzepatide GLP-1 therapies",
-          url: `${SITE_URL}/weight-loss`,
+          name: "Compounding",
+          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Novi, MI",
+          url: `${SITE_URL}/compounding`,
         },
         {
           "@type": "OfferCatalog",
@@ -213,13 +234,21 @@ export default function RootLayout({
     name: "Clear Choice Pharmacy",
     url: SITE_URL,
     logo: `${SITE_URL}/icon.svg`,
+    description: HOME_DESCRIPTION,
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+12489876182",
       contactType: "customer service",
-      areaServed: "US",
+      areaServed: "US-MI",
       availableLanguage: "English",
     },
+    knowsAbout: [
+      "Semaglutide",
+      "Tirzepatide",
+      "Medical weight loss",
+      "GLP-1 weight management",
+      "Compounding pharmacy",
+    ],
   }
 
   return (

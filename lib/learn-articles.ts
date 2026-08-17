@@ -6,34 +6,32 @@ const MI_DISCLAIMER =
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
     slug: "semaglutide-weight-loss",
-    title: "Semaglutide for Weight Loss: What Michigan Patients Should Know",
+    title: "How Semaglutide Supports Provider-Guided Weight Management in Michigan",
     description:
-      "Learn how Semaglutide works for provider-guided weight management, how it compares to Ozempic and Wegovy, dosing basics, side effects, and cash-pay options at Clear Choice Pharmacy in Novi, MI.",
+      "Educational guide to how Semaglutide works, how it relates to Ozempic and Wegovy, dosing basics, side effects, and what Michigan patients should ask before starting therapy.",
     keywords: [
-      "semaglutide",
-      "semaglutide weight loss",
-      "semaglutide injections",
-      "GLP-1",
-      "provider-guided weight management",
-      "ozempic",
-      "wegovy",
+      "how semaglutide works",
+      "semaglutide side effects",
+      "semaglutide dosing",
+      "ozempic wegovy explained",
+      "provider-guided weight management michigan",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-17",
     readingMinutes: 8,
-    primaryKeyword: "semaglutide weight loss",
+    primaryKeyword: "how semaglutide works michigan",
     serviceHref: "/weight-loss/semaglutide",
-    serviceCta: "View Semaglutide program",
+    serviceCta: "View Semaglutide kit pricing",
     relatedSlugs: [
       "tirzepatide-weight-loss",
       "semaglutide-vs-tirzepatide",
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "Semaglutide is one of the most searched provider-guided weight management therapies in the United States. Patients looking for Semaglutide, Ozempic, or Wegovy want clear answers: how it works, who it may help, what side effects to expect, and what it costs without insurance games.",
-      "At Clear Choice Pharmacy in Novi, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide as part of a structured provider-guided weight management program—with transparent cash-pay kit pricing.",
+      "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
+      "At Clear Choice Pharmacy in Novi, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide through our medical weight loss program after a licensed clinician approves therapy.",
     ],
     sections: [
       {
@@ -74,7 +72,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "Cash-pay Semaglutide in Novi, MI",
         paragraphs: [
           "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy offers transparent cash-pay Semaglutide kits for qualifying Michigan patients after provider approval. Each 30-day kit includes four weekly injections priced by dose tier—physician review, compounding, supplies, and shipping included.",
-          "If you have been comparing Semaglutide clinics, telehealth brands, or compounded options near Metro Detroit, start with our Semaglutide program page for current pricing and intake steps.",
+          "For current kit pricing and intake steps, visit the Semaglutide program page. For broader program context—eligibility, monitoring, and Michigan fulfillment—start with the medical weight loss hub or GLP-1 overview.",
         ],
       },
     ],
@@ -99,34 +97,32 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
   {
     slug: "tirzepatide-weight-loss",
-    title: "Tirzepatide for Weight Loss: Dual GLP-1/GIP Therapy Explained",
+    title: "Tirzepatide Explained: Dual GLP-1/GIP Therapy for Michigan Patients",
     description:
-      "Learn how Tirzepatide works for provider-guided weight management, how it compares to Zepbound and Mounjaro, side effects, and cash-pay options for Michigan patients at Clear Choice Pharmacy.",
+      "Educational overview of how Tirzepatide works, how it relates to Zepbound and Mounjaro, side effects, and what to expect from clinician-guided dual-pathway therapy.",
     keywords: [
-      "tirzepatide",
-      "tirzepatide weight loss",
-      "zepbound",
-      "mounjaro",
-      "GLP-1",
-      "weight loss injections",
-      "provider-guided weight management",
+      "how tirzepatide works",
+      "tirzepatide side effects",
+      "glp-1 gip therapy",
+      "zepbound mounjaro explained",
+      "provider-guided weight management michigan",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-17",
     readingMinutes: 8,
-    primaryKeyword: "tirzepatide weight loss",
+    primaryKeyword: "how tirzepatide works michigan",
     serviceHref: "/weight-loss/tirzepatide",
-    serviceCta: "View Tirzepatide program",
+    serviceCta: "View Tirzepatide kit pricing",
     relatedSlugs: [
       "semaglutide-weight-loss",
       "semaglutide-vs-tirzepatide",
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "Tirzepatide has become a leading option for patients searching provider-guided weight management injections, especially those comparing Zepbound, Mounjaro, and dual-pathway GLP-1/GIP therapy.",
-      "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients, with transparent cash-pay kit pricing from our Novi pharmacy.",
+      "This article covers Tirzepatide education—mechanism, brand-name context (Zepbound, Mounjaro), side effects, and clinical candidacy questions. Kit pricing and checkout are on the Tirzepatide program page; program overview lives on the medical weight loss hub.",
+      "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients after clinician approval, with transparent cash-pay kits fulfilled from our Novi pharmacy.",
     ],
     sections: [
       {
@@ -166,7 +162,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Cash-pay Tirzepatide near Metro Detroit",
         paragraphs: [
-          "If insurance delays or denials have blocked brand-name access, cash-pay compounded Tirzepatide after physician review can be a transparent path for eligible Michigan residents. Review current dose-tier pricing on our Tirzepatide program page, then complete intake for clinical approval.",
+          "If insurance delays or denials have blocked brand-name access, cash-pay compounded Tirzepatide after physician review can be a transparent path for eligible Michigan residents. Review current dose-tier pricing on the Tirzepatide program page, then complete intake for clinical approval. Compare options on the medications overview or medical weight loss hub.",
         ],
       },
     ],
@@ -191,32 +187,30 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
   {
     slug: "semaglutide-vs-tirzepatide",
-    title: "Semaglutide vs Tirzepatide: Which Weight Loss Injection Is Right?",
+    title: "Semaglutide vs Tirzepatide: Educational Comparison for Patients",
     description:
-      "Compare Semaglutide and Tirzepatide for provider-guided weight management—mechanism, dosing, side effects, and how Michigan patients choose between GLP-1 and dual GLP-1/GIP therapy.",
+      "Side-by-side education on Semaglutide and Tirzepatide—mechanism, dosing, side effects, and how clinicians help Michigan patients choose between GLP-1 and dual GLP-1/GIP therapy.",
     keywords: [
-      "semaglutide vs tirzepatide",
-      "semaglutide",
-      "tirzepatide",
-      "GLP-1 weight loss",
-      "weight loss injections",
-      "provider-guided weight management",
+      "semaglutide vs tirzepatide explained",
+      "glp-1 vs dual agonist",
+      "weight management injection comparison",
+      "provider-guided weight management michigan",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-17",
     readingMinutes: 7,
-    primaryKeyword: "semaglutide vs tirzepatide",
-    serviceHref: "/weight-loss",
-    serviceCta: "Compare weight loss programs",
+    primaryKeyword: "semaglutide vs tirzepatide explained",
+    serviceHref: "/weight-loss/medications",
+    serviceCta: "Compare medication options",
     relatedSlugs: [
       "semaglutide-weight-loss",
       "tirzepatide-weight-loss",
       "compounded-semaglutide-vs-ozempic",
     ],
     intro: [
-      "If you are researching provider-guided weight management, you have likely asked: Semaglutide or Tirzepatide? Both are once-weekly injectable options used under clinician supervision. The best choice depends on your health profile, prior response, tolerance, and goals—not a social-media ranking.",
+      "If you are researching provider-guided weight management, you have likely asked: Semaglutide or Tirzepatide? This page is an educational comparison—not a sales ranking. Kit pricing lives on the Semaglutide and Tirzepatide program pages; the medications overview and medical weight loss hub cover program structure.",
     ],
     sections: [
       {
@@ -246,7 +240,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "How to decide with your provider",
         paragraphs: [
-          "Useful decision factors include prior GLP-1 experience, GI sensitivity, weight-related comorbidities, cost after insurance or cash-pay options, and your comfort with injection therapy. At Clear Choice Pharmacy, Michigan patients can review both programs and complete intake for clinician selection and approval.",
+          "Useful decision factors include prior GLP-1 experience, GI sensitivity, weight-related comorbidities, cost after insurance or cash-pay options, and your comfort with injection therapy. At Clear Choice Pharmacy, Michigan patients can review both programs on the medical weight loss hub, compare options on the medications page, and complete intake for clinician selection and approval.",
         ],
       },
     ],
@@ -266,32 +260,30 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
   {
     slug: "compounded-semaglutide-vs-ozempic",
-    title: "Compounded Semaglutide vs Ozempic and Wegovy: Key Differences",
+    title: "Compounded Semaglutide vs Brand-Name Ozempic and Wegovy",
     description:
-      "Understand how compounded Semaglutide differs from brand-name Ozempic and Wegovy, what patients should ask, and how Clear Choice Pharmacy serves Michigan patients.",
+      "Educational differences between compounded Semaglutide and FDA-approved Ozempic or Wegovy—what patients should ask, and how Clear Choice Pharmacy serves Michigan patients.",
     keywords: [
-      "compounded semaglutide",
-      "ozempic",
-      "wegovy",
-      "semaglutide vs ozempic",
-      "GLP-1 weight loss",
-      "provider-guided weight management",
+      "compounded semaglutide vs brand",
+      "ozempic wegovy differences",
+      "compounding pharmacy glp-1",
+      "provider-guided weight management michigan",
     ],
     category: "weight-loss",
     categoryLabel: "Weight Loss",
     publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-17",
     readingMinutes: 7,
-    primaryKeyword: "compounded semaglutide vs ozempic",
-    serviceHref: "/weight-loss",
-    serviceCta: "Explore provider-guided weight management",
+    primaryKeyword: "compounded semaglutide vs brand ozempic",
+    serviceHref: "/weight-loss/semaglutide",
+    serviceCta: "See Semaglutide kit details",
     relatedSlugs: [
       "semaglutide-weight-loss",
       "tirzepatide-weight-loss",
       "semaglutide-vs-tirzepatide",
     ],
     intro: [
-      "Searches for Ozempic and Wegovy dominate Google—but many patients ultimately evaluate compounded Semaglutide when brand access, shortages, or cash-pay cost become barriers. Understanding the difference protects you from confusing marketing claims.",
+      "Searches for Ozempic and Wegovy dominate Google—but many patients ultimately evaluate compounded Semaglutide when brand access, shortages, or cash-pay cost become barriers. This educational page clarifies differences; commercial kit details are on the Semaglutide program page, and compounding context is covered on our compounding page and medical weight loss hub.",
     ],
     sections: [
       {

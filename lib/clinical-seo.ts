@@ -1,20 +1,27 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
-  "Clear Choice Pharmacy | Semaglutide from $134/mo, Sildenafil, TRT & Low Cost Rx | Novi, MI"
+  "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Semaglutide from $134/mo & Tirzepatide from $149/mo, Sildenafil from $39/mo, TRT from $109/mo, mobile IV, and low cost prescription drugs. Clear Choice Pharmacy, Novi, MI — Michigan patients only."
+  "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Novi. Transparent cash-pay pricing for qualifying patients."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
-  { name: "Semaglutide & Tirzepatide Weight Management", path: "/weight-loss" },
+  { name: "Semaglutide & Tirzepatide Weight Loss", path: "/weight-loss" },
+  { name: "GLP-1 Weight Management", path: "/weight-loss/glp-1" },
+  { name: "Semaglutide Kits", path: "/weight-loss/semaglutide" },
+  { name: "Tirzepatide Kits", path: "/weight-loss/tirzepatide" },
+  { name: "Weight Loss Medications", path: "/weight-loss/medications" },
+  { name: "Weight Loss FAQ", path: "/weight-loss/faq" },
+  { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
+  { name: "Compounding", path: "/compounding" },
+  { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
   { name: "Tadalafil, Sildenafil & TRT", path: "/mens-health" },
   { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
-  { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
-  { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
   { name: "Learn", path: "/learn" },
-  { name: "Our Services", path: "/services" },
 ] as const
 
 export function buildSiteNavigationJsonLd() {
@@ -23,6 +30,22 @@ export function buildSiteNavigationJsonLd() {
     name: link.name,
     url: `${SITE_URL}${link.path}`,
   }))
+}
+
+export type BreadcrumbItem = { name: string; path: string }
+
+/** BreadcrumbList JSON-LD for weight-loss cluster and trust pages. */
+export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.path.startsWith("http") ? item.path : `${SITE_URL}${item.path}`,
+    })),
+  }
 }
 
 export { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
@@ -55,34 +78,18 @@ export const AREA_SERVED = [
   { "@type": "City" as const, name: "Commerce Township", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
 ]
 
-/** High-intent search terms people actually type, with local support. */
+/** Short keyword list — rely on titles, H1s, and content rather than keyword stuffing. */
 export const SITE_KEYWORDS = [
-  "semaglutide",
-  "tirzepatide",
-  "ozempic",
-  "wegovy",
-  "zepbound",
-  "GLP-1",
-  "GLP-1 weight management",
-  "provider-guided weight management",
-  "weight management injections",
-  "weight management clinic",
-  "tadalafil",
-  "sildenafil",
-  "cialis",
-  "viagra",
-  "ED medication",
-  "TRT",
-  "testosterone replacement therapy",
-  "testosterone cypionate",
-  "mobile IV therapy",
-  "Myers Cocktail",
-  "NAD IV",
-  "specialty pharmacy",
-  "low cost prescription drugs",
-  "cash pay pharmacy",
+  "Semaglutide weight loss Michigan",
+  "Tirzepatide weight loss Michigan",
+  "Semaglutide Michigan",
+  "Tirzepatide Michigan",
+  "medical weight loss Michigan",
+  "compounded Semaglutide Novi",
+  "compounded Tirzepatide Novi",
+  "weight loss pharmacy Michigan",
+  "GLP-1 pharmacy Michigan",
   "Clear Choice Pharmacy Novi",
-  "pharmacy Novi MI",
 ]
 
 export type FaqItem = { question: string; answer: string }

@@ -77,6 +77,31 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8 md:py-12">
+      <nav className="mb-4 text-sm text-muted-foreground flex flex-wrap gap-x-2 gap-y-1">
+        <Link href="/" className="hover:text-primary">
+          Home
+        </Link>
+        <span>/</span>
+        <Link href="/weight-loss" className="hover:text-primary">
+          Medical Weight Loss
+        </Link>
+        <span>/</span>
+        <span className="text-foreground">{program.name}</span>
+      </nav>
+      <div className="mb-6 flex flex-wrap gap-3 text-sm">
+        <Link href="/weight-loss" className="text-primary hover:underline">
+          Program overview
+        </Link>
+        <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
+          GLP-1 overview
+        </Link>
+        <Link href="/weight-loss/medications" className="text-primary hover:underline">
+          Compare medications
+        </Link>
+        <Link href="/weight-loss/faq" className="text-primary hover:underline">
+          FAQ
+        </Link>
+      </div>
       <Button asChild variant="ghost" className="mb-6">
         <Link href="/weight-loss#programs">
           <ArrowLeft className="mr-2 h-4 w-4" />

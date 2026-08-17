@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
   description:
     "Complete secure checkout for provider-guided weight management with Semaglutide or Tirzepatide. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
+  robots: { index: false, follow: false },
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
   },
