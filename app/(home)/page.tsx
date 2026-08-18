@@ -68,6 +68,16 @@ export default function HomePage() {
 
         <section className="py-10 md:py-14 bg-background border-b">
           <div className="container max-w-5xl mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center mb-8 md:mb-10">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Provider-guided kits</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-balance">
+                Semaglutide &amp; Tirzepatide kits from $134/mo
+              </h2>
+              <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
+                Transparent cash-pay pricing for qualifying Michigan patients after clinician review—physician review,
+                compounding, supplies, and shipping or pickup included.
+              </p>
+            </div>
             <div className="grid md:grid-cols-2 gap-4 mb-4">
               <Card className="overflow-hidden p-0 border-primary/25 bg-primary/5 flex flex-col">
                 <div className="relative aspect-[4/3] w-full bg-muted/40">
@@ -80,7 +90,7 @@ export default function HomePage() {
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h2>
+                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
                     Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 60-day
                     starter billing for qualifying Michigan patients after clinician review.
@@ -104,7 +114,7 @@ export default function HomePage() {
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tirzepatide</h2>
+                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Tirzepatide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
                     Dual-pathway support for patients whose clinician recommends Tirzepatide. Kits from $149/mo on
                     60-day starter billing after provider approval.
