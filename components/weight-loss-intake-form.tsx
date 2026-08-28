@@ -25,7 +25,7 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
-import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { MichiganStateField } from "@/components/michigan-state-field"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
@@ -41,6 +41,7 @@ import {
   WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
+  WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
   formatDoseOptionLabel,
   formatKitBillingLabel,
@@ -125,6 +126,7 @@ type FormData = {
   paymentAuthorized: boolean
   injectionConsents: InjectionTelehealthConsentValues
   authorizeHold: boolean
+  acknowledgePayAtPharmacy: boolean
 }
 
 const initialFormData: FormData = {
@@ -180,6 +182,7 @@ const initialFormData: FormData = {
   ...emptyIntakePaymentValues,
   injectionConsents: { ...emptyInjectionTelehealthConsents },
   authorizeHold: false,
+  acknowledgePayAtPharmacy: false,
 }
 
 const programs = WEIGHT_LOSS_PROGRAMS
@@ -408,7 +411,7 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
           return { valid: false, message: "Please complete shipping address information.", fields }
         }
       }
-      for (const field of getIntakePaymentInvalidFields({
+      for (const field of getIntakeIdentityInvalidFields({
         idFrontFile: formData.idFrontFile,
         idBackFile: formData.idBackFile,
         idFrontKey: formData.idFrontKey,
@@ -421,7 +424,7 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
         add(field)
       }
       if (fields.length > 0) {
-        return { valid: false, message: "Please upload your ID and complete payment information.", fields }
+        return { valid: false, message: "Please upload front and back of your photo ID.", fields }
       }
       for (const field of getInjectionConsentInvalidFields(formData.injectionConsents, {
         variant: "weight-loss",
@@ -429,11 +432,11 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
       })) {
         add(field)
       }
-      if (!formData.authorizeHold) add("authorizeHold")
+      if (!formData.acknowledgePayAtPharmacy) add("acknowledgePayAtPharmacy")
       if (fields.length > 0) {
         return {
           valid: false,
-          message: "Please complete all required telemedicine consents and payment authorization.",
+          message: "Please complete all required telemedicine consents and payment acknowledgement.",
           fields,
         }
       }
@@ -761,12 +764,12 @@ export function WeightLossIntakeForm({
             idBackKey: formData.idBackKey,
             idFrontUploading: formData.idFrontUploading,
             idBackUploading: formData.idBackUploading,
-            stripePaymentIntentId: formData.stripePaymentIntentId,
-            paymentAuthorized: formData.paymentAuthorized,
+            stripePaymentIntentId: null,
+            paymentAuthorized: false,
           }),
         },
         consents: {
-          authorizeHold: formData.authorizeHold,
+          acknowledgePayAtPharmacy: formData.acknowledgePayAtPharmacy,
           injection: formData.injectionConsents,
         },
       }
@@ -845,10 +848,16 @@ export function WeightLossIntakeForm({
         treatmentLabel={selectedProgram?.name}
         returnHref="/weight-loss"
         returnLabel="Return to Weight Loss"
+        steps={[
+          "A licensed clinician will review your medical information (typically within a few business hours)",
+          "You'll receive an email with the decision and any follow-up questions",
+          "If approved, Clear Choice Pharmacy will contact you to collect payment at the pharmacy (terminal, phone, or cash)",
+          "After payment is arranged, the pharmacy compounds and ships your kit",
+        ]}
       >
         <p className="text-sm text-muted-foreground">
-          Thank you for completing your GLP weight loss intake. If approved, Clear Choice Pharmacy will compound and
-          fulfill your medication with ongoing clinical support.
+          Thank you for completing your weight loss intake. No card was charged online. If approved, you will pay at
+          Clear Choice Pharmacy before compounding and fulfillment.
         </p>
       </IntakeSuccessPanel>
     )
@@ -1058,7 +1067,7 @@ export function WeightLossIntakeForm({
                   productName={selectedProgram.name}
                   productSubtitle={`${selectedProgram.subtitle} · ${selectedTierMeta?.label ?? "Selected"}`}
                   billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "60-day (2-kit)"}
-                  priceLine={`Kit: $${holdQuote.totalBilled} · auth up to $${holdQuote.authorizationHold}`}
+                  priceLine={`Kit: $${holdQuote.totalBilled} · pay at pharmacy after approval`}
                   changeHref="/weight-loss#programs"
                 />
                 <div className="space-y-2 rounded-xl border-2 border-primary bg-primary/5 p-4">
@@ -1575,8 +1584,10 @@ export function WeightLossIntakeForm({
       {step === 4 && submissionStatus !== "success" && (
         <Card>
           <CardHeader>
-            <CardTitle>Identity &amp; Payment</CardTitle>
-            <CardDescription>Verify your identity, authorize payment, and complete consent.</CardDescription>
+            <CardTitle>Identity &amp; Consent</CardTitle>
+            <CardDescription>
+              Verify your identity and acknowledge that payment is collected at the pharmacy after clinician approval.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {selectedProgram && holdQuote ? (
@@ -1589,10 +1600,10 @@ export function WeightLossIntakeForm({
                     Kit total: ${holdQuote.totalBilled}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Authorization hold up to ${holdQuote.authorizationHold}
+                    Payment collected at Clear Choice Pharmacy after clinician approval (card terminal, phone, or cash).
                     {holdQuote.liveVisitAddon > 0
-                      ? ` (includes up to $${holdQuote.liveVisitAddon} if a live visit is required)`
-                      : " · live visit add-on waived on 60-day supply"}
+                      ? ` A $${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly billing if your clinician requires a live visit.`
+                      : " Live visit add-on is waived on 60-day supply."}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {formData.selectedBillingPlan === "monthly"
@@ -1600,7 +1611,7 @@ export function WeightLossIntakeForm({
                       : `First shipment — 2 kits, 4 injections each (60 days) · ${selectedTierMeta?.label ?? "selected"}`}
                   </p>
                   <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
-                  <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
+                  <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE}</p>
                 </div>
               ) : null}
 
@@ -1653,6 +1664,7 @@ export function WeightLossIntakeForm({
               serviceType="weight_loss"
               patientEmail={formData.email}
               intakePrefix={`glp1-${formData.email || "draft"}`}
+              showPayment={false}
               values={{
                 idFrontFile: formData.idFrontFile,
                 idBackFile: formData.idBackFile,
@@ -1664,7 +1676,7 @@ export function WeightLossIntakeForm({
                 paymentAuthorized: formData.paymentAuthorized,
               }}
               onChange={updateFormData}
-              totalBilled={holdQuote?.authorizationHold ?? 0}
+              totalBilled={holdQuote?.totalBilled ?? 0}
               invalidFields={fieldErrors}
             />
 
@@ -1680,30 +1692,34 @@ export function WeightLossIntakeForm({
 
             <div className="space-y-3 border-t pt-4">
               <div
-                data-field="authorizeHold"
+                data-field="acknowledgePayAtPharmacy"
                 className={cn(
                   "flex items-start space-x-2 rounded-md p-2 -mx-2 transition-colors",
-                  isFieldInvalid("authorizeHold") && "ring-2 ring-destructive bg-destructive/5"
+                  isFieldInvalid("acknowledgePayAtPharmacy") && "ring-2 ring-destructive bg-destructive/5"
                 )}
               >
                 <Checkbox
-                  id="authorizeHold"
-                  checked={formData.authorizeHold}
-                  onCheckedChange={(checked) => updateFormData("authorizeHold", checked === true)}
+                  id="acknowledgePayAtPharmacy"
+                  checked={formData.acknowledgePayAtPharmacy}
+                  onCheckedChange={(checked) =>
+                    updateFormData("acknowledgePayAtPharmacy", checked === true)
+                  }
                 />
                 <Label
-                  htmlFor="authorizeHold"
-                  className={cn("font-normal cursor-pointer leading-snug", isFieldInvalid("authorizeHold") && "text-destructive")}
+                  htmlFor="acknowledgePayAtPharmacy"
+                  className={cn(
+                    "font-normal cursor-pointer leading-snug",
+                    isFieldInvalid("acknowledgePayAtPharmacy") && "text-destructive"
+                  )}
                 >
-                  I authorize a payment hold of up to{" "}
-                  <strong>${holdQuote?.authorizationHold ?? 0}</strong>{" "}
-                  for my first {selectedTierMeta?.label ?? "selected"} kit(s)
-                  {formData.selectedBillingPlan === "monthly"
-                    ? " (including up to $25 if a live visit is required)"
-                    : " (live visit add-on waived on 60-day supply)"}{" "}
-                  to be charged only upon prescription approval *
+                  I understand that payment of{" "}
+                  <strong>${holdQuote?.totalBilled ?? 0}</strong> for my{" "}
+                  {selectedTierMeta?.label ?? "selected"} kit(s) will be collected by Clear Choice Pharmacy after
+                  clinician approval — in person on the pharmacy card terminal, by phone, or cash. No card is charged
+                  online during this intake. *
                 </Label>
               </div>
+              <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
             </div>
 
             {submissionStatus === "processing" && statusLogs.length > 0 && (

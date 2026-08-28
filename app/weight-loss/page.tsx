@@ -314,7 +314,7 @@ export default function WeightLossPage() {
             step: 2,
             title: "Complete intake & ID",
             description:
-              "Submit a secure health questionnaire, upload photo ID, and authorize a payment hold (charged only if approved).",
+              "Submit a secure health questionnaire and upload photo ID. Payment is collected at the pharmacy after clinician approval.",
           },
           {
             step: 3,

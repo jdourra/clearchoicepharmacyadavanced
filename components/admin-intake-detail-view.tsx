@@ -17,6 +17,7 @@ import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
 import { WEIGHT_LOSS_LIVE_VISIT_ADDON } from "@/lib/weight-loss-catalog"
+import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { staffAuthFetch } from "@/lib/staff-session"
 import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 import { ExternalLink, ChevronDown, Loader2, Printer } from "lucide-react"
@@ -173,6 +174,7 @@ export function AdminIntakeDetailView({
   const [error, setError] = useState("")
   const [reviewMessage, setReviewMessage] = useState("")
   const [liveVisitRequired, setLiveVisitRequired] = useState(false)
+  const [markingPaid, setMarkingPaid] = useState<string | null>(null)
   const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
   const [sesHint, setSesHint] = useState<string | null>(null)
   const [sesReviewStatus, setSesReviewStatus] = useState<string | null>(null)
@@ -205,8 +207,39 @@ export function AdminIntakeDetailView({
   const hasBackId = Boolean(detail.id_back_key)
   const isWeightLoss = serviceType === "weight_loss"
   const weightLossIsMonthly = String(detail.selected_billing_plan ?? "") === "monthly"
-  const canChargeLiveVisit = isWeightLoss && weightLossIsMonthly
+  const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
+  const payAtPharmacy = isWeightLoss && !hasStripeHold
+  const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
+  const canMarkPharmacyPaid =
+    isWeightLoss &&
+    payAtPharmacy &&
+    !["captured", "paid_in_person"].includes(paymentStatus) &&
+    ["rx_at_pharmacy", "preparing", "shipped", "completed"].includes(String(detail.status ?? ""))
+  const canChargeLiveVisit = isWeightLoss && weightLossIsMonthly && hasStripeHold
   const needsPrescription = RX_SERVICES.has(String(serviceType))
+
+  const markPaidAtPharmacy = async (method: "terminal" | "cash" | "phone") => {
+    setMarkingPaid(method)
+    setError("")
+    setReviewMessage("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/intakes/weight_loss/${id}/mark-paid`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method }),
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        throw new Error(result.error || "Could not mark paid")
+      }
+      setReviewMessage(`Marked paid (${method}) at pharmacy.`)
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not mark paid")
+    } finally {
+      setMarkingPaid(null)
+    }
+  }
 
   const handlePrint = () => {
     window.print()
@@ -465,16 +498,12 @@ export function AdminIntakeDetailView({
                     )}
                     {detail.payment_status != null && String(detail.payment_status).trim() !== "" && (
                       <p className="mt-1 text-sm">
-                        <strong>Payment:</strong>{" "}
-                        {String(detail.payment_status) === "captured"
-                          ? "Paid (captured)"
-                          : String(detail.payment_status) === "authorized"
-                            ? "Authorized (hold)"
-                            : String(detail.payment_status) === "released"
-                              ? "Hold released"
-                              : String(detail.payment_status) === "failed"
-                                ? "Payment failed"
-                                : String(detail.payment_status)}
+                        <strong>Payment:</strong> {formatPaymentStatus(String(detail.payment_status))}
+                      </p>
+                    )}
+                    {payAtPharmacy && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Collect payment at pharmacy terminal after approval (no online card charge).
                       </p>
                     )}
                     {detail.patient_id != null && String(detail.patient_id).trim() !== "" && (
@@ -521,7 +550,53 @@ export function AdminIntakeDetailView({
                             Open Rx PDF ({existingPrescription.medicationName})
                           </Button>
                         ) : null}
+                        {canMarkPharmacyPaid ? (
+                          <div className="space-y-2 pt-2 border-t">
+                            <p className="text-xs text-muted-foreground">
+                              After collecting payment on the pharmacy terminal (or cash/phone), mark this intake paid.
+                              Do not store card numbers in this system.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                disabled={!!markingPaid}
+                                onClick={() => markPaidAtPharmacy("terminal")}
+                              >
+                                {markingPaid === "terminal" ? (
+                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : null}
+                                Mark paid (terminal)
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                disabled={!!markingPaid}
+                                onClick={() => markPaidAtPharmacy("phone")}
+                              >
+                                {markingPaid === "phone" ? (
+                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : null}
+                                Mark paid (phone)
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                disabled={!!markingPaid}
+                                onClick={() => markPaidAtPharmacy("cash")}
+                              >
+                                {markingPaid === "cash" ? (
+                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : null}
+                                Mark paid (cash)
+                              </Button>
+                            </div>
+                          </div>
+                        ) : null}
                         {error ? <p className="text-destructive">{error}</p> : null}
+                        {reviewMessage ? <p className="text-sm text-foreground">{reviewMessage}</p> : null}
                       </AlertDescription>
                     </Alert>
                   ) : (
@@ -539,7 +614,12 @@ export function AdminIntakeDetailView({
 
                   {isWeightLoss && (
                     <div className="rounded-lg border p-3 space-y-2">
-                      {canChargeLiveVisit ? (
+                      {payAtPharmacy ? (
+                        <p className="text-xs text-muted-foreground">
+                          No online card hold on this intake. After you approve, pharmacy collects payment on the
+                          terminal and marks the intake paid.
+                        </p>
+                      ) : canChargeLiveVisit ? (
                         <div className="flex items-start gap-2">
                           <Checkbox
                             id="liveVisitRequired"
@@ -552,8 +632,8 @@ export function AdminIntakeDetailView({
                         </div>
                       ) : (
                         <p className="text-xs text-muted-foreground">
-                          60-day (2-kit) supply: live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}) is waived. Capture kit
-                          total only.
+                          Legacy Stripe hold: 60-day (2-kit) supply waives live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}).
+                          Capture kit total only.
                         </p>
                       )}
                     </div>
@@ -677,10 +757,16 @@ export function AdminIntakeDetailView({
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
                       {needsPrescription
-                        ? dropboxSignConfigured
-                          ? "Approve, capture & send for signature"
-                          : "Approve, capture & sign Rx"
-                        : "Approve & capture payment"}
+                        ? payAtPharmacy
+                          ? dropboxSignConfigured
+                            ? "Approve & send Rx for signature"
+                            : "Approve & sign Rx"
+                          : dropboxSignConfigured
+                            ? "Approve, capture & send for signature"
+                            : "Approve, capture & sign Rx"
+                        : payAtPharmacy
+                          ? "Approve (pay at pharmacy)"
+                          : "Approve & capture payment"}
                     </Button>
                     <Button
                       variant="outline"
@@ -702,16 +788,57 @@ export function AdminIntakeDetailView({
                       {submitting === "deny" ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Deny & release hold
+                      {payAtPharmacy || !hasStripeHold ? "Deny" : "Deny & release hold"}
                     </Button>
                   </div>
+
+                  {canMarkPharmacyPaid && (
+                    <div className="rounded-lg border p-3 space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        After the pharmacy collects payment, mark this intake paid (terminal / phone / cash).
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={!!markingPaid}
+                          onClick={() => markPaidAtPharmacy("terminal")}
+                        >
+                          Mark paid (terminal)
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={!!markingPaid}
+                          onClick={() => markPaidAtPharmacy("phone")}
+                        >
+                          Mark paid (phone)
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={!!markingPaid}
+                          onClick={() => markPaidAtPharmacy("cash")}
+                        >
+                          Mark paid (cash)
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
                   {serviceType === "specialty_pharmacy" && (
                     <p className="text-xs text-muted-foreground">
                       Specialty intakes have no payment hold. Approve starts pharmacy coordination.
                     </p>
                   )}
-
+                  {payAtPharmacy && (
+                    <p className="text-xs text-muted-foreground">
+                      Weight-loss intakes no longer place an online card hold. Pharmacy charges on the terminal after
+                      approval.
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Patient receives an email on approve, deny, or follow-up when SES production access
                     is enabled. Signed Rxs email the admin inbox for print.

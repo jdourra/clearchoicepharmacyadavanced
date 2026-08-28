@@ -179,6 +179,13 @@ export async function reviewClinicalIntake(params: {
       paymentAction = released ? "released" : "failed"
       paymentStatus = released ? "released" : "failed"
     }
+  } else if (serviceType === "weight_loss") {
+    // Pay-at-pharmacy path: no online Stripe hold
+    if (action === "approve") {
+      paymentStatus = "awaiting_pharmacy"
+    } else if (action === "deny") {
+      paymentStatus = "none"
+    }
   }
 
   const rows =
@@ -232,6 +239,8 @@ export async function reviewClinicalIntake(params: {
       submissionId: id,
       decision,
       note,
+      paymentModel:
+        serviceType === "weight_loss" && !stripeId ? "pharmacy_terminal" : "online_hold",
     })
     emailSent = emailResult.success
     emailError = emailResult.error

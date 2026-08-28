@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import {
   formatPaymentSummary,
-  requireIntakePaymentSubmission,
+  requireIntakeIdentitySubmission,
   type IntakeConsents,
   type IntakePaymentMetadata,
 } from "@/lib/intake-payment"
-import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
@@ -19,7 +18,6 @@ import {
 } from "@/lib/injection-telehealth-consents"
 import {
   ensurePatientFromIntake,
-  paymentStatusFromHold,
 } from "@/lib/ensure-patient-from-intake"
 
 type WeightLossIntakePayload = {
@@ -339,14 +337,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
-    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
+    const paymentError = requireIntakeIdentitySubmission(data.consents, data.identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
-    }
-
-    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
-    if (!stripeCheck.ok) {
-      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     if (!data.consents?.injection) {
@@ -402,7 +395,7 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       })
-      const paymentStatus = paymentStatusFromHold(data.identity.stripePaymentIntentId)
+      const paymentStatus = "awaiting_pharmacy"
 
       const values = [
           submissionId,
@@ -448,7 +441,7 @@ export async function POST(request: NextRequest) {
           data.identity.shippingState,
           data.identity.shippingZip,
           STANDARD_INTAKE_STATUS.pending,
-          data.identity.stripePaymentIntentId,
+          null,
           data.identity.idFrontKey,
           data.identity.idBackKey,
           partnerResult.partnerName,
@@ -551,7 +544,7 @@ export async function POST(request: NextRequest) {
             data.identity.shippingState,
             data.identity.shippingZip,
             STANDARD_INTAKE_STATUS.pending,
-            data.identity.stripePaymentIntentId,
+            null,
             data.identity.idFrontKey,
             data.identity.idBackKey,
             partnerResult.partnerName,

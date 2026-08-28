@@ -29,6 +29,15 @@ export function getIntakePaymentInvalidFields(values: IntakePaymentValues): stri
   return fields
 }
 
+/** ID uploads only — used when payment is collected at the pharmacy terminal after approval. */
+export function getIntakeIdentityInvalidFields(values: IntakePaymentValues): string[] {
+  const fields: string[] = []
+  if (values.idFrontUploading || values.idBackUploading) fields.push("idUploading")
+  if (!values.idFrontKey) fields.push("idFrontFile")
+  if (!values.idBackKey) fields.push("idBackFile")
+  return fields
+}
+
 export function validateIntakePayment(values: IntakePaymentValues): {
   valid: boolean
   fields: string[]
@@ -43,6 +52,25 @@ export function validateIntakePayment(values: IntakePaymentValues): {
       valid: false,
       fields,
       message: "Please upload your ID and authorize payment before submitting.",
+    }
+  }
+  return { valid: true, fields: [], message: "" }
+}
+
+export function validateIntakeIdentityOnly(values: IntakePaymentValues): {
+  valid: boolean
+  fields: string[]
+  message: string
+} {
+  const fields = getIntakeIdentityInvalidFields(values)
+  if (fields.includes("idUploading")) {
+    return { valid: false, fields, message: "Please wait for ID uploads to finish." }
+  }
+  if (fields.length > 0) {
+    return {
+      valid: false,
+      fields,
+      message: "Please upload front and back of your photo ID before submitting.",
     }
   }
   return { valid: true, fields: [], message: "" }
@@ -67,6 +95,8 @@ export type IntakeConsents = {
   agreeToTelehealth?: boolean
   agreeToPrivacy?: boolean
   authorizeHold?: boolean
+  /** Weight-loss pay-at-pharmacy acknowledgement (no online card charge). */
+  acknowledgePayAtPharmacy?: boolean
 }
 
 export function requireIntakePaymentSubmission(
@@ -85,15 +115,44 @@ export function requireIntakePaymentSubmission(
   return null
 }
 
+/** Weight-loss path: ID + pay-at-pharmacy acknowledgement; no Stripe hold. */
+export function requireIntakeIdentitySubmission(
+  consents?: IntakeConsents,
+  payment?: IntakePaymentMetadata
+): string | null {
+  if (!payment?.idFrontKey || !payment?.idBackKey) {
+    return "Photo ID uploads are required before submission."
+  }
+  if (!consents?.acknowledgePayAtPharmacy) {
+    return "Please acknowledge that payment is collected at the pharmacy after clinician approval."
+  }
+  return null
+}
+
 export function formatPaymentSummary(
   payment?: IntakePaymentMetadata,
   consents?: IntakeConsents
 ): string {
+  const payAtPharmacy = Boolean(consents?.acknowledgePayAtPharmacy) && !payment?.stripePaymentIntentId
   return `
 ID Front Stored:        ${payment?.idFrontKey ? "✓ Yes" : "✗ No"}
 ID Back Stored:         ${payment?.idBackKey ? "✓ Yes" : "✗ No"}
 Stripe Payment Intent:  ${payment?.stripePaymentIntentId || "—"}
-Payment Authorized:     ${payment?.paymentOnFile ? "✓ Hold placed" : "✗ Not Authorized"}
-Payment Consent:        ${consents?.authorizeHold ? "✓ Authorized" : "✗ Not Authorized"}
+Payment Authorized:     ${
+    payAtPharmacy
+      ? "Pay at pharmacy after approval (no online hold)"
+      : payment?.paymentOnFile
+        ? "✓ Hold placed"
+        : "✗ Not Authorized"
+  }
+Payment Consent:        ${
+    payAtPharmacy
+      ? consents?.acknowledgePayAtPharmacy
+        ? "✓ Pay at pharmacy acknowledged"
+        : "✗ Not acknowledged"
+      : consents?.authorizeHold
+        ? "✓ Authorized"
+        : "✗ Not Authorized"
+  }
 `.trim()
 }

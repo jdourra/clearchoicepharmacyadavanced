@@ -70,7 +70,10 @@ export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
   "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with 60-day (2-kit) supply."
 
 export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
-  "Your card is authorized for the 30-day kit at the weekly injection amount you select (plus up to $25 on monthly billing if a live visit is required). The 60-day supply waives the live-visit add-on. If your provider changes the prescribed dose, we confirm the exact amount before capture."
+  "Payment is collected at Clear Choice Pharmacy after clinician approval — by card terminal, phone, or cash. No card is charged online during intake."
+
+export const WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE =
+  "After your clinician approves, the pharmacy will contact you to collect payment for your kit on our card terminal (or by phone/cash). Your prescription is prepared once payment is arranged."
 
 export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
 

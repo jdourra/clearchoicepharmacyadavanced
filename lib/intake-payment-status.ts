@@ -4,6 +4,8 @@ export type IntakePaymentStatus =
   | "captured"
   | "released"
   | "failed"
+  | "awaiting_pharmacy"
+  | "paid_in_person"
 
 export type IntakePatientIdentity = {
   email: string
@@ -36,6 +38,10 @@ export function formatPaymentStatus(status: string | null | undefined): string {
       return "Hold released"
     case "failed":
       return "Payment failed"
+    case "awaiting_pharmacy":
+      return "Awaiting pharmacy payment"
+    case "paid_in_person":
+      return "Paid at pharmacy"
     case "none":
       return "No payment"
     default:
