@@ -14,6 +14,8 @@ export interface ClinicalProgramSubmission {
   status: string
   title: string
   subtitle?: string
+  paymentStatus?: string
+  paymentStatusLabel?: string
   submittedAt: string
   href: string
 }

@@ -3,6 +3,7 @@ import { orders } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import type { ClinicalProgramSubmission, PortalPrescription } from "@/lib/patient-portal-types"
+import { formatPaymentStatus } from "@/lib/intake-payment-status"
 
 export async function GET(request: Request) {
   try {
@@ -20,9 +21,11 @@ export async function GET(request: Request) {
     }
 
     const email = String(patients[0].email).toLowerCase()
+    const patientId = String(patients[0].id)
+    const intakeMatchSql = "WHERE patient_id = $1 OR LOWER(email) = $2"
 
     const [userOrders, prescriptionRows, mensHealthRows, trtRows, weightLossRows, ivRows, vialRows, specialtyRows] = await Promise.all([
-      orders.getOrdersForPatient(userId),
+      orders.getOrdersForPatient(patientId),
       sql(
         `SELECT rx.id, rx.status, rx.quantity_prescribed, rx.refills_remaining, rx.prescriber_name, rx.created_at,
                 m.name as med_name, m.strength as med_strength, m.dosage_form
@@ -30,49 +33,49 @@ export async function GET(request: Request) {
          LEFT JOIN medications m ON m.id = rx.medication_id
          WHERE rx.patient_id = $1
          ORDER BY rx.created_at DESC`,
-        [userId]
+        [patientId]
       ),
       sql(
-        `SELECT id, status, selected_product, selected_billing_plan, created_at
+        `SELECT id, status, selected_product, selected_billing_plan, payment_status, created_at
          FROM patient_intake
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
       sql(
-        `SELECT id, status, selected_program, selected_billing_plan, created_at
+        `SELECT id, status, selected_program, selected_billing_plan, payment_status, created_at
          FROM trt_intake
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
       sql(
-        `SELECT id, status, selected_program, selected_billing_plan, created_at
+        `SELECT id, status, selected_program, selected_billing_plan, payment_status, created_at
          FROM weight_loss_intake
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
       sql(
         `SELECT id, status, selected_package, selected_package_title, preferred_date, preferred_time_window, created_at
          FROM iv_booking_requests
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
       sql(
         `SELECT id, status, selected_vial, selected_vial_title, created_at
          FROM rejuvenation_vial_intakes
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
       sql(
         `SELECT id, status, selected_medication, request_type, created_at
          FROM specialty_intake
-         WHERE LOWER(email) = $1
+         ${intakeMatchSql}
          ORDER BY created_at DESC`,
-        [email]
+        [patientId, email]
       ).catch(() => []),
     ])
 
@@ -88,34 +91,53 @@ export async function GET(request: Request) {
       created_at: String(rx.created_at),
     }))
 
+    const mapProgram = (
+      row: Record<string, unknown>,
+      base: Omit<ClinicalProgramSubmission, "paymentStatus" | "paymentStatusLabel">
+    ): ClinicalProgramSubmission => {
+      const paymentStatus =
+        row.payment_status != null ? String(row.payment_status) : undefined
+      return {
+        ...base,
+        paymentStatus,
+        paymentStatusLabel: paymentStatus ? formatPaymentStatus(paymentStatus) : undefined,
+      }
+    }
+
     const clinicalPrograms: ClinicalProgramSubmission[] = [
-      ...mensHealthRows.map((row: Record<string, unknown>) => ({
-        type: "mens_health" as const,
-        id: String(row.id),
-        status: String(row.status),
-        title: "Men's Health & ED",
-        subtitle: row.selected_product ? String(row.selected_product) : undefined,
-        submittedAt: String(row.created_at),
-        href: "/mens-health",
-      })),
-      ...trtRows.map((row: Record<string, unknown>) => ({
-        type: "trt" as const,
-        id: String(row.id),
-        status: String(row.status),
-        title: "Testosterone Replacement Therapy",
-        subtitle: row.selected_program ? String(row.selected_program) : undefined,
-        submittedAt: String(row.created_at),
-        href: "/mens-health/trt/start",
-      })),
-      ...weightLossRows.map((row: Record<string, unknown>) => ({
-        type: "weight_loss" as const,
-        id: String(row.id),
-        status: String(row.status),
-        title: "GLP-1 Weight Loss",
-        subtitle: row.selected_program ? String(row.selected_program) : undefined,
-        submittedAt: String(row.created_at),
-        href: "/weight-loss",
-      })),
+      ...mensHealthRows.map((row: Record<string, unknown>) =>
+        mapProgram(row, {
+          type: "mens_health" as const,
+          id: String(row.id),
+          status: String(row.status),
+          title: "Men's Health & ED",
+          subtitle: row.selected_product ? String(row.selected_product) : undefined,
+          submittedAt: String(row.created_at),
+          href: "/mens-health",
+        })
+      ),
+      ...trtRows.map((row: Record<string, unknown>) =>
+        mapProgram(row, {
+          type: "trt" as const,
+          id: String(row.id),
+          status: String(row.status),
+          title: "Testosterone Replacement Therapy",
+          subtitle: row.selected_program ? String(row.selected_program) : undefined,
+          submittedAt: String(row.created_at),
+          href: "/mens-health/trt/start",
+        })
+      ),
+      ...weightLossRows.map((row: Record<string, unknown>) =>
+        mapProgram(row, {
+          type: "weight_loss" as const,
+          id: String(row.id),
+          status: String(row.status),
+          title: "Semaglutide & Tirzepatide Weight Loss",
+          subtitle: row.selected_program ? String(row.selected_program) : undefined,
+          submittedAt: String(row.created_at),
+          href: "/weight-loss",
+        })
+      ),
       ...ivRows.map((row: Record<string, unknown>) => ({
         type: "iv_rejuvenation" as const,
         id: String(row.id),

@@ -165,7 +165,7 @@ export function PatientPortalContent() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col gap-6">
             <TabsList className="flex flex-wrap h-auto gap-1">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="orders">Orders ({orders.length})</TabsTrigger>
+              <TabsTrigger value="orders">Orders ({orders.length + clinicalPrograms.length})</TabsTrigger>
               <TabsTrigger value="messages">
                 Messages{unreadCount > 0 ? ` (${unreadCount} new)` : messages.length > 0 ? ` (${messages.length})` : ""}
               </TabsTrigger>
@@ -276,7 +276,7 @@ export function PatientPortalContent() {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrdersTab orders={orders} />
+              <OrdersTab orders={orders} clinicalPrograms={clinicalPrograms} />
             </TabsContent>
 
             <TabsContent value="messages">
@@ -374,91 +374,167 @@ function MessagesTab({
   )
 }
 
-function OrdersTab({ orders }: { orders: Order[] }) {
-  if (orders.length === 0) {
+function OrdersTab({
+  orders,
+  clinicalPrograms,
+}: {
+  orders: Order[]
+  clinicalPrograms: ClinicalProgramSubmission[]
+}) {
+  if (orders.length === 0 && clinicalPrograms.length === 0) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
           <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
-          <p className="text-muted-foreground mb-6">Search a medication to see pricing and place an order.</p>
-          <Button asChild>
-            <Link href="/prescriptions">Search medications</Link>
-          </Button>
+          <p className="text-muted-foreground mb-6">
+            Prescription orders and medical program intakes (such as Semaglutide or Tirzepatide) will appear here.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button asChild>
+              <Link href="/prescriptions">Search medications</Link>
+            </Button>
+            <Button asChild variant="outline" className="bg-transparent">
+              <Link href="/weight-loss">Weight loss programs</Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {orders.map((order) => (
-        <Card key={order.id}>
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <p className="font-semibold text-lg">Order #{order.order_number}</p>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(order.created_at).toLocaleDateString()} at{" "}
-                  {new Date(order.created_at).toLocaleTimeString()}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-xl text-primary">${(order.total_amount || 0).toFixed(2)}</p>
-                <div className="flex gap-2 justify-end mt-1">
-                  <Badge variant={portalStatusVariant(order.status)}>{formatPortalStatus(order.status)}</Badge>
-                  <Badge variant="outline">{formatPortalStatus(order.payment_status)}</Badge>
+    <div className="flex flex-col gap-6">
+      {clinicalPrograms.length > 0 && (
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold">Medical program intakes</h2>
+            <p className="text-sm text-muted-foreground">
+              GLP-1 weight loss and other clinical programs appear here. Prescription checkout orders are listed below.
+            </p>
+          </div>
+          {clinicalPrograms.map((program) => {
+            const Icon = programIcon(program.type)
+            return (
+              <Card key={`${program.type}-${program.id}`}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex gap-4">
+                      <Icon className="h-8 w-8 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-lg">{program.title}</p>
+                        {program.subtitle && (
+                          <p className="text-sm text-muted-foreground capitalize">{program.subtitle}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Reference {program.id} · Submitted{" "}
+                          {new Date(program.submittedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 self-start">
+                      <Badge variant={portalStatusVariant(program.status)}>
+                        {formatPortalStatus(program.status)}
+                      </Badge>
+                      {program.paymentStatusLabel && (
+                        <Badge variant="outline">{program.paymentStatusLabel}</Badge>
+                      )}
+                    </div>
+                  </div>
+                  {program.type === "weight_loss" &&
+                    program.paymentStatus === "awaiting_pharmacy" && (
+                      <p className="text-sm text-muted-foreground mt-4">
+                        After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
+                        Call (248) 987-6182 with questions.
+                      </p>
+                    )}
+                  <Button asChild variant="link" className="px-0 mt-2 h-auto">
+                    <Link href={program.href}>View program details</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+
+      {orders.length > 0 && (
+        <div className="space-y-4">
+          {clinicalPrograms.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold">Prescription orders</h2>
+              <p className="text-sm text-muted-foreground">Medications ordered through the pharmacy catalog.</p>
+            </div>
+          )}
+          {orders.map((order) => (
+            <Card key={order.id}>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-lg">Order #{order.order_number}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(order.created_at).toLocaleDateString()} at{" "}
+                      {new Date(order.created_at).toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-xl text-primary">${(order.total_amount || 0).toFixed(2)}</p>
+                    <div className="flex gap-2 justify-end mt-1">
+                      <Badge variant={portalStatusVariant(order.status)}>{formatPortalStatus(order.status)}</Badge>
+                      <Badge variant="outline">{formatPortalStatus(order.payment_status)}</Badge>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            {order.items && order.items.length > 0 && (
-              <div className="mt-4 pt-4 border-t">
-                <p className="text-sm font-medium mb-2">Items</p>
-                <ul className="flex flex-col gap-1">
-                  {order.items.map((item, idx) => (
-                    <li key={idx} className="text-sm text-muted-foreground">
-                      {item.drug_name} — Qty {item.quantity} — ${(item.price || 0).toFixed(2)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {!isOrderPaid(order) && (
-              <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {order.payment_preference === "pay_by_phone"
-                    ? "We'll call you to collect payment."
-                    : "Pay now for faster processing, or wait for our pharmacy to call you."}
-                </p>
-                <Button asChild size="sm">
-                  <Link href={getOrderPayPath(order.id)}>
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Choose payment option
-                  </Link>
-                </Button>
-              </div>
-            )}
-            <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="text-sm text-muted-foreground">
-                {order.prescription_method ? (
-                  <span>
-                    Prescription:{" "}
-                    {prescriptionMethodLabel(order.prescription_method as PrescriptionMethod)}
-                  </span>
-                ) : (
-                  <span className="text-amber-700 font-medium">Prescription info needed</span>
+                {order.items && order.items.length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm font-medium mb-2">Items</p>
+                    <ul className="flex flex-col gap-1">
+                      {order.items.map((item, idx) => (
+                        <li key={idx} className="text-sm text-muted-foreground">
+                          {item.drug_name} — Qty {item.quantity} — ${(item.price || 0).toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
-              </div>
-              <Button asChild size="sm" variant="outline" className="bg-transparent">
-                <Link href={`/account/orders/${order.id}`}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Manage order & prescription
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+                {!isOrderPaid(order) && (
+                  <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {order.payment_preference === "pay_by_phone"
+                        ? "We'll call you to collect payment."
+                        : "Pay now for faster processing, or wait for our pharmacy to call you."}
+                    </p>
+                    <Button asChild size="sm">
+                      <Link href={getOrderPayPath(order.id)}>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Choose payment option
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="text-sm text-muted-foreground">
+                    {order.prescription_method ? (
+                      <span>
+                        Prescription:{" "}
+                        {prescriptionMethodLabel(order.prescription_method as PrescriptionMethod)}
+                      </span>
+                    ) : (
+                      <span className="text-amber-700 font-medium">Prescription info needed</span>
+                    )}
+                  </div>
+                  <Button asChild size="sm" variant="outline" className="bg-transparent">
+                    <Link href={`/account/orders/${order.id}`}>
+                      <FileText className="h-4 w-4 mr-2" />
+                      Manage order & prescription
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -568,10 +644,21 @@ function ProgramsTab({ programs }: { programs: ClinicalProgramSubmission[] }) {
                     </p>
                   </div>
                 </div>
-                <Badge variant={portalStatusVariant(program.status)} className="self-start">
-                  {formatPortalStatus(program.status)}
-                </Badge>
+                <div className="flex flex-wrap gap-2 self-start">
+                  <Badge variant={portalStatusVariant(program.status)}>
+                    {formatPortalStatus(program.status)}
+                  </Badge>
+                  {program.paymentStatusLabel && (
+                    <Badge variant="outline">{program.paymentStatusLabel}</Badge>
+                  )}
+                </div>
               </div>
+              {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
+                <p className="text-sm text-muted-foreground mt-4">
+                  After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
+                  Call (248) 987-6182 with questions.
+                </p>
+              )}
               <p className="text-sm text-muted-foreground mt-4">
                 A licensed provider or our pharmacy team will update you by email when your status changes. Clinical intakes are reviewed by Dr. Dourra and affiliated Michigan physicians.
               </p>
