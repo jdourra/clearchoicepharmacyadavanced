@@ -87,10 +87,17 @@ export async function POST(request: Request, { params }: RouteParams) {
       `UPDATE weight_loss_intake
        SET payment_status = $1,
            partner_status = $2,
+           status = CASE WHEN status = $4 THEN $5 ELSE status END,
            updated_at = NOW()
        WHERE id = $3
        RETURNING id, payment_status, partner_status, status`,
-      ["paid_in_person", partnerStatus, id]
+      [
+        "paid_in_person",
+        partnerStatus,
+        id,
+        STANDARD_INTAKE_STATUS.approved,
+        STANDARD_INTAKE_STATUS.preparing,
+      ]
     ).catch(() => [])
 
     if (!updated[0]) {

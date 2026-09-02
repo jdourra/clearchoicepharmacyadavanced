@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { AdminShell } from "@/components/admin-shell"
 import { Badge } from "@/components/ui/badge"
@@ -30,13 +30,34 @@ type IntakeRow = {
   createdAt: string
 }
 
-type StatusFilter = "pending" | "approved" | "all"
+type StatusFilter = "pending" | "awaiting_payment" | "approved" | "all"
 
 export default function AdminIntakesPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const filterParam = searchParams.get("filter")
+  const initialFilter: StatusFilter =
+    filterParam === "awaiting_payment" ||
+    filterParam === "approved" ||
+    filterParam === "all" ||
+    filterParam === "pending"
+      ? filterParam
+      : "pending"
+
   const [intakes, setIntakes] = useState<IntakeRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending")
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter)
+
+  useEffect(() => {
+    if (
+      filterParam === "awaiting_payment" ||
+      filterParam === "approved" ||
+      filterParam === "all" ||
+      filterParam === "pending"
+    ) {
+      setStatusFilter(filterParam)
+    }
+  }, [filterParam])
 
   const loadIntakes = useCallback(
     (filter: StatusFilter) => {
@@ -69,7 +90,8 @@ export default function AdminIntakesPage() {
         <div className="flex flex-wrap gap-2">
           {(
             [
-              ["pending", "Pending"],
+              ["pending", "Pending review"],
+              ["awaiting_payment", "Awaiting payment"],
               ["approved", "Approved / in progress"],
               ["all", "All"],
             ] as const
@@ -78,7 +100,10 @@ export default function AdminIntakesPage() {
               key={value}
               size="sm"
               variant={statusFilter === value ? "default" : "outline"}
-              onClick={() => setStatusFilter(value)}
+              onClick={() => {
+                setStatusFilter(value)
+                router.replace(`/admin/intakes?filter=${value}`)
+              }}
             >
               {label}
             </Button>
@@ -103,7 +128,9 @@ export default function AdminIntakesPage() {
           <CardContent className="py-12 text-center text-muted-foreground">
             {statusFilter === "pending"
               ? `No pending intakes. New submissions will appear here for ${PRIMARY_PHYSICIAN.name}'s review.`
-              : "No intakes in this view."}
+              : statusFilter === "awaiting_payment"
+                ? "No intakes awaiting pharmacy payment. Approved GLP patients waiting to pay will appear here."
+                : "No intakes in this view."}
           </CardContent>
         </Card>
       ) : (

@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/collapsible"
 
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
+import { AdminIntakePharmacyFulfillmentPanel } from "@/components/admin-intake-pharmacy-fulfillment"
 
 const RX_SERVICES = new Set([
   "weight_loss",
@@ -52,6 +53,7 @@ type AdminIntakeDetailViewProps = {
   dropboxSignConfigured?: boolean
   /** Which staff portal is hosting this review UI. */
   portal?: "admin" | "doctor"
+  onReload?: () => void
 }
 
 function IdImagePanel({
@@ -164,6 +166,7 @@ export function AdminIntakeDetailView({
   existingPrescription,
   dropboxSignConfigured = false,
   portal = "admin",
+  onReload,
 }: AdminIntakeDetailViewProps) {
   const router = useRouter()
   const queueHref = portal === "doctor" ? "/doctor/intakes" : "/admin/intakes"
@@ -455,6 +458,15 @@ export function AdminIntakeDetailView({
                 </CardContent>
               </Card>
 
+              {portal === "admin" && (
+                <AdminIntakePharmacyFulfillmentPanel
+                  serviceType={serviceType}
+                  intakeId={id}
+                  detail={detail}
+                  onUpdated={onReload}
+                />
+              )}
+
               <Card className="hidden print:block">
                 <CardHeader>
                   <CardTitle className="text-base">Identity verification</CardTitle>
@@ -550,7 +562,7 @@ export function AdminIntakeDetailView({
                             Open Rx PDF ({existingPrescription.medicationName})
                           </Button>
                         ) : null}
-                        {canMarkPharmacyPaid ? (
+                        {canMarkPharmacyPaid && portal !== "admin" ? (
                           <div className="space-y-2 pt-2 border-t">
                             <p className="text-xs text-muted-foreground">
                               After collecting payment on the pharmacy terminal (or cash/phone), mark this intake paid.

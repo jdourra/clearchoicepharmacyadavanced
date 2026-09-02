@@ -99,10 +99,15 @@ export async function listClinicalIntakes(options?: {
   const statusFilter = options?.status
 
   let statusClause: string[] | null = null
+  let paymentClause = ""
+
   if (!statusFilter || statusFilter === "pending") {
     statusClause = [...PENDING_INTAKE_STATUSES]
   } else if (statusFilter === "approved") {
     statusClause = [...APPROVED_INTAKE_STATUSES]
+  } else if (statusFilter === "awaiting_payment") {
+    statusClause = [...APPROVED_INTAKE_STATUSES]
+    paymentClause = ` AND payment_status = 'awaiting_pharmacy'`
   } else if (statusFilter === "all") {
     statusClause = null
   } else {
@@ -111,8 +116,10 @@ export async function listClinicalIntakes(options?: {
 
   const statusSql =
     statusClause == null
-      ? ""
-      : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})`
+      ? paymentClause
+        ? `WHERE payment_status = 'awaiting_pharmacy'`
+        : ""
+      : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})${paymentClause}`
   const statusParams = statusClause ?? []
 
   const queries = await Promise.all([

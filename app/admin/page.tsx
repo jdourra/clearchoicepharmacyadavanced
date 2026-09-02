@@ -29,6 +29,7 @@ import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processi
 
 type DashboardCounts = {
   pendingIntakes: number
+  awaitingPaymentIntakes: number
   messageCount: number
   followupEligible: number
   customerCount: number
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
   const [allOrders, setAllOrders] = useState<Order[]>([])
   const [counts, setCounts] = useState<DashboardCounts>({
     pendingIntakes: 0,
+    awaitingPaymentIntakes: 0,
     messageCount: 0,
     followupEligible: 0,
     customerCount: 0,
@@ -57,9 +59,11 @@ export default function AdminDashboard() {
         return
       }
 
-      const [ordersRes, intakesRes, messagesRes, customersRes, followupRes] = await Promise.all([
+      const [ordersRes, intakesRes, awaitingPayRes, messagesRes, customersRes, followupRes] =
+        await Promise.all([
         staffAuthFetch("/api/admin/orders"),
         staffAuthFetch("/api/admin/intakes?status=pending"),
+        staffAuthFetch("/api/admin/intakes?status=awaiting_payment"),
         staffAuthFetch("/api/admin/messages"),
         staffAuthFetch("/api/admin/customers"),
         staffAuthFetch("/api/admin/customers/signup-followup"),
@@ -73,6 +77,9 @@ export default function AdminDashboard() {
 
       setCounts({
         pendingIntakes: intakesRes.ok ? (await intakesRes.json()).intakes?.length || 0 : 0,
+        awaitingPaymentIntakes: awaitingPayRes.ok
+          ? (await awaitingPayRes.json()).intakes?.length || 0
+          : 0,
         messageCount: messagesRes.ok ? (await messagesRes.json()).messages?.length || 0 : 0,
         customerCount: customersRes.ok ? (await customersRes.json()).users?.length || 0 : 0,
         followupEligible: followupRes.ok ? (await followupRes.json()).eligibleCount || 0 : 0,
@@ -281,6 +288,28 @@ export default function AdminDashboard() {
                 <Button asChild size="sm" variant="outline" className="bg-background">
                   <Link href="/admin/orders?status=pending">
                     Open pending queue
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {counts.awaitingPaymentIntakes > 0 ? (
+            <Card className="mb-6 border-amber-200 bg-amber-50/50">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="font-medium text-amber-900">
+                    {counts.awaitingPaymentIntakes} approved intake
+                    {counts.awaitingPaymentIntakes === 1 ? "" : "s"} awaiting pharmacy payment
+                  </p>
+                  <p className="text-sm text-amber-800/80">
+                    Send payment reminder, mark paid, then mark shipped from the intake page.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="bg-background">
+                  <Link href="/admin/intakes?filter=awaiting_payment">
+                    Open awaiting payment
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
