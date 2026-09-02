@@ -3,6 +3,7 @@ import { staffAuth } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { isAdminRole, isClinicianRole } from "@/lib/staff-roles"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
+import { recordIntakeSupplyCycleStart } from "@/lib/patient-refill-reminder"
 
 const PAID_STATUSES = new Set(["captured", "paid_in_person"])
 
@@ -95,6 +96,8 @@ export async function POST(request: Request, { params }: RouteParams) {
     if (!updated[0]) {
       return NextResponse.json({ error: "Could not mark intake paid" }, { status: 500 })
     }
+
+    await recordIntakeSupplyCycleStart("weight_loss_intake", id, { force: true })
 
     return NextResponse.json({
       success: true,

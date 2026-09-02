@@ -537,7 +537,25 @@ export const orders = {
   },
 
   async updateOrderStatus(orderId: string, status: string): Promise<boolean> {
-    const rows = await sql("UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING id", [status, orderId])
+    const fulfillmentStatuses = new Set(["shipped", "delivered", "completed"])
+    const rows = fulfillmentStatuses.has(status)
+      ? await sql(
+          `UPDATE orders
+           SET status = $1,
+               updated_at = now(),
+               supply_cycle_started_at = COALESCE(supply_cycle_started_at, now()),
+               refill_reminder_sent_at = CASE
+                 WHEN supply_cycle_started_at IS NULL THEN NULL
+                 ELSE refill_reminder_sent_at
+               END
+           WHERE id = $2
+           RETURNING id`,
+          [status, orderId]
+        )
+      : await sql("UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING id", [
+          status,
+          orderId,
+        ])
     return rows.length > 0
   },
 

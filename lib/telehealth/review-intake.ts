@@ -19,6 +19,7 @@ import {
   createPrescriptionOnApprove,
   shouldGeneratePrescription,
 } from "@/lib/clinical-prescription-service"
+import { recordIntakeSupplyCycleStart } from "@/lib/patient-refill-reminder"
 
 export type IntakeReviewAction = "approve" | "deny" | "follow_up"
 
@@ -208,6 +209,21 @@ export async function reviewClinicalIntake(params: {
 
   if (rows.length === 0) {
     return { success: false, error: "Failed to update intake status" }
+  }
+
+  if (
+    paymentStatus === "captured" &&
+    (serviceType === "weight_loss" || serviceType === "mens_health" || serviceType === "trt")
+  ) {
+    const intakeTable =
+      serviceType === "weight_loss"
+        ? "weight_loss_intake"
+        : serviceType === "mens_health"
+          ? "patient_intake"
+          : "trt_intake"
+    await recordIntakeSupplyCycleStart(intakeTable, id, { force: true }).catch((error) => {
+      console.error("[review-intake] supply cycle start failed:", error)
+    })
   }
 
   if (serviceType === "prescription_telemedicine" && action === "approve") {
