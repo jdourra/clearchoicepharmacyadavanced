@@ -71,7 +71,11 @@ export function AdminIntakePharmacyFulfillmentPanel({
 
   const canMarkShipped = isPaid && !isShipped && approvedOrLater.has(status)
 
-  const runAction = async (action: string, label: string) => {
+  const runAction = async (
+    action: string,
+    label: string,
+    options?: { notifyPatient?: boolean }
+  ) => {
     setBusy(action)
     setError("")
     setMessage("")
@@ -87,12 +91,20 @@ export function AdminIntakePharmacyFulfillmentPanel({
         if (!res.ok) throw new Error(result.error || "Could not mark paid")
         setMessage(`Marked paid (${method}) at pharmacy.`)
       } else {
+        const notifyPatient =
+          action === "mark_shipped_silent" ? false : options?.notifyPatient !== false
+        const apiAction =
+          action === "mark_shipped_silent" ? "mark_shipped" : action
+
         const res = await staffAuthFetch(
           `/api/admin/intakes/${serviceType}/${intakeId}/fulfillment`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action }),
+            body: JSON.stringify({
+              action: apiAction,
+              ...(apiAction === "mark_shipped" ? { notifyPatient } : {}),
+            }),
           }
         )
         const result = await res.json()
@@ -108,6 +120,8 @@ export function AdminIntakePharmacyFulfillmentPanel({
               ? "Marked shipped and emailed the patient."
               : `Marked shipped.${result.emailError ? ` Email failed: ${result.emailError}` : ""}`
           )
+        } else if (action === "mark_shipped_silent") {
+          setMessage("Marked shipped (no email sent to patient).")
         }
       }
       onUpdated?.()
@@ -203,24 +217,44 @@ export function AdminIntakePharmacyFulfillmentPanel({
                 </Button>
               )}
               {canMarkShipped && (
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={!!busy}
-                  onClick={() => runAction("mark_shipped", "mark shipped")}
-                >
-                  {busy === "mark_shipped" ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <Truck className="h-4 w-4 mr-2" />
-                  )}
-                  Mark shipped &amp; email patient
-                </Button>
+                <>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!!busy}
+                    onClick={() => runAction("mark_shipped", "mark shipped", { notifyPatient: true })}
+                  >
+                    {busy === "mark_shipped" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Truck className="h-4 w-4 mr-2" />
+                    )}
+                    Mark shipped &amp; email patient
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={!!busy}
+                    onClick={() =>
+                      runAction("mark_shipped_silent", "mark shipped without email", {
+                        notifyPatient: false,
+                      })
+                    }
+                  >
+                    {busy === "mark_shipped_silent" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Truck className="h-4 w-4 mr-2" />
+                    )}
+                    Mark shipped (no email)
+                  </Button>
+                </>
               )}
             </div>
-            {canMarkShipped && !canMarkPreparing && (
+            {canMarkShipped && (
               <p className="text-xs text-muted-foreground">
-                Mark shipped sends a shipping confirmation email to the patient.
+                Use “no email” if you already told the patient by phone or don’t want a shipping notification.
               </p>
             )}
           </div>

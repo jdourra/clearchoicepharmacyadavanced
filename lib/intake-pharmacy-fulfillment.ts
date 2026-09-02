@@ -193,12 +193,16 @@ export async function markIntakeShippedAndNotify(params: {
   serviceType: AdminIntakeServiceType
   id: string
   staffLabel: string
+  /** When false, only update status — do not email the patient. Defaults to true. */
+  notifyPatient?: boolean
 }): Promise<{
   success: boolean
   error?: string
   emailSent?: boolean
   emailError?: string
 }> {
+  const notifyPatient = params.notifyPatient !== false
+
   const update = await updateIntakeFulfillmentStatus({
     serviceType: params.serviceType,
     id: params.id,
@@ -208,6 +212,10 @@ export async function markIntakeShippedAndNotify(params: {
 
   if (!update.success || !update.intake) {
     return { success: false, error: update.error }
+  }
+
+  if (!notifyPatient) {
+    return { success: true, emailSent: false }
   }
 
   const email = String(update.intake.email ?? "").trim()

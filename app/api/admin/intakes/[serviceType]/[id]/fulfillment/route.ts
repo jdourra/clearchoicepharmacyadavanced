@@ -58,7 +58,13 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     if (action === "mark_shipped") {
-      const result = await markIntakeShippedAndNotify({ serviceType, id, staffLabel })
+      const notifyPatient = body.notifyPatient !== false
+      const result = await markIntakeShippedAndNotify({
+        serviceType,
+        id,
+        staffLabel,
+        notifyPatient,
+      })
       if (!result.success) {
         return NextResponse.json({ error: result.error || "Could not mark shipped" }, { status: 400 })
       }
@@ -67,6 +73,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         status: "shipped",
         emailSent: result.emailSent,
         emailError: result.emailError,
+        notifyPatient,
       })
     }
 

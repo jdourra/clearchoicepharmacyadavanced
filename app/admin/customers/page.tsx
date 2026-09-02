@@ -10,6 +10,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Search,
   Users,
   Package,
@@ -33,12 +40,37 @@ type FollowupCandidate = {
   createdAt: string
 }
 
+type CustomerSort = "joined_newest" | "joined_oldest" | "spent_high" | "spent_low" | "name_az"
+
+function sortCustomers(list: CustomerWithOrders[], sortBy: CustomerSort): CustomerWithOrders[] {
+  const sorted = [...list]
+  switch (sortBy) {
+    case "joined_newest":
+      return sorted.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+    case "joined_oldest":
+      return sorted.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+    case "spent_high":
+      return sorted.sort((a, b) => b.totalSpent - a.totalSpent)
+    case "spent_low":
+      return sorted.sort((a, b) => a.totalSpent - b.totalSpent)
+    case "name_az":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }))
+    default:
+      return sorted
+  }
+}
+
 export default function AdminCustomersPage() {
   const router = useRouter()
   const [customers, setCustomers] = useState<CustomerWithOrders[]>([])
   const [filteredCustomers, setFilteredCustomers] = useState<CustomerWithOrders[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState<CustomerSort>("joined_newest")
   const [followupCandidates, setFollowupCandidates] = useState<FollowupCandidate[]>([])
   const [followupLoading, setFollowupLoading] = useState(true)
   const [sendingFollowup, setSendingFollowup] = useState(false)
@@ -66,18 +98,16 @@ export default function AdminCustomersPage() {
   }, [router, loadFollowupCandidates])
 
   useEffect(() => {
-    if (searchTerm) {
-      setFilteredCustomers(
-        customers.filter(
+    const q = searchTerm.trim().toLowerCase()
+    const matched = q
+      ? customers.filter(
           (c) =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.email.toLowerCase().includes(searchTerm.toLowerCase())
+            c.name.toLowerCase().includes(q) ||
+            c.email.toLowerCase().includes(q)
         )
-      )
-    } else {
-      setFilteredCustomers(customers)
-    }
-  }, [searchTerm, customers])
+      : customers
+    setFilteredCustomers(sortCustomers(matched, sortBy))
+  }, [searchTerm, customers, sortBy])
 
   const loadData = async () => {
     try {
@@ -101,7 +131,7 @@ export default function AdminCustomersPage() {
         return { ...user, orders: userOrders, totalSpent }
       })
 
-      setCustomers(customersWithOrders.sort((a, b) => b.totalSpent - a.totalSpent))
+      setCustomers(customersWithOrders)
     } catch {
       router.push("/admin/login")
     } finally {
@@ -243,14 +273,28 @@ export default function AdminCustomersPage() {
 
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as CustomerSort)}>
+                  <SelectTrigger className="w-full sm:w-56">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="joined_newest">Date joined (newest)</SelectItem>
+                    <SelectItem value="joined_oldest">Date joined (oldest)</SelectItem>
+                    <SelectItem value="spent_high">Total spent (high to low)</SelectItem>
+                    <SelectItem value="spent_low">Total spent (low to high)</SelectItem>
+                    <SelectItem value="name_az">Name (A–Z)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
