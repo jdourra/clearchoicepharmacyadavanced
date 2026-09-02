@@ -26,10 +26,12 @@ import {
 } from "lucide-react"
 import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
 import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
+import { isOrderPaid } from "@/lib/order-payment"
 
 type DashboardCounts = {
   pendingIntakes: number
   awaitingPaymentIntakes: number
+  awaitingShipmentIntakes: number
   messageCount: number
   followupEligible: number
   customerCount: number
@@ -41,6 +43,7 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState<DashboardCounts>({
     pendingIntakes: 0,
     awaitingPaymentIntakes: 0,
+    awaitingShipmentIntakes: 0,
     messageCount: 0,
     followupEligible: 0,
     customerCount: 0,
@@ -59,11 +62,12 @@ export default function AdminDashboard() {
         return
       }
 
-      const [ordersRes, intakesRes, awaitingPayRes, messagesRes, customersRes, followupRes] =
+      const [ordersRes, intakesRes, awaitingPayRes, awaitingShipRes, messagesRes, customersRes, followupRes] =
         await Promise.all([
         staffAuthFetch("/api/admin/orders"),
         staffAuthFetch("/api/admin/intakes?status=pending"),
         staffAuthFetch("/api/admin/intakes?status=awaiting_payment"),
+        staffAuthFetch("/api/admin/intakes?status=awaiting_shipment"),
         staffAuthFetch("/api/admin/messages"),
         staffAuthFetch("/api/admin/customers"),
         staffAuthFetch("/api/admin/customers/signup-followup"),
@@ -79,6 +83,9 @@ export default function AdminDashboard() {
         pendingIntakes: intakesRes.ok ? (await intakesRes.json()).intakes?.length || 0 : 0,
         awaitingPaymentIntakes: awaitingPayRes.ok
           ? (await awaitingPayRes.json()).intakes?.length || 0
+          : 0,
+        awaitingShipmentIntakes: awaitingShipRes.ok
+          ? (await awaitingShipRes.json()).intakes?.length || 0
           : 0,
         messageCount: messagesRes.ok ? (await messagesRes.json()).messages?.length || 0 : 0,
         customerCount: customersRes.ok ? (await customersRes.json()).users?.length || 0 : 0,
@@ -106,6 +113,9 @@ export default function AdminDashboard() {
   const pendingOrders = allOrders.filter((o) => o.status === "pending").length
   const processingOrders = allOrders.filter((o) => o.status === "processing").length
   const shippedOrders = allOrders.filter((o) => o.status === "shipped").length
+  const awaitingShipmentOrders = allOrders.filter(
+    (o) => isOrderPaid(o) && (o.status === "processing" || o.status === "ready")
+  ).length
   const awaitingTelehealthOrders = allOrders.filter(
     (o) =>
       isActiveOrderStatus(o.status) &&
@@ -126,6 +136,7 @@ export default function AdminDashboard() {
     pendingOrders,
     processingOrders,
     awaitingTelehealthOrders,
+    awaitingShipmentOrders,
     shippedOrders,
     completedOrders,
     cancelledOrders,
@@ -180,6 +191,14 @@ export default function AdminDashboard() {
               icon={Clock}
               valueClassName="text-yellow-600"
               subtitle="Process pending →"
+            />
+            <AdminDashboardStatCard
+              href="/admin/orders?status=awaiting_shipment"
+              title="Awaiting Shipment"
+              value={stats.awaitingShipmentOrders}
+              icon={Truck}
+              valueClassName="text-violet-700"
+              subtitle="Paid · processing / ready →"
             />
             <AdminDashboardStatCard
               href="/admin/orders?status=processing"
@@ -295,6 +314,28 @@ export default function AdminDashboard() {
             </Card>
           ) : null}
 
+          {stats.awaitingShipmentOrders > 0 ? (
+            <Card className="mb-6 border-violet-200 bg-violet-50/50">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="font-medium text-violet-900">
+                    {stats.awaitingShipmentOrders} catalog order
+                    {stats.awaitingShipmentOrders === 1 ? "" : "s"} awaiting shipment
+                  </p>
+                  <p className="text-sm text-violet-800/80">
+                    Paid prescription orders in processing or ready — pack and mark shipped.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="bg-background">
+                  <Link href="/admin/orders?status=awaiting_shipment">
+                    Open awaiting shipment
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
           {counts.awaitingPaymentIntakes > 0 ? (
             <Card className="mb-6 border-amber-200 bg-amber-50/50">
               <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
@@ -310,6 +351,28 @@ export default function AdminDashboard() {
                 <Button asChild size="sm" variant="outline" className="bg-background">
                   <Link href="/admin/intakes?filter=awaiting_payment">
                     Open awaiting payment
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {counts.awaitingShipmentIntakes > 0 ? (
+            <Card className="mb-6 border-violet-200 bg-violet-50/50">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="font-medium text-violet-900">
+                    {counts.awaitingShipmentIntakes} paid intake
+                    {counts.awaitingShipmentIntakes === 1 ? "" : "s"} awaiting shipment
+                  </p>
+                  <p className="text-sm text-violet-800/80">
+                    Payment received — pack and mark shipped from the intake page.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="bg-background">
+                  <Link href="/admin/intakes?filter=awaiting_shipment">
+                    Open awaiting shipment
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

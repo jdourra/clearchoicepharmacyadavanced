@@ -28,9 +28,11 @@ import { useSearchParams } from "next/navigation"
 import Loading from "./loading"
 import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
 import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
+import { isOrderPaid } from "@/lib/order-payment"
 
 const STATUS_FILTER_OPTIONS = [
   "active",
+  "awaiting_shipment",
   "awaiting_telehealth",
   "pending",
   "processing",
@@ -105,6 +107,13 @@ export default function AdminOrdersPage() {
         if (o.prescription_method !== "telemedicine") return true
         return !isTelemedicineAwaitingApprovalStatus(o.telemedicine_intake_status)
       })
+    } else if (statusFilter === "awaiting_shipment") {
+      // Paid catalog orders ready to leave the pharmacy (processing / ready)
+      filtered = filtered.filter(
+        (o) =>
+          isOrderPaid(o) &&
+          (o.status === "processing" || o.status === "ready")
+      )
     } else if (statusFilter === "awaiting_telehealth") {
       filtered = filtered.filter(
         (o) =>
@@ -224,7 +233,9 @@ export default function AdminOrdersPage() {
             <p className="text-muted-foreground mt-1">
               {statusFilter === "active"
                 ? "Active work queue — pending and in-progress orders"
-                : "View and manage customer orders"}
+                : statusFilter === "awaiting_shipment"
+                  ? "Paid orders in processing or ready — waiting to ship"
+                  : "View and manage customer orders"}
             </p>
           </div>
 
@@ -246,6 +257,7 @@ export default function AdminOrdersPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">Active queue</SelectItem>
+                    <SelectItem value="awaiting_shipment">Awaiting shipment</SelectItem>
                     <SelectItem value="awaiting_telehealth">Awaiting telehealth approval</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="processing">Processing</SelectItem>

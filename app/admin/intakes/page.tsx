@@ -30,7 +30,7 @@ type IntakeRow = {
   createdAt: string
 }
 
-type StatusFilter = "pending" | "awaiting_payment" | "approved" | "all"
+type StatusFilter = "pending" | "awaiting_payment" | "awaiting_shipment" | "approved" | "all"
 
 export default function AdminIntakesPage() {
   const router = useRouter()
@@ -38,6 +38,7 @@ export default function AdminIntakesPage() {
   const filterParam = searchParams.get("filter")
   const initialFilter: StatusFilter =
     filterParam === "awaiting_payment" ||
+    filterParam === "awaiting_shipment" ||
     filterParam === "approved" ||
     filterParam === "all" ||
     filterParam === "pending"
@@ -51,6 +52,7 @@ export default function AdminIntakesPage() {
   useEffect(() => {
     if (
       filterParam === "awaiting_payment" ||
+      filterParam === "awaiting_shipment" ||
       filterParam === "approved" ||
       filterParam === "all" ||
       filterParam === "pending"
@@ -92,6 +94,7 @@ export default function AdminIntakesPage() {
             [
               ["pending", "Pending review"],
               ["awaiting_payment", "Awaiting payment"],
+              ["awaiting_shipment", "Awaiting shipment"],
               ["approved", "Approved / in progress"],
               ["all", "All"],
             ] as const
@@ -130,7 +133,9 @@ export default function AdminIntakesPage() {
               ? `No pending intakes. New submissions will appear here for ${PRIMARY_PHYSICIAN.name}'s review.`
               : statusFilter === "awaiting_payment"
                 ? "No intakes awaiting pharmacy payment. Approved GLP patients waiting to pay will appear here."
-                : "No intakes in this view."}
+                : statusFilter === "awaiting_shipment"
+                  ? "No paid intakes waiting to ship. Mark paid intakes appear here until you mark them shipped."
+                  : "No intakes in this view."}
           </CardContent>
         </Card>
       ) : (

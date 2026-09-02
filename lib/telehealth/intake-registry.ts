@@ -108,6 +108,10 @@ export async function listClinicalIntakes(options?: {
   } else if (statusFilter === "awaiting_payment") {
     statusClause = [...APPROVED_INTAKE_STATUSES]
     paymentClause = ` AND payment_status = 'awaiting_pharmacy'`
+  } else if (statusFilter === "awaiting_shipment") {
+    // Paid and approved, but not yet shipped/completed
+    statusClause = ["rx_at_pharmacy", "preparing", "ready_for_fulfillment", "ready_for_dispatch"]
+    paymentClause = ` AND payment_status IN ('captured', 'paid_in_person')`
   } else if (statusFilter === "all") {
     statusClause = null
   } else {
@@ -117,7 +121,7 @@ export async function listClinicalIntakes(options?: {
   const statusSql =
     statusClause == null
       ? paymentClause
-        ? `WHERE payment_status = 'awaiting_pharmacy'`
+        ? `WHERE ${paymentClause.replace(/^\s*AND\s+/i, "")}`
         : ""
       : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})${paymentClause}`
   const statusParams = statusClause ?? []
