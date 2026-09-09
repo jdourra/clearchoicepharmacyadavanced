@@ -5,6 +5,11 @@ import { getWeightLossDose } from "@/lib/weight-loss-catalog"
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 import { formatPhoneDisplay } from "@/lib/phone"
+import {
+  formatWeightLossDoseStrength,
+  resolveWeightLossDoseIdFromDetail,
+  weightLossDrugName,
+} from "@/lib/weight-loss-dose-review"
 
 export type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
 
@@ -57,15 +62,10 @@ export function suggestPrescriptionFromIntake(
 
   if (serviceType === "weight_loss") {
     const programId = String(detail.selected_program ?? "")
-    const doseId = String(detail.selected_dose_tier ?? "")
+    const doseId = resolveWeightLossDoseIdFromDetail(detail)
     const dose = getWeightLossDose(programId, doseId)
-    const drug =
-      programId === "tirzepatide"
-        ? "Compounded Tirzepatide injection"
-        : "Compounded Semaglutide injection"
-    const strength = dose
-      ? `${dose.weeklyMg} mg weekly (${dose.vialMg} mg / 30-day vial)`
-      : doseId || "per protocol"
+    const drug = weightLossDrugName(programId)
+    const strength = dose ? formatWeightLossDoseStrength(dose) : doseId || "per protocol"
     return {
       medicationName: drug,
       strength,

@@ -20,6 +20,12 @@ import {
   shouldGeneratePrescription,
 } from "@/lib/clinical-prescription-service"
 import { recordIntakeSupplyCycleStart } from "@/lib/patient-refill-reminder"
+import {
+  formatWeightLossDoseLabel,
+  getPatientRequestedWeightLossDose,
+  resolvePatientRequestedWeightLossDoseId,
+  resolveWeightLossDoseIdFromDetail,
+} from "@/lib/weight-loss-dose-review"
 
 export type IntakeReviewAction = "approve" | "deny" | "follow_up"
 
@@ -34,22 +40,6 @@ export type IntakeReviewResult = {
   prescriptionStatus?: string
   dropboxSent?: boolean
   dropboxError?: string
-}
-
-function resolveWeightLossDoseId(detail: Record<string, unknown>): WeightLossDoseId {
-  const programId = String(detail.selected_program ?? "")
-  const raw = String(detail.selected_dose_tier ?? "").trim()
-  if (raw) {
-    const dose = getWeightLossDose(programId, raw)
-    if (dose) return dose.id
-  }
-  const concerns = String(detail.additional_concerns ?? "")
-  const match = concerns.match(/\[selected_dose_tier:([^\]]+)\]/i)
-  if (match?.[1]) {
-    const dose = getWeightLossDose(programId, match[1].trim())
-    if (dose) return dose.id
-  }
-  return getWeightLossDose(programId, "starter")?.id ?? "sema-1mg"
 }
 
 function tableForService(serviceType: AdminIntakeServiceType): string {
@@ -101,10 +91,13 @@ export async function reviewClinicalIntake(params: {
   reviewerName?: string
   /** Weight loss: capture kit + $25 live-visit add-on when monthly billing was authorized. */
   liveVisitRequired?: boolean
+  /** Weight loss: clinician-selected dose id (may differ from patient request). */
+  prescribedDoseId?: string
   /** Prescription fields — required when approving a medication program. */
   prescription?: ClinicalRxPayload
 }): Promise<IntakeReviewResult> {
-  const { serviceType, id, action, note, liveVisitRequired, prescription } = params
+  const { serviceType, id, action, note, liveVisitRequired, prescription, prescribedDoseId } =
+    params
 
   if (!isAdminIntakeServiceType(serviceType)) {
     return { success: false, error: "Invalid service type" }
@@ -137,6 +130,18 @@ export async function reviewClinicalIntake(params: {
   const reviewer = params.reviewerName ?? PRIMARY_PHYSICIAN.name
   const partnerStatus = `manual_${action}_by_${reviewer.replace(/\s+/g, "_").toLowerCase()}`
 
+  let effectivePrescribedDoseId: WeightLossDoseId | undefined
+  if (serviceType === "weight_loss" && action === "approve") {
+    const programId = String(detail.selected_program ?? "")
+    const fallback = resolveWeightLossDoseIdFromDetail(detail)
+    const candidate = String(prescribedDoseId ?? "").trim() || fallback
+    const dose = getWeightLossDose(programId, candidate)
+    if (!dose) {
+      return { success: false, error: "Invalid prescribed dose for this weight-loss program." }
+    }
+    effectivePrescribedDoseId = dose.id
+  }
+
   const stripeId =
     detail.stripe_payment_intent_id != null ? String(detail.stripe_payment_intent_id) : null
 
@@ -151,7 +156,7 @@ export async function reviewClinicalIntake(params: {
         const programId = String(detail.selected_program ?? "")
         const billingPlan =
           detail.selected_billing_plan === "quarterly" ? "quarterly" : "monthly"
-        const tierId = resolveWeightLossDoseId(detail)
+        const tierId = effectivePrescribedDoseId ?? resolveWeightLossDoseIdFromDetail(detail)
         const quote = getWeightLossIntakeHoldQuote(programId, billingPlan, tierId)
         if (quote) {
           const includeLiveVisit =
@@ -212,6 +217,38 @@ export async function reviewClinicalIntake(params: {
   }
 
   if (
+    serviceType === "weight_loss" &&
+    action === "approve" &&
+    effectivePrescribedDoseId
+  ) {
+    const requestedId = resolvePatientRequestedWeightLossDoseId(detail)
+    await sql(
+      `UPDATE weight_loss_intake
+       SET selected_dose_tier = $1,
+           updated_at = NOW()
+       WHERE id = $2`,
+      [effectivePrescribedDoseId, id]
+    ).catch(() => [])
+    detail.selected_dose_tier = effectivePrescribedDoseId
+
+    // Keep an audit trail of the patient's original request when clinician overrides.
+    if (requestedId !== effectivePrescribedDoseId) {
+      const concerns = String(detail.additional_concerns ?? "")
+      if (!/\[patient_requested_dose_tier:/i.test(concerns)) {
+        const tagged = `${concerns}\n[patient_requested_dose_tier:${requestedId}]`.trim()
+        await sql(
+          `UPDATE weight_loss_intake
+           SET additional_concerns = $1,
+               updated_at = NOW()
+           WHERE id = $2`,
+          [tagged, id]
+        ).catch(() => [])
+        detail.additional_concerns = tagged
+      }
+    }
+  }
+
+  if (
     paymentStatus === "captured" &&
     (serviceType === "weight_loss" || serviceType === "mens_health" || serviceType === "trt")
   ) {
@@ -240,7 +277,16 @@ export async function reviewClinicalIntake(params: {
   const patientEmail = String(detail.email ?? "")
   const patientName = `${detail.first_name ?? ""} ${detail.last_name ?? ""}`.trim()
   const serviceLabel = SERVICE_LABELS[serviceType]
-  const treatmentLabel = treatmentLabelFromDetail(serviceType, detail)
+  let treatmentLabel = treatmentLabelFromDetail(serviceType, detail)
+  if (serviceType === "weight_loss") {
+    const dose =
+      (effectivePrescribedDoseId
+        ? getWeightLossDose(String(detail.selected_program ?? ""), effectivePrescribedDoseId)
+        : null) ?? getPatientRequestedWeightLossDose(detail)
+    if (dose) {
+      treatmentLabel = `${treatmentLabel} · ${formatWeightLossDoseLabel(dose)}`
+    }
+  }
 
   let emailSent = false
   let emailError: string | undefined

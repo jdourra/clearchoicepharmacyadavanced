@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Loader2, Mail, Package, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { staffAuthFetch } from "@/lib/staff-session"
@@ -147,6 +148,10 @@ export function AdminIntakePharmacyFulfillmentPanel({
           <span className="text-muted-foreground">· Payment:</span>
           <span className="font-medium">{formatPaymentStatus(paymentStatus)}</span>
         </div>
+
+        {isWeightLoss ? (
+          <WeightLossChargeHighlight detail={detail} variant="compact" />
+        ) : null}
 
         {canSendPaymentReminder && (
           <div className="space-y-2 rounded-lg border p-3 bg-muted/30">

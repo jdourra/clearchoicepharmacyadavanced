@@ -15,10 +15,9 @@ import {
   type AdminIntakeServiceType,
 } from "@/lib/telehealth/intake-registry"
 import {
-  getWeightLossDose,
-  getWeightLossIntakeHoldQuote,
-  type WeightLossDoseId,
-} from "@/lib/weight-loss-catalog"
+  getWeightLossChargeSummary,
+  resolveWeightLossDoseIdFromDetail,
+} from "@/lib/weight-loss-dose-review"
 
 const PAID_STATUSES = new Set(["captured", "paid_in_person"])
 
@@ -37,29 +36,12 @@ function tableForService(serviceType: string): string | null {
   return FULFILLMENT_TABLES[serviceType] ?? null
 }
 
-function resolveWeightLossDoseId(detail: Record<string, unknown>): WeightLossDoseId {
-  const programId = String(detail.selected_program ?? "")
-  const direct = String(detail.selected_dose_tier ?? "").trim()
-  if (direct) {
-    const dose = getWeightLossDose(programId, direct)
-    if (dose) return dose.id
-  }
-  const concerns = String(detail.additional_concerns ?? "")
-  const match = concerns.match(/\[selected_dose_tier:([^\]]+)\]/i)
-  if (match?.[1]) {
-    const dose = getWeightLossDose(programId, match[1].trim())
-    if (dose) return dose.id
-  }
-  return getWeightLossDose(programId, "starter")?.id ?? "sema-1mg"
-}
-
 function weightLossAmountLabel(detail: Record<string, unknown>): string | null {
-  const programId = String(detail.selected_program ?? "")
-  const billingPlan = detail.selected_billing_plan === "quarterly" ? "quarterly" : "monthly"
-  const doseId = resolveWeightLossDoseId(detail)
-  const quote = getWeightLossIntakeHoldQuote(programId, billingPlan, doseId)
-  if (!quote) return null
-  return `$${quote.totalBilled.toFixed(2)}`
+  const summary = getWeightLossChargeSummary(
+    detail,
+    resolveWeightLossDoseIdFromDetail(detail)
+  )
+  return summary?.chargeLabel ?? null
 }
 
 export async function getIntakeRowForFulfillment(

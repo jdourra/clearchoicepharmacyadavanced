@@ -48,6 +48,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const note = typeof body.note === "string" ? body.note.trim() : undefined
     const liveVisitRequired = Boolean(body.liveVisitRequired)
     const prescription = parsePrescription(body)
+    const prescribedDoseId =
+      typeof body.prescribedDoseId === "string" ? body.prescribedDoseId.trim() : undefined
 
     if (!VALID_ACTIONS.includes(action)) {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
@@ -60,6 +62,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       note,
       liveVisitRequired: serviceType === "weight_loss" ? liveVisitRequired : undefined,
       prescription,
+      prescribedDoseId: serviceType === "weight_loss" ? prescribedDoseId : undefined,
     })
 
     if (!result.success) {

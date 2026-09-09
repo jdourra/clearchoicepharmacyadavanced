@@ -6,6 +6,12 @@ import {
 } from "@/lib/rx-visit-conditions"
 import type { RxDrugClass } from "@/lib/prescription-telemedicine"
 import { formatPhoneDisplay } from "@/lib/phone"
+import {
+  formatWeightLossDoseLabel,
+  getPatientRequestedWeightLossDose,
+  getWeightLossChargeSummary,
+} from "@/lib/weight-loss-dose-review"
+import { getWeightLossDose, getWeightLossProgram } from "@/lib/weight-loss-catalog"
 
 const HIDDEN_KEYS = new Set([
   "id_front_key",
@@ -345,12 +351,31 @@ function formatTreatment(serviceType: AdminIntakeServiceType, detail: Record<str
         pick(detail, "selected_vial_title") || pick(detail, "selected_vial"),
         pick(detail, "kit_price") ? `$${pick(detail, "kit_price")}` : null,
       ])
-    case "weight_loss":
+    case "weight_loss": {
+      const programId = pick(detail, "selected_program")
+      const programName = programId
+        ? getWeightLossProgram(programId)?.name ?? programId
+        : null
+      const requested = getPatientRequestedWeightLossDose(detail)
+      const currentId = String(detail.selected_dose_tier ?? "").trim()
+      const current =
+        (currentId ? getWeightLossDose(programId ?? "", currentId) : undefined) ?? requested
+      const charge = getWeightLossChargeSummary(detail, current?.id)
+      const doseText = current
+        ? requested && requested.id !== current.id
+          ? `Prescribed: ${formatWeightLossDoseLabel(current)} (patient asked ${formatWeightLossDoseLabel(requested)})`
+          : `Dose: ${formatWeightLossDoseLabel(current)}`
+        : null
       return joinLine([
-        pick(detail, "selected_program"),
-        pick(detail, "selected_dose_tier") ? `Dose: ${pick(detail, "selected_dose_tier")}` : null,
-        pick(detail, "selected_billing_plan") ? `Plan: ${pick(detail, "selected_billing_plan")}` : null,
+        programName,
+        doseText,
+        charge
+          ? `${charge.timeframeLabel} · Collect ${charge.chargeLabel}`
+          : pick(detail, "selected_billing_plan")
+            ? `Plan: ${pick(detail, "selected_billing_plan")}`
+            : null,
       ])
+    }
     case "trt":
       return joinLine([
         pick(detail, "selected_program"),
@@ -399,7 +424,17 @@ function formatTimeWindow(value: string): string {
   return labels[value] ?? value.replace(/_/g, " ")
 }
 
-function formatFieldValue(key: string, value: unknown): string | null {
+function formatFieldValue(
+  key: string,
+  value: unknown,
+  detail?: Record<string, unknown>
+): string | null {
+  if (key === "selected_dose_tier" && detail) {
+    const dose =
+      getWeightLossDose(String(detail.selected_program ?? ""), String(value ?? "")) ??
+      getPatientRequestedWeightLossDose(detail)
+    if (dose) return formatWeightLossDoseLabel(dose)
+  }
   const formatted = formatValue(value)
   if (!formatted) return null
   if (/phone/i.test(key)) {
@@ -415,7 +450,7 @@ function buildFieldItems(
 ): IntakeReviewField[] {
   const items: IntakeReviewField[] = []
   for (const key of keys) {
-    const value = formatFieldValue(key, detail[key])
+    const value = formatFieldValue(key, detail[key], detail)
     if (!value) continue
     used.add(key)
     items.push({ label: fieldLabel(key), value })

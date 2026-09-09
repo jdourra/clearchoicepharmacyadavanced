@@ -17,6 +17,16 @@ import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { buildIntakeReviewLayout } from "@/lib/intake-admin-display"
 import { WEIGHT_LOSS_LIVE_VISIT_ADDON } from "@/lib/weight-loss-catalog"
+import {
+  formatWeightLossDoseLabel,
+  formatWeightLossDoseStrength,
+  getPatientRequestedWeightLossDose,
+  getWeightLossChargeSummary,
+  isLikelyGlpNaive,
+  listWeightLossDosesForProgram,
+  weightLossDrugName,
+} from "@/lib/weight-loss-dose-review"
+import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { staffAuthFetch } from "@/lib/staff-session"
 import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
@@ -26,6 +36,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 import { AdminIntakePharmacyFulfillmentPanel } from "@/components/admin-intake-pharmacy-fulfillment"
@@ -188,6 +205,25 @@ export function AdminIntakeDetailView({
   const [rxRefills, setRxRefills] = useState(String(suggestedPrescription?.refills ?? 0))
   const [clinicianEsignName, setClinicianEsignName] = useState("")
 
+  const isWeightLoss = serviceType === "weight_loss"
+  const weightLossProgramId = String(detail.selected_program ?? "")
+  const patientRequestedDose = isWeightLoss
+    ? getPatientRequestedWeightLossDose(detail)
+    : undefined
+  const weightLossDoses = isWeightLoss ? listWeightLossDosesForProgram(weightLossProgramId) : []
+  const [prescribedDoseId, setPrescribedDoseId] = useState(
+    patientRequestedDose?.id ?? weightLossDoses[0]?.id ?? ""
+  )
+  const glpNaive = isWeightLoss && isLikelyGlpNaive(detail)
+
+  const applyPrescribedDose = (doseId: string) => {
+    setPrescribedDoseId(doseId)
+    const dose = weightLossDoses.find((d) => d.id === doseId)
+    if (!dose) return
+    setRxMedication(weightLossDrugName(weightLossProgramId))
+    setRxStrength(formatWeightLossDoseStrength(dose))
+  }
+
   useEffect(() => {
     staffAuthFetch("/api/admin/ses-health")
       .then(async (res) => {
@@ -208,7 +244,6 @@ export function AdminIntakeDetailView({
   )
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
-  const isWeightLoss = serviceType === "weight_loss"
   const weightLossIsMonthly = String(detail.selected_billing_plan ?? "") === "monthly"
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
   const payAtPharmacy = isWeightLoss && !hasStripeHold
@@ -286,6 +321,8 @@ export function AdminIntakeDetailView({
           note: note || undefined,
           liveVisitRequired: canChargeLiveVisit ? liveVisitRequired : false,
           prescription,
+          prescribedDoseId:
+            isWeightLoss && action === "approve" ? prescribedDoseId || undefined : undefined,
         }),
       })
       const result = await res.json()
@@ -384,6 +421,13 @@ export function AdminIntakeDetailView({
                     {layout.treatmentLine && (
                       <p className="text-foreground">{layout.treatmentLine}</p>
                     )}
+                    {isWeightLoss ? (
+                      <WeightLossChargeHighlight
+                        detail={detail}
+                        prescribedDoseId={prescribedDoseId || undefined}
+                        variant="full"
+                      />
+                    ) : null}
                     <p className="text-xs text-muted-foreground font-mono">{layout.metaLine}</p>
                   </div>
 
@@ -661,6 +705,53 @@ export function AdminIntakeDetailView({
                             : "Dropbox Sign is not configured — type your e-signature name below. Admin is emailed a printable Rx on approve."}
                         </p>
                       </div>
+                      {isWeightLoss && patientRequestedDose ? (
+                        <Alert className="border-amber-500/60 bg-amber-50 text-amber-950 dark:bg-amber-950/30 dark:text-amber-50">
+                          <AlertDescription className="space-y-1 text-sm">
+                            <p className="font-semibold">
+                              Patient requested: {formatWeightLossDoseLabel(patientRequestedDose)}
+                            </p>
+                            <p className="text-xs opacity-90">
+                              {glpNaive
+                                ? "Intake suggests little or no prior GLP-1 experience — consider starting at the lowest titration dose unless clinically inappropriate."
+                                : "You may prescribe a different weekly dose below; Rx strength, kit, and pharmacy charge will follow your selection."}
+                            </p>
+                          </AlertDescription>
+                        </Alert>
+                      ) : null}
+                      {isWeightLoss && weightLossDoses.length > 0 ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="prescribedDose">Prescribe weekly dose</Label>
+                          <Select
+                            value={prescribedDoseId}
+                            onValueChange={(value) => applyPrescribedDose(value)}
+                          >
+                            <SelectTrigger id="prescribedDose" className="w-full">
+                              <SelectValue placeholder="Select dose" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {weightLossDoses.map((dose) => {
+                                const doseCharge = getWeightLossChargeSummary(detail, dose.id)
+                                return (
+                                  <SelectItem key={dose.id} value={dose.id}>
+                                    {formatWeightLossDoseLabel(dose)}
+                                    {doseCharge ? ` · ${doseCharge.chargeLabel}` : ""}
+                                    {patientRequestedDose?.id === dose.id ? " (patient request)" : ""}
+                                  </SelectItem>
+                                )
+                              })}
+                            </SelectContent>
+                          </Select>
+                          {patientRequestedDose &&
+                          prescribedDoseId &&
+                          prescribedDoseId !== patientRequestedDose.id ? (
+                            <p className="text-xs text-amber-800 dark:text-amber-200">
+                              Differing from patient request — kit pricing and Rx will use your prescribed
+                              dose.
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : null}
                       {existingPrescription && (
                         <Alert>
                           <AlertDescription className="text-xs space-y-2">
