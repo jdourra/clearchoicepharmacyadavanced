@@ -390,6 +390,10 @@ export async function POST(request: NextRequest) {
       const billingSupplyLabel = formatWeightLossSupplyFromKitCount(billingKitCount)
 
       await sql(
+        `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS selected_dose_tier TEXT`,
+        []
+      ).catch(() => [])
+      await sql(
         `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_kit_count INTEGER`,
         []
       ).catch(() => [])

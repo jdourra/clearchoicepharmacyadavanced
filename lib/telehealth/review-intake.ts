@@ -222,14 +222,73 @@ export async function reviewClinicalIntake(params: {
     }
   }
 
+  // Weight-loss approve must persist prescribed dose/kits with status. Historically
+  // selected_dose_tier was missing and a follow-up UPDATE was swallowed, so pharmacy
+  // kept showing the patient-requested multi-kit charge after approve.
+  if (serviceType === "weight_loss" && action === "approve") {
+    await sql(
+      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS selected_dose_tier TEXT`,
+      []
+    )
+    await sql(
+      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_kit_count INTEGER`,
+      []
+    )
+    await sql(
+      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_supply_label TEXT`,
+      []
+    )
+  }
+
+  const wlBillingPlan =
+    effectivePrescribedKitCount != null
+      ? billingPlanFromKitCount(effectivePrescribedKitCount)
+      : undefined
+  const wlSupplyLabel =
+    effectivePrescribedKitCount != null
+      ? formatWeightLossSupplyFromKitCount(effectivePrescribedKitCount)
+      : undefined
+
   const rows =
     serviceType === "specialty_pharmacy"
       ? await sql(
           `UPDATE specialty_intake SET status = $1, payment_status = COALESCE($2, payment_status), updated_at = NOW() WHERE id = $3 RETURNING id`,
           [next, paymentStatus, id]
         ).catch(() => [])
-      : await sql(
-          `UPDATE ${table}
+      : serviceType === "weight_loss" &&
+          action === "approve" &&
+          effectivePrescribedDoseId &&
+          effectivePrescribedKitCount != null
+        ? await sql(
+            `UPDATE weight_loss_intake
+             SET status = $1,
+                 partner_name = $2,
+                 partner_status = $3,
+                 payment_status = $4,
+                 selected_dose_tier = $5,
+                 selected_billing_plan = $6,
+                 billing_kit_count = $7,
+                 billing_supply_label = $8,
+                 updated_at = NOW()
+             WHERE id = $9
+             RETURNING id`,
+            [
+              next,
+              "manual",
+              partnerStatus,
+              paymentStatus,
+              effectivePrescribedDoseId,
+              wlBillingPlan,
+              effectivePrescribedKitCount,
+              wlSupplyLabel,
+              id,
+            ]
+          ).catch((err) => {
+            console.error("[review-intake] weight_loss approve update failed:", err)
+            return []
+          })
+        : await sql(
+            `UPDATE ${table}
      SET status = $1,
          partner_name = $2,
          partner_status = $3,
@@ -237,49 +296,30 @@ export async function reviewClinicalIntake(params: {
          updated_at = NOW()
      WHERE id = $5
      RETURNING id`,
-          [next, "manual", partnerStatus, paymentStatus, id]
-        ).catch(() => [])
+            [next, "manual", partnerStatus, paymentStatus, id]
+          ).catch(() => [])
 
   if (rows.length === 0) {
-    return { success: false, error: "Failed to update intake status" }
+    return {
+      success: false,
+      error:
+        serviceType === "weight_loss" && action === "approve"
+          ? "Failed to save approval with prescribed dose/supply. Retry approve."
+          : "Failed to update intake status",
+    }
   }
 
   if (
     serviceType === "weight_loss" &&
     action === "approve" &&
     effectivePrescribedDoseId &&
-    effectivePrescribedKitCount
+    effectivePrescribedKitCount != null
   ) {
     const requestedId = resolvePatientRequestedWeightLossDoseId(detail)
     const requestedKits = resolvePatientRequestedBillingKitCount(detail)
-    const billingPlan = billingPlanFromKitCount(effectivePrescribedKitCount)
-    const supplyLabel = formatWeightLossSupplyFromKitCount(effectivePrescribedKitCount)
-
-    await sql(
-      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_kit_count INTEGER`,
-      []
-    ).catch(() => [])
-    await sql(
-      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_supply_label TEXT`,
-      []
-    ).catch(() => [])
-
-    await sql(
-      `UPDATE weight_loss_intake
-       SET selected_dose_tier = $1,
-           selected_billing_plan = $2,
-           billing_kit_count = $3,
-           billing_supply_label = $4,
-           updated_at = NOW()
-       WHERE id = $5`,
-      [
-        effectivePrescribedDoseId,
-        billingPlan,
-        effectivePrescribedKitCount,
-        supplyLabel,
-        id,
-      ]
-    ).catch(() => [])
+    const billingPlan = wlBillingPlan ?? billingPlanFromKitCount(effectivePrescribedKitCount)
+    const supplyLabel =
+      wlSupplyLabel ?? formatWeightLossSupplyFromKitCount(effectivePrescribedKitCount)
 
     detail.selected_dose_tier = effectivePrescribedDoseId
     detail.selected_billing_plan = billingPlan
