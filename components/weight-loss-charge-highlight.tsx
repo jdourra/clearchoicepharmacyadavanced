@@ -5,12 +5,16 @@ import {
   getPatientRequestedWeightLossDose,
   getWeightLossChargeSummary,
   isLikelyGlpNaive,
+  resolvePatientRequestedBillingKitCount,
 } from "@/lib/weight-loss-dose-review"
+import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 
 type WeightLossChargeHighlightProps = {
   detail: Record<string, unknown>
   /** When set (doctor prescribing), charge uses this dose instead of intake record. */
   prescribedDoseId?: string
+  /** When set (doctor prescribing), charge uses this kit count. */
+  prescribedKitCount?: number
   /** Compact = pharmacy fulfillment panel; full = intake header. */
   variant?: "full" | "compact"
 }
@@ -18,13 +22,20 @@ type WeightLossChargeHighlightProps = {
 export function WeightLossChargeHighlight({
   detail,
   prescribedDoseId,
+  prescribedKitCount,
   variant = "full",
 }: WeightLossChargeHighlightProps) {
   const patientDose = getPatientRequestedWeightLossDose(detail)
-  const patientQuote = getWeightLossChargeSummary(detail, patientDose?.id)
+  const patientKits = resolvePatientRequestedBillingKitCount(detail)
+  const patientQuote = getWeightLossChargeSummary(detail, patientDose?.id, patientKits)
+  const chargeKits =
+    Number.isFinite(Number(prescribedKitCount)) && Number(prescribedKitCount) > 0
+      ? Number(prescribedKitCount)
+      : patientKits
   const chargeQuote = getWeightLossChargeSummary(
     detail,
-    prescribedDoseId || patientDose?.id
+    prescribedDoseId || patientDose?.id,
+    chargeKits
   )
   if (!patientQuote && !chargeQuote) return null
 
@@ -33,6 +44,10 @@ export function WeightLossChargeHighlight({
     Boolean(prescribedDoseId) &&
     Boolean(patientDose) &&
     prescribedDoseId !== patientDose?.id
+  const supplyChanged =
+    Number.isFinite(Number(prescribedKitCount)) &&
+    Number(prescribedKitCount) > 0 &&
+    Number(prescribedKitCount) !== patientKits
   const glpNaive = isLikelyGlpNaive(detail)
   const pad = variant === "compact" ? "px-3 py-2" : "px-3 py-3"
 
@@ -45,25 +60,29 @@ export function WeightLossChargeHighlight({
           Patient selection
         </p>
         <p className="font-semibold text-sm sm:text-base">
-          {quote.programName}
+          {patientQuote?.programName ?? quote.programName}
           {patientDose ? ` · ${formatWeightLossDoseLabel(patientDose)}` : ""}
         </p>
         <p className="text-sm mt-0.5">
-          <span className="font-medium">Supply:</span> {quote.timeframeLabel}
-          <span className="opacity-70"> · {quote.billingTitle}</span>
+          <span className="font-medium">Supply:</span>{" "}
+          {formatWeightLossSupplyFromKitCount(patientKits)}
         </p>
       </div>
 
       <div className="rounded border border-amber-600/40 bg-white/70 dark:bg-black/20 px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
-          {doseChanged ? "Charge for prescribed dose" : "Amount to collect at pharmacy"}
+          {doseChanged || supplyChanged
+            ? "Charge for prescribed dose / supply"
+            : "Amount to collect at pharmacy"}
         </p>
         <p className="text-2xl font-bold tabular-nums tracking-tight">{quote.chargeLabel}</p>
-        <p className="text-xs mt-0.5 opacity-90">{quote.kitBreakdownLabel}</p>
-        {doseChanged && patientQuote ? (
+        <p className="text-xs mt-0.5 opacity-90">
+          {quote.timeframeLabel} · {quote.kitBreakdownLabel}
+        </p>
+        {(doseChanged || supplyChanged) && patientQuote ? (
           <p className="text-xs mt-1 opacity-90">
-            Patient-selected dose would have been {patientQuote.chargeLabel} (
-            {formatWeightLossDoseLabel(patientQuote.dose)}).
+            Patient selected {formatWeightLossDoseLabel(patientQuote.dose)} ·{" "}
+            {formatWeightLossSupplyFromKitCount(patientKits)} for {patientQuote.chargeLabel}.
           </p>
         ) : null}
         {quote.liveVisitNote ? (

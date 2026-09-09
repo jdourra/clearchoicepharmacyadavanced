@@ -50,6 +50,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const prescription = parsePrescription(body)
     const prescribedDoseId =
       typeof body.prescribedDoseId === "string" ? body.prescribedDoseId.trim() : undefined
+    const prescribedKitCountRaw = Number(body.prescribedKitCount)
+    const prescribedKitCount =
+      Number.isFinite(prescribedKitCountRaw) &&
+      prescribedKitCountRaw >= 1 &&
+      prescribedKitCountRaw <= 3
+        ? Math.floor(prescribedKitCountRaw)
+        : undefined
 
     if (!VALID_ACTIONS.includes(action)) {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
@@ -63,6 +70,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       liveVisitRequired: serviceType === "weight_loss" ? liveVisitRequired : undefined,
       prescription,
       prescribedDoseId: serviceType === "weight_loss" ? prescribedDoseId : undefined,
+      prescribedKitCount: serviceType === "weight_loss" ? prescribedKitCount : undefined,
     })
 
     if (!result.success) {

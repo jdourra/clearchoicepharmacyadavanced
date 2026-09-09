@@ -1,5 +1,4 @@
 import {
-  formatWeightLossBillingPlanTitle,
   formatWeightLossRxQuantity,
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
@@ -102,6 +101,7 @@ export function resolveWeightLossBillingKitCount(detail: Record<string, unknown>
   if (Number.isFinite(n) && n > 0) return Math.floor(n)
 
   const concerns = String(detail.additional_concerns ?? "")
+  // After clinician override, current kits are in billing_kit_count; fall through.
   const tagged = concerns.match(/\[billing_kit_count:(\d+)\]/i)
   if (tagged?.[1]) {
     const fromTag = Number(tagged[1])
@@ -114,12 +114,30 @@ export function resolveWeightLossBillingKitCount(detail: Record<string, unknown>
   return 2
 }
 
+/** Kits the patient originally requested (survives clinician override). */
+export function resolvePatientRequestedBillingKitCount(
+  detail: Record<string, unknown>
+): number {
+  const concerns = String(detail.additional_concerns ?? "")
+  const requestedTag = concerns.match(/\[patient_requested_billing_kit_count:(\d+)\]/i)
+  if (requestedTag?.[1]) {
+    const n = Number(requestedTag[1])
+    if (Number.isFinite(n) && n > 0) return Math.floor(n)
+  }
+  return resolveWeightLossBillingKitCount(detail)
+}
+
+export function billingPlanFromKitCount(kits: number): WeightLossBillingPlan {
+  return kits <= 1 ? "monthly" : "quarterly"
+}
+
 export function formatWeightLossBillingTimeframe(
   plan: WeightLossBillingPlan,
   kits?: number
 ): string {
+  if (kits != null && kits > 0) return formatWeightLossSupplyFromKitCount(kits)
   if (plan === "monthly") return "1-month (30-day kit)"
-  return formatWeightLossSupplyFromKitCount(kits ?? WEIGHT_LOSS_MULTI_KIT_COUNT)
+  return formatWeightLossSupplyFromKitCount(WEIGHT_LOSS_MULTI_KIT_COUNT)
 }
 
 export type WeightLossChargeSummary = {
@@ -138,18 +156,25 @@ export type WeightLossChargeSummary = {
   liveVisitNote: string | null
 }
 
-/** Charge amount for a specific dose + the intake billing plan / kit snapshot. */
+/** Charge amount for a specific dose + kit count (prescribed or patient snapshot). */
 export function getWeightLossChargeSummary(
   detail: Record<string, unknown>,
-  doseId?: string
+  doseId?: string,
+  kitsOverride?: number
 ): WeightLossChargeSummary | null {
   const programId = String(detail.selected_program ?? "")
   const program = getWeightLossProgram(programId)
   if (!program) return null
 
-  const billingPlan = resolveWeightLossBillingPlan(detail)
-  const kitsIncluded =
-    billingPlan === "monthly" ? 1 : resolveWeightLossBillingKitCount(detail)
+  const kitsIncluded = Math.max(
+    1,
+    Math.floor(
+      Number.isFinite(Number(kitsOverride)) && Number(kitsOverride) > 0
+        ? Number(kitsOverride)
+        : resolveWeightLossBillingKitCount(detail)
+    )
+  )
+  const billingPlan = billingPlanFromKitCount(kitsIncluded)
   const resolvedDoseId = doseId?.trim() || resolveWeightLossDoseIdFromDetail(detail)
   const dose = getWeightLossDose(programId, resolvedDoseId)
   if (!dose) return null
@@ -169,27 +194,31 @@ export function getWeightLossChargeSummary(
     programName: program.name,
     billingPlan,
     kitsIncluded,
-    timeframeLabel: formatWeightLossBillingTimeframe(billingPlan, kitsIncluded),
-    billingTitle:
-      billingPlan === "monthly"
-        ? formatWeightLossBillingPlanTitle(billingPlan)
-        : formatWeightLossSupplyFromKitCount(kitsIncluded),
+    timeframeLabel: formatWeightLossSupplyFromKitCount(kitsIncluded),
+    billingTitle: formatWeightLossSupplyFromKitCount(kitsIncluded),
     dose,
     quote,
     chargeCents: Math.round(quote.totalBilled * 100),
     chargeLabel: `$${quote.totalBilled.toFixed(2)}`,
     kitBreakdownLabel,
     liveVisitNote:
-      billingPlan === "monthly" && quote.liveVisitAddon > 0
+      kitsIncluded <= 1 && quote.liveVisitAddon > 0
         ? `Live visit add-on +$${quote.liveVisitAddon.toFixed(2)} only if clinician requires a live visit (not in default pharmacy charge).`
-        : billingPlan === "quarterly"
+        : kitsIncluded > 1
           ? `Live visit add-on waived on ${formatWeightLossSupplyFromKitCount(kitsIncluded)}.`
           : null,
   }
 }
 
-export function suggestWeightLossRxQuantity(detail: Record<string, unknown>): string {
-  return formatWeightLossRxQuantity(resolveWeightLossBillingKitCount(detail))
+export function suggestWeightLossRxQuantity(
+  detail: Record<string, unknown>,
+  kitsOverride?: number
+): string {
+  const kits =
+    Number.isFinite(Number(kitsOverride)) && Number(kitsOverride) > 0
+      ? Math.floor(Number(kitsOverride))
+      : resolveWeightLossBillingKitCount(detail)
+  return formatWeightLossRxQuantity(kits)
 }
 
 export function snapshotBillingKitCountForNewIntake(

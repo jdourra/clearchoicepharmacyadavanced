@@ -24,8 +24,11 @@ import {
   getWeightLossChargeSummary,
   isLikelyGlpNaive,
   listWeightLossDosesForProgram,
+  resolvePatientRequestedBillingKitCount,
+  suggestWeightLossRxQuantity,
   weightLossDrugName,
 } from "@/lib/weight-loss-dose-review"
+import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { staffAuthFetch } from "@/lib/staff-session"
@@ -214,14 +217,28 @@ export function AdminIntakeDetailView({
   const [prescribedDoseId, setPrescribedDoseId] = useState(
     patientRequestedDose?.id ?? weightLossDoses[0]?.id ?? ""
   )
+  const patientRequestedKits = isWeightLoss
+    ? resolvePatientRequestedBillingKitCount(detail)
+    : 1
+  const [prescribedKitCount, setPrescribedKitCount] = useState(
+    String(Math.min(3, Math.max(1, patientRequestedKits)))
+  )
   const glpNaive = isWeightLoss && isLikelyGlpNaive(detail)
 
-  const applyPrescribedDose = (doseId: string) => {
+  const applyPrescribedDose = (doseId: string, kits = Number(prescribedKitCount) || 1) => {
     setPrescribedDoseId(doseId)
     const dose = weightLossDoses.find((d) => d.id === doseId)
     if (!dose) return
     setRxMedication(weightLossDrugName(weightLossProgramId))
     setRxStrength(formatWeightLossDoseStrength(dose))
+    setRxQuantity(suggestWeightLossRxQuantity(detail, kits))
+  }
+
+  const applyPrescribedKits = (kitsRaw: string) => {
+    setPrescribedKitCount(kitsRaw)
+    const kits = Number(kitsRaw) || 1
+    if (prescribedDoseId) applyPrescribedDose(prescribedDoseId, kits)
+    else setRxQuantity(suggestWeightLossRxQuantity(detail, kits))
   }
 
   useEffect(() => {
@@ -244,7 +261,6 @@ export function AdminIntakeDetailView({
   )
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
-  const weightLossIsMonthly = String(detail.selected_billing_plan ?? "") === "monthly"
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
   const payAtPharmacy = isWeightLoss && !hasStripeHold
   const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
@@ -253,7 +269,8 @@ export function AdminIntakeDetailView({
     payAtPharmacy &&
     !["captured", "paid_in_person"].includes(paymentStatus) &&
     ["rx_at_pharmacy", "preparing", "shipped", "completed"].includes(String(detail.status ?? ""))
-  const canChargeLiveVisit = isWeightLoss && weightLossIsMonthly && hasStripeHold
+  const canChargeLiveVisit =
+    isWeightLoss && Number(prescribedKitCount) <= 1 && hasStripeHold
   const needsPrescription = RX_SERVICES.has(String(serviceType))
 
   const markPaidAtPharmacy = async (method: "terminal" | "cash" | "phone") => {
@@ -323,6 +340,10 @@ export function AdminIntakeDetailView({
           prescription,
           prescribedDoseId:
             isWeightLoss && action === "approve" ? prescribedDoseId || undefined : undefined,
+          prescribedKitCount:
+            isWeightLoss && action === "approve"
+              ? Number(prescribedKitCount) || undefined
+              : undefined,
         }),
       })
       const result = await res.json()
@@ -425,6 +446,7 @@ export function AdminIntakeDetailView({
                       <WeightLossChargeHighlight
                         detail={detail}
                         prescribedDoseId={prescribedDoseId || undefined}
+                        prescribedKitCount={Number(prescribedKitCount) || undefined}
                         variant="full"
                       />
                     ) : null}
@@ -729,45 +751,84 @@ export function AdminIntakeDetailView({
                         <Alert className="border-amber-500/60 bg-amber-50 text-amber-950 dark:bg-amber-950/30 dark:text-amber-50">
                           <AlertDescription className="space-y-1 text-sm">
                             <p className="font-semibold">
-                              Patient requested: {formatWeightLossDoseLabel(patientRequestedDose)}
+                              Patient requested: {formatWeightLossDoseLabel(patientRequestedDose)} ·{" "}
+                              {formatWeightLossSupplyFromKitCount(patientRequestedKits)}
                             </p>
                             <p className="text-xs opacity-90">
                               {glpNaive
-                                ? "Intake suggests little or no prior GLP-1 experience — consider starting at the lowest titration dose unless clinically inappropriate."
-                                : "You may prescribe a different weekly dose below; Rx strength, kit, and pharmacy charge will follow your selection."}
+                                ? "Intake suggests little or no prior GLP-1 experience — consider starter dose and shorter supply unless clinically inappropriate."
+                                : "You may prescribe a different weekly dose and supply length below; Rx, kit count, and pharmacy charge will follow your selection."}
                             </p>
                           </AlertDescription>
                         </Alert>
                       ) : null}
                       {isWeightLoss && weightLossDoses.length > 0 ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="prescribedDose">Prescribe weekly dose</Label>
-                          <Select
-                            value={prescribedDoseId}
-                            onValueChange={(value) => applyPrescribedDose(value)}
-                          >
-                            <SelectTrigger id="prescribedDose" className="w-full">
-                              <SelectValue placeholder="Select dose" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {weightLossDoses.map((dose) => {
-                                const doseCharge = getWeightLossChargeSummary(detail, dose.id)
-                                return (
-                                  <SelectItem key={dose.id} value={dose.id}>
-                                    {formatWeightLossDoseLabel(dose)}
-                                    {doseCharge ? ` · ${doseCharge.chargeLabel}` : ""}
-                                    {patientRequestedDose?.id === dose.id ? " (patient request)" : ""}
-                                  </SelectItem>
-                                )
-                              })}
-                            </SelectContent>
-                          </Select>
-                          {patientRequestedDose &&
-                          prescribedDoseId &&
-                          prescribedDoseId !== patientRequestedDose.id ? (
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="prescribedDose">Prescribe weekly dose</Label>
+                            <Select
+                              value={prescribedDoseId}
+                              onValueChange={(value) =>
+                                applyPrescribedDose(value, Number(prescribedKitCount) || 1)
+                              }
+                            >
+                              <SelectTrigger id="prescribedDose" className="w-full">
+                                <SelectValue placeholder="Select dose" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {weightLossDoses.map((dose) => {
+                                  const doseCharge = getWeightLossChargeSummary(
+                                    detail,
+                                    dose.id,
+                                    Number(prescribedKitCount) || patientRequestedKits
+                                  )
+                                  return (
+                                    <SelectItem key={dose.id} value={dose.id}>
+                                      {formatWeightLossDoseLabel(dose)}
+                                      {doseCharge ? ` · ${doseCharge.chargeLabel}` : ""}
+                                      {patientRequestedDose?.id === dose.id
+                                        ? " (patient request)"
+                                        : ""}
+                                    </SelectItem>
+                                  )
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="prescribedKits">Prescribe supply length</Label>
+                            <Select
+                              value={prescribedKitCount}
+                              onValueChange={applyPrescribedKits}
+                            >
+                              <SelectTrigger id="prescribedKits" className="w-full">
+                                <SelectValue placeholder="Select supply" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3].map((kits) => {
+                                  const charge = getWeightLossChargeSummary(
+                                    detail,
+                                    prescribedDoseId || patientRequestedDose?.id,
+                                    kits
+                                  )
+                                  return (
+                                    <SelectItem key={kits} value={String(kits)}>
+                                      {formatWeightLossSupplyFromKitCount(kits)}
+                                      {charge ? ` · ${charge.chargeLabel}` : ""}
+                                      {kits === patientRequestedKits ? " (patient request)" : ""}
+                                    </SelectItem>
+                                  )
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {(patientRequestedDose &&
+                            prescribedDoseId &&
+                            prescribedDoseId !== patientRequestedDose.id) ||
+                          Number(prescribedKitCount) !== patientRequestedKits ? (
                             <p className="text-xs text-amber-800 dark:text-amber-200">
                               Differing from patient request — kit pricing and Rx will use your prescribed
-                              dose.
+                              dose and supply length.
                             </p>
                           ) : null}
                         </div>
