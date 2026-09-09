@@ -59,10 +59,25 @@ export default function DoctorIntakesPage() {
     loadIntakes(statusFilter)
   }, [loadIntakes, statusFilter])
 
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadIntakes(statusFilter)
+      }
+    }
+    const onFocus = () => loadIntakes(statusFilter)
+    document.addEventListener("visibilitychange", onVisible)
+    window.addEventListener("focus", onFocus)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible)
+      window.removeEventListener("focus", onFocus)
+    }
+  }, [loadIntakes, statusFilter])
+
   return (
     <DoctorShell
       title="Clinical Intakes"
-      description={`Pending and completed reviews for ${PRIMARY_PHYSICIAN.name}`}
+      description={`Pending and completed reviews for ${PRIMARY_PHYSICIAN.name}. Live from the shared database — same on every computer.`}
     >
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
@@ -92,8 +107,25 @@ export default function DoctorIntakesPage() {
         <p className="text-sm text-muted-foreground">Loading intakes…</p>
       ) : intakes.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No intakes in this view.
+          <CardContent className="py-12 text-center text-muted-foreground space-y-2">
+            <p>
+              {statusFilter === "pending"
+                ? "No pending intakes right now."
+                : "No intakes in this view."}
+            </p>
+            {statusFilter === "pending" ? (
+              <p className="text-sm">
+                Approved patients move to{" "}
+                <button
+                  type="button"
+                  className="text-primary underline"
+                  onClick={() => setStatusFilter("approved")}
+                >
+                  Approved / in progress
+                </button>
+                .
+              </p>
+            ) : null}
           </CardContent>
         </Card>
       ) : (

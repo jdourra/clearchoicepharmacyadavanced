@@ -83,10 +83,25 @@ export default function AdminIntakesPage() {
     loadIntakes(statusFilter)
   }, [loadIntakes, statusFilter])
 
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadIntakes(statusFilter)
+      }
+    }
+    const onFocus = () => loadIntakes(statusFilter)
+    document.addEventListener("visibilitychange", onVisible)
+    window.addEventListener("focus", onFocus)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible)
+      window.removeEventListener("focus", onFocus)
+    }
+  }, [loadIntakes, statusFilter])
+
   return (
     <AdminShell
       title="Clinical Intakes"
-      description={`Reviews for ${PRIMARY_PHYSICIAN.name} and the Clear Choice clinical team`}
+      description={`Live from the shared database (same for every computer/IP). Pending = still needs doctor review. Approved patients move to “Awaiting payment” or “Approved / in progress”.`}
     >
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
@@ -130,7 +145,7 @@ export default function AdminIntakesPage() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             {statusFilter === "pending"
-              ? `No pending intakes. New submissions will appear here for ${PRIMARY_PHYSICIAN.name}'s review.`
+              ? `No pending intakes. Click Refresh, or check “Awaiting payment” / “Approved / in progress” for patients ${PRIMARY_PHYSICIAN.name} already approved.`
               : statusFilter === "awaiting_payment"
                 ? "No intakes awaiting pharmacy payment. Approved GLP patients waiting to pay will appear here."
                 : statusFilter === "awaiting_shipment"

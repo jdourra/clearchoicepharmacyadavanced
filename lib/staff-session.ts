@@ -48,5 +48,12 @@ export function staffAuthFetch(url: string, init?: RequestInit): Promise<Respons
   if (sessionId) {
     headers.set("Authorization", `Bearer ${sessionId}`)
   }
-  return fetch(url, { ...init, headers, credentials: "include" })
+  // Always bypass browser HTTP cache so doctor/admin see the same live DB state
+  // regardless of computer or IP.
+  return fetch(url, {
+    ...init,
+    headers,
+    credentials: "include",
+    cache: "no-store",
+  })
 }
