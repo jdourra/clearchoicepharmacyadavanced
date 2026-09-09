@@ -25,6 +25,8 @@ import {
   isLikelyGlpNaive,
   listWeightLossDosesForProgram,
   resolvePatientRequestedBillingKitCount,
+  resolveWeightLossBillingKitCount,
+  resolveWeightLossDoseIdFromDetail,
   suggestWeightLossRxQuantity,
   weightLossDrugName,
 } from "@/lib/weight-loss-dose-review"
@@ -214,14 +216,20 @@ export function AdminIntakeDetailView({
     ? getPatientRequestedWeightLossDose(detail)
     : undefined
   const weightLossDoses = isWeightLoss ? listWeightLossDosesForProgram(weightLossProgramId) : []
+  const currentPrescribedDoseId = isWeightLoss
+    ? resolveWeightLossDoseIdFromDetail(detail)
+    : ""
   const [prescribedDoseId, setPrescribedDoseId] = useState(
-    patientRequestedDose?.id ?? weightLossDoses[0]?.id ?? ""
+    currentPrescribedDoseId || patientRequestedDose?.id || weightLossDoses[0]?.id || ""
   )
   const patientRequestedKits = isWeightLoss
     ? resolvePatientRequestedBillingKitCount(detail)
     : 1
+  const currentPrescribedKits = isWeightLoss
+    ? resolveWeightLossBillingKitCount(detail)
+    : 1
   const [prescribedKitCount, setPrescribedKitCount] = useState(
-    String(Math.min(3, Math.max(1, patientRequestedKits)))
+    String(Math.min(3, Math.max(1, currentPrescribedKits || patientRequestedKits)))
   )
   const glpNaive = isWeightLoss && isLikelyGlpNaive(detail)
 

@@ -16,6 +16,7 @@ import {
 } from "@/lib/telehealth/intake-registry"
 import {
   getWeightLossChargeSummary,
+  resolveWeightLossBillingKitCount,
   resolveWeightLossDoseIdFromDetail,
 } from "@/lib/weight-loss-dose-review"
 
@@ -39,7 +40,8 @@ function tableForService(serviceType: string): string | null {
 function weightLossAmountLabel(detail: Record<string, unknown>): string | null {
   const summary = getWeightLossChargeSummary(
     detail,
-    resolveWeightLossDoseIdFromDetail(detail)
+    resolveWeightLossDoseIdFromDetail(detail),
+    resolveWeightLossBillingKitCount(detail)
   )
   return summary?.chargeLabel ?? null
 }

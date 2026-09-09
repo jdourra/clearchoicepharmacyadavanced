@@ -6,8 +6,13 @@ import {
   getWeightLossChargeSummary,
   isLikelyGlpNaive,
   resolvePatientRequestedBillingKitCount,
+  resolveWeightLossBillingKitCount,
+  resolveWeightLossDoseIdFromDetail,
 } from "@/lib/weight-loss-dose-review"
-import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
+import {
+  formatWeightLossSupplyFromKitCount,
+  getWeightLossDose,
+} from "@/lib/weight-loss-catalog"
 
 type WeightLossChargeHighlightProps = {
   detail: Record<string, unknown>
@@ -25,29 +30,30 @@ export function WeightLossChargeHighlight({
   prescribedKitCount,
   variant = "full",
 }: WeightLossChargeHighlightProps) {
+  const programId = String(detail.selected_program ?? "")
   const patientDose = getPatientRequestedWeightLossDose(detail)
   const patientKits = resolvePatientRequestedBillingKitCount(detail)
   const patientQuote = getWeightLossChargeSummary(detail, patientDose?.id, patientKits)
-  const chargeKits =
+
+  // Current / to-collect values: live doctor selection if provided, else intake record
+  // (selected_dose_tier + billing_kit_count after clinician approve).
+  const currentDoseId =
+    (prescribedDoseId && prescribedDoseId.trim()) ||
+    resolveWeightLossDoseIdFromDetail(detail)
+  const currentKits =
     Number.isFinite(Number(prescribedKitCount)) && Number(prescribedKitCount) > 0
-      ? Number(prescribedKitCount)
-      : patientKits
-  const chargeQuote = getWeightLossChargeSummary(
-    detail,
-    prescribedDoseId || patientDose?.id,
-    chargeKits
-  )
+      ? Math.floor(Number(prescribedKitCount))
+      : resolveWeightLossBillingKitCount(detail)
+  const currentDose =
+    getWeightLossDose(programId, currentDoseId) ??
+    patientDose ??
+    undefined
+  const chargeQuote = getWeightLossChargeSummary(detail, currentDoseId, currentKits)
   if (!patientQuote && !chargeQuote) return null
 
   const quote = chargeQuote ?? patientQuote!
-  const doseChanged =
-    Boolean(prescribedDoseId) &&
-    Boolean(patientDose) &&
-    prescribedDoseId !== patientDose?.id
-  const supplyChanged =
-    Number.isFinite(Number(prescribedKitCount)) &&
-    Number(prescribedKitCount) > 0 &&
-    Number(prescribedKitCount) !== patientKits
+  const doseChanged = Boolean(patientDose && currentDose && patientDose.id !== currentDose.id)
+  const supplyChanged = patientKits !== currentKits
   const glpNaive = isLikelyGlpNaive(detail)
   const pad = variant === "compact" ? "px-3 py-2" : "px-3 py-3"
 
@@ -69,10 +75,22 @@ export function WeightLossChargeHighlight({
         </p>
       </div>
 
+      {(doseChanged || supplyChanged) && currentDose ? (
+        <div className="rounded border border-sky-600/40 bg-sky-50/80 dark:bg-sky-950/30 px-3 py-2">
+          <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
+            Clinician prescribed
+          </p>
+          <p className="font-semibold text-sm">
+            {formatWeightLossDoseLabel(currentDose)} ·{" "}
+            {formatWeightLossSupplyFromKitCount(currentKits)}
+          </p>
+        </div>
+      ) : null}
+
       <div className="rounded border border-amber-600/40 bg-white/70 dark:bg-black/20 px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
           {doseChanged || supplyChanged
-            ? "Charge for prescribed dose / supply"
+            ? "Amount to collect (prescribed)"
             : "Amount to collect at pharmacy"}
         </p>
         <p className="text-2xl font-bold tabular-nums tracking-tight">{quote.chargeLabel}</p>

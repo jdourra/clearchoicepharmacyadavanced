@@ -10,8 +10,14 @@ import {
   formatWeightLossDoseLabel,
   getPatientRequestedWeightLossDose,
   getWeightLossChargeSummary,
+  resolvePatientRequestedBillingKitCount,
+  resolveWeightLossBillingKitCount,
 } from "@/lib/weight-loss-dose-review"
-import { getWeightLossDose, getWeightLossProgram } from "@/lib/weight-loss-catalog"
+import {
+  formatWeightLossSupplyFromKitCount,
+  getWeightLossDose,
+  getWeightLossProgram,
+} from "@/lib/weight-loss-catalog"
 
 const HIDDEN_KEYS = new Set([
   "id_front_key",
@@ -364,20 +370,28 @@ function formatTreatment(serviceType: AdminIntakeServiceType, detail: Record<str
       const currentId = String(detail.selected_dose_tier ?? "").trim()
       const current =
         (currentId ? getWeightLossDose(programId ?? "", currentId) : undefined) ?? requested
-      const charge = getWeightLossChargeSummary(detail, current?.id)
+      const currentKits = resolveWeightLossBillingKitCount(detail)
+      const requestedKits = resolvePatientRequestedBillingKitCount(detail)
+      const charge = getWeightLossChargeSummary(detail, current?.id, currentKits)
       const doseText = current
         ? requested && requested.id !== current.id
           ? `Prescribed: ${formatWeightLossDoseLabel(current)} (patient asked ${formatWeightLossDoseLabel(requested)})`
           : `Dose: ${formatWeightLossDoseLabel(current)}`
         : null
+      const supplyText =
+        requestedKits !== currentKits
+          ? `${formatWeightLossSupplyFromKitCount(currentKits)} (patient asked ${formatWeightLossSupplyFromKitCount(requestedKits)})`
+          : charge?.timeframeLabel ?? null
       return joinLine([
         programName,
         doseText,
-        charge
-          ? `${charge.timeframeLabel} · Collect ${charge.chargeLabel}`
-          : pick(detail, "selected_billing_plan")
-            ? `Plan: ${pick(detail, "selected_billing_plan")}`
-            : null,
+        supplyText && charge
+          ? `${supplyText} · Collect ${charge.chargeLabel}`
+          : charge
+            ? `${charge.timeframeLabel} · Collect ${charge.chargeLabel}`
+            : pick(detail, "selected_billing_plan")
+              ? `Plan: ${pick(detail, "selected_billing_plan")}`
+              : null,
       ])
     }
     case "trt":
