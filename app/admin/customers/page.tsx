@@ -24,6 +24,7 @@ import {
   Send,
   Loader2,
   MessageCircle,
+  Star,
 } from "lucide-react"
 import { AdminHeader } from "@/components/admin-header"
 import Loading from "./loading"
@@ -38,6 +39,14 @@ type FollowupCandidate = {
   email: string
   name: string
   createdAt: string
+}
+
+type ReviewCandidate = {
+  id: string
+  email: string
+  name: string
+  fulfilledAt: string
+  source: string
 }
 
 type CustomerSort = "joined_newest" | "joined_oldest" | "spent_high" | "spent_low" | "name_az"
@@ -76,6 +85,12 @@ export default function AdminCustomersPage() {
   const [sendingFollowup, setSendingFollowup] = useState(false)
   const [sendingPatientId, setSendingPatientId] = useState<string | null>(null)
   const [followupMessage, setFollowupMessage] = useState("")
+  const [reviewCandidates, setReviewCandidates] = useState<ReviewCandidate[]>([])
+  const [reviewLoading, setReviewLoading] = useState(true)
+  const [sendingReview, setSendingReview] = useState(false)
+  const [sendingReviewPatientId, setSendingReviewPatientId] = useState<string | null>(null)
+  const [reviewMessage, setReviewMessage] = useState("")
+  const [reviewUrlConfigured, setReviewUrlConfigured] = useState(true)
 
   const loadFollowupCandidates = useCallback(async () => {
     setFollowupLoading(true)
@@ -92,10 +107,27 @@ export default function AdminCustomersPage() {
     }
   }, [])
 
+  const loadReviewCandidates = useCallback(async () => {
+    setReviewLoading(true)
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/google-review")
+      if (res.ok) {
+        const data = await res.json()
+        setReviewCandidates(data.candidates || [])
+        setReviewUrlConfigured(Boolean(data.reviewUrlConfigured))
+      }
+    } catch {
+      setReviewCandidates([])
+    } finally {
+      setReviewLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadData()
     loadFollowupCandidates()
-  }, [router, loadFollowupCandidates])
+    loadReviewCandidates()
+  }, [router, loadFollowupCandidates, loadReviewCandidates])
 
   useEffect(() => {
     const q = searchTerm.trim().toLowerCase()
@@ -194,6 +226,73 @@ export default function AdminCustomersPage() {
     }
   }
 
+  const handleSendReviewBatch = async () => {
+    if (reviewCandidates.length === 0) return
+    if (!reviewUrlConfigured) {
+      alert(
+        "Set GOOGLE_REVIEW_URL in Vercel to your Google Business Profile “Ask for reviews” link, then redeploy."
+      )
+      return
+    }
+    const confirmed = window.confirm(
+      `Send a Google review request to ${reviewCandidates.length} patient(s) who completed a paid order/shipment? Each person will only receive this once.`
+    )
+    if (!confirmed) return
+
+    setSendingReview(true)
+    setReviewMessage("")
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/google-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || "Send failed")
+      }
+      setReviewMessage(
+        `Sent ${data.sent} of ${data.eligible} review request(s).${data.failed ? ` ${data.failed} failed — check SES / GOOGLE_REVIEW_URL.` : ""}`
+      )
+      await loadReviewCandidates()
+    } catch (err) {
+      setReviewMessage(err instanceof Error ? err.message : "Failed to send review requests")
+    } finally {
+      setSendingReview(false)
+    }
+  }
+
+  const handleSendReviewOne = async (patientId: string, email: string) => {
+    if (!reviewUrlConfigured) {
+      alert(
+        "Set GOOGLE_REVIEW_URL in Vercel to your Google Business Profile “Ask for reviews” link, then redeploy."
+      )
+      return
+    }
+    const confirmed = window.confirm(`Send Google review request to ${email}?`)
+    if (!confirmed) return
+
+    setSendingReviewPatientId(patientId)
+    try {
+      const res = await staffAuthFetch("/api/admin/customers/google-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientIds: [patientId] }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.failed > 0) {
+        const err = data.results?.[0]?.error || data.error || "Send failed"
+        throw new Error(err)
+      }
+      setReviewMessage(`Google review request sent to ${email}.`)
+      await loadReviewCandidates()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to send email")
+    } finally {
+      setSendingReviewPatientId(null)
+    }
+  }
+
   if (loading) {
     return <Loading />
   }
@@ -265,6 +364,99 @@ export default function AdminCustomersPage() {
                     </ul>
                   ) : (
                     <p className="text-sm text-muted-foreground">No patients are due for a check-in right now.</p>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="mb-6 border-amber-200/60 bg-amber-50/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-amber-600" />
+                Google review requests
+              </CardTitle>
+              <CardDescription>
+                Email patients who completed a paid shipment (catalog order or clinical intake) and ask for a Google
+                review. Each patient is emailed at most once. Eligible 3–90 days after fulfillment.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!reviewUrlConfigured ? (
+                <p className="text-sm text-amber-900 rounded-lg border border-amber-200 bg-background px-4 py-3">
+                  Set <code className="text-xs">GOOGLE_REVIEW_URL</code> in Vercel to your Google Business Profile
+                  “Ask for reviews” link, then redeploy. Until then, review emails cannot be sent.
+                </p>
+              ) : null}
+              {reviewLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading eligible patients...
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Badge variant="secondary" className="text-sm px-3 py-1">
+                      {reviewCandidates.length} eligible
+                    </Badge>
+                    <Button
+                      onClick={handleSendReviewBatch}
+                      disabled={
+                        reviewCandidates.length === 0 || sendingReview || !reviewUrlConfigured
+                      }
+                    >
+                      {sendingReview ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Send review request to all eligible
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {reviewMessage ? (
+                    <p className="text-sm text-foreground rounded-lg border bg-background px-4 py-3">
+                      {reviewMessage}
+                    </p>
+                  ) : null}
+                  {reviewCandidates.length > 0 ? (
+                    <ul className="text-sm space-y-2 max-h-48 overflow-y-auto">
+                      {reviewCandidates.map((c) => (
+                        <li
+                          key={c.id}
+                          className="flex flex-wrap items-center justify-between gap-2 text-muted-foreground"
+                        >
+                          <span>
+                            {c.name || c.email} · {c.email}
+                          </span>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span>{new Date(c.fulfilledAt).toLocaleDateString()}</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={
+                                sendingReviewPatientId === c.id || !reviewUrlConfigured
+                              }
+                              onClick={() => handleSendReviewOne(c.id, c.email)}
+                            >
+                              {sendingReviewPatientId === c.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                "Send"
+                              )}
+                            </Button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No fulfilled patients are due for a review request right now.
+                    </p>
                   )}
                 </>
               )}
@@ -351,6 +543,29 @@ export default function AdminCustomersPage() {
                           <p className="text-sm text-muted-foreground">Joined</p>
                           <p className="text-sm">{new Date(customer.created_at).toLocaleDateString()}</p>
                         </div>
+                        {reviewCandidates.some((c) => c.id === customer.id) ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={
+                              sendingReviewPatientId === customer.id || !reviewUrlConfigured
+                            }
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleSendReviewOne(customer.id, customer.email)
+                            }}
+                          >
+                            {sendingReviewPatientId === customer.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Star className="h-3 w-3 mr-1" />
+                                Review ask
+                              </>
+                            )}
+                          </Button>
+                        ) : null}
                         {customer.orders.length === 0 ? (
                           <Button
                             variant="outline"
