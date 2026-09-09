@@ -7,6 +7,7 @@ import {
 import {
   ONE_MONTH_SUPPLY_DAYS,
   REFILL_REMINDER_LEAD_DAYS,
+  THREE_MONTH_SUPPLY_DAYS,
   TWO_MONTH_SUPPLY_DAYS,
 } from "@/lib/supply-reminder-schedule"
 
@@ -22,7 +23,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       leadDaysBeforeDue: REFILL_REMINDER_LEAD_DAYS,
       oneMonthReminderAfterDays: ONE_MONTH_SUPPLY_DAYS - REFILL_REMINDER_LEAD_DAYS,
-      twoMonthReminderAfterDays: (TWO_MONTH_SUPPLY_DAYS - REFILL_REMINDER_LEAD_DAYS) / 7,
+      twoMonthReminderAfterWeeks: (TWO_MONTH_SUPPLY_DAYS - REFILL_REMINDER_LEAD_DAYS) / 7,
+      threeMonthReminderAfterWeeks: (THREE_MONTH_SUPPLY_DAYS - REFILL_REMINDER_LEAD_DAYS) / 7,
       eligibleCount: candidates.length,
       candidates: candidates.map((c) => ({
         sourceType: c.sourceType,
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
       ? body.sourceIds.map(String).filter(Boolean)
       : undefined
     const dryRun = Boolean(body.dryRun)
-    const relaxTiming = Boolean(body.relaxTiming) || (sourceIds?.length === 1)
+    const relaxTiming = Boolean(body.relaxTiming) || sourceIds?.length === 1
 
     const result = await sendRefillReminderBatch({ sourceIds, dryRun, relaxTiming })
 

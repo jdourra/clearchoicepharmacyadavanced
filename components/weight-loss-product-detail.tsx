@@ -135,7 +135,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             <p className="text-lg text-muted-foreground mt-2">{program.subtitle}</p>
             <p className="mt-4">
               <span className="text-3xl font-bold text-primary">from ${fromPrice}</span>
-              <span className="text-muted-foreground ml-1">/mo on 60-day starter kits</span>
+              <span className="text-muted-foreground ml-1">/mo on 90-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               Monthly starter kits from ${startingPrice}/mo · intake review, compounding &amp; shipping included
@@ -216,7 +216,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                           <RadioGroupItem value={option.plan} id={`plan-${option.plan}`} />
                           <div>
                             <Label htmlFor={`plan-${option.plan}`} className="font-medium cursor-pointer">
-                              {option.plan === "monthly" ? "Monthly billing" : "60-day (2-kit) supply"}
+                              {option.plan === "monthly" ? "Monthly billing" : "90-day (3-kit) supply"}
                             </Label>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {formatKitBillingLabel(option.plan)}
@@ -261,7 +261,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
-                      Kit ${holdQuote.totalBilled}. 60-day supply waives the live-visit add-on. Payment collected at the
+                      Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on. Payment collected at the
                       pharmacy after approval.
                     </p>
                   )}

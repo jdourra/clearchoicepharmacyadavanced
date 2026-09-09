@@ -1,8 +1,12 @@
 import {
   formatWeightLossBillingPlanTitle,
+  formatWeightLossRxQuantity,
+  formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
   getWeightLossKitQuote,
   getWeightLossProgram,
+  resolveBillingKitCountForPlan,
+  WEIGHT_LOSS_MULTI_KIT_COUNT,
   type WeightLossBillingPlan,
   type WeightLossDoseId,
   type WeightLossDoseOption,
@@ -87,14 +91,42 @@ export function resolveWeightLossBillingPlan(
   return detail.selected_billing_plan === "quarterly" ? "quarterly" : "monthly"
 }
 
-export function formatWeightLossBillingTimeframe(plan: WeightLossBillingPlan): string {
-  return plan === "monthly" ? "1-month (30-day kit)" : "60-day (2-kit / quarterly price)"
+/**
+ * Kits purchased on this intake.
+ * Prefer persisted billing_kit_count (audit snapshot). Legacy quarterly rows without
+ * a snapshot are treated as 2-kit (prior plan). New quarterly uses current catalog.
+ */
+export function resolveWeightLossBillingKitCount(detail: Record<string, unknown>): number {
+  const raw = detail.billing_kit_count
+  const n = typeof raw === "number" ? raw : Number(raw)
+  if (Number.isFinite(n) && n > 0) return Math.floor(n)
+
+  const concerns = String(detail.additional_concerns ?? "")
+  const tagged = concerns.match(/\[billing_kit_count:(\d+)\]/i)
+  if (tagged?.[1]) {
+    const fromTag = Number(tagged[1])
+    if (Number.isFinite(fromTag) && fromTag > 0) return Math.floor(fromTag)
+  }
+
+  const plan = resolveWeightLossBillingPlan(detail)
+  if (plan === "monthly") return 1
+  // Pre-column historical quarterly intakes were sold as 2-kit / 60-day.
+  return 2
+}
+
+export function formatWeightLossBillingTimeframe(
+  plan: WeightLossBillingPlan,
+  kits?: number
+): string {
+  if (plan === "monthly") return "1-month (30-day kit)"
+  return formatWeightLossSupplyFromKitCount(kits ?? WEIGHT_LOSS_MULTI_KIT_COUNT)
 }
 
 export type WeightLossChargeSummary = {
   programId: string
   programName: string
   billingPlan: WeightLossBillingPlan
+  kitsIncluded: number
   timeframeLabel: string
   billingTitle: string
   dose: WeightLossDoseOption
@@ -106,7 +138,7 @@ export type WeightLossChargeSummary = {
   liveVisitNote: string | null
 }
 
-/** Charge amount for a specific dose + the intake billing plan. */
+/** Charge amount for a specific dose + the intake billing plan / kit snapshot. */
 export function getWeightLossChargeSummary(
   detail: Record<string, unknown>,
   doseId?: string
@@ -116,24 +148,32 @@ export function getWeightLossChargeSummary(
   if (!program) return null
 
   const billingPlan = resolveWeightLossBillingPlan(detail)
+  const kitsIncluded =
+    billingPlan === "monthly" ? 1 : resolveWeightLossBillingKitCount(detail)
   const resolvedDoseId = doseId?.trim() || resolveWeightLossDoseIdFromDetail(detail)
   const dose = getWeightLossDose(programId, resolvedDoseId)
   if (!dose) return null
 
-  const quote = getWeightLossKitQuote(program, dose.id, billingPlan)
+  const quote = getWeightLossKitQuote(program, dose.id, billingPlan, {
+    kitsIncluded,
+  })
   if (!quote) return null
 
   const kitBreakdownLabel =
-    billingPlan === "monthly"
+    kitsIncluded <= 1
       ? `1 × $${quote.kitPrice.toFixed(2)} (30-day kit)`
-      : `2 × $${quote.kitPrice.toFixed(2)} (30-day kits) = $${quote.totalBilled.toFixed(2)}`
+      : `${kitsIncluded} × $${quote.kitPrice.toFixed(2)} (30-day kits) = $${quote.totalBilled.toFixed(2)}`
 
   return {
     programId,
     programName: program.name,
     billingPlan,
-    timeframeLabel: formatWeightLossBillingTimeframe(billingPlan),
-    billingTitle: formatWeightLossBillingPlanTitle(billingPlan),
+    kitsIncluded,
+    timeframeLabel: formatWeightLossBillingTimeframe(billingPlan, kitsIncluded),
+    billingTitle:
+      billingPlan === "monthly"
+        ? formatWeightLossBillingPlanTitle(billingPlan)
+        : formatWeightLossSupplyFromKitCount(kitsIncluded),
     dose,
     quote,
     chargeCents: Math.round(quote.totalBilled * 100),
@@ -143,7 +183,17 @@ export function getWeightLossChargeSummary(
       billingPlan === "monthly" && quote.liveVisitAddon > 0
         ? `Live visit add-on +$${quote.liveVisitAddon.toFixed(2)} only if clinician requires a live visit (not in default pharmacy charge).`
         : billingPlan === "quarterly"
-          ? "Live visit add-on waived on 60-day (2-kit) plan."
+          ? `Live visit add-on waived on ${formatWeightLossSupplyFromKitCount(kitsIncluded)}.`
           : null,
   }
+}
+
+export function suggestWeightLossRxQuantity(detail: Record<string, unknown>): string {
+  return formatWeightLossRxQuantity(resolveWeightLossBillingKitCount(detail))
+}
+
+export function snapshotBillingKitCountForNewIntake(
+  billingPlan: WeightLossBillingPlan
+): number {
+  return resolveBillingKitCountForPlan(billingPlan)
 }

@@ -6,8 +6,11 @@ export type RefillReminderServiceType = "order" | "weight_loss" | "mens_health" 
 /** Four-week month used for 1-month kit cycles (reminder at day 21). */
 export const ONE_MONTH_SUPPLY_DAYS = 28
 
-/** Eight-week cycle for weight-loss 60-day / 2-kit supply (reminder at week 7). */
+/** Eight-week cycle for legacy weight-loss 60-day / 2-kit supply (reminder at week 7). */
 export const TWO_MONTH_SUPPLY_DAYS = 56
+
+/** Twelve-week cycle for weight-loss 90-day / 3-kit supply (reminder at week 11). */
+export const THREE_MONTH_SUPPLY_DAYS = 84
 
 const DEFAULT_CASH_PAY_DAYS_SUPPLY = 30
 
@@ -18,12 +21,21 @@ const DEFAULT_CASH_PAY_DAYS_SUPPLY = 30
 export function getSupplyPeriodDays(params: {
   serviceType: RefillReminderServiceType
   billingPlan?: string | null
+  /** Snapshot kits from weight_loss_intake.billing_kit_count when available. */
+  billingKitCount?: number | null
   /** Cash-pay: days_supply × quantity (already computed). */
   orderSupplyDays?: number | null
 }): number {
   const plan = String(params.billingPlan || "monthly").toLowerCase()
 
   if (params.serviceType === "weight_loss" && plan === "quarterly") {
+    const kits = Number(params.billingKitCount)
+    if (Number.isFinite(kits) && kits > 0) {
+      if (kits <= 1) return ONE_MONTH_SUPPLY_DAYS
+      if (kits === 2) return TWO_MONTH_SUPPLY_DAYS
+      return THREE_MONTH_SUPPLY_DAYS
+    }
+    // Legacy quarterly without snapshot → 2-kit era.
     return TWO_MONTH_SUPPLY_DAYS
   }
 
@@ -40,6 +52,9 @@ export function getReminderDaysAfterFulfillment(supplyPeriodDays: number): numbe
 }
 
 export function formatSupplyLabel(supplyPeriodDays: number): string {
+  if (supplyPeriodDays >= THREE_MONTH_SUPPLY_DAYS) {
+    return "3-month supply"
+  }
   if (supplyPeriodDays >= TWO_MONTH_SUPPLY_DAYS) {
     return "2-month supply"
   }

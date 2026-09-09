@@ -167,14 +167,14 @@ export default function WeightLossPage() {
                   <div className="mt-5 pt-4 border-t space-y-2">
                     <p className="text-3xl font-bold text-primary">
                       from {formatUsd(range.fromQuarterly)}
-                      <span className="text-base font-normal text-muted-foreground">/mo · 60-day</span>
+                      <span className="text-base font-normal text-muted-foreground">/mo · 90-day</span>
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by weekly dose
                     </p>
                     {savePct > 0 && (
                       <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                        Save ~{savePct}% vs monthly on 60-day starter kits
+                        Save ~{savePct}% vs monthly on 90-day starter kits
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground">

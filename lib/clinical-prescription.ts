@@ -8,6 +8,7 @@ import { formatPhoneDisplay } from "@/lib/phone"
 import {
   formatWeightLossDoseStrength,
   resolveWeightLossDoseIdFromDetail,
+  suggestWeightLossRxQuantity,
   weightLossDrugName,
 } from "@/lib/weight-loss-dose-review"
 
@@ -71,8 +72,8 @@ export function suggestPrescriptionFromIntake(
       strength,
       directions:
         "Inject subcutaneously once weekly as directed by prescribing physician. Use each vial as a 30-day supply (4 weekly injections).",
-      quantity: billing === "quarterly" ? "2 kits (60-day supply)" : "1 kit (30-day supply)",
-      refills: billing === "quarterly" ? 1 : 0,
+      quantity: suggestWeightLossRxQuantity(detail),
+      refills: 0,
     }
   }
 

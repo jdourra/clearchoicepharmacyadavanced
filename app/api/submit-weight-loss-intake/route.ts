@@ -10,7 +10,8 @@ import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
-import { getWeightLossDose } from "@/lib/weight-loss-catalog"
+import { getWeightLossDose, formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
+import { snapshotBillingKitCountForNewIntake } from "@/lib/weight-loss-dose-review"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -158,7 +159,7 @@ ${data.medicalHistory.allergies || "None reported"}
 Selected Program:       ${programMap[data.treatmentInfo.selectedProgram] || data.treatmentInfo.selectedProgram}
 Billing Plan:           ${data.treatmentInfo.selectedBillingPlan}
 Vial Strength:          ${data.treatmentInfo.selectedDoseTier}
-Pricing Model:          Vial-strength kit pricing (hold at selected mg; +$25 live visit on monthly if required, waived on 60-day / 2-kit supply)
+Pricing Model:          Vial-strength kit pricing (hold at selected mg; +$25 live visit on monthly if required, waived on 90-day / 3-kit supply)
 Prior GLP Experience:   ${data.treatmentInfo.priorGlpExperience}
 Weight Loss Goals:      ${data.treatmentInfo.weightLossGoals.join(", ") || "Not specified"}
 
@@ -383,6 +384,19 @@ export async function POST(request: NextRequest) {
         getWeightLossDose(data.treatmentInfo.selectedProgram, data.treatmentInfo.selectedDoseTier) ||
         getWeightLossDose(data.treatmentInfo.selectedProgram, "starter")
       const doseTier = resolved?.id || "sema-1mg"
+      const billingPlan =
+        data.treatmentInfo.selectedBillingPlan === "quarterly" ? "quarterly" : "monthly"
+      const billingKitCount = snapshotBillingKitCountForNewIntake(billingPlan)
+      const billingSupplyLabel = formatWeightLossSupplyFromKitCount(billingKitCount)
+
+      await sql(
+        `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_kit_count INTEGER`,
+        []
+      ).catch(() => [])
+      await sql(
+        `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_supply_label TEXT`,
+        []
+      ).catch(() => [])
 
       const { patientId } = await ensurePatientFromIntake({
         email: data.patientInfo.email,
@@ -448,9 +462,41 @@ export async function POST(request: NextRequest) {
           partnerResult.partnerStatus || "queued_for_manual_review",
           patientId,
           paymentStatus,
+          billingKitCount,
+          billingSupplyLabel,
         ]
 
       try {
+        await sql(
+          `INSERT INTO weight_loss_intake (
+            id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
+            height_inches, weight_lbs, bmi, goal_weight_lbs, systolic_bp, diastolic_bp,
+            pregnant_or_breastfeeding, mtc_or_men2_history, pancreatitis_history, type1_diabetes,
+            eating_disorder, on_other_glp,
+            type2_diabetes, hypertension, gallbladder_disease, diabetic_retinopathy, bariatric_surgery,
+            sleep_apnea, cardiovascular_disease, current_medications, allergies,
+            selected_program, selected_billing_plan, selected_dose_tier, prior_glp_experience,
+            weight_loss_goals, comorbidities, additional_concerns,
+            shipping_address, shipping_city, shipping_state, shipping_zip,
+            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status,
+            patient_id, payment_status, billing_kit_count, billing_supply_label
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+            $11, $12, $13, $14, $15, $16,
+            $17, $18, $19, $20, $21, $22,
+            $23, $24, $25, $26, $27, $28, $29, $30, $31,
+            $32, $33, $34, $35, $36::jsonb, $37::jsonb, $38,
+            $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52
+          )`,
+          values
+        )
+      } catch (columnError) {
+        console.warn(
+          "weight_loss_intake insert with billing_kit_count failed; retrying without snapshot columns.",
+          columnError
+        )
+        const fallbackConcerns =
+          `[selected_dose_tier:${doseTier}] [billing_kit_count:${billingKitCount}] ${data.treatmentInfo.additionalConcerns}`.trim()
         await sql(
           `INSERT INTO weight_loss_intake (
             id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
@@ -471,35 +517,6 @@ export async function POST(request: NextRequest) {
             $23, $24, $25, $26, $27, $28, $29, $30, $31,
             $32, $33, $34, $35, $36::jsonb, $37::jsonb, $38,
             $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50
-          )`,
-          values
-        )
-      } catch (columnError) {
-        console.warn(
-          "weight_loss_intake insert with patient_id/payment_status/selected_dose_tier failed; retrying legacy columns. Run scripts/031 and scripts/034.",
-          columnError
-        )
-        const fallbackConcerns =
-          `[selected_dose_tier:${doseTier}] ${data.treatmentInfo.additionalConcerns}`.trim()
-        await sql(
-          `INSERT INTO weight_loss_intake (
-            id, first_name, last_name, email, phone, date_of_birth, state, address, city, zip_code,
-            height_inches, weight_lbs, bmi, goal_weight_lbs, systolic_bp, diastolic_bp,
-            pregnant_or_breastfeeding, mtc_or_men2_history, pancreatitis_history, type1_diabetes,
-            eating_disorder, on_other_glp,
-            type2_diabetes, hypertension, gallbladder_disease, diabetic_retinopathy, bariatric_surgery,
-            sleep_apnea, cardiovascular_disease, current_medications, allergies,
-            selected_program, selected_billing_plan, prior_glp_experience,
-            weight_loss_goals, comorbidities, additional_concerns,
-            shipping_address, shipping_city, shipping_state, shipping_zip,
-            status, stripe_payment_intent_id, id_front_key, id_back_key, partner_name, partner_status
-          ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-            $11, $12, $13, $14, $15, $16,
-            $17, $18, $19, $20, $21, $22,
-            $23, $24, $25, $26, $27, $28, $29, $30, $31,
-            $32, $33, $34, $35::jsonb, $36::jsonb, $37,
-            $38, $39, $40, $41, $42, $43, $44, $45, $46, $47
           )`,
           [
             submissionId,
@@ -535,6 +552,7 @@ export async function POST(request: NextRequest) {
             data.medicalHistory.allergies,
             data.treatmentInfo.selectedProgram,
             data.treatmentInfo.selectedBillingPlan,
+            doseTier,
             data.treatmentInfo.priorGlpExperience,
             JSON.stringify(data.treatmentInfo.weightLossGoals),
             JSON.stringify(data.treatmentInfo.comorbidities),
@@ -549,12 +567,10 @@ export async function POST(request: NextRequest) {
             data.identity.idBackKey,
             partnerResult.partnerName,
             partnerResult.partnerStatus || "queued_for_manual_review",
+            patientId,
+            paymentStatus,
           ]
         )
-        await sql(
-          `UPDATE weight_loss_intake SET patient_id = $1, payment_status = $2 WHERE id = $3`,
-          [patientId, paymentStatus, submissionId]
-        ).catch(() => {})
       }
     } catch (dbError) {
       console.error("Failed to persist weight loss intake:", dbError)

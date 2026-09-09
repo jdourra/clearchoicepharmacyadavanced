@@ -10,16 +10,16 @@ export const WEIGHT_LOSS_KIT_SUPPLY = "30-day kit · 4 weekly injections"
 export const WEIGHT_LOSS_KIT_INJECTIONS_NOTE =
   "Every kit includes 4 once-weekly injections at your selected weekly amount. The price shown is always for the full 30-day kit — not a weekly price and not per injection."
 
-/** Charged only when the provider requires a live visit (waived on 60-day / 2-kit billing). */
+/** Charged only when the provider requires a live visit (waived on multi-kit / quarterly billing). */
 export const WEIGHT_LOSS_LIVE_VISIT_ADDON = 25
 
 export type WeightLossKitQuote = {
   kitPrice: number
-  /** Kit-only total for the selected billing plan (1 kit or 2-kit shipment). */
+  /** Kit-only total for the selected billing plan (1 kit or multi-kit shipment). */
   totalBilled: number
   monthlyEquivalent: number
   kitsIncluded: number
-  /** $25 on monthly if a live visit is required; $0 on multi-kit (60-day) billing. */
+  /** $25 on monthly if a live visit is required; $0 on multi-kit billing. */
   liveVisitAddon: number
   /** Max card authorization: kit total + possible live-visit add-on. */
   authorizationHold: number
@@ -64,10 +64,10 @@ export type WeightLossProgram = {
 }
 
 export const WEIGHT_LOSS_DOSE_PRICING_NOTE =
-  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 60-day (2-kit) supply. Multi-kit shipments stay within typical compounded GLP beyond-use dating."
+  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply."
 
 export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
-  "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with 60-day (2-kit) supply."
+  "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with 90-day (3-kit) supply."
 
 export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
   "Payment is collected at Clear Choice Pharmacy after clinician approval — by card terminal, phone, or cash. No card is charged online during intake."
@@ -82,13 +82,19 @@ export const WEIGHT_LOSS_DOSE_SELECT_HINT =
 
 export const WEIGHT_LOSS_PRICE_PERIOD_BADGE = "Price is per 30-day kit"
 
-/** Multi-kit GLP plan length (2 × 30-day kits = 60 days) to stay within typical compounded BUD. */
-export const WEIGHT_LOSS_MULTI_KIT_COUNT = 2
+/**
+ * Multi-kit GLP plan length (3 × 30-day kits = 90 days).
+ * Historical intakes may still be 2 kits — see billing_kit_count on weight_loss_intake.
+ */
+export const WEIGHT_LOSS_MULTI_KIT_COUNT = 3
+
+/** Prior quarterly plan length (kept for audit / legacy intake quotes). */
+export const WEIGHT_LOSS_LEGACY_MULTI_KIT_COUNT = 2
 
 const QUARTERLY_KITS = WEIGHT_LOSS_MULTI_KIT_COUNT
 
-function quarterlyTotal(kitPrice: number) {
-  return kitPrice * QUARTERLY_KITS
+function quarterlyTotal(kitPrice: number, kits: number = QUARTERLY_KITS) {
+  return kitPrice * kits
 }
 
 function q(monthly: number) {
@@ -217,7 +223,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     supplyLabel: WEIGHT_LOSS_KIT_SUPPLY,
     billingPlans: [
       { plan: "monthly" },
-      { plan: "quarterly", badge: "Best Value · 60-day · Live visit waived" },
+      { plan: "quarterly", badge: "Best Value · 90-day · Live visit waived" },
     ],
     doses: SEMAGLUTIDE_DOSES,
     doseTiers: SEMAGLUTIDE_DOSES,
@@ -236,7 +242,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     supplyLabel: WEIGHT_LOSS_KIT_SUPPLY,
     billingPlans: [
       { plan: "monthly" },
-      { plan: "quarterly", badge: "Best Value · 60-day · Live visit waived" },
+      { plan: "quarterly", badge: "Best Value · 90-day · Live visit waived" },
     ],
     doses: TIRZEPATIDE_DOSES,
     doseTiers: TIRZEPATIDE_DOSES,
@@ -344,7 +350,8 @@ export function isWeightLossDoseTierId(value: string): boolean {
 export function getWeightLossKitQuote(
   program: WeightLossProgram | string,
   doseId: WeightLossDoseId,
-  billingPlan: WeightLossBillingPlan
+  billingPlan: WeightLossBillingPlan,
+  options?: { kitsIncluded?: number }
 ): WeightLossKitQuote | undefined {
   const dose = getWeightLossDose(program, doseId)
   if (!dose) return undefined
@@ -363,12 +370,13 @@ export function getWeightLossKitQuote(
     }
   }
 
-  const totalBilled = quarterlyTotal(dose.quarterlyKitPrice)
+  const kits = Math.max(1, Math.floor(options?.kitsIncluded ?? QUARTERLY_KITS))
+  const totalBilled = quarterlyTotal(dose.quarterlyKitPrice, kits)
   return {
     kitPrice: dose.quarterlyKitPrice,
     totalBilled,
-    monthlyEquivalent: Math.round(totalBilled / QUARTERLY_KITS),
-    kitsIncluded: QUARTERLY_KITS,
+    monthlyEquivalent: Math.round(totalBilled / kits),
+    kitsIncluded: kits,
     liveVisitAddon,
     authorizationHold: totalBilled + liveVisitAddon,
   }
@@ -378,10 +386,11 @@ export function getWeightLossKitQuote(
 export function getWeightLossIntakeHoldQuote(
   program: WeightLossProgram | string,
   billingPlan: WeightLossBillingPlan,
-  doseId?: WeightLossDoseId
+  doseId?: WeightLossDoseId,
+  options?: { kitsIncluded?: number }
 ): WeightLossKitQuote | undefined {
   const resolved = doseId || getDefaultWeightLossDoseId(program)
-  return getWeightLossKitQuote(program, resolved, billingPlan)
+  return getWeightLossKitQuote(program, resolved, billingPlan, options)
 }
 
 export function getWeightLossStartingKitPrice(program: WeightLossProgram | string): number {
@@ -437,12 +446,31 @@ export function formatKitPriceCaption(doseLabel: string): string {
 export function formatKitBillingLabel(billingPlan: WeightLossBillingPlan): string {
   return billingPlan === "monthly"
     ? "Billed monthly per 30-day kit"
-    : "Billed per 2-kit shipment (60 days)"
+    : `Billed per ${WEIGHT_LOSS_MULTI_KIT_COUNT}-kit shipment (90 days)`
 }
 
 /** UI label for the multi-kit plan (plan id remains "quarterly" for DB/URL compatibility). */
 export function formatWeightLossBillingPlanTitle(billingPlan: WeightLossBillingPlan): string {
-  return billingPlan === "monthly" ? "Monthly billing" : "60-day (2-kit) supply"
+  return billingPlan === "monthly" ? "Monthly billing" : "90-day (3-kit) supply"
+}
+
+/** Snapshot kit count for a new intake (persisted for audit / legacy quotes). */
+export function resolveBillingKitCountForPlan(billingPlan: WeightLossBillingPlan): number {
+  return billingPlan === "quarterly" ? WEIGHT_LOSS_MULTI_KIT_COUNT : 1
+}
+
+export function formatWeightLossSupplyFromKitCount(kits: number): string {
+  if (kits <= 1) return "1-month (30-day kit)"
+  if (kits === 2) return "60-day (2-kit) supply"
+  if (kits === 3) return "90-day (3-kit) supply"
+  return `${kits}-kit supply (~${kits * 30} days)`
+}
+
+export function formatWeightLossRxQuantity(kits: number): string {
+  if (kits <= 1) return "1 kit (30-day supply)"
+  if (kits === 2) return "2 kits (60-day supply)"
+  if (kits === 3) return "3 kits (90-day supply)"
+  return `${kits} kits (~${kits * 30}-day supply)`
 }
 
 /** MIC + B12 metabolic support — sold via weight loss landing; intake uses rejuvenation vial flow. */

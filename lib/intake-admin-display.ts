@@ -42,6 +42,8 @@ const ADMIN_KEYS = new Set([
   "selected_program",
   "selected_product",
   "selected_billing_plan",
+  "billing_kit_count",
+  "billing_supply_label",
 ])
 
 const ADDRESS_KEYS = new Set([
@@ -127,6 +129,8 @@ const FIELD_LABELS: Record<string, string> = {
   selected_program: "Program ID",
   selected_product: "Product ID",
   selected_billing_plan: "Billing plan",
+  billing_kit_count: "Kits ordered (audit)",
+  billing_supply_label: "Supply snapshot (audit)",
   selected_dose_tier: "Weekly dose",
   selected_conditions: "Conditions for visit",
   other_condition_notes: "Other condition details",

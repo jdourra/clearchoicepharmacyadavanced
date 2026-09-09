@@ -70,7 +70,7 @@ export default function WeightLossMedicationsPage() {
             {semaRange && (
               <p className="text-lg font-semibold mb-4">
                 from {formatUsd(semaRange.fromQuarterly)}
-                <span className="text-sm font-normal text-muted-foreground">/mo · 60-day</span>
+                <span className="text-sm font-normal text-muted-foreground">/mo · 90-day</span>
               </p>
             )}
             <Button asChild className="w-fit">
@@ -88,7 +88,7 @@ export default function WeightLossMedicationsPage() {
             {tirzRange && (
               <p className="text-lg font-semibold mb-4">
                 from {formatUsd(tirzRange.fromQuarterly)}
-                <span className="text-sm font-normal text-muted-foreground">/mo · 60-day</span>
+                <span className="text-sm font-normal text-muted-foreground">/mo · 90-day</span>
               </p>
             )}
             <Button asChild className="w-fit">

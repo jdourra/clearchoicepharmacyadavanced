@@ -688,7 +688,7 @@ export function AdminIntakeDetailView({
                         </div>
                       ) : (
                         <p className="text-xs text-muted-foreground">
-                          Legacy Stripe hold: 60-day (2-kit) supply waives live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}).
+                          Legacy Stripe hold: 90-day (3-kit) supply waives live visit add-on (${WEIGHT_LOSS_LIVE_VISIT_ADDON}).
                           Capture kit total only.
                         </p>
                       )}

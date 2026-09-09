@@ -157,7 +157,16 @@ export async function reviewClinicalIntake(params: {
         const billingPlan =
           detail.selected_billing_plan === "quarterly" ? "quarterly" : "monthly"
         const tierId = effectivePrescribedDoseId ?? resolveWeightLossDoseIdFromDetail(detail)
-        const quote = getWeightLossIntakeHoldQuote(programId, billingPlan, tierId)
+        const kitsIncluded =
+          billingPlan === "monthly"
+            ? 1
+            : (() => {
+                const n = Number(detail.billing_kit_count)
+                return Number.isFinite(n) && n > 0 ? Math.floor(n) : 2
+              })()
+        const quote = getWeightLossIntakeHoldQuote(programId, billingPlan, tierId, {
+          kitsIncluded,
+        })
         if (quote) {
           const includeLiveVisit =
             Boolean(liveVisitRequired) && quote.liveVisitAddon > 0

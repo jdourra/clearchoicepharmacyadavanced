@@ -55,6 +55,8 @@ async function ensureReminderColumns(): Promise<void> {
     `ALTER TABLE orders ADD COLUMN IF NOT EXISTS refill_reminder_sent_at TIMESTAMPTZ`,
     `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS supply_cycle_started_at TIMESTAMPTZ`,
     `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS refill_reminder_sent_at TIMESTAMPTZ`,
+    `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_kit_count INTEGER`,
+    `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_supply_label TEXT`,
     `ALTER TABLE patient_intake ADD COLUMN IF NOT EXISTS supply_cycle_started_at TIMESTAMPTZ`,
     `ALTER TABLE patient_intake ADD COLUMN IF NOT EXISTS refill_reminder_sent_at TIMESTAMPTZ`,
     `ALTER TABLE trt_intake ADD COLUMN IF NOT EXISTS supply_cycle_started_at TIMESTAMPTZ`,
@@ -63,6 +65,24 @@ async function ensureReminderColumns(): Promise<void> {
   for (const statement of alters) {
     await sql(statement, [])
   }
+
+  // Backfill legacy quarterly as 2-kit so audits and refill timing stay accurate.
+  await sql(
+    `UPDATE weight_loss_intake
+     SET billing_kit_count = 2,
+         billing_supply_label = COALESCE(billing_supply_label, '60-day (2-kit) supply')
+     WHERE selected_billing_plan = 'quarterly'
+       AND billing_kit_count IS NULL`,
+    []
+  ).catch(() => [])
+  await sql(
+    `UPDATE weight_loss_intake
+     SET billing_kit_count = 1,
+         billing_supply_label = COALESCE(billing_supply_label, '1-month (30-day kit)')
+     WHERE (selected_billing_plan IS NULL OR selected_billing_plan = 'monthly')
+       AND billing_kit_count IS NULL`,
+    []
+  ).catch(() => [])
 }
 
 function siteUrl(path: string): string {
@@ -90,7 +110,15 @@ function mapIntakeCandidate(
   if (!email || !supplyCycleStartedAt) return null
 
   const billingPlan = row.selected_billing_plan != null ? String(row.selected_billing_plan) : "monthly"
-  const supplyPeriodDays = getSupplyPeriodDays({ serviceType, billingPlan })
+  const billingKitCount =
+    row.billing_kit_count != null && Number.isFinite(Number(row.billing_kit_count))
+      ? Number(row.billing_kit_count)
+      : null
+  const supplyPeriodDays = getSupplyPeriodDays({
+    serviceType,
+    billingPlan,
+    billingKitCount,
+  })
 
   let productLabel = "your medication"
   let reorderUrl = siteUrl("/account?tab=orders")
@@ -141,10 +169,16 @@ async function listIntakeCandidates(
   options?: { sourceIds?: string[]; relaxTiming?: boolean }
 ): Promise<RefillReminderCandidate[]> {
   const ids = options?.sourceIds?.filter(Boolean)
-  const rows = await sql(
-    `SELECT id, patient_id, first_name, email, selected_billing_plan,
+  const selectCols =
+    table === "weight_loss_intake"
+      ? `id, patient_id, first_name, email, selected_billing_plan, billing_kit_count,
             selected_program, selected_product, selected_dose_tier, additional_concerns,
-            supply_cycle_started_at, payment_status, status
+            supply_cycle_started_at, payment_status, status`
+      : `id, patient_id, first_name, email, selected_billing_plan,
+            selected_program, selected_product, selected_dose_tier, additional_concerns,
+            supply_cycle_started_at, payment_status, status`
+  const rows = await sql(
+    `SELECT ${selectCols}
      FROM ${table}
      WHERE refill_reminder_sent_at IS NULL
        AND supply_cycle_started_at IS NOT NULL

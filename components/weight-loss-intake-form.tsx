@@ -1011,7 +1011,7 @@ export function WeightLossIntakeForm({
                           }`}
                         >
                           <p className="font-medium">
-                            {option.plan === "monthly" ? "Monthly" : "60-day (2-kit)"}
+                            {option.plan === "monthly" ? "Monthly" : "90-day (3-kit)"}
                           </p>
                           <p className="text-xs text-muted-foreground">{formatKitBillingLabel(option.plan)}</p>
                           {quote && (
@@ -1066,7 +1066,7 @@ export function WeightLossIntakeForm({
                 <IntakeOrderSummary
                   productName={selectedProgram.name}
                   productSubtitle={`${selectedProgram.subtitle} · ${selectedTierMeta?.label ?? "Selected"}`}
-                  billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "60-day (2-kit)"}
+                  billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "90-day (3-kit)"}
                   priceLine={`Kit: $${holdQuote.totalBilled} · pay at pharmacy after approval`}
                   changeHref="/weight-loss#programs"
                 />
@@ -1603,7 +1603,7 @@ export function WeightLossIntakeForm({
                     Payment collected at Clear Choice Pharmacy after clinician approval (card terminal, phone, or cash).
                     {holdQuote.liveVisitAddon > 0
                       ? ` A $${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly billing if your clinician requires a live visit.`
-                      : " Live visit add-on is waived on 60-day supply."}
+                      : " Live visit add-on is waived on 90-day supply."}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {formData.selectedBillingPlan === "monthly"

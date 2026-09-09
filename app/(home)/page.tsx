@@ -92,7 +92,7 @@ export default function HomePage() {
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
-                    Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 60-day
+                    Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 90-day
                     starter billing for qualifying Michigan patients after clinician review.
                   </p>
                   <Button asChild size="sm" className="w-fit">
@@ -117,7 +117,7 @@ export default function HomePage() {
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Tirzepatide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
                     Dual-pathway support for patients whose clinician recommends Tirzepatide. Kits from $149/mo on
-                    60-day starter billing after provider approval.
+                    90-day starter billing after provider approval.
                   </p>
                   <Button asChild size="sm" className="w-fit">
                     <Link href="/weight-loss/tirzepatide">
