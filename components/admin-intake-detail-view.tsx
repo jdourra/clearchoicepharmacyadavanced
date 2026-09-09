@@ -563,15 +563,35 @@ export function AdminIntakeDetailView({
                       </p>
                     )}
                     {detail.patient_id != null && String(detail.patient_id).trim() !== "" && (
-                      <p className="mt-1 text-sm">
+                      <p className="mt-1 text-sm space-x-3">
+                        {portal === "admin" ? (
+                          <Link
+                            href={`/admin/customers/${String(detail.patient_id)}`}
+                            className="text-primary underline-offset-2 hover:underline"
+                          >
+                            Open customer profile
+                          </Link>
+                        ) : null}
                         <Link
-                          href={`/admin/customers/${String(detail.patient_id)}`}
+                          href={`/doctor/patients/${encodeURIComponent(String(detail.patient_id))}/therapy`}
                           className="text-primary underline-offset-2 hover:underline"
                         >
-                          Open customer profile
+                          Therapy chart
                         </Link>
                       </p>
                     )}
+                    {(!detail.patient_id || String(detail.patient_id).trim() === "") &&
+                      detail.email != null &&
+                      String(detail.email).trim() !== "" && (
+                        <p className="mt-1 text-sm">
+                          <Link
+                            href={`/doctor/patients/${encodeURIComponent(String(detail.email).toLowerCase())}/therapy`}
+                            className="text-primary underline-offset-2 hover:underline"
+                          >
+                            Therapy chart
+                          </Link>
+                        </p>
+                      )}
                   </div>
 
                   {!canDecide ? (

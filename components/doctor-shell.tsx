@@ -10,6 +10,7 @@ import { clearStaffSession } from "@/lib/staff-session"
 
 const NAV = [
   { href: "/doctor/intakes", label: "Patient intakes" },
+  { href: "/doctor/patients", label: "Therapy charts" },
   { href: "/doctor/change-password", label: "Change password" },
 ]
 
@@ -50,7 +51,8 @@ export function DoctorShell({
                   "text-sm font-medium whitespace-nowrap transition-colors hover:text-primary",
                   pathname === item.href ||
                     (item.href !== "/doctor/intakes" && pathname.startsWith(`${item.href}/`)) ||
-                    (item.href === "/doctor/intakes" && pathname.startsWith("/doctor/intakes"))
+                    (item.href === "/doctor/intakes" && pathname.startsWith("/doctor/intakes")) ||
+                    (item.href === "/doctor/patients" && pathname.startsWith("/doctor/patients"))
                     ? "text-primary"
                     : "text-muted-foreground"
                 )}

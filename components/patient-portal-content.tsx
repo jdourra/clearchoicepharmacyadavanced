@@ -37,6 +37,8 @@ import type {
   PortalPrescription,
 } from "@/lib/patient-portal-types"
 import { formatPortalStatus, portalStatusVariant } from "@/lib/patient-portal-types"
+import { PatientTherapyTimelineTable } from "@/components/patient-therapy-timeline-table"
+import type { TherapyTimelineResult } from "@/lib/patient-therapy-timeline"
 
 interface PatientProfile {
   id: string
@@ -53,7 +55,7 @@ interface PatientProfile {
   created_at: string
 }
 
-const TAB_VALUES = ["overview", "orders", "messages", "prescriptions", "programs", "profile"] as const
+const TAB_VALUES = ["overview", "orders", "messages", "prescriptions", "programs", "therapy", "profile"] as const
 
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
@@ -90,6 +92,7 @@ export function PatientPortalContent() {
   const [user, setUser] = useState<PatientProfile | null>(null)
   const [portal, setPortal] = useState<PatientPortalData | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [therapy, setTherapy] = useState<TherapyTimelineResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(initialTab)
 
@@ -121,6 +124,12 @@ export function PatientPortalContent() {
         if (messagesRes.ok) {
           const msgData = await messagesRes.json()
           setMessages(msgData.messages || [])
+        }
+
+        const therapyRes = await authFetch("/api/patient-therapy")
+        if (therapyRes.ok) {
+          const therapyData = await therapyRes.json()
+          setTherapy(therapyData.timeline || null)
         }
       } catch {
         router.push("/auth/login?redirect=/account")
@@ -171,6 +180,9 @@ export function PatientPortalContent() {
               </TabsTrigger>
               <TabsTrigger value="prescriptions">Prescriptions ({prescriptions.length})</TabsTrigger>
               <TabsTrigger value="programs">Clinical programs ({clinicalPrograms.length})</TabsTrigger>
+              <TabsTrigger value="therapy">
+                Therapy chart{therapy?.rows?.length ? ` (${therapy.rows.length})` : ""}
+              </TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
             </TabsList>
 
@@ -297,6 +309,23 @@ export function PatientPortalContent() {
 
             <TabsContent value="programs">
               <ProgramsTab programs={clinicalPrograms} />
+            </TabsContent>
+
+            <TabsContent value="therapy">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your therapy chart</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {therapy ? (
+                    <PatientTherapyTimelineTable timeline={therapy} compact />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Your month-by-month GLP dose history will appear here after an approved weight-loss order.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="profile">

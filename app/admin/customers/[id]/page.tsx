@@ -30,7 +30,10 @@ import {
   Stethoscope,
   DollarSign,
   Loader2,
+  CalendarDays,
 } from "lucide-react"
+import { PatientTherapyTimelineTable } from "@/components/patient-therapy-timeline-table"
+import type { TherapyTimelineResult } from "@/lib/patient-therapy-timeline"
 
 type PaymentSummary = {
   totalReceived: number
@@ -64,6 +67,9 @@ export default function AdminCustomerDetailPage() {
   const [paymentBusy, setPaymentBusy] = useState<"request" | "record" | null>(null)
   const [paymentMessage, setPaymentMessage] = useState("")
   const [paymentError, setPaymentError] = useState("")
+  const [therapy, setTherapy] = useState<TherapyTimelineResult | null>(null)
+  const [therapyError, setTherapyError] = useState("")
+  const [therapySendingKey, setTherapySendingKey] = useState<string | null>(null)
 
   useEffect(() => {
     loadData()
@@ -93,6 +99,15 @@ export default function AdminCustomerDetailPage() {
           })
         }
       }
+
+      const therapyRes = await staffAuthFetch(`/api/admin/customers/${customerId}/therapy`)
+      if (therapyRes.ok) {
+        const therapyData = await therapyRes.json()
+        setTherapy(therapyData.timeline || null)
+        setTherapyError("")
+      } else {
+        setTherapyError("Could not load therapy chart")
+      }
     } catch {
       router.push("/admin/login")
     } finally {
@@ -107,6 +122,26 @@ export default function AdminCustomerDetailPage() {
       balanceRequests: (data.balanceRequests as PatientBalanceRequest[]) || [],
       ledger: (data.ledger as PatientLedgerEntry[]) || [],
     })
+  }
+
+  const sendTherapyCheckIn = async (intakeId: string, monthIndex: number) => {
+    const key = `${intakeId}:${monthIndex}`
+    setTherapySendingKey(key)
+    setTherapyError("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/customers/${customerId}/therapy`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intakeId, monthIndex, forceResend: true }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to send check-in")
+      setTherapy(data.timeline || null)
+    } catch (err) {
+      setTherapyError(err instanceof Error ? err.message : "Failed to send check-in")
+    } finally {
+      setTherapySendingKey(null)
+    }
   }
 
   const submitBalanceRequest = async () => {
@@ -472,6 +507,32 @@ export default function AdminCustomerDetailPage() {
                   )}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarDays className="h-5 w-5" />
+                Therapy chart (GLP)
+              </CardTitle>
+              <CardDescription>
+                Month-by-month dose, doctor, kit cost, remaining kits, and patient check-in replies. Use this before the
+                next refill to decide continue vs titrate.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {therapyError ? <p className="text-sm text-destructive mb-3">{therapyError}</p> : null}
+              {therapy ? (
+                <PatientTherapyTimelineTable
+                  timeline={therapy}
+                  canSendCheckIn
+                  sendingKey={therapySendingKey}
+                  onSendCheckIn={sendTherapyCheckIn}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">No therapy months loaded yet.</p>
+              )}
             </CardContent>
           </Card>
 
