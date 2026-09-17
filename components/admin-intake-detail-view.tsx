@@ -35,7 +35,11 @@ import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highl
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { staffAuthFetch } from "@/lib/staff-session"
 import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
-import { ExternalLink, ChevronDown, Loader2, Printer } from "lucide-react"
+import { ExternalLink, ChevronDown, Loader2, Printer, Mail } from "lucide-react"
+import {
+  INTAKE_CLINICIAN_DELAY_SUBJECT,
+  buildClinicianDelayCourtesyBody,
+} from "@/lib/intake-patient-message-copy"
 import {
   Collapsible,
   CollapsibleContent,
@@ -209,6 +213,12 @@ export function AdminIntakeDetailView({
   const [rxQuantity, setRxQuantity] = useState(suggestedPrescription?.quantity ?? "")
   const [rxRefills, setRxRefills] = useState(String(suggestedPrescription?.refills ?? 0))
   const [clinicianEsignName, setClinicianEsignName] = useState("")
+  const [messageSubject, setMessageSubject] = useState(INTAKE_CLINICIAN_DELAY_SUBJECT)
+  const [messageBody, setMessageBody] = useState(() =>
+    buildClinicianDelayCourtesyBody(String(detail.first_name ?? ""))
+  )
+  const [sendingMessage, setSendingMessage] = useState(false)
+  const [messageStatus, setMessageStatus] = useState("")
 
   const isWeightLoss = serviceType === "weight_loss"
   const weightLossProgramId = String(detail.selected_program ?? "")
@@ -561,6 +571,100 @@ export function AdminIntakeDetailView({
                   </AlertDescription>
                 </Alert>
               )}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Message patient
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Sends email to {String(detail.email ?? "the intake email")}
+                    {detail.patient_id ? " and saves a copy in the patient portal." : "."}
+                  </p>
+                  <div className="space-y-1">
+                    <Label htmlFor="intake-message-subject">Subject</Label>
+                    <Input
+                      id="intake-message-subject"
+                      value={messageSubject}
+                      onChange={(e) => setMessageSubject(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="intake-message-body">Message</Label>
+                    <Textarea
+                      id="intake-message-body"
+                      rows={12}
+                      value={messageBody}
+                      onChange={(e) => setMessageBody(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setMessageSubject(INTAKE_CLINICIAN_DELAY_SUBJECT)
+                        setMessageBody(
+                          buildClinicianDelayCourtesyBody(String(detail.first_name ?? ""))
+                        )
+                      }}
+                    >
+                      Load delay + 10% template
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={sendingMessage || !messageSubject.trim() || !messageBody.trim()}
+                      onClick={async () => {
+                        setSendingMessage(true)
+                        setMessageStatus("")
+                        setError("")
+                        try {
+                          const res = await staffAuthFetch(
+                            `/api/admin/intakes/${serviceType}/${id}/message`,
+                            {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                subject: messageSubject,
+                                body: messageBody,
+                                noteCourtesyHold: true,
+                              }),
+                            }
+                          )
+                          const data = await res.json().catch(() => ({}))
+                          if (!res.ok) {
+                            throw new Error(data.error || "Failed to send message")
+                          }
+                          const bits = [
+                            data.emailed ? "emailed" : null,
+                            data.portalSaved ? "saved to portal" : "no patient portal account",
+                            data.courtesyNoted ? "10% hold noted on intake" : null,
+                          ].filter(Boolean)
+                          setMessageStatus(`Sent (${bits.join(", ")}).`)
+                          onReload?.()
+                        } catch (err) {
+                          setError(err instanceof Error ? err.message : "Failed to send message")
+                        } finally {
+                          setSendingMessage(false)
+                        }
+                      }}
+                    >
+                      {sendingMessage ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending…
+                        </>
+                      ) : (
+                        "Send message"
+                      )}
+                    </Button>
+                  </div>
+                  {messageStatus ? <p className="text-sm text-emerald-700">{messageStatus}</p> : null}
+                </CardContent>
+              </Card>
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">

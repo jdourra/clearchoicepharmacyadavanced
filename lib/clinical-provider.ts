@@ -1,40 +1,39 @@
-/** Primary reviewing physician for Michigan clinical intakes (manual telehealth queue). */
+import { PHARMACY_PHONE_DISPLAY } from "@/lib/phone"
+
+/** Display name for the reviewing clinician on patient-facing copy. */
 export const PRIMARY_PHYSICIAN = {
-  name: "Dr. Dourra",
-  credentials: "Michigan-Licensed Physician",
+  name: "Licensed clinician",
+  credentials: "Michigan-licensed clinician",
   state: "Michigan",
-  reviewSla: "2–4 hours during business hours",
-  pharmacyPhone: "(248) 987-6182",
+  reviewSla: "typically within one week",
+  pharmacyPhone: PHARMACY_PHONE_DISPLAY,
 } as const
 
 export function getAdminInboxEmail(): string {
   return process.env.ADMIN_EMAIL?.trim().toLowerCase() || ""
 }
 
-export function getDrDourraInboxEmail(): string {
-  return (
-    process.env.TELEHEALTH_CLINICIAN_EMAIL?.trim().toLowerCase() ||
-    process.env.DR_DOURRA_EMAIL?.trim().toLowerCase() ||
-    ""
-  )
-}
-
-/** @deprecated Prefer getDrDourraInboxEmail or getClinicalIntakeRecipientEmails */
+/** New clinician inbox. Do not fall back to a former reviewer's personal email. */
 export function getClinicianInboxEmail(): string {
-  return getDrDourraInboxEmail() || getAdminInboxEmail()
+  return process.env.TELEHEALTH_CLINICIAN_EMAIL?.trim().toLowerCase() || ""
 }
 
-/** Admin + Dr. Dourra for new clinical intake alerts (deduped). */
+/** @deprecated Use getClinicianInboxEmail */
+export function getDrDourraInboxEmail(): string {
+  return getClinicianInboxEmail()
+}
+
+/** Admin plus current clinician inbox only (former reviewer is not copied). */
 export function getClinicalIntakeRecipientEmails(): string[] {
-  return [...new Set([getAdminInboxEmail(), getDrDourraInboxEmail()].filter(Boolean))]
+  return [...new Set([getAdminInboxEmail(), getClinicianInboxEmail()].filter(Boolean))]
 }
 
 export function physicianReviewPendingLabel(): string {
-  return `Pending ${PRIMARY_PHYSICIAN.name}'s Review`
+  return "Pending clinician review"
 }
 
 export function physicianReviewDescription(): string {
-  return `${PRIMARY_PHYSICIAN.name} is currently reviewing your medical history`
+  return "A licensed clinician will review your medical history. Review is currently delayed about one week while we assign a new provider."
 }
 
 export function physicianReviewShort(): string {
@@ -42,7 +41,7 @@ export function physicianReviewShort(): string {
 }
 
 export const DEFAULT_INTAKE_SUCCESS_STEPS = [
-  `${PRIMARY_PHYSICIAN.name} will review your medical information (typically ${PRIMARY_PHYSICIAN.reviewSla})`,
-  `You'll receive an email with ${PRIMARY_PHYSICIAN.name}'s decision and any follow-up questions`,
-  "If approved, your payment hold will be captured and Clear Choice Pharmacy will prepare your order",
+  `A licensed clinician will review your medical information (${PRIMARY_PHYSICIAN.reviewSla})`,
+  "You'll receive an email with the clinician's decision. Approved orders receive a 10% courtesy discount for the current delay.",
+  "If approved, Clear Choice Pharmacy will contact you to collect payment and prepare your order",
 ] as const

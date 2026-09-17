@@ -44,7 +44,7 @@ export async function sendPrescriptionForSignature(params: {
     process.env.DROPBOX_SIGN_SIGNER_EMAIL?.trim().toLowerCase() ||
     ""
   if (!signerEmail) {
-    throw new Error("Set TELEHEALTH_CLINICIAN_EMAIL / DR_DOURRA_EMAIL for the Dropbox Sign signer")
+    throw new Error("Set TELEHEALTH_CLINICIAN_EMAIL or DROPBOX_SIGN_SIGNER_EMAIL for the Dropbox Sign signer")
   }
 
   const dir = await mkdtemp(join(tmpdir(), "ccp-rx-"))

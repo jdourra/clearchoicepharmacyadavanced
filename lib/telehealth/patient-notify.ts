@@ -35,7 +35,7 @@ export async function notifyPatientIntakeDecision(params: {
   const approvedBody = payAtPharmacy
     ? `Hi ${patientName},
 
-Good news — ${PRIMARY_PHYSICIAN.name} has approved your ${serviceLabel} intake (Reference: ${submissionId}).
+Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
 Next step: Clear Choice Pharmacy in Novi will contact you to collect payment for your kit on our pharmacy card terminal (or by phone/cash). Once payment is arranged, we prepare and ship your prescription.
 
@@ -44,7 +44,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 — Clear Choice Pharmacy`
     : `Hi ${patientName},
 
-Good news — ${PRIMARY_PHYSICIAN.name} has approved your ${serviceLabel} intake (Reference: ${submissionId}).
+Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
 Clear Choice Pharmacy in Novi, MI is now preparing your prescription. You'll receive another update when your order ships or is ready for dispatch.
 
@@ -55,7 +55,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
   const deniedBody = payAtPharmacy
     ? `Hi ${patientName},
 
-${PRIMARY_PHYSICIAN.name} reviewed your ${serviceLabel} intake (Reference: ${submissionId}) and we are unable to approve treatment through our online program at this time.
+A licensed clinician reviewed your ${serviceLabel} intake (Reference: ${submissionId}) and we are unable to approve treatment through our online program at this time.
 
 ${note ? `Provider note: ${note}\n\n` : ""}No payment was collected online. You will not be charged.
 
@@ -64,7 +64,7 @@ We recommend discussing your options with your primary care physician. For pharm
 — Clear Choice Pharmacy`
     : `Hi ${patientName},
 
-${PRIMARY_PHYSICIAN.name} reviewed your ${serviceLabel} intake (Reference: ${submissionId}) and we are unable to approve treatment through our online program at this time.
+A licensed clinician reviewed your ${serviceLabel} intake (Reference: ${submissionId}) and we are unable to approve treatment through our online program at this time.
 
 ${note ? `Provider note: ${note}\n\n` : ""}Your card authorization hold has been released — you will not be charged.
 
@@ -75,7 +75,7 @@ We recommend discussing your options with your primary care physician. For pharm
   const followUpBody = payAtPharmacy
     ? `Hi ${patientName},
 
-${PRIMARY_PHYSICIAN.name} is reviewing your ${serviceLabel} intake (Reference: ${submissionId}) and needs additional information before we can proceed.
+A licensed clinician is reviewing your ${serviceLabel} intake (Reference: ${submissionId}) and needs additional information before we can proceed.
 
 ${note ? `Please reply with: ${note}\n\n` : "Our team will contact you shortly with specific questions.\n\n"}No online payment is required until after approval. Payment is collected at the pharmacy when treatment is approved.
 
@@ -84,7 +84,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
 — Clear Choice Pharmacy`
     : `Hi ${patientName},
 
-${PRIMARY_PHYSICIAN.name} is reviewing your ${serviceLabel} intake (Reference: ${submissionId}) and needs additional information before we can proceed.
+A licensed clinician is reviewing your ${serviceLabel} intake (Reference: ${submissionId}) and needs additional information before we can proceed.
 
 ${note ? `Please reply with: ${note}\n\n` : "Our team will contact you shortly with specific questions.\n\n"}Your card authorization hold remains in place until a final decision is made.
 

@@ -19,7 +19,7 @@ export function buildIntakePharmacyPaymentReminderEmail(params: {
 
   const text = `${greeting}
 
-Your ${params.serviceLabel} intake (Reference: ${params.submissionId}) has been approved by ${PRIMARY_PHYSICIAN.name}.
+Your ${params.serviceLabel} intake (Reference: ${params.submissionId}) has been approved by a licensed clinician.
 
 ${amountLine}
 
@@ -35,7 +35,7 @@ ${CONTACT_EMAIL}`
 <html>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
   <p>${greeting}</p>
-  <p>Your <strong>${params.serviceLabel}</strong> intake (Reference: <strong>${params.submissionId}</strong>) has been approved by ${PRIMARY_PHYSICIAN.name}.</p>
+  <p>Your <strong>${params.serviceLabel}</strong> intake (Reference: <strong>${params.submissionId}</strong>) has been approved by a licensed clinician.</p>
   <p>${amountLine.replace("Amount due:", "<strong>Amount due:</strong>")}</p>
   <p>Visit us or call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a> to arrange payment. Once paid, we prepare and ship your medication.</p>
   <p style="margin: 24px 0;">

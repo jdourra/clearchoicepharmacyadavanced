@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/accordion"
 import type { LearnArticle } from "@/lib/learn-types"
 import { getRelatedLearnArticles } from "@/lib/learn-articles"
-import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { SITE_URL, buildFaqJsonLd } from "@/lib/clinical-seo"
 
 function formatDate(iso: string) {
@@ -34,8 +33,8 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     author: {
-      "@type": "Person",
-      name: PRIMARY_PHYSICIAN.name,
+      "@type": "Organization",
+      name: "Clear Choice Pharmacy",
     },
     publisher: {
       "@type": "Organization",
@@ -69,7 +68,7 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
               </h1>
               <p className="mt-3 text-muted-foreground leading-relaxed">{article.description}</p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Reviewed for educational publishing · {PRIMARY_PHYSICIAN.name}, {PRIMARY_PHYSICIAN.credentials} · Updated{" "}
+                Reviewed for educational publishing · Clear Choice Pharmacy · Updated{" "}
                 {formatDate(article.updatedAt)}
               </p>
             </div>

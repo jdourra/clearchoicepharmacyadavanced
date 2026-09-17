@@ -563,7 +563,7 @@ export function ClinicalIntakeForm({
       await new Promise((r) => setTimeout(r, 500))
       addLog("Submission received successfully!")
       addLog("Routing to physician review panel...")
-      addLog("Estimated review time: 2-4 hours during business hours")
+      addLog("Estimated review time: typically within one week")
       
       setSubmissionStatus("success")
       setStep(4)

@@ -62,7 +62,7 @@ const STEPS = [
   {
     step: 2,
     title: "Telehealth Review",
-    description: "Submit your intake online. Dr. Dourra reviews your screening for clinical eligibility.",
+    description: "Submit your intake online. A licensed clinician reviews your screening for clinical eligibility.",
   },
   {
     step: 3,
@@ -85,7 +85,7 @@ const VIAL_STEPS = [
   {
     step: 2,
     title: "Telehealth Review",
-    description: "Submit your online intake. Dr. Dourra reviews your health screening.",
+    description: "Submit your online intake. A licensed clinician reviews your health screening.",
   },
   {
     step: 3,

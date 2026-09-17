@@ -25,7 +25,6 @@ import {
 import { TRT_PROGRAMS, getTrtStartingMonthlyPrice } from "@/lib/trt-catalog"
 import { ED_FORMULATIONS, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
 import { buildEdProductUrl, buildTrtProductUrl } from "@/lib/intake-prefill"
-import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import {
   ALL_IN_INCLUSIONS,
   formatUsd,
@@ -275,7 +274,7 @@ export default function MensHealthPage() {
           {
             step: 2,
             title: "Physician Approval",
-            description: `${PRIMARY_PHYSICIAN.name} reviews your intake and approves a customized protocol.`,
+            description: "A licensed clinician reviews your intake and approves a customized protocol.",
           },
           {
             step: 3,

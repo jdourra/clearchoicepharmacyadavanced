@@ -9,7 +9,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
-import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { formatPhoneDisplay } from "@/lib/phone"
 
@@ -48,6 +47,8 @@ export default function AdminIntakesPage() {
   const [intakes, setIntakes] = useState<IntakeRow[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter)
+  const [notifying, setNotifying] = useState(false)
+  const [notifyStatus, setNotifyStatus] = useState("")
 
   useEffect(() => {
     if (
@@ -136,8 +137,44 @@ export default function AdminIntakesPage() {
           <Button variant="outline" size="sm" onClick={() => loadIntakes(statusFilter)}>
             Refresh
           </Button>
+          {statusFilter === "pending" ? (
+            <Button
+              size="sm"
+              disabled={notifying || loading || intakes.length === 0}
+              onClick={async () => {
+                if (
+                  !confirm(
+                    `Email the clinician-delay + 10% courtesy note to ${intakes.length} pending intake${intakes.length === 1 ? "" : "s"}? Already-notified patients are skipped.`
+                  )
+                ) {
+                  return
+                }
+                setNotifying(true)
+                setNotifyStatus("")
+                try {
+                  const res = await staffAuthFetch("/api/admin/intakes/notify-clinician-delay", {
+                    method: "POST",
+                  })
+                  const data = await res.json().catch(() => ({}))
+                  if (!res.ok) throw new Error(data.error || "Failed to send notices")
+                  setNotifyStatus(
+                    `Sent ${data.emailed ?? 0}, skipped ${data.skipped ?? 0}, failed ${data.failed ?? 0}.`
+                  )
+                  loadIntakes(statusFilter)
+                } catch (err) {
+                  setNotifyStatus(err instanceof Error ? err.message : "Failed to send notices")
+                } finally {
+                  setNotifying(false)
+                }
+              }}
+            >
+              {notifying ? "Sending…" : "Email delay + 10% to pending"}
+            </Button>
+          ) : null}
         </div>
       </div>
+
+      {notifyStatus ? <p className="mb-4 text-sm text-muted-foreground">{notifyStatus}</p> : null}
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading intakes…</p>
@@ -145,7 +182,7 @@ export default function AdminIntakesPage() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             {statusFilter === "pending"
-              ? `No pending intakes. Click Refresh, or check “Awaiting payment” / “Approved / in progress” for patients ${PRIMARY_PHYSICIAN.name} already approved.`
+              ? `No pending intakes. Click Refresh, or check “Awaiting payment” / “Approved / in progress” for patients already approved.`
               : statusFilter === "awaiting_payment"
                 ? "No intakes awaiting pharmacy payment. Approved GLP patients waiting to pay will appear here."
                 : statusFilter === "awaiting_shipment"

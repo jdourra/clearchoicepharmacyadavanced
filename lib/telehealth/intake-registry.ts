@@ -204,7 +204,7 @@ export async function getClinicalIntakeDetail(
   return rows[0] ?? null
 }
 
-function tableForAdminService(serviceType: AdminIntakeServiceType): string {
+export function tableForAdminService(serviceType: AdminIntakeServiceType): string {
   switch (serviceType) {
     case "mens_health":
       return "patient_intake"

@@ -607,7 +607,7 @@ export default function CheckoutPage() {
                               <p className="font-medium">What happens next</p>
                               <ul className="list-disc list-inside text-muted-foreground space-y-1">
                                 <li>Your order is placed and intake is sent for physician review</li>
-                                <li>Dr. Dourra or an affiliated provider reviews within 2–4 business hours</li>
+                                <li>A licensed clinician reviews your intake. Review is currently delayed about one week.</li>
                                 <li>If approved, your prescription is sent to Clear Choice Pharmacy</li>
                               </ul>
                             </div>
@@ -730,7 +730,7 @@ export default function CheckoutPage() {
                         <div className="text-sm space-y-1">
                           <p>Telemedicine visit — physician review required</p>
                           <p className="text-muted-foreground">
-                            Intake will be reviewed by Dr. Dourra before prescribing.
+                            Intake will be reviewed by a licensed clinician before prescribing. Review is currently delayed about one week.
                           </p>
                         </div>
                       ) : (

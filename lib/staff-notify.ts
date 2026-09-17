@@ -54,7 +54,7 @@ export async function notifyAdminAlert(params: {
   return sendToRecipients(admin ? [admin] : [], `[Admin] ${params.subject}`, params.body)
 }
 
-/** Clinical intake alerts — admin + Dr. Dourra. */
+/** Clinical intake alerts — admin + current clinician inbox. */
 export async function notifyClinicalIntakeAlert(params: {
   submissionId: string
   subject: string

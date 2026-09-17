@@ -6,7 +6,6 @@ import {
   DEFAULT_INTAKE_SUCCESS_STEPS,
   physicianReviewDescription,
   physicianReviewPendingLabel,
-  PRIMARY_PHYSICIAN,
 } from "@/lib/clinical-provider"
 
 type IntakeSuccessPanelProps = {
@@ -62,7 +61,7 @@ export function IntakeSuccessPanel({
               <p className="text-xs text-muted-foreground">Status</p>
               <p className="font-medium text-amber-600">{physicianReviewPendingLabel()}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Reviewing physician: {PRIMARY_PHYSICIAN.name}, {PRIMARY_PHYSICIAN.state}
+                Reviewing clinician: licensed Michigan clinician
               </p>
             </div>
           </div>

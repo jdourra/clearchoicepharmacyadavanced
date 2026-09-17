@@ -236,7 +236,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
         returnHref="/iv-rejuvenation"
         returnLabel="Back to IV & Rejuvenation"
         steps={[
-          `${PRIMARY_PHYSICIAN.name} will review your screening (typically 2–4 business hours)`,
+          `A licensed clinician will review your screening (${PRIMARY_PHYSICIAN.reviewSla})`,
           "Prescription received at Clear Choice Pharmacy",
           "Homekit shipped with supplies and injection instructions",
         ]}
@@ -261,7 +261,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
         <CardContent className="pt-6 text-sm text-slate-600 space-y-2">
           <p className="font-medium text-slate-900">What happens next</p>
           <ol className="list-decimal list-inside space-y-1">
-            <li>{PRIMARY_PHYSICIAN.name} reviews your intake</li>
+            <li>A licensed clinician reviews your intake</li>
             <li>If approved, eRx is routed to Clear Choice Pharmacy (Michigan)</li>
             <li>Your 30-day home injection kit is shipped to your door</li>
           </ol>
