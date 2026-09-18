@@ -1,4 +1,5 @@
 import { PHARMACY_PHONE_DISPLAY } from "@/lib/phone"
+import { CONTACT_EMAIL } from "@/lib/site-config"
 
 /** Display name for the reviewing clinician on patient-facing copy. */
 export const PRIMARY_PHYSICIAN = {
@@ -10,7 +11,7 @@ export const PRIMARY_PHYSICIAN = {
 } as const
 
 export function getAdminInboxEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim().toLowerCase() || ""
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() || CONTACT_EMAIL
 }
 
 /** New clinician inbox. Do not fall back to a former reviewer's personal email. */
