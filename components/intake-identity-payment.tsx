@@ -1,11 +1,18 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState, type RefObject } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { IntakePaymentValues } from "@/lib/intake-payment"
-import { CheckCircle2, CreditCard, Loader2, Shield, Upload } from "lucide-react"
+import {
+  ID_FILE_ACCEPT,
+  isAllowedIdUploadFile,
+  messageForIdUploadFailure,
+  prepareIdUploadFile,
+} from "@/lib/prepare-id-upload"
+import { Camera, CheckCircle2, CreditCard, ImageIcon, Loader2, Shield } from "lucide-react"
 import { StripePaymentHold } from "@/components/stripe-payment-hold"
 
 type IntakeIdentityPaymentProps = {
@@ -25,6 +32,8 @@ function fieldInvalid(invalidFields: Set<string> | undefined, field: string) {
   return invalidFields?.has(field) ?? false
 }
 
+type UploadPhase = "idle" | "preparing" | "uploading"
+
 export function IntakeIdentityPaymentSection({
   values,
   onChange,
@@ -37,36 +46,61 @@ export function IntakeIdentityPaymentSection({
   showPayment = true,
 }: IntakeIdentityPaymentProps) {
   const isInvalid = (field: string) => fieldInvalid(invalidFields, field)
-  const frontInputRef = useRef<HTMLInputElement>(null)
-  const backInputRef = useRef<HTMLInputElement>(null)
+  const frontGalleryRef = useRef<HTMLInputElement>(null)
+  const frontCameraRef = useRef<HTMLInputElement>(null)
+  const backGalleryRef = useRef<HTMLInputElement>(null)
+  const backCameraRef = useRef<HTMLInputElement>(null)
   const [uploadErrors, setUploadErrors] = useState<{ front?: string; back?: string }>({})
+  const [phase, setPhase] = useState<{ front: UploadPhase; back: UploadPhase }>({
+    front: "idle",
+    back: "idle",
+  })
 
   const uploadId = useCallback(
     async (side: "front" | "back", file: File | null) => {
       const fileKey = side === "front" ? "idFrontFile" : "idBackFile"
       const storageKey = side === "front" ? "idFrontKey" : "idBackKey"
       const uploadingKey = side === "front" ? "idFrontUploading" : "idBackUploading"
-      const inputRef = side === "front" ? frontInputRef : backInputRef
+      const galleryRef = side === "front" ? frontGalleryRef : backGalleryRef
+      const cameraRef = side === "front" ? frontCameraRef : backCameraRef
 
       onChange(fileKey, file)
       if (!file) {
         onChange(storageKey, null)
         setUploadErrors((prev) => ({ ...prev, [side]: undefined }))
+        setPhase((prev) => ({ ...prev, [side]: "idle" }))
+        return
+      }
+
+      if (!isAllowedIdUploadFile(file)) {
+        onChange(fileKey, null)
+        onChange(storageKey, null)
+        setUploadErrors((prev) => ({
+          ...prev,
+          [side]: "Please upload a photo (JPEG, PNG, or HEIC) or a PDF of your ID.",
+        }))
+        if (galleryRef.current) galleryRef.current.value = ""
+        if (cameraRef.current) cameraRef.current.value = ""
         return
       }
 
       onChange(uploadingKey, true)
+      setPhase((prev) => ({ ...prev, [side]: "preparing" }))
       setUploadErrors((prev) => ({ ...prev, [side]: undefined }))
 
       try {
+        const prepared = await prepareIdUploadFile(file)
+        onChange(fileKey, prepared)
+        setPhase((prev) => ({ ...prev, [side]: "uploading" }))
+
         const formData = new FormData()
-        formData.append("file", file)
+        formData.append("file", prepared)
         formData.append("side", side)
         formData.append("intakePrefix", intakePrefix)
 
         const res = await fetch("/api/intake/upload-id", { method: "POST", body: formData })
-        const data = await res.json().catch(() => ({}))
-        if (!res.ok) throw new Error(data.error || "Upload failed")
+        const data = await res.json().catch(() => ({} as { error?: string }))
+        if (!res.ok) throw new Error(messageForIdUploadFailure(res.status, data.error))
 
         onChange(storageKey, data.storageKey)
       } catch (err) {
@@ -77,7 +111,9 @@ export function IntakeIdentityPaymentSection({
         }))
       } finally {
         onChange(uploadingKey, false)
-        if (inputRef.current) inputRef.current.value = ""
+        setPhase((prev) => ({ ...prev, [side]: "idle" }))
+        if (galleryRef.current) galleryRef.current.value = ""
+        if (cameraRef.current) cameraRef.current.value = ""
       }
     },
     [intakePrefix, onChange]
@@ -95,91 +131,39 @@ export function IntakeIdentityPaymentSection({
           <Shield className="h-4 w-4" />
           <AlertTitle>Secure ID storage</AlertTitle>
           <AlertDescription>
-            Your ID is encrypted and stored in HIPAA-eligible storage. It is used only for telemedicine identity
-            verification.
+            Upload the <strong>front and back</strong> of your driver&apos;s license or state ID. You can take a
+            photo or choose a file (JPEG, PNG, HEIC, or PDF). Large iPhone photos are compressed automatically. Your
+            ID is encrypted and used only for telemedicine identity verification.
           </AlertDescription>
         </Alert>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2" data-field="idFrontFile">
-            <Label className={cn(isInvalid("idFrontFile") && "text-destructive")}>Photo ID - Front *</Label>
-            <div
-              className={cn(
-                "border-2 border-dashed rounded-lg p-4 text-center hover:border-primary/50 transition-colors",
-                isInvalid("idFrontFile") && "border-destructive ring-2 ring-destructive"
-              )}
-            >
-              <input
-                ref={frontInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif"
-                onChange={(e) => uploadId("front", e.target.files?.[0] || null)}
-                className="hidden"
-                id={`${idPrefix}-idFront`}
-              />
-              <label htmlFor={`${idPrefix}-idFront`} className="cursor-pointer block">
-                {values.idFrontUploading ? (
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Uploading...</span>
-                  </div>
-                ) : values.idFrontKey ? (
-                  <div className="flex items-center justify-center gap-2 text-green-600">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span className="text-sm">{values.idFrontFile?.name || "Front uploaded"}</span>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload front of ID</p>
-                  </div>
-                )}
-              </label>
-            </div>
-            {uploadErrors.front && (
-              <p className="text-sm text-destructive">{uploadErrors.front}</p>
-            )}
-          </div>
-
-          <div className="space-y-2" data-field="idBackFile">
-            <Label className={cn(isInvalid("idBackFile") && "text-destructive")}>Photo ID - Back *</Label>
-            <div
-              className={cn(
-                "border-2 border-dashed rounded-lg p-4 text-center hover:border-primary/50 transition-colors",
-                isInvalid("idBackFile") && "border-destructive ring-2 ring-destructive"
-              )}
-            >
-              <input
-                ref={backInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif"
-                onChange={(e) => uploadId("back", e.target.files?.[0] || null)}
-                className="hidden"
-                id={`${idPrefix}-idBack`}
-              />
-              <label htmlFor={`${idPrefix}-idBack`} className="cursor-pointer block">
-                {values.idBackUploading ? (
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Uploading...</span>
-                  </div>
-                ) : values.idBackKey ? (
-                  <div className="flex items-center justify-center gap-2 text-green-600">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span className="text-sm">{values.idBackFile?.name || "Back uploaded"}</span>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload back of ID</p>
-                  </div>
-                )}
-              </label>
-            </div>
-            {uploadErrors.back && (
-              <p className="text-sm text-destructive">{uploadErrors.back}</p>
-            )}
-          </div>
+          <IdSideUploader
+            side="front"
+            label="Photo ID - Front *"
+            inputId={`${idPrefix}-idFront`}
+            galleryRef={frontGalleryRef}
+            cameraRef={frontCameraRef}
+            invalid={isInvalid("idFrontFile")}
+            uploaded={Boolean(values.idFrontKey)}
+            fileName={values.idFrontFile?.name}
+            phase={phase.front}
+            error={uploadErrors.front}
+            onFile={(file) => uploadId("front", file)}
+          />
+          <IdSideUploader
+            side="back"
+            label="Photo ID - Back *"
+            inputId={`${idPrefix}-idBack`}
+            galleryRef={backGalleryRef}
+            cameraRef={backCameraRef}
+            invalid={isInvalid("idBackFile")}
+            uploaded={Boolean(values.idBackKey)}
+            fileName={values.idBackFile?.name}
+            phase={phase.back}
+            error={uploadErrors.back}
+            onFile={(file) => uploadId("back", file)}
+          />
         </div>
       </div>
 
@@ -218,6 +202,106 @@ export function IntakeIdentityPaymentSection({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+function IdSideUploader({
+  side,
+  label,
+  inputId,
+  galleryRef,
+  cameraRef,
+  invalid,
+  uploaded,
+  fileName,
+  phase,
+  error,
+  onFile,
+}: {
+  side: "front" | "back"
+  label: string
+  inputId: string
+  galleryRef: RefObject<HTMLInputElement | null>
+  cameraRef: RefObject<HTMLInputElement | null>
+  invalid: boolean
+  uploaded: boolean
+  fileName?: string
+  phase: UploadPhase
+  error?: string
+  onFile: (file: File | null) => void
+}) {
+  const busy = phase !== "idle"
+  const busyLabel = phase === "preparing" ? "Preparing photo..." : "Uploading..."
+
+  return (
+    <div className="space-y-2" data-field={side === "front" ? "idFrontFile" : "idBackFile"}>
+      <Label className={cn(invalid && "text-destructive")}>{label}</Label>
+      <div
+        className={cn(
+          "border-2 border-dashed rounded-lg p-4 text-center transition-colors",
+          invalid && "border-destructive ring-2 ring-destructive"
+        )}
+      >
+        <input
+          ref={galleryRef}
+          type="file"
+          accept={ID_FILE_ACCEPT}
+          onChange={(e) => onFile(e.target.files?.[0] || null)}
+          className="sr-only"
+          id={inputId}
+          disabled={busy}
+        />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={(e) => onFile(e.target.files?.[0] || null)}
+          className="sr-only"
+          id={`${inputId}-camera`}
+          disabled={busy}
+        />
+
+        {busy ? (
+          <div className="flex items-center justify-center gap-2 text-muted-foreground py-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">{busyLabel}</span>
+          </div>
+        ) : uploaded ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-center gap-2 text-green-600">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              <span className="text-sm break-all">{fileName || `${side === "front" ? "Front" : "Back"} uploaded`}</span>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => galleryRef.current?.click()}
+            >
+              Replace
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {side === "front" ? "Front of your ID" : "Back of your ID"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button type="button" size="sm" onClick={() => cameraRef.current?.click()}>
+                <Camera className="h-4 w-4" />
+                Take photo
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => galleryRef.current?.click()}>
+                <ImageIcon className="h-4 w-4" />
+                Choose file
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )
 }

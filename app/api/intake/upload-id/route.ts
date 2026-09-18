@@ -8,11 +8,23 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
   "image/heic",
   "image/heif",
+  "application/pdf",
 ])
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
+    let formData: FormData
+    try {
+      formData = await request.formData()
+    } catch {
+      return NextResponse.json(
+        {
+          error:
+            "This photo is too large to upload. Please use Take photo in the form so it can be compressed automatically.",
+        },
+        { status: 413 }
+      )
+    }
     const file = formData.get("file")
     const side = formData.get("side")
     const intakePrefix = String(formData.get("intakePrefix") || "draft").replace(/[^a-zA-Z0-9_-]/g, "")
@@ -25,10 +37,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "side must be front or back" }, { status: 400 })
     }
 
-    const contentType = resolveUploadMimeType(file, ALLOWED_TYPES, "image/jpeg")
+    const contentType = resolveUploadMimeType(file, ALLOWED_TYPES)
     if (!contentType) {
       return NextResponse.json(
-        { error: "Only JPEG, PNG, WebP, or HEIC license photos are allowed" },
+        { error: "Please upload a JPEG, PNG, HEIC, or PDF of your photo ID" },
         { status: 400 }
       )
     }

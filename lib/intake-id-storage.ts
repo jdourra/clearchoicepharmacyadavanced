@@ -3,7 +3,19 @@ import { randomUUID } from "crypto"
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
 import { getAwsCredentials, getIntakeIdBucket, getS3Client } from "@/lib/s3-env"
 
-const MAX_ID_BYTES = 10 * 1024 * 1024 // 10 MB
+const MAX_ID_BYTES = 10 * 1024 * 1024 // 10 MB — client compresses under Vercel’s 4.5MB body cap
+
+function extensionForStoredId(originalName: string, contentType: string): string {
+  const fromName = originalName.split(".").pop()?.toLowerCase() || ""
+  if (/^[a-z0-9]{2,5}$/.test(fromName) && fromName !== "blob") return fromName
+  const lower = contentType.toLowerCase()
+  if (lower.includes("pdf")) return "pdf"
+  if (lower.includes("png")) return "png"
+  if (lower.includes("webp")) return "webp"
+  if (lower.includes("heic")) return "heic"
+  if (lower.includes("heif")) return "heif"
+  return "jpg"
+}
 
 export type IdFileFetchError =
   | "bucket_not_configured"
@@ -28,11 +40,15 @@ export async function storeIdDocument(params: {
   intakePrefix: string
 }): Promise<{ storageKey: string; mode: "s3" | "dev" }> {
   if (params.file.length > MAX_ID_BYTES) {
-    throw new Error("ID image exceeds 10MB limit")
+    throw new Error(
+      "This file is too large to upload. Please photograph your ID in the form so it can be compressed automatically."
+    )
   }
 
-  const ext = params.originalName.split(".").pop()?.toLowerCase() || "jpg"
-  const storageKey = `intake-ids/${params.intakePrefix}/${params.side}-${randomUUID()}.${ext}`
+  const storageKey = `intake-ids/${params.intakePrefix}/${params.side}-${randomUUID()}.${extensionForStoredId(
+    params.originalName,
+    params.contentType
+  )}`
 
   const bucket = getIntakeIdBucket()
   if (bucket && getAwsCredentials()) {

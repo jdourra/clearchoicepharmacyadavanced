@@ -11,6 +11,8 @@ const EXT_TO_MIME: Record<string, string> = {
 const MIME_ALIASES: Record<string, string> = {
   "image/jpg": "image/jpeg",
   "image/pjpeg": "image/jpeg",
+  "image/heic-sequence": "image/heic",
+  "image/heif-sequence": "image/heif",
 }
 
 function normalizeMime(type: string): string {

@@ -6,6 +6,16 @@ import { getClinicalIntakeDetail, isAdminIntakeServiceType } from "@/lib/telehea
 
 type RouteParams = { params: Promise<{ serviceType: string; id: string }> }
 
+function extensionFromContentType(contentType: string): string {
+  const lower = contentType.toLowerCase()
+  if (lower.includes("png")) return "png"
+  if (lower.includes("webp")) return "webp"
+  if (lower.includes("pdf")) return "pdf"
+  if (lower.includes("heic")) return "heic"
+  if (lower.includes("heif")) return "heif"
+  return "jpg"
+}
+
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const staff = await staffAuth.getCurrentStaff(request)
@@ -50,7 +60,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const disposition = request.nextUrl.searchParams.get("download") === "1" ? "attachment" : "inline"
-    const filename = `id-${side}-${id}.${file.contentType.includes("png") ? "png" : "jpg"}`
+    const filename = `id-${side}-${id}.${extensionFromContentType(file.contentType)}`
 
     return new NextResponse(new Uint8Array(file.body), {
       headers: {
