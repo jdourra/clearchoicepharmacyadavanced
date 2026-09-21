@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
+        alt: "Clear Choice Pharmacy — Sildenafil and Tadalafil ED medication in Michigan",
       },
     ],
   },
@@ -81,15 +81,15 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
   },
   category: "health",
-  classification: "Medical Weight Loss, Semaglutide, Tirzepatide, Compounding Pharmacy",
+  classification: "ED Medication, Sildenafil, Tadalafil, Compounding Pharmacy",
   other: {
     "geo.region": "US-MI",
     "geo.placename": "Novi",
     "geo.position": "42.4806;-83.4755",
     ICBM: "42.4806, -83.4755",
     subject:
-      "Semaglutide and Tirzepatide medical weight loss in Michigan | Clear Choice Pharmacy Novi",
-    topic: "Medical Weight Loss",
+      "Sildenafil and Tadalafil ED medication in Michigan | Clear Choice Pharmacy Novi",
+    topic: "ED Medication",
     coverage: "Michigan",
     ...(process.env.GOOGLE_SITE_VERIFICATION
       ? { "google-site-verification": process.env.GOOGLE_SITE_VERIFICATION }
@@ -169,10 +169,10 @@ export default function RootLayout({
       itemListElement: [
         {
           "@type": "OfferCatalog",
-          name: "Semaglutide & Tirzepatide Weight Loss",
+          name: "Sildenafil & Tadalafil ED Medications",
           description:
-            "Provider-guided weight management with compounded Semaglutide and Tirzepatide after clinician review",
-          url: `${SITE_URL}/weight-loss`,
+            "Provider-reviewed ED medication with compounded Sildenafil, Tadalafil, and combination troches after clinician review",
+          url: `${SITE_URL}/mens-health`,
         },
         {
           "@type": "OfferCatalog",
@@ -189,9 +189,10 @@ export default function RootLayout({
         },
         {
           "@type": "OfferCatalog",
-          name: "ED Medications & TRT",
-          description: "Custom sublingual ED troches and physician-supervised testosterone replacement therapy",
-          url: `${SITE_URL}/mens-health`,
+          name: "Low-Cost ED Tablets",
+          description:
+            "Cash-pay generic Sildenafil and Tadalafil tablets with transparent pharmacy pricing",
+          url: `${SITE_URL}/prescriptions`,
         },
         {
           "@type": "OfferCatalog",
@@ -243,10 +244,11 @@ export default function RootLayout({
       availableLanguage: "English",
     },
     knowsAbout: [
-      "Semaglutide",
-      "Tirzepatide",
-      "Medical weight loss",
-      "GLP-1 weight management",
+      "Sildenafil",
+      "Tadalafil",
+      "ED medication",
+      "Erectile dysfunction medication",
+      "Compounded ED troches",
       "Compounding pharmacy",
     ],
   }

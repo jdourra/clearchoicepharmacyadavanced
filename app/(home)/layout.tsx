@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
+        alt: "Clear Choice Pharmacy — Sildenafil and Tadalafil ED medication in Michigan",
       },
     ],
   },
@@ -32,24 +32,24 @@ export const metadata: Metadata = {
 
 const homeFaqJsonLd = buildFaqJsonLd([
   {
-    question: "Do you offer Semaglutide and Tirzepatide weight loss in Michigan?",
+    question: "Do you offer Sildenafil and Tadalafil ED medication in Michigan?",
     answer:
-      "Yes. Clear Choice Pharmacy offers provider-guided weight management with compounded Semaglutide and Tirzepatide for qualifying Michigan patients after clinician review. Individual results may vary.",
+      "Yes. Clear Choice Pharmacy offers provider-reviewed Sildenafil, Tadalafil, and combination ED troches for qualifying Michigan patients after clinician review. Individual results may vary.",
   },
   {
-    question: "Is compounded Semaglutide the same as Ozempic?",
+    question: "Is Tadalafil the same as Cialis?",
     answer:
-      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. We compound Semaglutide pursuant to a patient-specific prescription when a clinician determines it is appropriate. We do not dispense brand-name Ozempic or Wegovy through this program.",
+      "Tadalafil is the active ingredient in brand-name Cialis. Clear Choice Pharmacy compounds Tadalafil troches pursuant to a patient-specific prescription. We do not sell brand-name Cialis through this program.",
   },
   {
-    question: "Who evaluates and who fills the medication?",
+    question: "Is Sildenafil the same as Viagra?",
     answer:
-      "A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear Choice Pharmacy compounds and fulfills approved prescriptions for Michigan patients.",
+      "Sildenafil is the active ingredient in brand-name Viagra. Our ED program compounds Sildenafil sublingual troches for qualifying patients after clinician review.",
   },
   {
-    question: "How do Semaglutide and Tirzepatide kits work?",
+    question: "How do ED troches work?",
     answer:
-      "After clinician approval, Clear Choice Pharmacy compounds a patient-specific kit with transparent cash-pay pricing. Review dosing, inclusions, and starter options on each program page.",
+      "Troches dissolve under the tongue so medication can absorb through the oral mucosa. This can support faster onset than swallowed tablets and helps avoid food-related delays.",
   },
 ])
 

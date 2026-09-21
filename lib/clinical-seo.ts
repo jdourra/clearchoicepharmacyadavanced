@@ -1,23 +1,22 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
-  "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy"
+  "Sildenafil & Tadalafil ED Medication in Michigan | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Novi. Transparent cash-pay pricing for qualifying patients."
+  "Provider-reviewed ED medication in Michigan with compounded Sildenafil, Tadalafil, and combination troches fulfilled discreetly by Clear Choice Pharmacy in Novi. Transparent cash-pay pricing for qualifying patients."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
-  { name: "Semaglutide & Tirzepatide Weight Loss", path: "/weight-loss" },
-  { name: "GLP-1 Weight Management", path: "/weight-loss/glp-1" },
-  { name: "Semaglutide Kits", path: "/weight-loss/semaglutide" },
-  { name: "Tirzepatide Kits", path: "/weight-loss/tirzepatide" },
-  { name: "Weight Loss Medications", path: "/weight-loss/medications" },
-  { name: "Weight Loss FAQ", path: "/weight-loss/faq" },
+  { name: "Sildenafil & Tadalafil ED Medication", path: "/mens-health" },
+  { name: "Sildenafil Troches", path: "/mens-health/ed/sildenafil-fast" },
+  { name: "Tadalafil Troches", path: "/mens-health/ed/tadalafil-daily" },
+  { name: "Sildenafil + Tadalafil Combination Troches", path: "/mens-health/ed/combination-troche" },
+  { name: "Low Cost Sildenafil Tablets", path: "/prescriptions/sildenafil" },
+  { name: "Low Cost Tadalafil Tablets", path: "/prescriptions/tadalafil" },
   { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
   { name: "Compounding", path: "/compounding" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
-  { name: "Tadalafil, Sildenafil & TRT", path: "/mens-health" },
   { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
   { name: "About", path: "/about" },
   { name: "Contact", path: "/contact" },
@@ -80,15 +79,16 @@ export const AREA_SERVED = [
 
 /** Short keyword list — rely on titles, H1s, and content rather than keyword stuffing. */
 export const SITE_KEYWORDS = [
-  "Semaglutide weight loss Michigan",
-  "Tirzepatide weight loss Michigan",
-  "Semaglutide Michigan",
-  "Tirzepatide Michigan",
-  "medical weight loss Michigan",
-  "compounded Semaglutide Novi",
-  "compounded Tirzepatide Novi",
-  "weight loss pharmacy Michigan",
-  "GLP-1 pharmacy Michigan",
+  "ED medication Michigan",
+  "erectile dysfunction medication Michigan",
+  "Sildenafil Michigan",
+  "Tadalafil Michigan",
+  "Sildenafil troches",
+  "Tadalafil troches",
+  "Viagra generic Michigan",
+  "Cialis generic Michigan",
+  "compounded ED medication Novi",
+  "ED meds Novi",
   "Clear Choice Pharmacy Novi",
 ]
 
