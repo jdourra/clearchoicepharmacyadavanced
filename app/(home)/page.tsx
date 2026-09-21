@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, MapPin, ShieldCheck, Stethoscope } from "lucide-react"
@@ -7,8 +8,96 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
+import { ED_FORMULATIONS } from "@/lib/ed-troche-catalog"
+import { formatUsd, getBestEdPlan, getEdDosesPerSupply } from "@/lib/pricing-clarity"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CASH_PAY_ED_TABLETS, type CashPayEdTabletSlug } from "@/lib/cash-pay-ed-tablets"
+import {
+  mapDbToHomeMedication,
+  type HomeMedication,
+  type PharmacyMedication,
+} from "@/lib/pharmacy-medication"
+
+const COMMERCIAL_ED_TABLETS: {
+  slug: CashPayEdTabletSlug
+  label: string
+  description: string
+}[] = [
+  {
+    slug: "sildenafil",
+    label: "Sildenafil tablets",
+    description: "Generic Viagra for as-needed use",
+  },
+  {
+    slug: "tadalafil",
+    label: "Tadalafil tablets",
+    description: "Generic Cialis for longer-duration support",
+  },
+]
+
+const EMPTY_TABLET_STRENGTHS: HomeMedication[] = []
 
 export default function HomePage() {
+  const [selectedTablet, setSelectedTablet] = useState<CashPayEdTabletSlug>("sildenafil")
+  const [tabletStrengths, setTabletStrengths] = useState<
+    Partial<Record<CashPayEdTabletSlug, HomeMedication[]>>
+  >({})
+  const [selectedTabletMedicationId, setSelectedTabletMedicationId] = useState("")
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadCommercialEdTablets() {
+      const entries = await Promise.all(
+        COMMERCIAL_ED_TABLETS.map(async (option) => {
+          const response = await fetch(
+            `/api/drugs?q=${encodeURIComponent(CASH_PAY_ED_TABLETS[option.slug].searchQuery)}&limit=100&prefix=1`
+          )
+          if (!response.ok) return [option.slug, []] as const
+
+          const data = await response.json()
+          const strengths = ((data.medications || []) as PharmacyMedication[])
+            .map(mapDbToHomeMedication)
+            .filter((med) => {
+              const form = med.form.toUpperCase()
+              return form.includes("TAB") || form.includes("CAP")
+            })
+            .sort((a, b) => {
+              const aMg = Number.parseFloat(a.strength)
+              const bMg = Number.parseFloat(b.strength)
+              if (Number.isFinite(aMg) && Number.isFinite(bMg) && aMg !== bMg) return aMg - bMg
+              return `${a.strength} ${a.form}`.localeCompare(`${b.strength} ${b.form}`)
+            })
+
+          return [option.slug, strengths] as const
+        })
+      )
+
+      if (!cancelled) {
+        setTabletStrengths(Object.fromEntries(entries))
+      }
+    }
+
+    loadCommercialEdTablets()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const selectedTabletGuide = CASH_PAY_ED_TABLETS[selectedTablet]
+  const selectedTabletStrengths = tabletStrengths[selectedTablet] ?? EMPTY_TABLET_STRENGTHS
+  const selectedTabletMedication =
+    selectedTabletStrengths.find((med) => med.id === selectedTabletMedicationId) ?? null
+  const selectedTabletHref = selectedTabletMedication
+    ? `/medications/${selectedTabletMedication.id}`
+    : selectedTabletGuide.path
+
+  useEffect(() => {
+    if (selectedTabletStrengths.some((med) => med.id === selectedTabletMedicationId)) return
+    setSelectedTabletMedicationId(selectedTabletStrengths[0]?.id ?? "")
+  }, [selectedTabletMedicationId, selectedTabletStrengths])
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -33,15 +122,15 @@ export default function HomePage() {
               Clear Choice Pharmacy · Novi, MI
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance max-w-2xl mb-3 sm:mb-4">
-              <span className="block text-sky-300">Semaglutide</span>
-              <span className="block text-sky-300">&amp; Tirzepatide</span>
+              <span className="block text-sky-300">ED Medications</span>
+              <span className="block text-sky-300">Sildenafil &amp; Tadalafil</span>
               <span className="block mt-1 text-white text-[0.72em] sm:text-[0.78em] font-bold leading-tight">
-                Weight Loss in Michigan
+                in Michigan
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
-              Provider-guided medical weight management with pharmacy-compounded Semaglutide and Tirzepatide kits after
-              licensed clinician review—fulfilled from Novi. Individual results may vary.
+              Provider-reviewed ED medication with pharmacy-compounded Sildenafil, Tadalafil, and combination
+              sublingual troches—fulfilled discreetly from Novi for qualifying Michigan patients.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
               <Button
@@ -49,8 +138,8 @@ export default function HomePage() {
                 size="lg"
                 className="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-lg shadow-sky-900/30"
               >
-                <Link href="/weight-loss">
-                  Explore Semaglutide &amp; Tirzepatide
+                <Link href="/mens-health#ed-troches">
+                  Shop ED Medications
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -60,79 +149,150 @@ export default function HomePage() {
                 variant="outline"
                 className="w-full sm:w-auto bg-white/10 border-white/35 text-white hover:bg-white/20 hover:text-white"
               >
-                <Link href="/weight-loss#programs">View kit pricing</Link>
+                <Link href="/mens-health">View ED pricing</Link>
               </Button>
             </div>
           </div>
         </section>
 
         <section className="py-10 md:py-14 bg-background border-b">
-          <div className="container max-w-5xl mx-auto px-4">
+          <div className="container max-w-6xl mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center mb-8 md:mb-10">
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Provider-guided kits</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">ED medication kits</p>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-balance">
-                Semaglutide &amp; Tirzepatide kits from $134/mo
+                Sildenafil &amp; Tadalafil options from $39/mo
               </h2>
               <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Transparent cash-pay pricing for qualifying Michigan patients after clinician review—physician review,
-                compounding, supplies, and shipping or pickup included.
+                Compare compounded sublingual troches with standard commercially available tablets. Troches require
+                clinician review; generic tablets use our low-cost prescription flow with strength and quantity
+                selection.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              {ED_FORMULATIONS.map((product) => {
+                const bestPlan = getBestEdPlan(product)
+                return (
+                  <Card key={product.id} className="overflow-hidden p-0 border-primary/25 bg-primary/5 flex flex-col">
+                    <div className="relative aspect-[4/3] w-full bg-muted/40">
+                      <Image
+                        src={product.image.src}
+                        alt={product.image.alt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover object-center"
+                      />
+                    </div>
+                    <div className="p-6 flex flex-col flex-1">
+                      <h3 className="text-2xl md:text-3xl font-bold tracking-tight">{product.name}</h3>
+                      <p className="text-sm text-primary font-medium mt-1">{product.subtitle}</p>
+                      <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">{product.description}</p>
+                      <p className="text-2xl font-bold text-primary mb-1">
+                        {formatUsd(bestPlan.pricePerMonth)}
+                        <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-4">
+                        About {formatUsd(bestPlan.pricePerDose, 2)}/dose ·{" "}
+                        {getEdDosesPerSupply(product.id)} troches per 30 days
+                      </p>
+                      <Button asChild size="sm" className="w-fit">
+                        <Link href={`/mens-health/ed/${product.id}`}>
+                          View {product.name}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </Card>
+                )
+              })}
               <Card className="overflow-hidden p-0 border-primary/25 bg-primary/5 flex flex-col">
-                <div className="relative aspect-[4/3] w-full bg-muted/40">
-                  <Image
-                    src="/images/semaglutide-vial.png"
-                    alt="Compounded Semaglutide injection vial"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-contain object-center p-4"
-                  />
+                <div className="relative aspect-[4/3] w-full bg-muted/40 flex items-center justify-center p-6">
+                  <div className="rounded-2xl border bg-background p-5 text-center shadow-sm w-full">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">Commercial tablets</p>
+                    <p className="text-3xl font-bold tracking-tight">Generic ED</p>
+                    <p className="text-sm text-muted-foreground mt-1">Viagra &amp; Cialis alternatives</p>
+                  </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
-                  <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
-                    Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 90-day
-                    starter billing for qualifying Michigan patients after clinician review.
+                  <h3 className="text-2xl md:text-3xl font-bold tracking-tight">ED Tablets</h3>
+                  <p className="text-sm text-primary font-medium mt-1">Sildenafil or Tadalafil</p>
+                  <p className="text-sm text-muted-foreground mt-3 mb-4">
+                    Choose the commercial ED tablet and exact strength first, then continue to quantity and cash-pay
+                    pricing.
                   </p>
-                  <Button asChild size="sm" className="w-fit">
-                    <Link href="/weight-loss/semaglutide">
-                      View Semaglutide kits
-                      <ArrowRight className="ml-2 h-4 w-4" />
+
+                  <div className="space-y-3 mt-auto">
+                    <div>
+                      <label
+                        htmlFor="commercial-ed-tablet"
+                        className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      >
+                        Medication
+                      </label>
+                      <Select
+                        value={selectedTablet}
+                        onValueChange={(value) => setSelectedTablet(value as CashPayEdTabletSlug)}
+                      >
+                        <SelectTrigger id="commercial-ed-tablet" className="mt-1 w-full">
+                          <SelectValue placeholder="Choose medication" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {COMMERCIAL_ED_TABLETS.map((option) => (
+                            <SelectItem key={option.slug} value={option.slug}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="commercial-ed-strength"
+                        className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      >
+                        Strength
+                      </label>
+                      {selectedTabletStrengths.length > 0 ? (
+                        <Select value={selectedTabletMedicationId} onValueChange={setSelectedTabletMedicationId}>
+                          <SelectTrigger id="commercial-ed-strength" className="mt-1 w-full">
+                            <SelectValue placeholder="Choose strength" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedTabletStrengths.map((med) => (
+                              <SelectItem key={med.id} value={med.id}>
+                                {med.strength} {med.form.toLowerCase()}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="mt-1 rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground">
+                          Strengths load when the prescription database is available.
+                        </div>
+                      )}
+                    </div>
+
+                    <Button asChild size="sm" className="w-full">
+                      <Link href={selectedTabletHref}>
+                        {selectedTabletMedication ? "Continue to quantity" : "Search strengths"}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Link
+                      href="/learn/viagra-vs-cialis-best-ed-medication"
+                      className="block text-center text-xs text-primary hover:underline"
+                    >
+                      Compare Viagra vs Cialis, fastest onset, and longest duration
                     </Link>
-                  </Button>
-                </div>
-              </Card>
-              <Card className="overflow-hidden p-0 border-primary/25 bg-primary/5 flex flex-col">
-                <div className="relative aspect-[4/3] w-full bg-muted/40">
-                  <Image
-                    src="/images/tirzepatide-vial.png"
-                    alt="Compounded Tirzepatide injection vial"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-contain object-center p-4"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Tirzepatide</h3>
-                  <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
-                    Dual-pathway support for patients whose clinician recommends Tirzepatide. Kits from $149/mo on
-                    90-day starter billing after provider approval.
-                  </p>
-                  <Button asChild size="sm" className="w-fit">
-                    <Link href="/weight-loss/tirzepatide">
-                      View Tirzepatide kits
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  </div>
                 </div>
               </Card>
             </div>
             <p className="text-xs text-muted-foreground">
-              Compounded medications are prepared pursuant to a patient-specific prescription. They are not the same as
-              FDA-approved brand-name Ozempic, Wegovy, Zepbound, or Mounjaro.{" "}
-              <Link href="/weight-loss/medications" className="text-primary hover:underline">
-                Compare weight loss medications
+              Compounded ED medications are prepared pursuant to a patient-specific prescription after clinical review.
+              Standard Sildenafil and Tadalafil tablets are separate low-cost prescription options.{" "}
+              <Link href="/mens-health#ed-troches" className="text-primary hover:underline">
+                Compare ED medication options
               </Link>
               .
             </p>
@@ -152,7 +312,7 @@ export default function HomePage() {
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                <span>Pharmacy-compounded · transparent pricing</span>
+                <span>Discreet fulfillment · transparent pricing</span>
               </li>
             </ul>
           </div>
@@ -161,47 +321,47 @@ export default function HomePage() {
         <section className="py-12 md:py-16 bg-background">
           <div className="container max-w-5xl mx-auto px-4">
             <div className="max-w-3xl mb-10">
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Weight management</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">ED medication</p>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                Why choose Clear Choice Pharmacy for weight management
+                Why choose Clear Choice Pharmacy for ED meds
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Clear Choice Pharmacy helps qualifying Michigan patients access provider-guided Semaglutide and
-                Tirzepatide weight management. A licensed clinician reviews your intake before any prescription is
-                written. When appropriate, our Novi pharmacy compounds and fulfills patient-specific kits with clear
-                cash-pay pricing—no membership fee surprises.
+                Clear Choice Pharmacy helps qualifying Michigan patients access provider-reviewed Sildenafil,
+                Tadalafil, and dual-action ED troches. A licensed clinician reviews your intake before any prescription
+                is written. When appropriate, our Novi pharmacy compounds and fulfills patient-specific medication with
+                clear cash-pay pricing and discreet delivery.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 mb-12">
               <Card className="p-5">
-                <h3 className="font-semibold mb-2">How the program works</h3>
+                <h3 className="font-semibold mb-2">How ED treatment works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Choose a kit, complete a secure intake, and upload your photo ID. Your clinician reviews
-                  eligibility. If approved, you pay at the pharmacy, then we prepare your kit.
+                  Choose an ED medication, complete a secure intake, and upload your photo ID. Your clinician reviews
+                  safety and eligibility. If approved, Clear Choice prepares your medication.
                 </p>
-                <Link href="/weight-loss#how-it-works" className="text-sm text-primary hover:underline">
+                <Link href="/mens-health#ed-troches" className="text-sm text-primary hover:underline">
                   See program steps
                 </Link>
               </Card>
               <Card className="p-5">
-                <h3 className="font-semibold mb-2">Semaglutide &amp; Tirzepatide</h3>
+                <h3 className="font-semibold mb-2">Sildenafil &amp; Tadalafil</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Compare how these therapies support appetite regulation and weight management under clinical
-                  supervision—and how compounded options differ from brand-name products.
+                  Compare fast-acting Sildenafil, extended-duration Tadalafil, and dual-action combination troches
+                  compounded for sublingual use after clinical review.
                 </p>
-                <Link href="/weight-loss/medications" className="text-sm text-primary hover:underline">
-                  Compare medication options
+                <Link href="/mens-health#ed-troches" className="text-sm text-primary hover:underline">
+                  Compare ED medication options
                 </Link>
               </Card>
               <Card className="p-5">
-                <h3 className="font-semibold mb-2">Who may be a candidate</h3>
+                <h3 className="font-semibold mb-2">Private clinical review</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Eligibility depends on clinical review—BMI, health history, and contraindications matter. Medication
-                  is never automatic without an appropriate evaluation.
+                  Eligibility depends on clinical review—heart history, blood pressure, nitrate use, and other
+                  contraindications matter. Medication is never automatic without evaluation.
                 </p>
-                <Link href="/weight-loss/faq" className="text-sm text-primary hover:underline">
-                  Read weight loss FAQ
+                <Link href="/mens-health" className="text-sm text-primary hover:underline">
+                  Read ED medication FAQ
                 </Link>
               </Card>
             </div>
@@ -209,9 +369,9 @@ export default function HomePage() {
             <div className="rounded-lg border bg-muted/30 p-6 md:p-8">
               <h2 className="text-xl font-bold mb-3">Michigan service area</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Clear Choice Pharmacy is located at 40890 Grand River Ave in Novi and currently dispenses clinical
-                weight management programs to qualifying Michigan patients. We commonly serve patients from Novi,
-                Northville, Farmington Hills, Wixom, South Lyon, and greater Metro Detroit.
+                Clear Choice Pharmacy is located at 40890 Grand River Ave in Novi and currently dispenses ED medication
+                programs to qualifying Michigan patients. We commonly serve patients from Novi, Northville, Farmington
+                Hills, Wixom, South Lyon, and greater Metro Detroit.
               </p>
               <Link href="/contact" className="text-sm text-primary hover:underline">
                 Contact the pharmacy
@@ -222,15 +382,15 @@ export default function HomePage() {
 
         <section className="py-12 md:py-16 bg-primary text-primary-foreground">
           <div className="container max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start weight management?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start ED medication?</h2>
             <p className="text-sm opacity-90 mb-8 max-w-xl mx-auto">
-              Review how provider-guided weight management works, compare Semaglutide and Tirzepatide kits, or call{" "}
-              (248) 987-6182 with questions. A clinician must evaluate eligibility before any medication is prescribed.
+              Review Sildenafil, Tadalafil, and combination troche options, or call (248) 987-6182 with questions. A
+              clinician must evaluate eligibility before any ED medication is prescribed.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" variant="secondary">
-                <Link href="/weight-loss">
-                  Explore Semaglutide &amp; Tirzepatide
+                <Link href="/mens-health#ed-troches">
+                  Shop ED Medications
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -240,8 +400,8 @@ export default function HomePage() {
                 variant="outline"
                 className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
               >
-                <Link href="/weight-loss/faq">
-                  Weight loss FAQ
+                <Link href="/mens-health">
+                  ED medication FAQ
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -255,47 +415,47 @@ export default function HomePage() {
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
                 <h3 className="font-semibold text-lg mb-2">
-                  Do you offer Semaglutide and Tirzepatide weight loss in Michigan?
+                  Do you offer Sildenafil and Tadalafil ED medication in Michigan?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. Clear Choice Pharmacy offers provider-guided weight management with compounded Semaglutide and
-                  Tirzepatide for qualifying Michigan patients after clinician review. Individual results may vary.{" "}
-                  <Link href="/weight-loss" className="text-primary hover:underline">
-                    Explore the medical weight loss program
+                  Yes. Clear Choice Pharmacy offers provider-reviewed Sildenafil, Tadalafil, and combination ED troches
+                  for qualifying Michigan patients after clinician review. Individual results may vary.{" "}
+                  <Link href="/mens-health#ed-troches" className="text-primary hover:underline">
+                    Explore ED medication options
                   </Link>
                   .
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Is compounded Semaglutide the same as Ozempic?</h3>
+                <h3 className="font-semibold text-lg mb-2">Is Tadalafil the same as Cialis?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. We compound
-                  Semaglutide pursuant to a patient-specific prescription when a clinician determines it is appropriate.
-                  We do not dispense brand-name Ozempic or Wegovy through this program.{" "}
-                  <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
-                    Learn about Semaglutide kits
+                  Tadalafil is the active ingredient in brand-name Cialis. Clear Choice Pharmacy compounds Tadalafil
+                  troches pursuant to a patient-specific prescription. We do not sell brand-name Cialis through this
+                  program.{" "}
+                  <Link href="/mens-health/ed/tadalafil-daily" className="text-primary hover:underline">
+                    Learn about Tadalafil troches
                   </Link>
                   .
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Who evaluates and who fills the medication?</h3>
+                <h3 className="font-semibold text-lg mb-2">Is Sildenafil the same as Viagra?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear
-                  Choice Pharmacy compounds and fulfills approved prescriptions for Michigan patients.{" "}
-                  <Link href="/about" className="text-primary hover:underline">
-                    About Clear Choice Pharmacy
+                  Sildenafil is the active ingredient in brand-name Viagra. Our ED program compounds Sildenafil
+                  sublingual troches for qualifying patients after clinician review.{" "}
+                  <Link href="/mens-health/ed/sildenafil-fast" className="text-primary hover:underline">
+                    Learn about Sildenafil troches
                   </Link>
                   .
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">How do Semaglutide and Tirzepatide kits work?</h3>
+                <h3 className="font-semibold text-lg mb-2">How do ED troches work?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  After clinician approval, Clear Choice Pharmacy compounds a patient-specific kit with transparent
-                  cash-pay pricing. Review dosing, inclusions, and starter options on each program page.{" "}
-                  <Link href="/weight-loss/medications" className="text-primary hover:underline">
-                    Compare medication options
+                  Troches dissolve under the tongue so medication can absorb through the oral mucosa. This can support
+                  faster onset than swallowed tablets and helps avoid food-related delays.{" "}
+                  <Link href="/mens-health" className="text-primary hover:underline">
+                    Read the ED medication FAQ
                   </Link>
                   .
                 </p>
@@ -310,11 +470,12 @@ export default function HomePage() {
               <h2 className="text-2xl font-bold text-foreground mb-4">About Clear Choice Pharmacy</h2>
               <p className="leading-relaxed mb-4">
                 Clear Choice Pharmacy is a Novi, Michigan compounding pharmacy focused on{" "}
-                <Link href="/weight-loss" className="text-primary hover:underline">
-                  provider-guided Semaglutide and Tirzepatide weight management
+                <Link href="/mens-health#ed-troches" className="text-primary hover:underline">
+                  provider-reviewed ED medication
                 </Link>
-                . Kits are prepared after licensed clinician review for qualifying Michigan patients. Individual results
-                may vary. This content is informational and does not replace medical advice from your provider.
+                . Sildenafil, Tadalafil, and combination troches are prepared after licensed clinician review for
+                qualifying Michigan patients. Individual results may vary. This content is informational and does not
+                replace medical advice from your provider.
               </p>
               <p className="leading-relaxed">
                 Serving Novi, Northville, Farmington Hills, Wixom, South Lyon, and Metro Detroit communities.{" "}

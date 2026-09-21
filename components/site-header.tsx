@@ -71,13 +71,13 @@ export function SiteHeader() {
     { href: "/compounding", label: "Compounding pharmacy" },
   ]
 
-  const weightLossLinks = [
-    { href: "/weight-loss", label: "Medical weight loss overview" },
-    { href: "/weight-loss/glp-1", label: "GLP-1 weight management" },
-    { href: "/weight-loss/semaglutide", label: "Semaglutide kits" },
-    { href: "/weight-loss/tirzepatide", label: "Tirzepatide kits" },
-    { href: "/weight-loss/medications", label: "Weight loss medications" },
-    { href: "/weight-loss/faq", label: "Weight loss FAQ" },
+  const edMedicationLinks = [
+    { href: "/mens-health#ed-troches", label: "ED medication overview" },
+    { href: "/mens-health/ed/sildenafil-fast", label: "Sildenafil troches" },
+    { href: "/mens-health/ed/tadalafil-daily", label: "Tadalafil troches" },
+    { href: "/mens-health/ed/combination-troche", label: "Sildenafil + Tadalafil troches" },
+    { href: "/sildenafil", label: "Low cost Sildenafil tablets" },
+    { href: "/tadalafil", label: "Low cost Tadalafil tablets" },
   ]
 
   const clinicalLinks = [
@@ -85,7 +85,7 @@ export function SiteHeader() {
     { href: "/prescriptions", label: "Low cost prescription drugs" },
     { href: "/compounding", label: "Compounding" },
     { href: "/specialty-pharmacy", label: "Specialty pharmacy" },
-    { href: "/mens-health", label: "Men's health (ED & TRT)" },
+    { href: "/mens-health", label: "ED medications & men's health" },
     { href: "/iv-rejuvenation", label: "Mobile IV therapy" },
     { href: "/about", label: "About us" },
     { href: "/contact", label: "Contact" },
@@ -141,9 +141,9 @@ export function SiteHeader() {
                 </SheetHeader>
                 <nav className="flex flex-col px-2 py-4 overflow-y-auto max-h-[calc(100vh-5rem)]">
                   <div className="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Medical Weight Loss
+                    ED Medications
                   </div>
-                  {weightLossLinks.map((link) => (
+                  {edMedicationLinks.map((link) => (
                     <SheetClose asChild key={link.href}>
                       <Link
                         href={link.href}
@@ -249,7 +249,7 @@ export function SiteHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-5">
-          <NavHoverMenu label="Medical Weight Loss" links={weightLossLinks} menuClassName="w-60" />
+          <NavHoverMenu label="ED Medications" links={edMedicationLinks} menuClassName="w-64" />
           <NavHoverMenu label="Medications" links={medicationLinks} menuClassName="w-56" />
           <NavHoverMenu label="Services" links={clinicalLinks} menuClassName="w-56" />
           {mounted && user && (

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { IV_PACKAGE_IDS } from "@/lib/iv-catalog"
 import { VIAL_PRODUCT_IDS } from "@/lib/rejuvenation-vial-catalog"
 import { getLearnArticles } from "@/lib/learn-articles"
+import { CASH_PAY_ED_TABLET_ALIAS_SLUGS } from "@/lib/cash-pay-ed-tablets"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
@@ -36,6 +37,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.88,
   }))
 
+  const edTabletAliasPages: MetadataRoute.Sitemap = CASH_PAY_ED_TABLET_ALIAS_SLUGS.map((slug) => ({
+    url: `${baseUrl}/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority:
+      slug === "sildenafil" || slug === "tadalafil" || slug === "viagra" || slug === "cialis" ? 0.94 : 0.9,
+  }))
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -48,18 +57,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/prescriptions/sildenafil`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.92,
-    },
-    {
-      url: `${baseUrl}/prescriptions/tadalafil`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.92,
     },
     {
       url: `${baseUrl}/medications`,
@@ -95,13 +92,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/mens-health`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.85,
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/mens-health/start`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.93,
     },
     {
       url: `${baseUrl}/mens-health/trt/start`,
@@ -113,19 +110,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/mens-health/ed/sildenafil-fast`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.88,
+      priority: 0.92,
     },
     {
       url: `${baseUrl}/mens-health/ed/tadalafil-daily`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.88,
+      priority: 0.92,
     },
     {
       url: `${baseUrl}/mens-health/ed/combination-troche`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.88,
+      priority: 0.92,
     },
     {
       url: `${baseUrl}/mens-health/trt/testosterone-cypionate`,
@@ -144,42 +141,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.88,
-    },
-    {
-      url: `${baseUrl}/weight-loss`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.95,
-    },
-    {
-      url: `${baseUrl}/weight-loss/glp-1`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/weight-loss/medications`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/weight-loss/faq`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.88,
-    },
-    {
-      url: `${baseUrl}/weight-loss/semaglutide`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/weight-loss/tirzepatide`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
     },
     {
       url: `${baseUrl}/about`,
@@ -223,7 +184,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     if (!process.env.DATABASE_URL) {
-      return [...staticPages, ...learnPages, ...ivPackagePages, ...vialProductPages]
+      return [...staticPages, ...edTabletAliasPages, ...learnPages, ...ivPackagePages, ...vialProductPages]
     }
 
     const { sql } = await import("@/lib/db")
@@ -241,5 +202,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Failed to load medications from database:", error)
   }
 
-  return [...staticPages, ...learnPages, ...ivPackagePages, ...vialProductPages, ...medicationPages]
+  return [...staticPages, ...edTabletAliasPages, ...learnPages, ...ivPackagePages, ...vialProductPages, ...medicationPages]
 }
