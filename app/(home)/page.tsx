@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, MapPin, ShieldCheck, Stethoscope } from "lucide-react"
@@ -9,8 +10,62 @@ import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
 import { ED_FORMULATIONS } from "@/lib/ed-troche-catalog"
 import { formatUsd, getBestEdPlan, getEdDosesPerSupply } from "@/lib/pricing-clarity"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CASH_PAY_ED_TABLETS, type CashPayEdTabletSlug } from "@/lib/cash-pay-ed-tablets"
+import { fetchPopularMedication, type HomeMedication } from "@/lib/pharmacy-medication"
+
+const COMMERCIAL_ED_TABLETS: {
+  slug: CashPayEdTabletSlug
+  label: string
+  description: string
+}[] = [
+  {
+    slug: "sildenafil",
+    label: "Sildenafil tablets",
+    description: "Generic Viagra for as-needed use",
+  },
+  {
+    slug: "tadalafil",
+    label: "Tadalafil tablets",
+    description: "Generic Cialis for longer-duration support",
+  },
+]
 
 export default function HomePage() {
+  const [selectedTablet, setSelectedTablet] = useState<CashPayEdTabletSlug>("sildenafil")
+  const [tabletMedications, setTabletMedications] = useState<
+    Partial<Record<CashPayEdTabletSlug, HomeMedication | null>>
+  >({})
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadCommercialEdTablets() {
+      const entries = await Promise.all(
+        COMMERCIAL_ED_TABLETS.map(async (option) => [
+          option.slug,
+          await fetchPopularMedication(CASH_PAY_ED_TABLETS[option.slug].searchQuery),
+        ] as const)
+      )
+
+      if (!cancelled) {
+        setTabletMedications(Object.fromEntries(entries))
+      }
+    }
+
+    loadCommercialEdTablets()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const selectedTabletGuide = CASH_PAY_ED_TABLETS[selectedTablet]
+  const selectedTabletMedication = tabletMedications[selectedTablet]
+  const selectedTabletHref = selectedTabletMedication
+    ? `/medications/${selectedTabletMedication.id}`
+    : selectedTabletGuide.path
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -125,6 +180,76 @@ export default function HomePage() {
               </Link>
               .
             </p>
+          </div>
+        </section>
+
+        <section id="commercial-ed-tablets" className="py-10 md:py-14 bg-slate-50 border-b">
+          <div className="container max-w-5xl mx-auto px-4">
+            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">
+                  Commercial ED tablets
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-balance mb-3">
+                  Prefer generic Viagra or Cialis tablets?
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl">
+                  Choose a commercially available ED medication to see cash-pay tablet pricing. The next page lets you
+                  choose strength and quantity using the same low-cost prescription pricing flow: Drug Cost + 15% + $5.
+                </p>
+              </div>
+
+              <Card className="p-5 bg-background shadow-sm">
+                <label
+                  htmlFor="commercial-ed-tablet"
+                  className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+                >
+                  Select ED tablet
+                </label>
+                <Select
+                  value={selectedTablet}
+                  onValueChange={(value) => setSelectedTablet(value as CashPayEdTabletSlug)}
+                >
+                  <SelectTrigger id="commercial-ed-tablet" className="mt-3 w-full">
+                    <SelectValue placeholder="Choose Sildenafil or Tadalafil" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COMMERCIAL_ED_TABLETS.map((option) => (
+                      <SelectItem key={option.slug} value={option.slug}>
+                        {option.label} · {CASH_PAY_ED_TABLETS[option.slug].brandReference} generic
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className="mt-4 rounded-md border bg-muted/30 p-3">
+                  <p className="font-medium text-sm">{selectedTabletGuide.genericName}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {COMMERCIAL_ED_TABLETS.find((option) => option.slug === selectedTablet)?.description}
+                  </p>
+                  {selectedTabletMedication ? (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Opens {selectedTabletMedication.strength} {selectedTabletMedication.form.toLowerCase()} so you
+                      can adjust quantity and compare price.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Opens the low-cost {selectedTabletGuide.genericName} page where you can search by strength.
+                    </p>
+                  )}
+                </div>
+
+                <Button asChild className="mt-4 w-full">
+                  <Link href={selectedTabletHref}>
+                    Choose strength &amp; quantity
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <p className="text-xs text-muted-foreground mt-3">
+                  These are standard prescription tablets, separate from compounded sublingual troches.
+                </p>
+              </Card>
+            </div>
           </div>
         </section>
 
