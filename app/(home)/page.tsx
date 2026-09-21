@@ -35,10 +35,10 @@ export default function HomePage() {
               Clear Choice Pharmacy · Novi, MI
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance max-w-2xl mb-3 sm:mb-4">
-              <span className="block text-sky-300">Sildenafil</span>
-              <span className="block text-sky-300">&amp; Tadalafil</span>
+              <span className="block text-sky-300">ED Medications</span>
+              <span className="block text-sky-300">Sildenafil &amp; Tadalafil</span>
               <span className="block mt-1 text-white text-[0.72em] sm:text-[0.78em] font-bold leading-tight">
-                ED Medication in Michigan
+                in Michigan
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
