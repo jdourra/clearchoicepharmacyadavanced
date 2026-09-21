@@ -278,6 +278,12 @@ export default function HomePage() {
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
+                    <Link
+                      href="/learn/viagra-vs-cialis-best-ed-medication"
+                      className="block text-center text-xs text-primary hover:underline"
+                    >
+                      Compare Viagra vs Cialis, fastest onset, and longest duration
+                    </Link>
                   </div>
                 </div>
               </Card>
