@@ -12,8 +12,8 @@ export const SITE_NAV_LINKS = [
   { name: "Sildenafil Troches", path: "/mens-health/ed/sildenafil-fast" },
   { name: "Tadalafil Troches", path: "/mens-health/ed/tadalafil-daily" },
   { name: "Sildenafil + Tadalafil Combination Troches", path: "/mens-health/ed/combination-troche" },
-  { name: "Low Cost Sildenafil Tablets", path: "/prescriptions/sildenafil" },
-  { name: "Low Cost Tadalafil Tablets", path: "/prescriptions/tadalafil" },
+  { name: "Low Cost Sildenafil Tablets", path: "/sildenafil" },
+  { name: "Low Cost Tadalafil Tablets", path: "/tadalafil" },
   { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
   { name: "Compounding", path: "/compounding" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
@@ -262,7 +262,7 @@ export const PRESCRIPTIONS_FAQS: FaqItem[] = [
   {
     question: "Do you offer low cost Cialis or Viagra generics?",
     answer:
-      "Yes. We fill cash-pay generic Tadalafil tablets (Cialis active ingredient) and Sildenafil tablets (Viagra active ingredient) with the same Drug Cost + 15% + $5 formula. See /prescriptions/tadalafil and /prescriptions/sildenafil. These are standard tablets—not compounded troches.",
+      "Yes. We fill cash-pay generic Tadalafil tablets (Cialis active ingredient) and Sildenafil tablets (Viagra active ingredient) with the same Drug Cost + 15% + $5 formula. See /tadalafil and /sildenafil. These are standard tablets—not compounded troches.",
   },
   {
     question: "Do I need insurance?",

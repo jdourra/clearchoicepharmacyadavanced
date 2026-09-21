@@ -244,11 +244,11 @@ export default function PrescriptionsPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes. We fill cash-pay generic Tadalafil tablets (the active ingredient in Cialis) and Sildenafil
                   tablets (the active ingredient in Viagra) using the same Drug Cost + 15% + $5 formula. See{" "}
-                  <Link href="/prescriptions/tadalafil" className="text-primary hover:underline">
+                  <Link href="/tadalafil" className="text-primary hover:underline">
                     low cost Tadalafil
                   </Link>{" "}
                   and{" "}
-                  <Link href="/prescriptions/sildenafil" className="text-primary hover:underline">
+                  <Link href="/sildenafil" className="text-primary hover:underline">
                     low cost Sildenafil
                   </Link>
                   . These are standard tablets—not compounded troches.

@@ -459,7 +459,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     updatedAt: "2026-07-21",
     readingMinutes: 6,
     primaryKeyword: "low cost cialis",
-    serviceHref: "/prescriptions/tadalafil",
+    serviceHref: "/tadalafil",
     serviceCta: "Look up low cost Tadalafil tablets",
     relatedSlugs: [
       "viagra-vs-cialis-best-ed-medication",
@@ -538,7 +538,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     updatedAt: "2026-07-21",
     readingMinutes: 6,
     primaryKeyword: "low cost sildenafil",
-    serviceHref: "/prescriptions/sildenafil",
+    serviceHref: "/sildenafil",
     serviceCta: "Look up low cost Sildenafil tablets",
     relatedSlugs: [
       "viagra-vs-cialis-best-ed-medication",

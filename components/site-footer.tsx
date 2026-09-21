@@ -68,12 +68,12 @@ export function SiteFooter() {
                 Combination ED troches
               </Link>
               <Link
-                href="/prescriptions/sildenafil"
+                href="/sildenafil"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Low cost Sildenafil tablets
               </Link>
-              <Link href="/prescriptions/tadalafil" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/tadalafil" className="text-muted-foreground hover:text-foreground transition-colors">
                 Low cost Tadalafil tablets
               </Link>
               <Link href="/learn" className="text-muted-foreground hover:text-foreground transition-colors">

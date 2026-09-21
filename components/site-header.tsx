@@ -76,8 +76,8 @@ export function SiteHeader() {
     { href: "/mens-health/ed/sildenafil-fast", label: "Sildenafil troches" },
     { href: "/mens-health/ed/tadalafil-daily", label: "Tadalafil troches" },
     { href: "/mens-health/ed/combination-troche", label: "Sildenafil + Tadalafil troches" },
-    { href: "/prescriptions/sildenafil", label: "Low cost Sildenafil tablets" },
-    { href: "/prescriptions/tadalafil", label: "Low cost Tadalafil tablets" },
+    { href: "/sildenafil", label: "Low cost Sildenafil tablets" },
+    { href: "/tadalafil", label: "Low cost Tadalafil tablets" },
   ]
 
   const clinicalLinks = [
