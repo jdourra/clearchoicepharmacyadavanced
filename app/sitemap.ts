@@ -146,42 +146,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.88,
     },
     {
-      url: `${baseUrl}/weight-loss`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.82,
-    },
-    {
-      url: `${baseUrl}/weight-loss/glp-1`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.78,
-    },
-    {
-      url: `${baseUrl}/weight-loss/medications`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.78,
-    },
-    {
-      url: `${baseUrl}/weight-loss/faq`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.75,
-    },
-    {
-      url: `${baseUrl}/weight-loss/semaglutide`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.78,
-    },
-    {
-      url: `${baseUrl}/weight-loss/tirzepatide`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.78,
-    },
-    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: "monthly",
