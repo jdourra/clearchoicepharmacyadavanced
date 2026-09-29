@@ -1,40 +1,37 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { useState } from "react"
-import { saveSession } from "@/lib/session"
 import { SiteLogo } from "@/components/site-logo"
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
-
+    setMessage(null)
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       })
-      const data = await res.json()
-      if (!res.ok) {
-        throw new Error(data.error || "Invalid email or password")
-      }
-      saveSession(data.sessionId)
-      window.location.href = "/"
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Invalid email or password")
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || "Could not send the reset email.")
+      setMessage(data.message || "If an account exists for that email, we sent a link to reset the password.")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send the reset email.")
+    } finally {
       setIsLoading(false)
     }
   }
@@ -48,11 +45,11 @@ export default function LoginPage() {
           </div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>Enter your credentials to access your account</CardDescription>
+              <CardTitle className="text-2xl">Forgot password</CardTitle>
+              <CardDescription>We will email you a link to choose a new password.</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
@@ -65,33 +62,15 @@ export default function LoginPage() {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
-                      <Link href="/auth/forgot-password" className="text-sm underline underline-offset-4 text-primary">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
                   {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
+                  {message && <div className="text-sm bg-muted p-3 rounded-md">{message}</div>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Login"}
-                  </Button>
-                  <Button type="button" variant="outline" className="w-full bg-transparent" asChild>
-                    <Link href="/">Continue Shopping as Guest</Link>
+                    {isLoading ? "Sending..." : "Send reset link"}
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">
-                  {"Don't have an account? "}
-                  <Link href="/auth/sign-up" className="underline underline-offset-4 text-primary">
-                    Sign up
+                  <Link href="/auth/login" className="underline underline-offset-4 text-primary">
+                    Back to login
                   </Link>
                 </div>
               </form>
