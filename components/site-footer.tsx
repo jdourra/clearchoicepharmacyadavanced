@@ -38,43 +38,46 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed pt-1">
-              Michigan pharmacy focused on provider-guided medical weight management and GLP-1 care, with full-service
-              prescriptions and compounding.
+              Michigan pharmacy focused on provider-reviewed ED medication, low-cost prescriptions, and patient-specific
+              compounding.
             </p>
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Medical Weight Loss</h3>
+            <h3 className="font-semibold text-foreground">ED Medications</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <Link href="/weight-loss" className="text-muted-foreground hover:text-foreground transition-colors">
-                Medical weight loss program
-              </Link>
-              <Link href="/weight-loss/glp-1" className="text-muted-foreground hover:text-foreground transition-colors">
-                GLP-1 weight management
+              <Link href="/mens-health#ed-troches" className="text-muted-foreground hover:text-foreground transition-colors">
+                ED medication overview
               </Link>
               <Link
-                href="/weight-loss/semaglutide"
+                href="/mens-health/ed/sildenafil-fast"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Semaglutide kits
+                Sildenafil troches
               </Link>
               <Link
-                href="/weight-loss/tirzepatide"
+                href="/mens-health/ed/tadalafil-daily"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Tirzepatide kits
+                Tadalafil troches
               </Link>
               <Link
-                href="/weight-loss/medications"
+                href="/mens-health/ed/combination-troche"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Weight loss medications
+                Combination ED troches
               </Link>
-              <Link href="/weight-loss/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                Weight loss FAQ
+              <Link
+                href="/sildenafil"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Low cost Sildenafil tablets
+              </Link>
+              <Link href="/tadalafil" className="text-muted-foreground hover:text-foreground transition-colors">
+                Low cost Tadalafil tablets
               </Link>
               <Link href="/learn" className="text-muted-foreground hover:text-foreground transition-colors">
-                Weight management guides
+                ED medication guides
               </Link>
             </div>
           </div>

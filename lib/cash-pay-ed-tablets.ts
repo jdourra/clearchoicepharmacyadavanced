@@ -24,7 +24,7 @@ export const CASH_PAY_ED_TABLETS: Record<CashPayEdTabletSlug, CashPayEdTabletGui
     genericName: "Sildenafil",
     brandReference: "Viagra",
     searchQuery: "Sildenafil",
-    path: "/prescriptions/sildenafil",
+    path: "/sildenafil",
     pageTitle: "Low Cost Sildenafil (Viagra Generic) Tablets | Cash-Pay | Clear Choice Pharmacy",
     metaDescription:
       "Low cost Sildenafil tablets—the generic for Viagra—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Novi.",
@@ -67,7 +67,7 @@ export const CASH_PAY_ED_TABLETS: Record<CashPayEdTabletSlug, CashPayEdTabletGui
     genericName: "Tadalafil",
     brandReference: "Cialis",
     searchQuery: "Tadalafil",
-    path: "/prescriptions/tadalafil",
+    path: "/tadalafil",
     pageTitle: "Low Cost Tadalafil (Cialis Generic) Tablets | Cash-Pay | Clear Choice Pharmacy",
     metaDescription:
       "Low cost Tadalafil tablets—the generic for Cialis—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Novi.",
@@ -108,6 +108,21 @@ export const CASH_PAY_ED_TABLETS: Record<CashPayEdTabletSlug, CashPayEdTabletGui
 }
 
 export const CASH_PAY_ED_TABLET_SLUGS: CashPayEdTabletSlug[] = ["sildenafil", "tadalafil"]
+
+export const CASH_PAY_ED_TABLET_ALIAS_SLUGS = [
+  "sildenafil",
+  "viagra",
+  "generic-viagra",
+  "low-cost-sildenafil",
+  "low-cost-viagra",
+  "cheap-viagra",
+  "tadalafil",
+  "cialis",
+  "generic-cialis",
+  "low-cost-tadalafil",
+  "low-cost-cialis",
+  "cheap-cialis",
+] as const
 
 /** Map common brand / search slugs to the cash-pay tablet guide. */
 const DRUG_ALIASES: Record<string, CashPayEdTabletSlug> = {

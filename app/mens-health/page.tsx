@@ -298,6 +298,9 @@ export default function MensHealthPage() {
         />
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild variant="outline">
+            <Link href="/learn/viagra-vs-cialis-best-ed-medication">Viagra vs Cialis</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link href="/learn/tadalafil-vs-cialis">Tadalafil vs Cialis</Link>
           </Button>
           <Button asChild variant="outline">
