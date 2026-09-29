@@ -21,14 +21,6 @@ import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -38,6 +30,7 @@ import { formatPhoneInput, formatPhoneDisplay } from "@/lib/phone"
 import toast from "react-hot-toast"
 import type { Order, Message } from "@/lib/auth-types"
 import { getOrderPayPath, isOrderPaid } from "@/lib/order-payment"
+import { prescriptionMethodLabel, type PrescriptionMethod } from "@/lib/order-prescription"
 import type {
   ClinicalProgramSubmission,
   PatientPortalData,
@@ -302,12 +295,7 @@ export function PatientPortalContent() {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrdersTab
-                orders={orders}
-                clinicalPrograms={clinicalPrograms}
-                prescriptions={prescriptions}
-                onReordered={reloadPortal}
-              />
+              <OrdersTab orders={orders} clinicalPrograms={clinicalPrograms} onReordered={reloadPortal} />
             </TabsContent>
 
             <TabsContent value="messages">
@@ -422,126 +410,19 @@ function MessagesTab({
   )
 }
 
-function formatOrderDate(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return "—"
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-}
-
-function normalizeMedicationName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()
-}
-
-function findPrescription(
-  drugName: string,
-  prescriptions: PortalPrescription[]
-): PortalPrescription | undefined {
-  const needle = normalizeMedicationName(drugName)
-  if (!needle) return undefined
-  return prescriptions.find((rx) => {
-    const hay = normalizeMedicationName(rx.medication_name)
-    if (!hay) return false
-    if (hay.includes(needle) || needle.includes(hay)) return true
-    return needle.split(" ").some((word) => word.length > 4 && hay.includes(word))
-  })
-}
-
-function isShippedStatus(status: string): boolean {
-  const value = status.toLowerCase()
-  return value === "shipped" || value === "completed" || value === "dispatched" || value.includes("shipped")
-}
-
-function programDrugLabel(program: ClinicalProgramSubmission): string {
-  if (program.reorderSummary) return program.reorderSummary
-  if (program.subtitle) {
-    return program.subtitle.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
-  }
-  return program.title
-}
-
-function formatMoney(amount: number): string {
-  return `$${amount.toFixed(2)}`
-}
-
-type MedicationTableRow = {
-  key: string
-  drugName: string
-  orderedAt: string
-  refills: string
-  doctor: string
-  amount: string
-  status: string
-  shipped: boolean
-  detailHref: string
-  reorder?: { intakeId: string; summary?: string }
-  payHref?: string
-}
-
-function medicationRows(
-  orders: Order[],
-  clinicalPrograms: ClinicalProgramSubmission[],
-  prescriptions: PortalPrescription[]
-): MedicationTableRow[] {
-  const rows: MedicationTableRow[] = []
-
-  for (const program of clinicalPrograms) {
-    const drugName = programDrugLabel(program)
-    const rx =
-      findPrescription(drugName, prescriptions) ??
-      findPrescription(program.subtitle || program.title, prescriptions)
-    rows.push({
-      key: `${program.type}-${program.id}`,
-      drugName,
-      orderedAt: program.submittedAt,
-      refills: rx?.refills_remaining != null ? String(rx.refills_remaining) : "—",
-      doctor: rx?.prescriber_name || "—",
-      amount: program.paymentStatusLabel || "—",
-      status: program.status,
-      shipped: isShippedStatus(program.status),
-      detailHref: program.href,
-      reorder: program.canReorder
-        ? { intakeId: program.id, summary: program.reorderSummary }
-        : undefined,
-    })
-  }
-
-  for (const order of orders) {
-    const items = (order.items || []).filter((item) => item.drug_name)
-    const lines =
-      items.length > 0
-        ? items
-        : [{ drug_name: `Order #${order.order_number}`, quantity: 1, price: order.total_amount || 0 }]
-    const paid = isOrderPaid(order)
-    lines.forEach((item, index) => {
-      const rx = findPrescription(item.drug_name, prescriptions)
-      const lineAmount = lines.length === 1 ? order.total_amount || Number(item.price) || 0 : Number(item.price) || 0
-      rows.push({
-        key: `${order.id}-${index}`,
-        drugName: item.drug_name,
-        orderedAt: order.created_at,
-        refills: rx?.refills_remaining != null ? String(rx.refills_remaining) : "—",
-        doctor: rx?.prescriber_name || "—",
-        amount: paid ? formatMoney(lineAmount) : "Unpaid",
-        status: order.status,
-        shipped: isShippedStatus(order.status),
-        detailHref: `/account/orders/${order.id}`,
-        payHref: paid ? undefined : getOrderPayPath(order.id),
-      })
-    })
-  }
-
-  return rows.sort((a, b) => new Date(b.orderedAt).getTime() - new Date(a.orderedAt).getTime())
+function orderAcceptsPayment(order: Order): boolean {
+  if (isOrderPaid(order)) return false
+  const status = order.status.toLowerCase()
+  return !["cancelled", "completed", "shipped", "delivered"].includes(status)
 }
 
 function OrdersTab({
   orders,
   clinicalPrograms,
-  prescriptions,
   onReordered,
 }: {
   orders: Order[]
   clinicalPrograms: ClinicalProgramSubmission[]
-  prescriptions: PortalPrescription[]
   onReordered: () => void
 }) {
   if (orders.length === 0 && clinicalPrograms.length === 0) {
@@ -566,64 +447,148 @@ function OrdersTab({
     )
   }
 
-  const rows = medicationRows(orders, clinicalPrograms, prescriptions)
-
   return (
-    <Card>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Drug</TableHead>
-              <TableHead>Last ordered</TableHead>
-              <TableHead>Refills remaining</TableHead>
-              <TableHead>Doctor</TableHead>
-              <TableHead>Amount paid</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Shipped</TableHead>
-              <TableHead>Reorder</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.key}>
-                <TableCell className="whitespace-normal font-medium min-w-40">
-                  <Link href={row.detailHref} className="hover:underline">
-                    {row.drugName}
-                  </Link>
-                </TableCell>
-                <TableCell>{formatOrderDate(row.orderedAt)}</TableCell>
-                <TableCell>{row.refills}</TableCell>
-                <TableCell className="whitespace-normal">{row.doctor}</TableCell>
-                <TableCell>{row.amount}</TableCell>
-                <TableCell>
-                  <Badge variant={portalStatusVariant(row.status)}>{formatPortalStatus(row.status)}</Badge>
-                </TableCell>
-                <TableCell>{row.shipped ? "Yes" : "No"}</TableCell>
-                <TableCell>
-                  {row.reorder ? (
-                    <GlpReorderButton
-                      intakeId={row.reorder.intakeId}
-                      summary={row.reorder.summary}
-                      onReordered={onReordered}
-                    />
-                  ) : row.payHref ? (
+    <div className="flex flex-col gap-6">
+      {clinicalPrograms.length > 0 && (
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold">Medical program intakes</h2>
+            <p className="text-sm text-muted-foreground">
+              GLP-1 weight loss and other clinical programs appear here. Prescription checkout orders are listed below.
+            </p>
+          </div>
+          {clinicalPrograms.map((program) => {
+            const Icon = programIcon(program.type)
+            return (
+              <Card key={`${program.type}-${program.id}`}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex gap-4">
+                      <Icon className="h-8 w-8 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-lg">{program.title}</p>
+                        {program.subtitle && (
+                          <p className="text-sm text-muted-foreground capitalize">{program.subtitle}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Reference {program.id} · Submitted{" "}
+                          {new Date(program.submittedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 self-start">
+                      <Badge variant={portalStatusVariant(program.status)}>
+                        {formatPortalStatus(program.status)}
+                      </Badge>
+                      {program.paymentStatusLabel && (
+                        <Badge variant="outline">{program.paymentStatusLabel}</Badge>
+                      )}
+                    </div>
+                  </div>
+                  {program.type === "weight_loss" &&
+                    program.paymentStatus === "awaiting_pharmacy" && (
+                      <p className="text-sm text-muted-foreground mt-4">
+                        After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
+                        Call (248) 987-6182 with questions.
+                      </p>
+                    )}
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    {program.canReorder ? (
+                      <GlpReorderButton
+                        intakeId={program.id}
+                        summary={program.reorderSummary}
+                        onReordered={onReordered}
+                      />
+                    ) : null}
+                    <Button asChild variant="link" className="px-0 h-auto">
+                      <Link href={program.href}>View program details</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+
+      {orders.length > 0 && (
+        <div className="space-y-4">
+          {clinicalPrograms.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold">Prescription orders</h2>
+              <p className="text-sm text-muted-foreground">Medications ordered through the pharmacy catalog.</p>
+            </div>
+          )}
+          {orders.map((order) => (
+            <Card key={order.id}>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-lg">Order #{order.order_number}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(order.created_at).toLocaleDateString()} at{" "}
+                      {new Date(order.created_at).toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-xl text-primary">${(order.total_amount || 0).toFixed(2)}</p>
+                    <div className="flex gap-2 justify-end mt-1">
+                      <Badge variant={portalStatusVariant(order.status)}>{formatPortalStatus(order.status)}</Badge>
+                      <Badge variant="outline">{formatPortalStatus(order.payment_status)}</Badge>
+                    </div>
+                  </div>
+                </div>
+                {order.items && order.items.length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm font-medium mb-2">Items</p>
+                    <ul className="flex flex-col gap-1">
+                      {order.items.map((item, idx) => (
+                        <li key={idx} className="text-sm text-muted-foreground">
+                          {item.drug_name} — Qty {item.quantity} — ${(item.price || 0).toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {orderAcceptsPayment(order) && (
+                  <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {order.payment_preference === "pay_by_phone"
+                        ? "We'll call you to collect payment."
+                        : "Pay now for faster processing, or wait for our pharmacy to call you."}
+                    </p>
                     <Button asChild size="sm">
-                      <Link href={row.payHref}>
+                      <Link href={getOrderPayPath(order.id)}>
                         <CreditCard className="h-4 w-4 mr-2" />
-                        Pay
+                        Choose payment option
                       </Link>
                     </Button>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="text-sm text-muted-foreground">
+                    {order.prescription_method ? (
+                      <span>
+                        Prescription:{" "}
+                        {prescriptionMethodLabel(order.prescription_method as PrescriptionMethod)}
+                      </span>
+                    ) : (
+                      <span className="text-amber-700 font-medium">Prescription info needed</span>
+                    )}
+                  </div>
+                  <Button asChild size="sm" variant="outline" className="bg-transparent">
+                    <Link href={`/account/orders/${order.id}`}>
+                      <FileText className="h-4 w-4 mr-2" />
+                      Manage order & prescription
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
