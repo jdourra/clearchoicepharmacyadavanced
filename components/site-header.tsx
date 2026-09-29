@@ -9,7 +9,6 @@ import {
   Printer,
   Menu,
 } from "lucide-react"
-import { ClinicianDelayBanner } from "@/components/clinician-delay-banner"
 import { SiteLogo } from "@/components/site-logo"
 import {
   PHARMACY_FAX_DISPLAY,
@@ -91,7 +90,6 @@ export function SiteHeader() {
   ]
 
   return (
-    <>
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="w-full bg-primary text-primary-foreground">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 py-1.5 text-xs sm:text-sm">
@@ -307,7 +305,5 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-    <ClinicianDelayBanner />
-    </>
   )
 }
