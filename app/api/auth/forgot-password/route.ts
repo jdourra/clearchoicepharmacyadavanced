@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         error:
           status === 400
             ? message
-            : "We could not send the reset email. Call (810) 309-8222 and we will help you sign in.",
+            : "We could not send the reset email. Call (248) 987-6182 and we will help you sign in.",
       },
       { status }
     )

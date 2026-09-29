@@ -118,11 +118,11 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                   </p>
                   <div className="space-y-3">
                     <a
-                      href="tel:+18103098222"
+                      href="tel:+12489876182"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
                       <Phone className="h-4 w-4" />
-                      (810) 309-8222
+                      (248) 987-6182
                     </a>
                     <a
                       href="mailto:info@clearchoicepharmacy.com"

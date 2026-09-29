@@ -21,7 +21,7 @@ We're happy to help with:
 Look up prices: ${prescriptionsUrl}
 Build a medication list: ${medicationsUrl}
 
-Reply to this email or call us at (810) 309-8222 if you have any questions. No pressure — we're here when you're ready.
+Reply to this email or call us at (248) 987-6182 if you have any questions. No pressure — we're here when you're ready.
 
 — Clear Choice Pharmacy
 40890 Grand River Ave, Novi, MI 48375
@@ -42,7 +42,7 @@ ${CONTACT_EMAIL}`
     <a href="${prescriptionsUrl}" style="display: inline-block; background: #0d9488; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">Look up prescription prices</a>
   </p>
   <p><a href="${medicationsUrl}">Build your medication cost list</a></p>
-  <p>Reply to this email or call us at <a href="tel:+18103098222">(810) 309-8222</a> if you have any questions. No pressure — we're here when you're ready.</p>
+  <p>Reply to this email or call us at <a href="tel:+12489876182">(248) 987-6182</a> if you have any questions. No pressure — we're here when you're ready.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
     40890 Grand River Ave, Novi, MI 48375<br>

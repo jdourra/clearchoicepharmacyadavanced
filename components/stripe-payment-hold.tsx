@@ -176,7 +176,7 @@ export function StripePaymentHold({ amount, email, serviceType, onAuthorized, in
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          Payment form is not configured yet. Enter your email above, then refresh — or call (810) 309-8222 for help.
+          Payment form is not configured yet. Enter your email above, then refresh — or call (248) 987-6182 for help.
         </AlertDescription>
       </Alert>
     )

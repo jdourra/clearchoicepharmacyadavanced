@@ -24,7 +24,7 @@ ${orderLine}
 You can also read this message in your patient portal:
 ${portalUrl}
 
-Questions? Call (810) 309-8222 or reply to this email.
+Questions? Call (248) 987-6182 or reply to this email.
 
 — Clear Choice Pharmacy`
 

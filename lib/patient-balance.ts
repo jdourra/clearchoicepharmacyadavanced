@@ -181,7 +181,7 @@ export async function createAndEmailBalanceRequest(params: {
       "Please pay securely using this link:",
       url,
       "",
-      "If you have questions, reply to this email or call (810) 309-8222.",
+      "If you have questions, reply to this email or call (248) 987-6182.",
       "",
       "Clear Choice Pharmacy",
       "40890 Grand River Ave, Novi, MI 48375",
@@ -192,7 +192,7 @@ export async function createAndEmailBalanceRequest(params: {
       <p><strong>Reason:</strong> ${escapeHtml(description)}</p>
       <p><a href="${url}" style="display:inline-block;background:#0f766e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Pay ${amountLabel} now</a></p>
       <p style="font-size:13px;color:#555;">Or open this link:<br/><a href="${url}">${url}</a></p>
-      <p>Questions? Reply to this email or call (810) 309-8222.</p>
+      <p>Questions? Reply to this email or call (248) 987-6182.</p>
       <p>Clear Choice Pharmacy<br/>40890 Grand River Ave, Novi, MI 48375</p>
     `,
   })

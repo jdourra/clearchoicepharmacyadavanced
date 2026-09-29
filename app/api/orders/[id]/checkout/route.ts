@@ -48,7 +48,7 @@ export async function POST(
         })
       }
       return NextResponse.json(
-        { error: "Online payment is not configured. Please call (810) 309-8222." },
+        { error: "Online payment is not configured. Please call (248) 987-6182." },
         { status: 503 }
       )
     }

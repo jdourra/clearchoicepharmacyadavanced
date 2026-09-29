@@ -37,7 +37,7 @@ ${CONTACT_EMAIL}`
   <p>${greeting}</p>
   <p>Your <strong>${params.serviceLabel}</strong> intake (Reference: <strong>${params.submissionId}</strong>) has been approved by a licensed clinician.</p>
   <p>${amountLine.replace("Amount due:", "<strong>Amount due:</strong>")}</p>
-  <p>Visit us or call <a href="tel:+18103098222">${PRIMARY_PHYSICIAN.pharmacyPhone}</a> to arrange payment. Once paid, we prepare and ship your medication.</p>
+  <p>Visit us or call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a> to arrange payment. Once paid, we prepare and ship your medication.</p>
   <p style="margin: 24px 0;">
     <a href="${accountUrl}" style="display: inline-block; background: #0d9488; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">View your patient portal</a>
   </p>
@@ -79,7 +79,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
   <p>Great news — your <strong>${params.serviceLabel}</strong> order (Reference: <strong>${params.submissionId}</strong>) has <strong>shipped</strong> from Clear Choice Pharmacy.</p>
   <p>You should receive it within a few business days depending on shipping.</p>
   <p><a href="${accountUrl}">View your patient portal</a></p>
-  <p>Questions? Call <a href="tel:+18103098222">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
+  <p>Questions? Call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">— Clear Choice Pharmacy</p>
 </body>
 </html>`

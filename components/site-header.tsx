@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import {
   ShoppingCart,
   User,
@@ -10,7 +9,7 @@ import {
   Printer,
   Menu,
 } from "lucide-react"
-import { ClinicianDelayBanner, shouldShowClinicianDelayBanner } from "@/components/clinician-delay-banner"
+import { ClinicianDelayBanner } from "@/components/clinician-delay-banner"
 import { SiteLogo } from "@/components/site-logo"
 import {
   PHARMACY_FAX_DISPLAY,
@@ -40,7 +39,6 @@ import {
 import { NavHoverMenu } from "@/components/nav-hover-menu"
 
 export function SiteHeader() {
-  const pathname = usePathname()
   const [user, setUser] = useState<AuthUser | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -309,7 +307,7 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-    {shouldShowClinicianDelayBanner(pathname) ? <ClinicianDelayBanner /> : null}
+    <ClinicianDelayBanner />
     </>
   )
 }

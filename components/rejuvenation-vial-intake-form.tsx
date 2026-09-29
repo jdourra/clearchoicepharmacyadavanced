@@ -420,8 +420,8 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
             )}
           </Button>
           <Button variant="outline" className="w-full" asChild>
-            <a href="tel:+18103098222">
-              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (810) 309-8222
+            <a href="tel:+12489876182">
+              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (248) 987-6182
             </a>
           </Button>
         </CardFooter>

@@ -46,12 +46,12 @@ We will hold your intake as submitted. You do not need to fill out the form agai
 
 For the delay, we will apply a 10% courtesy discount to your order if treatment is approved.
 
-If you have questions, or if you would rather cancel while you wait, call us at (810) 309-8222 or reply to this email.
+If you have questions, or if you would rather cancel while you wait, call us at (248) 987-6182 or reply to this email.
 
 Thank you for your patience,
 Clear Choice Pharmacy
 40890 Grand River Ave, Novi, MI
-(810) 309-8222`
+(248) 987-6182`
 }
 
 const SOURCES = [

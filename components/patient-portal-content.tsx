@@ -483,7 +483,7 @@ function OrdersTab({
                     program.paymentStatus === "awaiting_pharmacy" && (
                       <p className="text-sm text-muted-foreground mt-4">
                         After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
-                        Call (810) 309-8222 with questions.
+                        Call (248) 987-6182 with questions.
                       </p>
                     )}
                   <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -666,7 +666,7 @@ function ProgramsTab({
             Intakes submitted with <strong>{`your account email`}</strong> will show up here with review status.
           </p>
           <p className="text-sm text-muted-foreground mb-6">
-            Already submitted with a different email? Call (810) 309-8222 to link your records.
+            Already submitted with a different email? Call (248) 987-6182 to link your records.
           </p>
           <Button asChild>
             <Link href="/services">Explore clinical programs</Link>
@@ -709,7 +709,7 @@ function ProgramsTab({
               {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
                 <p className="text-sm text-muted-foreground mt-4">
                   After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
-                  Call (810) 309-8222 with questions.
+                  Call (248) 987-6182 with questions.
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-4">
