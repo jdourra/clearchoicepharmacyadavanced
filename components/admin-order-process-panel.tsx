@@ -456,6 +456,27 @@ export function AdminOrderProcessPanel({
                   </SelectContent>
                 </Select>
               </div>
+              {order.status !== "cancelled" &&
+              order.status !== "shipped" &&
+              order.status !== "delivered" &&
+              order.status !== "completed" ? (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    const paid = isOrderPaid(order)
+                    const confirmed = window.confirm(
+                      paid
+                        ? "This order is already paid. Cancelling does not refund the patient. Continue?"
+                        : "Cancel this order because the patient asked to stop?"
+                    )
+                    if (confirmed) void handleStatusChange("cancelled")
+                  }}
+                >
+                  Cancel — patient requested
+                </Button>
+              ) : null}
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Payment</span>
                 <Badge

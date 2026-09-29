@@ -55,6 +55,7 @@ import {
 
 import type { AdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 import { AdminIntakePharmacyFulfillmentPanel } from "@/components/admin-intake-pharmacy-fulfillment"
+import { AdminIntakeCancelPanel } from "@/components/admin-intake-cancel-panel"
 
 const RX_SERVICES = new Set([
   "weight_loss",
@@ -544,6 +545,15 @@ export function AdminIntakeDetailView({
 
               {portal === "admin" && (
                 <AdminIntakePharmacyFulfillmentPanel
+                  serviceType={serviceType}
+                  intakeId={id}
+                  detail={detail}
+                  onUpdated={onReload}
+                />
+              )}
+
+              {portal === "admin" && (
+                <AdminIntakeCancelPanel
                   serviceType={serviceType}
                   intakeId={id}
                   detail={detail}
