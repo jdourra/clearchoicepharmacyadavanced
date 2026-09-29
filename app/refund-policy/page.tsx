@@ -30,7 +30,7 @@ export default function RefundPolicyPage() {
         <a href="mailto:info@clearchoicepharmacy.com" className="text-primary hover:underline">
           info@clearchoicepharmacy.com
         </a>{" "}
-        · <a href="tel:+12489876182" className="text-primary hover:underline">(248) 987-6182</a>
+        · <a href="tel:+18103098222" className="text-primary hover:underline">(810) 309-8222</a>
       </p>
     </LegalPageShell>
   )

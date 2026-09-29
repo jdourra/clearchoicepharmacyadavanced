@@ -1,7 +1,7 @@
 import type { Order, OrderItem } from "@/lib/auth-types"
 import { SITE_URL } from "@/lib/site-config"
 
-const PHARMACY_PHONE = "(248) 987-6182"
+const PHARMACY_PHONE = "(810) 309-8222"
 
 function formatCurrency(amount: number): string {
   return `$${amount.toFixed(2)}`

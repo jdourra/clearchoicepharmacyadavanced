@@ -491,7 +491,7 @@ export default function CheckoutPage() {
                               <div className="bg-muted/50 rounded-lg p-4 text-sm">
                                 <p className="font-semibold mb-2">Clear Choice Pharmacy</p>
                                 <p className="text-muted-foreground">40890 Grand River Ave, Novi, MI 48375</p>
-                                <p className="text-muted-foreground">Phone: (248) 987-6182</p>
+                                <p className="text-muted-foreground">Phone: (810) 309-8222</p>
                                 <p className="text-muted-foreground">Fax: (248) 987-4963</p>
                               </div>
 

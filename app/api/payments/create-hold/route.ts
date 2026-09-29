@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Payment processing is not configured. Please call (248) 987-6182 to complete your booking.",
+            "Payment processing is not configured. Please call (810) 309-8222 to complete your booking.",
         },
         { status: 503 }
       )
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Payment form is not fully configured. Please call (248) 987-6182 to complete your booking.",
+            "Payment form is not fully configured. Please call (810) 309-8222 to complete your booking.",
         },
         { status: 503 }
       )

@@ -19,7 +19,7 @@ If you had a good experience, would you take a minute to leave us a Google revie
 
 Leave a Google review: ${reviewUrl}
 
-If anything could have gone better, please reply to this email or call us at (248) 987-6182 — we'd rather hear from you directly so we can make it right.
+If anything could have gone better, please reply to this email or call us at (810) 309-8222 — we'd rather hear from you directly so we can make it right.
 
 — Clear Choice Pharmacy
 40890 Grand River Ave, Novi, MI 48375
@@ -35,7 +35,7 @@ ${siteUrl}`
   <p style="margin: 24px 0;">
     <a href="${reviewUrl}" style="display: inline-block; background: #0d9488; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">Leave a Google review</a>
   </p>
-  <p>If anything could have gone better, please reply to this email or call us at <a href="tel:+12489876182">(248) 987-6182</a> — we'd rather hear from you directly so we can make it right.</p>
+  <p>If anything could have gone better, please reply to this email or call us at <a href="tel:+18103098222">(810) 309-8222</a> — we'd rather hear from you directly so we can make it right.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
     40890 Grand River Ave, Novi, MI 48375<br>

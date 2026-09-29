@@ -38,6 +38,7 @@ import type {
 } from "@/lib/patient-portal-types"
 import { formatPortalStatus, portalStatusVariant } from "@/lib/patient-portal-types"
 import { PatientTherapyTimelineTable } from "@/components/patient-therapy-timeline-table"
+import { GlpReorderButton } from "@/components/glp-reorder-button"
 import type { TherapyTimelineResult } from "@/lib/patient-therapy-timeline"
 
 interface PatientProfile {
@@ -155,6 +156,12 @@ export function PatientPortalContent() {
   const prescriptions = portal?.prescriptions ?? []
   const clinicalPrograms = portal?.clinicalPrograms ?? []
   const unreadCount = messages.filter((m) => !m.is_read).length
+
+  const reloadPortal = () => {
+    void authFetch("/api/patient-portal").then(async (res) => {
+      if (res.ok) setPortal(await res.json())
+    })
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -288,7 +295,7 @@ export function PatientPortalContent() {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrdersTab orders={orders} clinicalPrograms={clinicalPrograms} />
+              <OrdersTab orders={orders} clinicalPrograms={clinicalPrograms} onReordered={reloadPortal} />
             </TabsContent>
 
             <TabsContent value="messages">
@@ -308,7 +315,7 @@ export function PatientPortalContent() {
             </TabsContent>
 
             <TabsContent value="programs">
-              <ProgramsTab programs={clinicalPrograms} />
+              <ProgramsTab programs={clinicalPrograms} onReordered={reloadPortal} />
             </TabsContent>
 
             <TabsContent value="therapy">
@@ -406,9 +413,11 @@ function MessagesTab({
 function OrdersTab({
   orders,
   clinicalPrograms,
+  onReordered,
 }: {
   orders: Order[]
   clinicalPrograms: ClinicalProgramSubmission[]
+  onReordered: () => void
 }) {
   if (orders.length === 0 && clinicalPrograms.length === 0) {
     return (
@@ -474,12 +483,21 @@ function OrdersTab({
                     program.paymentStatus === "awaiting_pharmacy" && (
                       <p className="text-sm text-muted-foreground mt-4">
                         After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
-                        Call (248) 987-6182 with questions.
+                        Call (810) 309-8222 with questions.
                       </p>
                     )}
-                  <Button asChild variant="link" className="px-0 mt-2 h-auto">
-                    <Link href={program.href}>View program details</Link>
-                  </Button>
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    {program.canReorder ? (
+                      <GlpReorderButton
+                        intakeId={program.id}
+                        summary={program.reorderSummary}
+                        onReordered={onReordered}
+                      />
+                    ) : null}
+                    <Button asChild variant="link" className="px-0 h-auto">
+                      <Link href={program.href}>View program details</Link>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )
@@ -631,7 +649,13 @@ function PrescriptionsTab({ prescriptions }: { prescriptions: PortalPrescription
   )
 }
 
-function ProgramsTab({ programs }: { programs: ClinicalProgramSubmission[] }) {
+function ProgramsTab({
+  programs,
+  onReordered,
+}: {
+  programs: ClinicalProgramSubmission[]
+  onReordered: () => void
+}) {
   if (programs.length === 0) {
     return (
       <Card>
@@ -642,7 +666,7 @@ function ProgramsTab({ programs }: { programs: ClinicalProgramSubmission[] }) {
             Intakes submitted with <strong>{`your account email`}</strong> will show up here with review status.
           </p>
           <p className="text-sm text-muted-foreground mb-6">
-            Already submitted with a different email? Call (248) 987-6182 to link your records.
+            Already submitted with a different email? Call (810) 309-8222 to link your records.
           </p>
           <Button asChild>
             <Link href="/services">Explore clinical programs</Link>
@@ -685,15 +709,24 @@ function ProgramsTab({ programs }: { programs: ClinicalProgramSubmission[] }) {
               {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
                 <p className="text-sm text-muted-foreground mt-4">
                   After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
-                  Call (248) 987-6182 with questions.
+                  Call (810) 309-8222 with questions.
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-4">
                 A licensed provider or our pharmacy team will update you by email when your status changes. Clinical intakes are reviewed by a licensed Michigan clinician.
               </p>
-              <Button asChild variant="link" className="px-0 mt-2 h-auto">
-                <Link href={program.href}>View program details</Link>
-              </Button>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                {program.canReorder ? (
+                  <GlpReorderButton
+                    intakeId={program.id}
+                    summary={program.reorderSummary}
+                    onReordered={onReordered}
+                  />
+                ) : null}
+                <Button asChild variant="link" className="px-0 h-auto">
+                  <Link href={program.href}>View program details</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )

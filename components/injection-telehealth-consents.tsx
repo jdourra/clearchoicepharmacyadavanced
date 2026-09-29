@@ -86,6 +86,35 @@ export function InjectionTelehealthConsents({
         </p>
       </div>
 
+      {variant === "weight-loss" && (
+        <ConsentRow
+          id={`${idPrefix}-glp-risks`}
+          field="glpRiskAcknowledgment"
+          checked={values.glpRiskAcknowledgment}
+          onCheckedChange={(c) => onChange("glpRiskAcknowledgment", c)}
+          invalidFields={invalidFields}
+        >
+          <p className="font-semibold text-foreground">GLP MEDICATION RISKS AND SIDE EFFECTS *</p>
+          <p>
+            I understand that Semaglutide and Tirzepatide are prescription medications that can cause side effects. Common
+            effects include nausea, vomiting, diarrhea, constipation, stomach pain, decreased appetite, headache, fatigue,
+            and injection-site reactions. These are often stronger when the dose is increased.
+          </p>
+          <p className="mt-2">
+            Less common but serious risks can include pancreatitis, gallbladder problems, kidney problems related to
+            dehydration, low blood sugar if I also use other diabetes medicines, severe allergic reaction, and a possible
+            risk of thyroid C-cell tumors. I should not use these medicines if I am pregnant, planning pregnancy, or
+            breastfeeding, or if I or my family have a history of medullary thyroid cancer or Multiple Endocrine Neoplasia
+            syndrome type 2.
+          </p>
+          <p className="mt-2">
+            I will contact the pharmacy or seek urgent care for severe or persistent abdominal pain, repeated vomiting,
+            signs of an allergic reaction, or a lump or swelling in the neck. I have had a chance to ask questions, and I
+            agree to have a clinician review whether this treatment is appropriate for me.
+          </p>
+        </ConsentRow>
+      )}
+
       {selfInject && (
         <>
           <ConsentRow

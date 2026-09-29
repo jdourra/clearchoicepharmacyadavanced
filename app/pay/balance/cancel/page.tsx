@@ -18,7 +18,7 @@ export default function BalancePayCancelPage() {
         <CardContent className="space-y-4 text-center text-sm text-muted-foreground">
           <p>
             No charge was completed. If this was a mistake, use the payment link from your email
-            again, or contact Clear Choice Pharmacy at (248) 987-6182.
+            again, or contact Clear Choice Pharmacy at (810) 309-8222.
           </p>
           <Button asChild variant="outline" className="w-full">
             <Link href="/">Return home</Link>

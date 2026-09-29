@@ -748,7 +748,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                         <div className="bg-muted/50 rounded-lg p-4 text-sm">
                           <p className="font-semibold mb-1">Clear Choice Pharmacy</p>
                           <p className="text-muted-foreground">40890 Grand River Ave, Novi, MI 48375</p>
-                          <p className="text-muted-foreground">Phone: (248) 987-6182 · Fax: (248) 987-4963</p>
+                          <p className="text-muted-foreground">Phone: (810) 309-8222 · Fax: (248) 987-4963</p>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
@@ -958,9 +958,9 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
 
       <p className="text-center text-sm text-muted-foreground">
         Prefer to talk to someone?{" "}
-        <a href="tel:+12489876182" className="text-primary hover:underline inline-flex items-center gap-1">
+        <a href="tel:+18103098222" className="text-primary hover:underline inline-flex items-center gap-1">
           <Phone className="h-3.5 w-3.5" />
-          (248) 987-6182
+          (810) 309-8222
         </a>
       </p>
     </div>

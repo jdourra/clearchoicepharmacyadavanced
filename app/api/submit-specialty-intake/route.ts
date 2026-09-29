@@ -372,7 +372,7 @@ export async function POST(request: NextRequest) {
     } catch (dbError) {
       console.error("[specialty-intake] DB insert failed:", dbError)
       return NextResponse.json(
-        { error: "Failed to save your submission. Please try again or call (248) 987-6182." },
+        { error: "Failed to save your submission. Please try again or call (810) 309-8222." },
         { status: 500 }
       )
     }

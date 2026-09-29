@@ -122,7 +122,7 @@ export default function RootLayout({
     logo: `${SITE_URL}/icon.svg`,
     image: `${SITE_URL}/og-image.jpg`,
     description: HOME_DESCRIPTION,
-    telephone: "+12489876182",
+    telephone: "+18103098222",
     faxNumber: "+12489874963",
     address: {
       "@type": "PostalAddress",
@@ -237,7 +237,7 @@ export default function RootLayout({
     description: HOME_DESCRIPTION,
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+12489876182",
+      telephone: "+18103098222",
       contactType: "customer service",
       areaServed: "US-MI",
       availableLanguage: "English",

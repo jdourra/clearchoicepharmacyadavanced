@@ -49,7 +49,7 @@ ${CONTACT_EMAIL}`
   </p>
   <p><a href="${accountUrl}">Open your patient portal</a></p>
   <p>This helps your clinician decide whether to continue your current dose or adjust it before your next kit.</p>
-  <p>Questions? Call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
+  <p>Questions? Call <a href="tel:+18103098222">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
     <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>

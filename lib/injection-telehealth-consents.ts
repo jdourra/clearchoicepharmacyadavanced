@@ -24,6 +24,8 @@ export type InjectionTelehealthConsentValues = {
   telehealthConsent: boolean
   termsAndConditions: boolean
   agreeToPrivacy: boolean
+  /** Required on GLP weight-loss intakes only. */
+  glpRiskAcknowledgment: boolean
   eSignName: string
 }
 
@@ -37,6 +39,7 @@ export const emptyInjectionTelehealthConsents: InjectionTelehealthConsentValues 
   telehealthConsent: false,
   termsAndConditions: false,
   agreeToPrivacy: false,
+  glpRiskAcknowledgment: false,
   eSignName: "",
 }
 
@@ -72,6 +75,9 @@ export function getInjectionConsentInvalidFields(
   if (!values.telehealthConsent) fields.push("telehealthConsent")
   if (!values.termsAndConditions) fields.push("termsAndConditions")
   if (!values.agreeToPrivacy) fields.push("agreeToPrivacy")
+  if (options.variant === "weight-loss" && !values.glpRiskAcknowledgment) {
+    fields.push("glpRiskAcknowledgment")
+  }
 
   const eSign = values.eSignName.trim()
   if (!eSign || eSign.split(/\s+/).length < 2) fields.push("eSignName")
@@ -105,6 +111,10 @@ No Returns / Refund Policy:  ${values.noReturnsRefundPolicy ? "✓ Agreed" : "�
 Telehealth Consent:          ${values.telehealthConsent ? "✓ Agreed" : "✗ Not Agreed"}
 Terms & Conditions:          ${values.termsAndConditions ? "✓ Agreed" : "✗ Not Agreed"}
 HIPAA Privacy:               ${values.agreeToPrivacy ? "✓ Agreed" : "✗ Not Agreed"}
-E-Sign Name:                 ${values.eSignName.trim() || "—"}
+${
+  values.glpRiskAcknowledgment
+    ? "GLP Risk & Side-Effect Acknowledgment: ✓ Agreed\n"
+    : ""
+}E-Sign Name:                 ${values.eSignName.trim() || "—"}
 `.trim()
 }

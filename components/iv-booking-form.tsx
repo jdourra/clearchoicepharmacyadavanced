@@ -265,8 +265,8 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         </p>
         <p className="text-sm">
           Need immediate assistance? Call{" "}
-          <a href="tel:+12489876182" className="text-sky-600 font-medium hover:underline">
-            (248) 987-6182
+          <a href="tel:+18103098222" className="text-sky-600 font-medium hover:underline">
+            (810) 309-8222
           </a>
         </p>
       </IntakeSuccessPanel>
@@ -477,8 +477,8 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
             )}
           </Button>
           <Button variant="outline" className="w-full" asChild>
-            <a href="tel:+12489876182">
-              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (248) 987-6182
+            <a href="tel:+18103098222">
+              <Phone className="mr-2 h-4 w-4" /> Prefer to call? (810) 309-8222
             </a>
           </Button>
         </CardFooter>

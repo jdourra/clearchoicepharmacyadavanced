@@ -4,6 +4,29 @@ import { sql } from "@/lib/db"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import type { ClinicalProgramSubmission, PortalPrescription } from "@/lib/patient-portal-types"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
+import {
+  canPatientReorderWeightLoss,
+  weightLossReorderSummary,
+} from "@/lib/patient-glp-reorder"
+import { PENDING_INTAKE_STATUSES } from "@/lib/telehealth/intake-registry"
+
+function weightLossCanReorder(rows: Record<string, unknown>[], row: Record<string, unknown>): boolean {
+  const programId = String(row.selected_program || "")
+  const hasPending = rows.some(
+    (other) =>
+      String(other.selected_program || "") === programId &&
+      (PENDING_INTAKE_STATUSES as readonly string[]).includes(String(other.status || ""))
+  )
+  if (hasPending) return false
+  const paymentStatus = row.payment_status != null ? String(row.payment_status) : ""
+  if (!canPatientReorderWeightLoss(String(row.status || ""), paymentStatus)) return false
+  const newestEligible = rows.find((other) => {
+    if (String(other.selected_program || "") !== programId) return false
+    const otherPayment = other.payment_status != null ? String(other.payment_status) : ""
+    return canPatientReorderWeightLoss(String(other.status || ""), otherPayment)
+  })
+  return newestEligible != null && String(newestEligible.id) === String(row.id)
+}
 
 export async function GET(request: Request) {
   try {
@@ -50,7 +73,8 @@ export async function GET(request: Request) {
         [patientId, email]
       ).catch(() => []),
       sql(
-        `SELECT id, status, selected_program, selected_billing_plan, payment_status, created_at
+        `SELECT id, status, selected_program, selected_billing_plan, selected_dose_tier,
+                additional_concerns, payment_status, created_at
          FROM weight_loss_intake
          ${intakeMatchSql}
          ORDER BY created_at DESC`,
@@ -136,6 +160,8 @@ export async function GET(request: Request) {
           subtitle: row.selected_program ? String(row.selected_program) : undefined,
           submittedAt: String(row.created_at),
           href: "/weight-loss",
+          canReorder: weightLossCanReorder(weightLossRows, row),
+          reorderSummary: weightLossReorderSummary(row),
         })
       ),
       ...ivRows.map((row: Record<string, unknown>) => ({

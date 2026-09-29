@@ -1,9 +1,9 @@
 /** US phone display / input helpers — always (xxx) xxx-xxxx for 10-digit numbers. */
 
-export const PHARMACY_PHONE_DISPLAY = "(248) 987-6182"
+export const PHARMACY_PHONE_DISPLAY = "(810) 309-8222"
 export const PHARMACY_FAX_DISPLAY = "(248) 987-4963"
 /** E.164 for tel: links and schema.org */
-export const PHARMACY_PHONE_E164 = "+12489876182"
+export const PHARMACY_PHONE_E164 = "+18103098222"
 export const PHARMACY_FAX_E164 = "+12489874963"
 export const PHARMACY_PHONE_TEL_HREF = `tel:${PHARMACY_PHONE_E164}`
 

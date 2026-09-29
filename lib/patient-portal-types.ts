@@ -18,6 +18,9 @@ export interface ClinicalProgramSubmission {
   paymentStatusLabel?: string
   submittedAt: string
   href: string
+  /** Present on a fulfilled GLP order the patient can reorder without a new intake. */
+  canReorder?: boolean
+  reorderSummary?: string
 }
 
 export interface PortalPrescription {

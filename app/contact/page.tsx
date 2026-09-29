@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: { absolute: "Contact Clear Choice Pharmacy | Novi, Michigan" },
   description:
-    "Contact Clear Choice Pharmacy in Novi, MI for medical weight loss questions, prescriptions, compounding, and pharmacy support. Call (248) 987-6182.",
+    "Contact Clear Choice Pharmacy in Novi, MI for medical weight loss questions, prescriptions, compounding, and pharmacy support. Call (810) 309-8222.",
   alternates: { canonical: `${SITE_URL}/contact` },
 }
 

@@ -23,7 +23,7 @@ Start your order early so your medication arrives on time — compounding and sh
 Reorder now: ${params.reorderUrl}
 View your account: ${accountUrl}
 
-Questions? Reply to this email or call us at (248) 987-6182.
+Questions? Reply to this email or call us at (810) 309-8222.
 
 — Clear Choice Pharmacy
 40890 Grand River Ave, Novi, MI 48375
@@ -39,7 +39,7 @@ ${CONTACT_EMAIL}`
     <a href="${params.reorderUrl}" style="display: inline-block; background: #0d9488; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">Start your reorder</a>
   </p>
   <p><a href="${accountUrl}">View your orders in your patient portal</a></p>
-  <p>Questions? Reply to this email or call us at <a href="tel:+12489876182">(248) 987-6182</a>.</p>
+  <p>Questions? Reply to this email or call us at <a href="tel:+18103098222">(810) 309-8222</a>.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
     40890 Grand River Ave, Novi, MI 48375<br>

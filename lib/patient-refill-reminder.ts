@@ -1,10 +1,6 @@
 import "server-only"
 import { sql } from "@/lib/db"
-import {
-  buildEdIntakeUrl,
-  buildTrtIntakeUrl,
-  buildWeightLossIntakeUrl,
-} from "@/lib/intake-prefill"
+import { buildEdIntakeUrl, buildTrtIntakeUrl } from "@/lib/intake-prefill"
 import { SITE_URL } from "@/lib/site-config"
 import {
   buildRefillReminderEmail,
@@ -89,17 +85,6 @@ function siteUrl(path: string): string {
   return `${SITE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`
 }
 
-function resolveWeightLossDoseTier(detail: {
-  selected_dose_tier?: unknown
-  additional_concerns?: unknown
-}): string {
-  const direct = String(detail.selected_dose_tier ?? "").trim()
-  if (direct) return direct
-  const concerns = String(detail.additional_concerns ?? "")
-  const match = concerns.match(/\[selected_dose_tier:([^\]]+)\]/i)
-  return match?.[1]?.trim() || "starter"
-}
-
 function mapIntakeCandidate(
   row: Record<string, unknown>,
   sourceType: Exclude<RefillReminderSourceType, "order">,
@@ -126,16 +111,7 @@ function mapIntakeCandidate(
   if (sourceType === "weight_loss_intake") {
     const program = String(row.selected_program || "semaglutide")
     productLabel = program.includes("tirz") ? "Tirzepatide weight loss" : "Semaglutide weight loss"
-    reorderUrl = siteUrl(
-      buildWeightLossIntakeUrl(
-        program,
-        billingPlan,
-        resolveWeightLossDoseTier({
-          selected_dose_tier: row.selected_dose_tier,
-          additional_concerns: row.additional_concerns,
-        })
-      )
-    )
+    reorderUrl = siteUrl("/account?tab=orders")
   } else if (sourceType === "patient_intake") {
     const product = String(row.selected_product || "sildenafil-fast")
     productLabel = "men's health medication"

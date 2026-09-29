@@ -225,7 +225,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start weight management?</h2>
             <p className="text-sm opacity-90 mb-8 max-w-xl mx-auto">
               Review how provider-guided weight management works, compare Semaglutide and Tirzepatide kits, or call{" "}
-              (248) 987-6182 with questions. A clinician must evaluate eligibility before any medication is prescribed.
+              (810) 309-8222 with questions. A clinician must evaluate eligibility before any medication is prescribed.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" variant="secondary">

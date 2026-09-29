@@ -79,8 +79,8 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                 <div className="rounded-xl border border-border bg-muted p-6">
                   <h3 className="font-semibold text-foreground mb-2">Need Help?</h3>
                   <div className="space-y-3 text-sm">
-                    <a href="tel:+12489876182" className="flex items-center gap-2 text-primary hover:underline">
-                      <Phone className="h-4 w-4" /> (248) 987-6182
+                    <a href="tel:+18103098222" className="flex items-center gap-2 text-primary hover:underline">
+                      <Phone className="h-4 w-4" /> (810) 309-8222
                     </a>
                     <a href="mailto:info@clearchoicepharmacy.com" className="flex items-center gap-2 text-primary hover:underline">
                       <Mail className="h-4 w-4" /> info@clearchoicepharmacy.com
