@@ -11,6 +11,8 @@ import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { staffAuthFetch } from "@/lib/staff-session"
 import { formatPhoneDisplay } from "@/lib/phone"
+import { canAdminCancelIntake } from "@/lib/admin-cancel-eligibility"
+import { AdminCancelIntakeButton } from "@/components/admin-cancel-actions"
 
 type IntakeRow = {
   serviceType: string
@@ -231,6 +233,14 @@ export default function AdminIntakesPage() {
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/admin/customers/${intake.patientId}`}>Customer</Link>
                     </Button>
+                  ) : null}
+                  {canAdminCancelIntake(intake.status, intake.paymentStatus) ? (
+                    <AdminCancelIntakeButton
+                      serviceType={intake.serviceType}
+                      intakeId={intake.id}
+                      label={`${intake.firstName} ${intake.lastName} · ${intake.treatmentLabel}`}
+                      onCancelled={() => loadIntakes(statusFilter)}
+                    />
                   ) : null}
                   <Button asChild size="sm">
                     <Link href={`/admin/intakes/${intake.serviceType}/${intake.id}`}>Open</Link>

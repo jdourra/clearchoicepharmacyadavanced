@@ -9,7 +9,7 @@ import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
 import { staffAuthFetch } from "@/lib/staff-session"
 
-const PAID_STATUSES = new Set(["captured", "paid_in_person"])
+const PAID_STATUSES = new Set(["captured", "paid_in_person", "paid"])
 
 const INTAKE_STATUS = {
   approved: "rx_at_pharmacy",
@@ -18,7 +18,22 @@ const INTAKE_STATUS = {
   completed: "completed",
 } as const
 
-const FULFILLMENT_SERVICES = new Set(["weight_loss", "mens_health", "trt", "rejuvenation_vial"])
+const SHIPPABLE_STATUSES = new Set([
+  "rx_at_pharmacy",
+  "preparing",
+  "ready_for_fulfillment",
+  "ready_for_dispatch",
+])
+
+const FULFILLMENT_SERVICES = new Set([
+  "weight_loss",
+  "mens_health",
+  "trt",
+  "rejuvenation_vial",
+  "iv_rejuvenation",
+  "specialty_pharmacy",
+  "prescription_telemedicine",
+])
 
 export function supportsAdminPharmacyFulfillment(serviceType: string): boolean {
   return FULFILLMENT_SERVICES.has(serviceType)
@@ -53,8 +68,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
     status === INTAKE_STATUS.shipped || status === INTAKE_STATUS.completed
 
   const approvedOrLater = new Set<string>([
-    INTAKE_STATUS.approved,
-    INTAKE_STATUS.preparing,
+    ...SHIPPABLE_STATUSES,
     INTAKE_STATUS.shipped,
     INTAKE_STATUS.completed,
   ])
@@ -71,6 +85,16 @@ export function AdminIntakePharmacyFulfillmentPanel({
   const canMarkPreparing = approvedOrLater.has(status) && !isShipped && status !== INTAKE_STATUS.preparing
 
   const canMarkShipped = isPaid && !isShipped && approvedOrLater.has(status)
+
+  if (
+    !canSendPaymentReminder &&
+    !canMarkPharmacyPaid &&
+    !canMarkPreparing &&
+    !canMarkShipped &&
+    !isShipped
+  ) {
+    return null
+  }
 
   const runAction = async (
     action: string,

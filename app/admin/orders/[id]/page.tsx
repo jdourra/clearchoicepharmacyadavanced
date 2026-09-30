@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { getOrderStatusBadgeClass } from "@/lib/admin-order-status"
 import { useAdminOrder } from "./use-admin-order"
+import { AdminMarkOrderShipped } from "@/components/admin-mark-order-shipped"
 import { ArrowLeft, ArrowRight, Package } from "lucide-react"
 
 export default function AdminOrderDetailPage() {
   const params = useParams()
   const orderId = params.id as string
-  const { order, patient, loading } = useAdminOrder(orderId)
+  const { order, setOrder, patient, staffId, loading } = useAdminOrder(orderId)
 
   if (loading) {
     return (
@@ -75,6 +76,12 @@ export default function AdminOrderDetailPage() {
           </div>
 
           <div className="space-y-6">
+            <AdminMarkOrderShipped
+              order={order}
+              staffId={staffId}
+              onShipped={() => setOrder({ ...order, status: "shipped" })}
+            />
+
             <AdminOrderPatientPanel patient={patient} patientId={order.patient_id} />
 
             <Card>

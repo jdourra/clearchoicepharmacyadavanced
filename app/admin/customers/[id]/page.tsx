@@ -33,6 +33,11 @@ import {
   CalendarDays,
 } from "lucide-react"
 import { PatientTherapyTimelineTable } from "@/components/patient-therapy-timeline-table"
+import { canAdminCancelCatalogOrder, canAdminCancelIntake } from "@/lib/admin-cancel-eligibility"
+import {
+  AdminCancelCatalogOrderButton,
+  AdminCancelIntakeButton,
+} from "@/components/admin-cancel-actions"
 import type { TherapyTimelineResult } from "@/lib/patient-therapy-timeline"
 
 type PaymentSummary = {
@@ -554,12 +559,11 @@ export default function AdminCustomerDetailPage() {
               ) : (
                 <div className="space-y-3">
                   {clinicalPrograms.map((program) => (
-                    <Link
+                    <div
                       key={`${program.serviceType}-${program.id}`}
-                      href={program.reviewHref}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4"
                     >
-                      <div className="min-w-0 space-y-1">
+                      <Link href={program.reviewHref} className="min-w-0 flex-1 space-y-1 hover:underline">
                         <p className="font-medium">
                           {program.serviceLabel}
                           <span className="text-muted-foreground font-normal"> · {program.treatmentLabel}</span>
@@ -570,7 +574,7 @@ export default function AdminCustomerDetailPage() {
                             ? ` · Stripe ${program.stripePaymentIntentId}`
                             : ""}
                         </p>
-                      </div>
+                      </Link>
                       <div className="flex flex-wrap items-center gap-2 shrink-0">
                         <Badge variant="outline">{program.statusLabel}</Badge>
                         <Badge
@@ -584,9 +588,22 @@ export default function AdminCustomerDetailPage() {
                         >
                           {program.paymentStatusLabel}
                         </Badge>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                        {canAdminCancelIntake(program.status, program.paymentStatus) ? (
+                          <AdminCancelIntakeButton
+                            serviceType={program.serviceType}
+                            intakeId={program.id}
+                            label={`${program.serviceLabel} · ${program.treatmentLabel}`}
+                            onCancelled={() => void loadData()}
+                          />
+                        ) : null}
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={program.reviewHref}>
+                            Open
+                            <ArrowRight className="h-4 w-4 ml-1" />
+                          </Link>
+                        </Button>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               )}
@@ -689,6 +706,13 @@ export default function AdminCustomerDetailPage() {
                             <ArrowRight className="h-4 w-4 text-muted-foreground" />
                           </div>
                         </Link>
+                        {canAdminCancelCatalogOrder(order) ? (
+                          <AdminCancelCatalogOrderButton
+                            orderId={order.id}
+                            label={`#${order.order_number || order.id}`}
+                            onCancelled={() => void loadData()}
+                          />
+                        ) : null}
                       </div>
                     )
                   })}

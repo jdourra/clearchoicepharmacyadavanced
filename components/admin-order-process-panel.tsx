@@ -22,6 +22,10 @@ import {
   isFulfillmentStatus,
 } from "@/lib/admin-order-processing-rules"
 import { staffAuthFetch } from "@/lib/staff-session"
+import { canAdminCancelCatalogOrder } from "@/lib/admin-cancel-eligibility"
+import { AdminCancelCatalogOrderButton } from "@/components/admin-cancel-actions"
+import { AdminMarkOrderShipped } from "@/components/admin-mark-order-shipped"
+import { canMarkCatalogOrderShipped } from "@/lib/admin-order-buckets"
 import { AdminOrderPrescriptionPanel } from "@/components/admin-order-prescription"
 import { AdminOrderPatientPanel } from "@/components/admin-order-patient"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -93,6 +97,7 @@ export function AdminOrderProcessPanel({
     [order, prescription]
   )
   const canProcess = canAdvanceBeyondPending(order, prescription)
+  const canShip = canMarkCatalogOrderShipped(order)
   const statusLocked = !canProcess && isFulfillmentStatus(order.status)
 
   const handleStatusChange = async (newStatus: string) => {
@@ -253,7 +258,7 @@ export function AdminOrderProcessPanel({
         break
       case "shipped":
         content = `Great news! Your prescription has been shipped. Order #${order.order_number || order.id}. You should receive it within 2-3 business days.`
-        if (canProcess) await handleStatusChange("shipped")
+        if (canProcess || canShip) await handleStatusChange("shipped")
         break
       case "delivered":
         content = `Your prescription has been delivered! Order #${order.order_number || order.id}. Thank you for choosing Clear Choice Pharmacy.`
@@ -292,6 +297,16 @@ export function AdminOrderProcessPanel({
 
   return (
     <div className="space-y-6">
+      <AdminMarkOrderShipped
+        order={order}
+        staffId={staffId}
+        onShipped={() => {
+          onOrderUpdate({ ...order, status: "shipped" })
+          setSuccessMessage("Order shipped — returning to queue for the next order.")
+          window.setTimeout(() => router.push(ADMIN_ORDERS_QUEUE_PATH), 1500)
+        }}
+      />
+
       {selectedItem ? (
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader className="pb-2">
@@ -321,8 +336,9 @@ export function AdminOrderProcessPanel({
               Order must stay pending
             </CardTitle>
             <CardDescription className="text-amber-800/90">
-              Payment and prescription requirements must be met before processing, ready, or shipped
-              status. Mark paid in full if the patient paid by phone or cash at the pharmacy.
+              {canShip
+                ? "Prescription details are still incomplete. You can still mark this paid order shipped from the card above."
+                : "Payment and prescription requirements must be met before processing, ready, or shipped status. Mark paid in full if the patient paid by phone or cash at the pharmacy."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -448,7 +464,7 @@ export function AdminOrderProcessPanel({
                     <SelectItem value="ready" disabled={!canProcess}>
                       Ready
                     </SelectItem>
-                    <SelectItem value="shipped" disabled={!canProcess}>
+                    <SelectItem value="shipped" disabled={!canProcess && !canShip}>
                       Shipped
                     </SelectItem>
                     <SelectItem value="delivered">Delivered</SelectItem>
@@ -456,26 +472,16 @@ export function AdminOrderProcessPanel({
                   </SelectContent>
                 </Select>
               </div>
-              {order.status !== "cancelled" &&
-              order.status !== "shipped" &&
-              order.status !== "delivered" &&
-              order.status !== "completed" ? (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => {
-                    const paid = isOrderPaid(order)
-                    const confirmed = window.confirm(
-                      paid
-                        ? "This order is already paid. Cancelling does not refund the patient. Continue?"
-                        : "Cancel this order because the patient asked to stop?"
-                    )
-                    if (confirmed) void handleStatusChange("cancelled")
+              {canAdminCancelCatalogOrder(order) ? (
+                <AdminCancelCatalogOrderButton
+                  orderId={order.id}
+                  label={`Order #${order.order_number || order.id}`}
+                  onCancelled={() => {
+                    onOrderUpdate({ ...order, status: "cancelled" })
+                    setSuccessMessage("Order cancelled — returning to queue.")
+                    window.setTimeout(() => router.push(ADMIN_ORDERS_QUEUE_PATH), 1500)
                   }}
-                >
-                  Cancel — patient requested
-                </Button>
+                />
               ) : null}
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Payment</span>
@@ -563,7 +569,7 @@ export function AdminOrderProcessPanel({
                   <SelectItem value="payment_request">Payment Request (full)</SelectItem>
                   <SelectItem value="missing_prescription_info">Request Prescription Info</SelectItem>
                   <SelectItem value="prescription_ready">Prescription Ready + Cost</SelectItem>
-                  <SelectItem value="shipped" disabled={!canProcess}>
+                  <SelectItem value="shipped" disabled={!canProcess && !canShip}>
                     Prescription Shipped
                   </SelectItem>
                   <SelectItem value="delivered">Prescription Delivered</SelectItem>

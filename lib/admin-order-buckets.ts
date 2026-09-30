@@ -1,3 +1,6 @@
+import type { Order } from "@/lib/auth-types"
+import { isOrderPaid } from "@/lib/order-payment"
+
 /** Order statuses counted in the admin dashboard "Completed" bucket and ?status=completed filter. */
 export const COMPLETED_ORDER_STATUSES = ["ready", "shipped", "delivered"] as const
 
@@ -25,6 +28,17 @@ export function exitsActiveQueue(status: string): boolean {
 
 export function isCancelledOrderStatus(status: string): boolean {
   return status === CANCELLED_ORDER_STATUS
+}
+
+/** Paid catalog orders the pharmacy can mark shipped (processing or ready). */
+export function canMarkCatalogOrderShipped(order: {
+  status: string
+  payment_status?: string | null
+}): boolean {
+  return (
+    isOrderPaid({ payment_status: order.payment_status ?? "" } as Order) &&
+    (order.status === "processing" || order.status === "ready")
+  )
 }
 
 /** True when an order is counted in one of the dashboard stat buckets. */

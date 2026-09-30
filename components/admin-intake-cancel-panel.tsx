@@ -42,7 +42,7 @@ export function AdminIntakeCancelPanel({
 
   const cancel = async () => {
     const confirmed = window.confirm(
-      "Cancel this intake because the patient asked to stop? Any unpaid card hold will be released. This cannot be undone."
+        "Cancel this intake because the patient changed their mind or did not pay? Any unpaid card hold will be released."
     )
     if (!confirmed) return
 
@@ -72,10 +72,10 @@ export function AdminIntakeCancelPanel({
   return (
     <Card className="border-destructive/30">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Patient requested cancellation</CardTitle>
+        <CardTitle className="text-lg">Cancel this intake</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Use this when the patient asks to stop, including while the intake is still in review or after
-          clinician approval if payment has not been collected.
+          Use this if the patient changed their mind or did not pay. It works while the intake is in review,
+          after clinician approval, and before payment is collected.
         </p>
       </CardHeader>
       <CardContent className="space-y-3">

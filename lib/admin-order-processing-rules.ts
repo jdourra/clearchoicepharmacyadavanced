@@ -1,6 +1,7 @@
 import type { Order } from "@/lib/auth-types"
 import type { OrderPrescriptionDetails } from "@/lib/order-prescription"
 import { isOrderPaid } from "@/lib/order-payment"
+import { canMarkCatalogOrderShipped } from "@/lib/admin-order-buckets"
 
 export type ProcessingBlocker =
   | "unpaid"
@@ -113,6 +114,10 @@ export function validateStatusTransition(
   newStatus: string
 ): { allowed: boolean; error?: string } {
   if (newStatus === "cancelled" || newStatus === "pending" || newStatus === "delivered") {
+    return { allowed: true }
+  }
+
+  if (newStatus === "shipped" && canMarkCatalogOrderShipped(order)) {
     return { allowed: true }
   }
 

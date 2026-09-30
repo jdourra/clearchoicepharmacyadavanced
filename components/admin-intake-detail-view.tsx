@@ -435,6 +435,17 @@ export function AdminIntakeDetailView({
           </Button>
         </div>
 
+        {portal === "admin" && (
+          <div className="no-print mb-6">
+            <AdminIntakePharmacyFulfillmentPanel
+              serviceType={serviceType}
+              intakeId={id}
+              detail={detail}
+              onUpdated={onReload}
+            />
+          </div>
+        )}
+
         <div id="intake-print-area">
           <div className="hidden print:block mb-6 border-b pb-4">
             <h1 className="text-xl font-bold">Clear Choice Pharmacy — Clinical Intake</h1>
@@ -542,15 +553,6 @@ export function AdminIntakeDetailView({
                   />
                 </CardContent>
               </Card>
-
-              {portal === "admin" && (
-                <AdminIntakePharmacyFulfillmentPanel
-                  serviceType={serviceType}
-                  intakeId={id}
-                  detail={detail}
-                  onUpdated={onReload}
-                />
-              )}
 
               {portal === "admin" && (
                 <AdminIntakeCancelPanel

@@ -20,13 +20,16 @@ import {
   resolveWeightLossDoseIdFromDetail,
 } from "@/lib/weight-loss-dose-review"
 
-const PAID_STATUSES = new Set(["captured", "paid_in_person"])
+const PAID_STATUSES = new Set(["captured", "paid_in_person", "paid"])
 
 const FULFILLMENT_TABLES: Record<string, string> = {
   weight_loss: "weight_loss_intake",
   mens_health: "patient_intake",
   trt: "trt_intake",
   rejuvenation_vial: "rejuvenation_vial_intakes",
+  iv_rejuvenation: "iv_booking_requests",
+  specialty_pharmacy: "specialty_intake",
+  prescription_telemedicine: "prescription_telemedicine_intake",
 }
 
 export function supportsPharmacyFulfillment(serviceType: string): boolean {
@@ -158,13 +161,23 @@ export async function updateIntakeFulfillmentStatus(params: {
 
   const partnerStatus = `${params.nextStatus}_by_${params.staffLabel}`
 
-  const updated = await sql(
+  let updated = await sql(
     `UPDATE ${table}
      SET status = $1, partner_status = $2, updated_at = NOW()
      WHERE id = $3
      RETURNING *`,
     [statusValue, partnerStatus, params.id]
   ).catch(() => [])
+
+  if (!updated[0]) {
+    updated = await sql(
+      `UPDATE ${table}
+       SET status = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [statusValue, params.id]
+    ).catch(() => [])
+  }
 
   if (!updated[0]) {
     return { success: false, error: "Could not update intake status." }

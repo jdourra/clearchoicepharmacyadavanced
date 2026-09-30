@@ -29,6 +29,9 @@ import Loading from "./loading"
 import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
 import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
 import { isOrderPaid } from "@/lib/order-payment"
+import { canAdminCancelCatalogOrder } from "@/lib/admin-cancel-eligibility"
+import { AdminCancelCatalogOrderButton } from "@/components/admin-cancel-actions"
+import { AdminMarkOrderShipped } from "@/components/admin-mark-order-shipped"
 
 const STATUS_FILTER_OPTIONS = [
   "active",
@@ -52,6 +55,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("active")
+  const [staffId, setStaffId] = useState("admin")
 
   useEffect(() => {
     loadData()
@@ -86,6 +90,8 @@ export default function AdminOrdersPage() {
         router.push("/admin/login")
         return
       }
+      const meData = await meRes.json().catch(() => ({}))
+      if (meData.staff?.id) setStaffId(String(meData.staff.id))
       const ordersRes = await staffAuthFetch("/api/admin/orders")
       if (ordersRes.ok) {
         const data = await ordersRes.json()
@@ -321,6 +327,31 @@ export default function AdminOrdersPage() {
                         >
                           <Printer className="h-4 w-4" />
                         </Button>
+                        {canAdminCancelCatalogOrder(order) ? (
+                          <AdminCancelCatalogOrderButton
+                            orderId={order.id}
+                            label={`#${order.order_number || order.id}`}
+                            onCancelled={() =>
+                              setAllOrders((prev) =>
+                                prev.map((item) =>
+                                  item.id === order.id ? { ...item, status: "cancelled" } : item
+                                )
+                              )
+                            }
+                          />
+                        ) : null}
+                        <AdminMarkOrderShipped
+                          order={order}
+                          staffId={staffId}
+                          compact
+                          onShipped={() =>
+                            setAllOrders((prev) =>
+                              prev.map((item) =>
+                                item.id === order.id ? { ...item, status: "shipped" } : item
+                              )
+                            )
+                          }
+                        />
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/admin/orders/${order.id}`}>
                             <Eye className="h-4 w-4" />
