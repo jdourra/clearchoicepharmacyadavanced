@@ -146,7 +146,7 @@ export default function AdminIntakesPage() {
               onClick={async () => {
                 if (
                   !confirm(
-                    `Email the clinician-delay + 10% courtesy note to ${intakes.length} pending intake${intakes.length === 1 ? "" : "s"}? Already-notified patients are skipped.`
+                    `Email the delay note and 5% courtesy to patients who submitted an intake and have been waiting more than one day for clinician review? Intakes from the last 24 hours are not included. Patients who already received this note are skipped.`
                   )
                 ) {
                   return
@@ -160,7 +160,7 @@ export default function AdminIntakesPage() {
                   const data = await res.json().catch(() => ({}))
                   if (!res.ok) throw new Error(data.error || "Failed to send notices")
                   setNotifyStatus(
-                    `Sent ${data.emailed ?? 0}, skipped ${data.skipped ?? 0}, failed ${data.failed ?? 0}.`
+                    `Sent ${data.emailed ?? 0}, skipped ${data.skipped ?? 0}, failed ${data.failed ?? 0}. ${data.eligible ?? 0} had been waiting more than one day.`
                   )
                   loadIntakes(statusFilter)
                 } catch (err) {
@@ -170,7 +170,7 @@ export default function AdminIntakesPage() {
                 }
               }}
             >
-              {notifying ? "Sending…" : "Email delay + 10% to pending"}
+              {notifying ? "Sending…" : "Email delay + 5% to waiting"}
             </Button>
           ) : null}
         </div>

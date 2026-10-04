@@ -624,7 +624,7 @@ export function AdminIntakeDetailView({
                         )
                       }}
                     >
-                      Load delay + 10% template
+                      Load delay + 5% template
                     </Button>
                     <Button
                       type="button"
@@ -653,7 +653,7 @@ export function AdminIntakeDetailView({
                           const bits = [
                             data.emailed ? "emailed" : null,
                             data.portalSaved ? "saved to portal" : "no patient portal account",
-                            data.courtesyNoted ? "10% hold noted on intake" : null,
+                            data.courtesyNoted ? "5% courtesy noted on intake" : null,
                           ].filter(Boolean)
                           setMessageStatus(`Sent (${bits.join(", ")}).`)
                           onReload?.()

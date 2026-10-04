@@ -15,7 +15,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const pending = await listClinicalIntakes({ status: "pending", limit: 200 })
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    const waiting = await listClinicalIntakes({
+      status: "pending",
+      limit: 500,
+      createdBefore: cutoff,
+    })
     const results: Array<{
       id: string
       serviceType: string
@@ -25,7 +30,7 @@ export async function POST(request: Request) {
       error?: string
     }> = []
 
-    for (const intake of pending) {
+    for (const intake of waiting) {
       const result = await sendIntakePatientMessage({
         serviceType: intake.serviceType,
         intakeId: intake.id,
@@ -51,7 +56,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: failed === 0,
-      pending: pending.length,
+      eligible: waiting.length,
       emailed,
       skipped,
       failed,

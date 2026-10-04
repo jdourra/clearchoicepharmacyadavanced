@@ -1,20 +1,32 @@
 export const INTAKE_CLINICIAN_DELAY_SUBJECT = "Update on your intake — Clear Choice Pharmacy"
 
+/** Staff-note marker for the current delay email. Older 10% notes do not count. */
+export const INTAKE_DELAY_COURTESY_MARKER = "courtesy_5pct_delay_if_approved"
+
 export const INTAKE_COURTESY_STAFF_TAG =
-  "[staff_note:hold_for_new_clinician courtesy_10pct_if_approved]"
+  `[staff_note:glp_review_backlog ${INTAKE_DELAY_COURTESY_MARKER}]`
+
+export const INTAKE_DELAY_NOTICE_MIN_AGE_MS = 24 * 60 * 60 * 1000
+
+export function intakeWaitingLongEnoughForDelayNotice(
+  createdAt: string,
+  now = Date.now()
+): boolean {
+  const created = Date.parse(createdAt)
+  if (Number.isNaN(created)) return false
+  return now - created >= INTAKE_DELAY_NOTICE_MIN_AGE_MS
+}
 
 export function buildClinicianDelayCourtesyBody(firstName: string): string {
   const name = firstName.trim()
   const greeting = name ? `Hi ${name},` : "Hi,"
   return `${greeting}
 
-Thank you for submitting your intake with Clear Choice Pharmacy.
+Thank you for waiting on your Clear Choice Pharmacy intake.
 
-The physician originally assigned to review your information is not available right now. We are assigning a new licensed clinician, who we expect to be onboard next week.
+We have had a high number of patients asking about GLP weight-loss treatment, so clinician review is taking longer than usual. Dr. Dourra is reviewing intakes in the order they were received. You do not need to submit the form again. We will email you as soon as your review is finished.
 
-We will hold your intake as submitted. You do not need to fill out the form again. The new clinician will review your information when they come onboard. Approval is still based on that clinical review.
-
-For the delay, we will apply a 10% courtesy discount to your order if treatment is approved.
+We are sorry for the wait. If treatment is approved, we will take 5% off the original medication price as a courtesy for the delay.
 
 If you have questions, or if you would rather cancel while you wait, call us at (248) 987-6182 or reply to this email.
 

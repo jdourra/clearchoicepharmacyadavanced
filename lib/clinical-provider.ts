@@ -34,7 +34,7 @@ export function physicianReviewPendingLabel(): string {
 }
 
 export function physicianReviewDescription(): string {
-  return "A licensed clinician will review your medical history. Review is currently delayed about one week while we assign a new provider."
+  return "Dr. Dourra is reviewing intakes in the order they were received. A high number of GLP weight-loss requests means review is taking longer than usual."
 }
 
 export function physicianReviewShort(): string {
@@ -43,6 +43,6 @@ export function physicianReviewShort(): string {
 
 export const DEFAULT_INTAKE_SUCCESS_STEPS = [
   `A licensed clinician will review your medical information (${PRIMARY_PHYSICIAN.reviewSla})`,
-  "You'll receive an email with the clinician's decision. Approved orders receive a 10% courtesy discount for the current delay.",
+  "You'll receive an email when the review is finished. Approval depends on that clinical review.",
   "If approved, Clear Choice Pharmacy will contact you to collect payment and prepare your order",
 ] as const

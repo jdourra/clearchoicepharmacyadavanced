@@ -94,8 +94,10 @@ function rowToItem(
 export async function listClinicalIntakes(options?: {
   status?: string
   limit?: number
+  /** Only intakes submitted at or before this time. */
+  createdBefore?: Date
 }): Promise<IntakeListItem[]> {
-  const limit = Math.min(options?.limit ?? 100, 200)
+  const limit = Math.min(options?.limit ?? 100, options?.createdBefore ? 500 : 200)
   const statusFilter = options?.status
 
   let statusClause: string[] | null = null
@@ -118,13 +120,21 @@ export async function listClinicalIntakes(options?: {
     statusClause = [statusFilter]
   }
 
+  const statusParams: unknown[] = statusClause ?? []
+  let ageClause = ""
+  if (options?.createdBefore) {
+    statusParams.push(options.createdBefore.toISOString())
+    ageClause = ` AND created_at <= $${statusParams.length}`
+  }
+
   const statusSql =
     statusClause == null
       ? paymentClause
-        ? `WHERE ${paymentClause.replace(/^\s*AND\s+/i, "")}`
-        : ""
-      : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})${paymentClause}`
-  const statusParams = statusClause ?? []
+        ? `WHERE ${paymentClause.replace(/^\s*AND\s+/i, "")}${ageClause}`
+        : ageClause
+          ? `WHERE ${ageClause.replace(/^\s*AND\s+/i, "")}`
+          : ""
+      : `WHERE status IN (${statusClause.map((_, i) => `$${i + 1}`).join(", ")})${paymentClause}${ageClause}`
 
   const queries = await Promise.all([
     sql(

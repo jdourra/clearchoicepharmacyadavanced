@@ -1,5 +1,5 @@
 /**
- * Email pending clinical intakes: clinician delay + 10% courtesy.
+ * Email pending clinical intakes waiting more than one day: review delay + 5% courtesy.
  *
  * Usage: node scripts/send-clinician-delay-notices.mjs
  */
@@ -30,7 +30,7 @@ function loadEnvLocal() {
 }
 
 const SUBJECT = "Update on your intake — Clear Choice Pharmacy"
-const TAG = "[staff_note:hold_for_new_clinician courtesy_10pct_if_approved]"
+const TAG = "[staff_note:glp_review_backlog courtesy_5pct_delay_if_approved]"
 const PENDING = ["pending_provider_review", "pending_review", "provider_follow_up"]
 
 function bodyFor(firstName) {
@@ -38,13 +38,11 @@ function bodyFor(firstName) {
   const greeting = name ? `Hi ${name},` : "Hi,"
   return `${greeting}
 
-Thank you for submitting your intake with Clear Choice Pharmacy.
+Thank you for waiting on your Clear Choice Pharmacy intake.
 
-The physician originally assigned to review your information is not available right now. We are assigning a new licensed clinician, who we expect to be onboard next week.
+We have had a high number of patients asking about GLP weight-loss treatment, so clinician review is taking longer than usual. Dr. Dourra is reviewing intakes in the order they were received. You do not need to submit the form again. We will email you as soon as your review is finished.
 
-We will hold your intake as submitted. You do not need to fill out the form again. The new clinician will review your information when they come onboard. Approval is still based on that clinical review.
-
-For the delay, we will apply a 10% courtesy discount to your order if treatment is approved.
+We are sorry for the wait. If treatment is approved, we will take 5% off the original medication price as a courtesy for the delay.
 
 If you have questions, or if you would rather cancel while you wait, call us at (248) 987-6182 or reply to this email.
 
@@ -106,7 +104,8 @@ async function main() {
         `SELECT id, first_name, email, patient_id, status
          FROM ${source.table}
          WHERE status IN (${placeholders})
-         ORDER BY created_at DESC`,
+           AND created_at <= NOW() - INTERVAL '1 day'
+         ORDER BY created_at ASC`,
         PENDING
       )
     } catch (err) {
@@ -130,7 +129,7 @@ async function main() {
         )
         notes = noteCols.map((c) => String(noteRows[0]?.[c] ?? "")).join("\n")
       }
-      if (notes.includes("courtesy_10pct_if_approved")) {
+      if (notes.includes("courtesy_5pct_delay_if_approved")) {
         skipped += 1
         continue
       }

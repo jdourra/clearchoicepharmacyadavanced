@@ -9,7 +9,10 @@ import {
   tableForAdminService,
   type AdminIntakeServiceType,
 } from "@/lib/telehealth/intake-registry"
-import { INTAKE_COURTESY_STAFF_TAG } from "@/lib/intake-patient-message-copy"
+import {
+  INTAKE_COURTESY_STAFF_TAG,
+  INTAKE_DELAY_COURTESY_MARKER,
+} from "@/lib/intake-patient-message-copy"
 
 export type SendIntakePatientMessageResult = {
   success: boolean
@@ -37,7 +40,9 @@ async function resolvePatientId(detail: Record<string, unknown>): Promise<string
 function notesAlreadyHaveCourtesy(detail: Record<string, unknown>): boolean {
   const concerns = detail.additional_concerns != null ? String(detail.additional_concerns) : ""
   const extra = detail.additional_notes != null ? String(detail.additional_notes) : ""
-  return concerns.includes("courtesy_10pct_if_approved") || extra.includes("courtesy_10pct_if_approved")
+  return (
+    concerns.includes(INTAKE_DELAY_COURTESY_MARKER) || extra.includes(INTAKE_DELAY_COURTESY_MARKER)
+  )
 }
 
 async function appendCourtesyStaffNote(
@@ -45,7 +50,7 @@ async function appendCourtesyStaffNote(
   intakeId: string,
   current: string | null
 ): Promise<boolean> {
-  if (current?.includes("courtesy_10pct_if_approved")) return true
+  if (current?.includes(INTAKE_DELAY_COURTESY_MARKER)) return true
   const table = tableForAdminService(serviceType)
   const next = current?.trim()
     ? `${current.trim()}\n${INTAKE_COURTESY_STAFF_TAG}`
