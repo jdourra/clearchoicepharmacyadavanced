@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import { formatPhoneInput } from "@/lib/phone"
 import { getRejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import {
   emptyIntakePaymentValues,
   getIntakePaymentInvalidFields,
@@ -250,6 +251,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
 
   return (
     <div className="space-y-6">
+      <IntakePhysicianCallNotice />
       {error && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />

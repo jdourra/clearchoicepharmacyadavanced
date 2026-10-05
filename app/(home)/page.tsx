@@ -178,7 +178,7 @@ export default function HomePage() {
                 <h3 className="font-semibold mb-2">How the program works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
                   Choose a kit, complete a secure intake, and upload your photo ID. Your clinician reviews
-                  eligibility. If approved, you pay at the pharmacy, then we prepare your kit.
+                  eligibility. If approved, the card hold is charged and we prepare your kit.
                 </p>
                 <Link href="/weight-loss#how-it-works" className="text-sm text-primary hover:underline">
                   See program steps

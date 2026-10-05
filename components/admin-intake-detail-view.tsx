@@ -33,13 +33,19 @@ import {
 import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
-import { staffAuthFetch } from "@/lib/staff-session"
-import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
-import { ExternalLink, ChevronDown, Loader2, Printer, Mail } from "lucide-react"
 import {
   INTAKE_CLINICIAN_DELAY_SUBJECT,
   buildClinicianDelayCourtesyBody,
+  intakeDelayCourtesyPercent,
 } from "@/lib/intake-patient-message-copy"
+import { staffAuthFetch } from "@/lib/staff-session"
+import {
+  buildWeightLossApprovalNote,
+  WEIGHT_LOSS_DIABETES_OPTIONS,
+  type WeightLossDiabetesStatus,
+} from "@/lib/weight-loss-approval-note"
+import type { ClinicalRxPayload } from "@/lib/clinical-prescription-types"
+import { ExternalLink, ChevronDown, Loader2, Printer, Mail } from "lucide-react"
 import {
   Collapsible,
   CollapsibleContent,
@@ -201,6 +207,8 @@ export function AdminIntakeDetailView({
   const canDecide = portal === "doctor"
   const [submitting, setSubmitting] = useState<string | null>(null)
   const [note, setNote] = useState("")
+  const [approvalNoteChecked, setApprovalNoteChecked] = useState(false)
+  const [diabetesStatus, setDiabetesStatus] = useState<WeightLossDiabetesStatus | "">("")
   const [error, setError] = useState("")
   const [reviewMessage, setReviewMessage] = useState("")
   const [liveVisitRequired, setLiveVisitRequired] = useState(false)
@@ -288,6 +296,7 @@ export function AdminIntakeDetailView({
     payAtPharmacy &&
     !["captured", "paid_in_person"].includes(paymentStatus) &&
     ["rx_at_pharmacy", "preparing", "shipped", "completed"].includes(String(detail.status ?? ""))
+  const courtesyPercent = intakeDelayCourtesyPercent(detail)
   const canChargeLiveVisit =
     isWeightLoss && Number(prescribedKitCount) <= 1 && hasStripeHold
   const needsPrescription = RX_SERVICES.has(String(serviceType))
@@ -349,6 +358,15 @@ export function AdminIntakeDetailView({
         }
       }
 
+      if (action === "approve" && isWeightLoss) {
+        if (!approvalNoteChecked) {
+          throw new Error("Check the therapy approval note before approving this patient.")
+        }
+        if (!diabetesStatus) {
+          throw new Error("Select the patient's diabetes status on the approval note.")
+        }
+      }
+
       const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -363,6 +381,8 @@ export function AdminIntakeDetailView({
             isWeightLoss && action === "approve"
               ? Number(prescribedKitCount) || undefined
               : undefined,
+          approvalNoteConfirmed: isWeightLoss && action === "approve" ? approvalNoteChecked : undefined,
+          diabetesStatus: isWeightLoss && action === "approve" ? diabetesStatus || undefined : undefined,
         }),
       })
       const result = await res.json()
@@ -533,6 +553,19 @@ export function AdminIntakeDetailView({
                   )}
                 </CardContent>
               </Card>
+
+              {detail.clinician_chart_note ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Clinician approval note</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <pre className="whitespace-pre-wrap text-xs leading-relaxed font-sans">
+                      {String(detail.clinician_chart_note)}
+                    </pre>
+                  </CardContent>
+                </Card>
+              ) : null}
 
               <Card className="no-print">
                 <CardHeader>
@@ -778,6 +811,12 @@ export function AdminIntakeDetailView({
                               After collecting payment on the pharmacy terminal (or cash/phone), mark this intake paid.
                               Do not store card numbers in this system.
                             </p>
+                            {courtesyPercent ? (
+                              <p className="text-sm font-medium text-emerald-800">
+                                This patient was promised {courtesyPercent}% off the original medication
+                                price. Charge the courtesy amount, not the original price.
+                              </p>
+                            ) : null}
                             <div className="flex flex-wrap gap-2">
                               <Button
                                 type="button"
@@ -1048,6 +1087,45 @@ export function AdminIntakeDetailView({
                     </div>
                   )}
 
+                  {isWeightLoss ? (
+                    <div className="rounded-lg border p-3 space-y-3">
+                      <p className="text-sm font-semibold">Therapy approval note</p>
+                      <p className="text-xs text-muted-foreground">
+                        Choose the diabetes status, review the note, and check the box before approving.
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium">Diabetes status</p>
+                        {WEIGHT_LOSS_DIABETES_OPTIONS.map((option) => (
+                          <label key={option.id} className="flex items-start gap-2 text-sm">
+                            <input
+                              type="radio"
+                              name="weight-loss-diabetes-status"
+                              className="mt-1"
+                              checked={diabetesStatus === option.id}
+                              onChange={() => setDiabetesStatus(option.id)}
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded border bg-muted/40 p-3 text-xs leading-relaxed">
+                        {diabetesStatus
+                          ? buildWeightLossApprovalNote({
+                              medicationName: rxMedication.trim() || "tirzepatide",
+                              diabetesStatus,
+                            })
+                          : "Select a diabetes status to preview the note. The medication name comes from the prescription above."}
+                      </pre>
+                      <label className="flex items-start gap-2 text-sm font-medium">
+                        <Checkbox
+                          checked={approvalNoteChecked}
+                          onCheckedChange={(value) => setApprovalNoteChecked(value === true)}
+                        />
+                        <span>I have reviewed this note and approve this therapy for the patient.</span>
+                      </label>
+                    </div>
+                  ) : null}
+
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   {reviewMessage && (
                     <Alert variant={reviewMessage.includes("could not") || reviewMessage.includes("failed") ? "destructive" : "default"}>
@@ -1058,7 +1136,10 @@ export function AdminIntakeDetailView({
                   <div className="flex flex-col gap-2">
                     <Button
                       className="w-full bg-green-700 hover:bg-green-600"
-                      disabled={!!submitting}
+                      disabled={
+                        !!submitting ||
+                        (isWeightLoss && (!approvalNoteChecked || !diabetesStatus))
+                      }
                       onClick={() => submitReview("approve")}
                     >
                       {submitting === "approve" ? (
@@ -1105,6 +1186,12 @@ export function AdminIntakeDetailView({
                       <p className="text-xs text-muted-foreground">
                         After the pharmacy collects payment, mark this intake paid (terminal / phone / cash).
                       </p>
+                      {courtesyPercent ? (
+                        <p className="text-sm font-medium text-emerald-800">
+                          This patient was promised {courtesyPercent}% off the original medication price.
+                          Charge the courtesy amount, not the original price.
+                        </p>
+                      ) : null}
                       <div className="flex flex-wrap gap-2">
                         <Button
                           type="button"
@@ -1143,8 +1230,7 @@ export function AdminIntakeDetailView({
                   )}
                   {payAtPharmacy && (
                     <p className="text-xs text-muted-foreground">
-                      Weight-loss intakes no longer place an online card hold. Pharmacy charges on the terminal after
-                      approval.
+                      This intake has no online card hold. Collect payment on the pharmacy terminal, by phone, or in cash.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

@@ -10,8 +10,9 @@ import {
   type AdminIntakeServiceType,
 } from "@/lib/telehealth/intake-registry"
 import {
+  INTAKE_CLINICIAN_DELAY_SUBJECT,
   INTAKE_COURTESY_STAFF_TAG,
-  INTAKE_DELAY_COURTESY_MARKER,
+  PRIOR_INTAKE_DELAY_MARKERS,
 } from "@/lib/intake-patient-message-copy"
 
 export type SendIntakePatientMessageResult = {
@@ -40,8 +41,8 @@ async function resolvePatientId(detail: Record<string, unknown>): Promise<string
 function notesAlreadyHaveCourtesy(detail: Record<string, unknown>): boolean {
   const concerns = detail.additional_concerns != null ? String(detail.additional_concerns) : ""
   const extra = detail.additional_notes != null ? String(detail.additional_notes) : ""
-  return (
-    concerns.includes(INTAKE_DELAY_COURTESY_MARKER) || extra.includes(INTAKE_DELAY_COURTESY_MARKER)
+  return PRIOR_INTAKE_DELAY_MARKERS.some(
+    (marker) => concerns.includes(marker) || extra.includes(marker)
   )
 }
 
@@ -50,7 +51,7 @@ async function appendCourtesyStaffNote(
   intakeId: string,
   current: string | null
 ): Promise<boolean> {
-  if (current?.includes(INTAKE_DELAY_COURTESY_MARKER)) return true
+  if (PRIOR_INTAKE_DELAY_MARKERS.some((marker) => current?.includes(marker))) return true
   const table = tableForAdminService(serviceType)
   const next = current?.trim()
     ? `${current.trim()}\n${INTAKE_COURTESY_STAFF_TAG}`
@@ -125,6 +126,34 @@ export async function sendIntakePatientMessage(params: {
     }
   }
 
+  const patientId = await resolvePatientId(detail)
+  if (params.skipIfCourtesyNoted && patientId) {
+    const prior = await sql(
+      `SELECT id FROM messages
+       WHERE recipient_type = 'patient' AND recipient_id = $1 AND subject = $2
+       LIMIT 1`,
+      [patientId, subject]
+    ).catch(() => [])
+    if (prior.length > 0) {
+      const courtesyNoted = await appendCourtesyStaffNote(
+        params.serviceType,
+        params.intakeId,
+        detail.additional_concerns != null
+          ? String(detail.additional_concerns)
+          : detail.additional_notes != null
+            ? String(detail.additional_notes)
+            : null
+      )
+      return {
+        success: true,
+        emailed: false,
+        portalSaved: true,
+        courtesyNoted,
+        skipped: true,
+      }
+    }
+  }
+
   const portalUrl = `${SITE_URL.replace(/\/$/, "")}/account`
   const text = `${body}
 
@@ -132,19 +161,27 @@ You can also read this message in your patient portal:
 ${portalUrl}`
 
   const emailResult = await sendPatientEmail({ to, subject, text })
+  if (!emailResult.success) {
+    return {
+      success: false,
+      emailed: false,
+      portalSaved: false,
+      courtesyNoted: false,
+      error: emailResult.error || "Failed to send email.",
+      emailError: emailResult.error,
+    }
+  }
 
   let portalSaved = false
-  const patientId = await resolvePatientId(detail)
-  if (patientId) {
-    await messaging.sendMessage(
-      "staff",
-      params.staffId,
-      "patient",
-      patientId,
-      subject,
-      body
-    )
-    portalSaved = true
+  if (patientId && params.staffId) {
+    await messaging
+      .sendMessage("staff", params.staffId, "patient", patientId, subject, body)
+      .then(() => {
+        portalSaved = true
+      })
+      .catch(() => {
+        portalSaved = false
+      })
   }
 
   let courtesyNoted = false
@@ -160,23 +197,25 @@ ${portalUrl}`
     )
   }
 
-  if (!emailResult.success) {
-    return {
-      success: portalSaved,
-      emailed: false,
-      portalSaved,
-      courtesyNoted,
-      error: portalSaved
-        ? "Saved to the patient portal, but email failed."
-        : emailResult.error || "Failed to send email.",
-      emailError: emailResult.error,
-    }
-  }
-
   return {
     success: true,
     emailed: true,
     portalSaved,
     courtesyNoted,
   }
+}
+
+export async function noteIntakeDelayCourtesy(serviceType: string, intakeId: string): Promise<boolean> {
+  if (!isAdminIntakeServiceType(serviceType)) return false
+  const detail = await getClinicalIntakeDetail(serviceType, intakeId)
+  if (!detail || notesAlreadyHaveCourtesy(detail)) return true
+  return appendCourtesyStaffNote(
+    serviceType,
+    intakeId,
+    detail.additional_concerns != null
+      ? String(detail.additional_concerns)
+      : detail.additional_notes != null
+        ? String(detail.additional_notes)
+        : null
+  )
 }

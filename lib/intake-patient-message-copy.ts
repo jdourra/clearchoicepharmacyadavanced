@@ -1,12 +1,49 @@
 export const INTAKE_CLINICIAN_DELAY_SUBJECT = "Update on your intake — Clear Choice Pharmacy"
 
-/** Staff-note marker for the current delay email. Older 10% notes do not count. */
+/** Staff-note marker for this delay email. The older 10% note counts as already sent. */
 export const INTAKE_DELAY_COURTESY_MARKER = "courtesy_5pct_delay_if_approved"
+
+export const PRIOR_INTAKE_DELAY_MARKERS = [
+  INTAKE_DELAY_COURTESY_MARKER,
+  "courtesy_10pct_if_approved",
+] as const
 
 export const INTAKE_COURTESY_STAFF_TAG =
   `[staff_note:glp_review_backlog ${INTAKE_DELAY_COURTESY_MARKER}]`
 
 export const INTAKE_DELAY_NOTICE_MIN_AGE_MS = 24 * 60 * 60 * 1000
+
+export type DelayCourtesyPercent = 5 | 10
+
+export function delayCourtesyPercentFromNotes(
+  ...notes: Array<string | null | undefined>
+): DelayCourtesyPercent | null {
+  const text = notes.filter((note) => note != null && note !== "").join("\n")
+  if (text.includes(INTAKE_DELAY_COURTESY_MARKER)) return 5
+  if (text.includes("courtesy_10pct_if_approved")) return 10
+  return null
+}
+
+export function intakeDelayCourtesyPercent(
+  detail: Record<string, unknown> | null | undefined
+): DelayCourtesyPercent | null {
+  if (!detail) return null
+  return delayCourtesyPercentFromNotes(
+    detail.additional_concerns != null ? String(detail.additional_concerns) : "",
+    detail.additional_notes != null ? String(detail.additional_notes) : "",
+    detail.order_notes != null ? String(detail.order_notes) : ""
+  )
+}
+
+export function courtesyDiscountedAmount(amount: number, percent: DelayCourtesyPercent) {
+  const due = Math.round(amount * (100 - percent)) / 100
+  const discount = Math.round((amount - due) * 100) / 100
+  return { original: amount, discount, due }
+}
+
+export function formatCourtesyUsd(amount: number): string {
+  return `$${amount.toFixed(2)}`
+}
 
 export function intakeWaitingLongEnoughForDelayNotice(
   createdAt: string,

@@ -18,6 +18,7 @@ import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { calculateIvSubtotal, calculateIvTotal, getIvBoosters, getIvPackage, IV_TRAVEL_FEE, type IvBooster } from "@/lib/iv-catalog"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import {
   emptyIntakePaymentValues,
   getIntakePaymentInvalidFields,
@@ -275,6 +276,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
 
   return (
     <div className="space-y-6">
+      <IntakePhysicianCallNotice />
       {error && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />

@@ -10,6 +10,11 @@ import {
   resolveWeightLossDoseIdFromDetail,
 } from "@/lib/weight-loss-dose-review"
 import {
+  courtesyDiscountedAmount,
+  formatCourtesyUsd,
+  intakeDelayCourtesyPercent,
+} from "@/lib/intake-patient-message-copy"
+import {
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
 } from "@/lib/weight-loss-catalog"
@@ -52,6 +57,9 @@ export function WeightLossChargeHighlight({
   if (!patientQuote && !chargeQuote) return null
 
   const quote = chargeQuote ?? patientQuote!
+  const courtesyPercent = intakeDelayCourtesyPercent(detail)
+  const courtesy =
+    courtesyPercent != null ? courtesyDiscountedAmount(quote.chargeCents / 100, courtesyPercent) : null
   const doseChanged = Boolean(patientDose && currentDose && patientDose.id !== currentDose.id)
   const supplyChanged = patientKits !== currentKits
   const glpNaive = isLikelyGlpNaive(detail)
@@ -89,11 +97,21 @@ export function WeightLossChargeHighlight({
 
       <div className="rounded border border-amber-600/40 bg-white/70 dark:bg-black/20 px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
-          {doseChanged || supplyChanged
-            ? "Amount to collect (prescribed)"
-            : "Amount to collect at pharmacy"}
+          {courtesy
+            ? `Charge with ${courtesyPercent}% delay courtesy`
+            : doseChanged || supplyChanged
+              ? "Amount to collect (prescribed)"
+              : "Amount to collect at pharmacy"}
         </p>
-        <p className="text-2xl font-bold tabular-nums tracking-tight">{quote.chargeLabel}</p>
+        <p className="text-2xl font-bold tabular-nums tracking-tight">
+          {courtesy ? formatCourtesyUsd(courtesy.due) : quote.chargeLabel}
+        </p>
+        {courtesy ? (
+          <p className="text-xs mt-0.5">
+            Original {formatCourtesyUsd(courtesy.original)} · {courtesyPercent}% off −
+            {formatCourtesyUsd(courtesy.discount)}
+          </p>
+        ) : null}
         <p className="text-xs mt-0.5 opacity-90">
           {quote.timeframeLabel} · {quote.kitBreakdownLabel}
         </p>

@@ -18,6 +18,7 @@ import { TRT_PROGRAMS, getTrtProgram, type TrtBillingPlan } from "@/lib/trt-cata
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { MichiganStateField } from "@/components/michigan-state-field"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
@@ -341,6 +342,7 @@ export function TrtIntakeForm({
 
   return (
     <div className="space-y-4">
+      <IntakePhysicianCallNotice />
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         {[1, 2, 3, 4].map((n) => (
           <div key={n} className={cn("flex-1 h-1.5 rounded-full", step >= n ? "bg-primary" : "bg-muted")} />

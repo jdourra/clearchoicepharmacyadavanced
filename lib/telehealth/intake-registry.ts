@@ -20,6 +20,7 @@ export type IntakeListItem = {
   paymentStatus: string | null
   patientId: string | null
   createdAt: string
+  delayCourtesyPercent: 5 | 10 | null
 }
 
 export const PENDING_INTAKE_STATUSES = [
@@ -88,6 +89,12 @@ function rowToItem(
     paymentStatus: row.payment_status != null ? String(row.payment_status) : null,
     patientId: row.patient_id != null ? String(row.patient_id) : null,
     createdAt: String(row.created_at ?? new Date().toISOString()),
+    delayCourtesyPercent:
+      Number(row.delay_courtesy_percent) === 5
+        ? 5
+        : Number(row.delay_courtesy_percent) === 10
+          ? 10
+          : null,
   }
 }
 
@@ -143,27 +150,52 @@ export async function listClinicalIntakes(options?: {
       statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at,
+              CASE
+                WHEN COALESCE(additional_concerns, '') LIKE '%courtesy_5pct_delay_if_approved%' THEN 5
+                WHEN COALESCE(additional_concerns, '') LIKE '%courtesy_10pct_if_approved%' THEN 10
+                ELSE NULL
+              END AS delay_courtesy_percent
        FROM trt_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
       statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_program, stripe_payment_intent_id, payment_status, patient_id, created_at,
+              CASE
+                WHEN COALESCE(additional_concerns, '') LIKE '%courtesy_5pct_delay_if_approved%' THEN 5
+                WHEN COALESCE(additional_concerns, '') LIKE '%courtesy_10pct_if_approved%' THEN 10
+                ELSE NULL
+              END AS delay_courtesy_percent
        FROM weight_loss_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
       statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, shipping_state AS state, status, selected_vial_title, stripe_payment_intent_id, payment_status, patient_id, created_at
+      `SELECT id, first_name, last_name, email, phone, shipping_state AS state, status, selected_vial_title, stripe_payment_intent_id, payment_status, patient_id, created_at,
+              CASE
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_5pct_delay_if_approved%' THEN 5
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_10pct_if_approved%' THEN 10
+                ELSE NULL
+              END AS delay_courtesy_percent
        FROM rejuvenation_vial_intakes ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
       statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, service_state AS state, status, selected_package_title, stripe_payment_intent_id, payment_status, patient_id, created_at
+      `SELECT id, first_name, last_name, email, phone, service_state AS state, status, selected_package_title, stripe_payment_intent_id, payment_status, patient_id, created_at,
+              CASE
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_5pct_delay_if_approved%' THEN 5
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_10pct_if_approved%' THEN 10
+                ELSE NULL
+              END AS delay_courtesy_percent
        FROM iv_booking_requests ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
       statusParams
     ).catch(() => []),
     sql(
-      `SELECT id, first_name, last_name, email, phone, state, status, selected_medication, payment_status, patient_id, created_at
+      `SELECT id, first_name, last_name, email, phone, state, status, selected_medication, payment_status, patient_id, created_at,
+              CASE
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_5pct_delay_if_approved%' THEN 5
+                WHEN COALESCE(additional_notes, '') LIKE '%courtesy_10pct_if_approved%' THEN 10
+                ELSE NULL
+              END AS delay_courtesy_percent
        FROM specialty_intake ${statusSql} ORDER BY created_at DESC LIMIT ${limit}`,
       statusParams
     ).catch(() => []),

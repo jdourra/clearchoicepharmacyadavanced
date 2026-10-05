@@ -257,12 +257,13 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. A ${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly
-                      billing if your clinician requires a live visit. Payment collected at the pharmacy after approval.
+                      billing if your clinician requires a live visit. A card hold is placed during intake and charged
+                      only if treatment is approved.
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
-                      Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on. Payment collected at the
-                      pharmacy after approval.
+                      Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on. A card hold is placed
+                      during intake and charged only if treatment is approved.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground pt-1">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
@@ -273,7 +274,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 <Link href={intakeUrl}>Start intake</Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                Secure health questionnaire · Pay at pharmacy after clinician approval
+                Secure health questionnaire · Card hold, charged only if approved
               </p>
             </CardContent>
           </Card>

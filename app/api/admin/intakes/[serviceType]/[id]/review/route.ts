@@ -57,6 +57,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       prescribedKitCountRaw <= 3
         ? Math.floor(prescribedKitCountRaw)
         : undefined
+    const approvalNoteConfirmed = body.approvalNoteConfirmed === true
+    const diabetesStatus = typeof body.diabetesStatus === "string" ? body.diabetesStatus : undefined
 
     if (!VALID_ACTIONS.includes(action)) {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
@@ -71,6 +73,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       prescription,
       prescribedDoseId: serviceType === "weight_loss" ? prescribedDoseId : undefined,
       prescribedKitCount: serviceType === "weight_loss" ? prescribedKitCount : undefined,
+      approvalNoteConfirmed: serviceType === "weight_loss" ? approvalNoteConfirmed : undefined,
+      diabetesStatus: serviceType === "weight_loss" ? diabetesStatus : undefined,
     })
 
     if (!result.success) {

@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { formatPhoneInput } from "@/lib/phone"
 import { isAllowedUploadFile } from "@/lib/upload-mime"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { MichiganStateField } from "@/components/michigan-state-field"
 import { MICHIGAN_STATE_CODE } from "@/lib/michigan-eligibility"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
@@ -396,6 +397,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
 
   return (
     <div className="space-y-6">
+      <IntakePhysicianCallNotice />
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
         {STEP_LABELS.map((label, index) => {
           const num = index + 1

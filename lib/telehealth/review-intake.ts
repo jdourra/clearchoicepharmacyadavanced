@@ -33,6 +33,15 @@ import {
   resolveWeightLossDoseIdFromDetail,
   billingPlanFromKitCount,
 } from "@/lib/weight-loss-dose-review"
+import {
+  buildWeightLossApprovalNote,
+  isWeightLossDiabetesStatus,
+  type WeightLossDiabetesStatus,
+} from "@/lib/weight-loss-approval-note"
+import {
+  courtesyDiscountedAmount,
+  intakeDelayCourtesyPercent,
+} from "@/lib/intake-patient-message-copy"
 
 export type IntakeReviewAction = "approve" | "deny" | "follow_up"
 
@@ -102,6 +111,10 @@ export async function reviewClinicalIntake(params: {
   prescribedDoseId?: string
   /** Weight loss: clinician-selected kit months (1 / 2 / 3). */
   prescribedKitCount?: number
+  /** Weight loss: clinician checked the therapy approval note. */
+  approvalNoteConfirmed?: boolean
+  /** Weight loss: diabetes line chosen on the approval note. */
+  diabetesStatus?: string
   /** Prescription fields — required when approving a medication program. */
   prescription?: ClinicalRxPayload
 }): Promise<IntakeReviewResult> {
@@ -114,6 +127,8 @@ export async function reviewClinicalIntake(params: {
     prescription,
     prescribedDoseId,
     prescribedKitCount,
+    approvalNoteConfirmed,
+    diabetesStatus,
   } = params
 
   if (!isAdminIntakeServiceType(serviceType)) {
@@ -135,6 +150,26 @@ export async function reviewClinicalIntake(params: {
           "Enter your typed e-signature name, or configure DROPBOX_SIGN_API_KEY to send for remote signature.",
       }
     }
+  }
+
+  let clinicianChartNote: string | undefined
+  if (serviceType === "weight_loss" && action === "approve") {
+    if (!approvalNoteConfirmed) {
+      return {
+        success: false,
+        error: "Check the therapy approval note before approving this patient.",
+      }
+    }
+    if (!diabetesStatus || !isWeightLossDiabetesStatus(diabetesStatus)) {
+      return {
+        success: false,
+        error: "Select the patient's diabetes status on the approval note.",
+      }
+    }
+    clinicianChartNote = buildWeightLossApprovalNote({
+      medicationName: prescription?.medicationName?.trim() || "tirzepatide",
+      diabetesStatus: diabetesStatus as WeightLossDiabetesStatus,
+    })
   }
 
   const detail = await getClinicalIntakeDetail(serviceType, id)
@@ -187,11 +222,11 @@ export async function reviewClinicalIntake(params: {
           kitsIncluded,
         })
         if (quote) {
-          const includeLiveVisit =
-            Boolean(liveVisitRequired) && quote.liveVisitAddon > 0
-          amountCents = Math.round(
-            (includeLiveVisit ? quote.authorizationHold : quote.totalBilled) * 100
-          )
+          const includeLiveVisit = Boolean(liveVisitRequired) && quote.liveVisitAddon > 0
+          const billed = includeLiveVisit ? quote.authorizationHold : quote.totalBilled
+          const courtesy = intakeDelayCourtesyPercent(detail)
+          const due = courtesy ? courtesyDiscountedAmount(billed, courtesy).due : billed
+          amountCents = Math.round(due * 100)
         }
       }
       const captured = await capturePaymentHold(stripeId, amountCents)
@@ -238,6 +273,10 @@ export async function reviewClinicalIntake(params: {
       `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS billing_supply_label TEXT`,
       []
     )
+    await sql(
+      `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS clinician_chart_note TEXT`,
+      []
+    )
   }
 
   const wlBillingPlan =
@@ -269,8 +308,9 @@ export async function reviewClinicalIntake(params: {
                  selected_billing_plan = $6,
                  billing_kit_count = $7,
                  billing_supply_label = $8,
+                 clinician_chart_note = $9,
                  updated_at = NOW()
-             WHERE id = $9
+             WHERE id = $10
              RETURNING id`,
             [
               next,
@@ -281,6 +321,7 @@ export async function reviewClinicalIntake(params: {
               wlBillingPlan,
               effectivePrescribedKitCount,
               wlSupplyLabel,
+              clinicianChartNote ?? null,
               id,
             ]
           ).catch((err) => {

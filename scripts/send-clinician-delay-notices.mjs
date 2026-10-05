@@ -129,7 +129,10 @@ async function main() {
         )
         notes = noteCols.map((c) => String(noteRows[0]?.[c] ?? "")).join("\n")
       }
-      if (notes.includes("courtesy_5pct_delay_if_approved")) {
+      if (
+        notes.includes("courtesy_5pct_delay_if_approved") ||
+        notes.includes("courtesy_10pct_if_approved")
+      ) {
         skipped += 1
         continue
       }

@@ -16,7 +16,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
   description:
-    "Complete a secure medical intake for provider-guided Semaglutide or Tirzepatide. Payment is collected at Clear Choice Pharmacy after clinician approval.",
+    "Complete a secure medical intake for provider-guided Semaglutide or Tirzepatide. A card hold is placed during intake and charged only if a clinician approves.",
   robots: { index: false, follow: false },
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
     description:
-      "Secure medical intake for Semaglutide and Tirzepatide. Pay at the pharmacy after approval — Clear Choice Pharmacy, Novi, MI.",
+      "Secure medical intake for Semaglutide and Tirzepatide. Card hold charged only if approved — Clear Choice Pharmacy, Novi, MI.",
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
@@ -65,8 +65,8 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                   Finish your secure intake for custom compounded Semaglutide or Tirzepatide. A licensed provider
-                  reviews your information before Clear Choice Pharmacy prepares your therapy. Payment is collected at
-                  the pharmacy after approval — not online during this form.
+                  reviews your information before Clear Choice Pharmacy prepares your therapy. A card hold is placed
+                  during this form and charged only if a clinician approves treatment.
                 </p>
               </div>
 
@@ -113,8 +113,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 <div className="rounded-xl border border-border bg-muted p-6">
                   <h3 className="font-semibold text-foreground mb-2">Need Help?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Our team is available to answer questions about Semaglutide, Tirzepatide, and paying at the pharmacy
-                    after approval.
+                    Our team is available to answer questions about Semaglutide, Tirzepatide, and the card hold.
                   </p>
                   <div className="space-y-3">
                     <a
@@ -166,5 +165,5 @@ const processSteps = [
   "Complete the secure medical questionnaire and vitals",
   "Answer clinical screening questions and upload photo ID",
   "Licensed clinician reviews your eligibility",
-  "If approved, pay at Clear Choice Pharmacy (terminal, phone, or cash), then we compound and ship",
+  "If approved, the card hold is charged, then we compound and ship",
 ]

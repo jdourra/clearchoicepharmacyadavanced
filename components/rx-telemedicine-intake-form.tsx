@@ -18,6 +18,7 @@ import { formatCartMedicationLine, TELEMEDICINE_VISIT_FEE } from "@/lib/prescrip
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { emptyIntakePaymentValues, validateIntakePayment } from "@/lib/intake-payment"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
@@ -363,6 +364,9 @@ export function RxTelemedicineIntakeForm({
 
   return (
     <Card>
+      <div className="px-6 pt-6">
+        <IntakePhysicianCallNotice />
+      </div>
       <CardHeader>
         <CardTitle>Prescription Telemedicine Intake</CardTitle>
         <CardDescription>

@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import {
   formatPaymentSummary,
-  requireIntakeIdentitySubmission,
+  requireIntakePaymentSubmission,
   type IntakeConsents,
   type IntakePaymentMetadata,
 } from "@/lib/intake-payment"
+import { paymentStatusFromHold } from "@/lib/intake-payment-status"
+import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
@@ -337,9 +339,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
-    const paymentError = requireIntakeIdentitySubmission(data.consents, data.identity)
+    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
+    }
+
+    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
+    if (!stripeCheck.ok) {
+      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     if (!data.consents?.injection) {
@@ -412,7 +419,7 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       })
-      const paymentStatus = "awaiting_pharmacy"
+      const paymentStatus = paymentStatusFromHold(data.identity.stripePaymentIntentId)
 
       const values = [
           submissionId,

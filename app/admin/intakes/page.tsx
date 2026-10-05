@@ -29,6 +29,7 @@ type IntakeRow = {
   paymentStatus: string | null
   patientId: string | null
   createdAt: string
+  delayCourtesyPercent?: 5 | 10 | null
 }
 
 type StatusFilter = "pending" | "awaiting_payment" | "awaiting_shipment" | "approved" | "all"
@@ -174,6 +175,12 @@ export default function AdminIntakesPage() {
             </Button>
           ) : null}
         </div>
+        {statusFilter === "pending" ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            This note sends on its own every 6 hours to intakes that have been waiting more than one
+            day. Patients who already received it are skipped.
+          </p>
+        ) : null}
       </div>
 
       {notifyStatus ? <p className="mb-4 text-sm text-muted-foreground">{notifyStatus}</p> : null}
@@ -229,6 +236,11 @@ export default function AdminIntakesPage() {
                   >
                     {formatPaymentStatus(intake.paymentStatus)}
                   </Badge>
+                  {intake.delayCourtesyPercent ? (
+                    <Badge className="bg-emerald-100 text-emerald-900 hover:bg-emerald-100">
+                      {intake.delayCourtesyPercent}% off at payment
+                    </Badge>
+                  ) : null}
                   {intake.patientId ? (
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/admin/customers/${intake.patientId}`}>Customer</Link>

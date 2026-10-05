@@ -28,6 +28,7 @@ import {
   physicianReviewDescription,
   physicianReviewPendingLabel,
 } from "@/lib/clinical-provider"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import {
   ED_FORMULATIONS,
   calculateEdOrderPricing,
@@ -669,6 +670,7 @@ export function ClinicalIntakeForm({
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-6">
+            <IntakePhysicianCallNotice />
             {/* Patient Dashboard Summary */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-lg border p-4">
@@ -1663,6 +1665,9 @@ export function ClinicalIntakeForm({
   
   return (
     <Card className="border-border">
+      <div className="px-6 pt-6">
+        <IntakePhysicianCallNotice />
+      </div>
       <CardHeader>
         {/* Progress Indicator */}
         <div className="flex items-center justify-between mb-4">

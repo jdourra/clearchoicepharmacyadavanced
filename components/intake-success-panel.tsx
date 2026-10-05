@@ -2,6 +2,7 @@ import Link from "next/link"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import {
   DEFAULT_INTAKE_SUCCESS_STEPS,
   physicianReviewDescription,
@@ -40,6 +41,9 @@ export function IntakeSuccessPanel({
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description ?? physicianReviewDescription()}</CardDescription>
           </div>
+        </div>
+        <div className="pt-3">
+          <IntakePhysicianCallNotice />
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
