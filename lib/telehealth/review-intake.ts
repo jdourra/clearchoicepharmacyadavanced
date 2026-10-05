@@ -49,6 +49,7 @@ export type IntakeReviewResult = {
   success: boolean
   status?: string
   paymentAction?: "captured" | "released" | "none" | "failed"
+  paymentNote?: string
   emailSent?: boolean
   emailError?: string
   error?: string
@@ -207,6 +208,8 @@ export async function reviewClinicalIntake(params: {
     detail.stripe_payment_intent_id != null ? String(detail.stripe_payment_intent_id) : null
 
   let paymentAction: IntakeReviewResult["paymentAction"] = "none"
+  let paymentNote: string | undefined
+  let collectAtPharmacy = serviceType === "weight_loss" && !stripeId
   let paymentStatus =
     detail.payment_status != null ? String(detail.payment_status) : stripeId ? "authorized" : "none"
 
@@ -230,17 +233,32 @@ export async function reviewClinicalIntake(params: {
         }
       }
       const captured = await capturePaymentHold(stripeId, amountCents)
-      paymentAction = captured ? "captured" : "failed"
-      paymentStatus = captured ? "captured" : "failed"
-      if (!captured) {
+      if (captured.ok) {
+        paymentAction = "captured"
+        paymentStatus = "captured"
+        if (captured.alreadyCaptured) {
+          const dollars =
+            captured.amountReceivedCents != null
+              ? `$${(captured.amountReceivedCents / 100).toFixed(2)}`
+              : "the earlier amount"
+          paymentNote = `Card was already charged ${dollars}. This approval did not charge the card again.`
+        }
+      } else if (serviceType === "weight_loss") {
+        collectAtPharmacy = true
+        paymentAction = "none"
+        paymentStatus = "awaiting_pharmacy"
+        paymentNote =
+          captured.error ||
+          "The card hold is gone and nothing was charged. Collect payment at the pharmacy."
+      } else {
         await sql(
           `UPDATE ${table} SET payment_status = $1, updated_at = NOW() WHERE id = $2`,
           ["failed", id]
         ).catch(() => [])
         return {
           success: false,
-          error: "Failed to capture payment hold. Check Stripe dashboard and retry.",
-          paymentAction,
+          error: captured.error || "Failed to capture payment hold. Check Stripe dashboard and retry.",
+          paymentAction: "failed",
         }
       }
     } else if (action === "deny") {
@@ -447,8 +465,7 @@ export async function reviewClinicalIntake(params: {
       submissionId: id,
       decision,
       note,
-      paymentModel:
-        serviceType === "weight_loss" && !stripeId ? "pharmacy_terminal" : "online_hold",
+      paymentModel: collectAtPharmacy ? "pharmacy_terminal" : "online_hold",
     })
     emailSent = emailResult.success
     emailError = emailResult.error
@@ -487,6 +504,7 @@ export async function reviewClinicalIntake(params: {
     success: true,
     status: next,
     paymentAction,
+    paymentNote,
     emailSent,
     emailError,
     prescriptionId,

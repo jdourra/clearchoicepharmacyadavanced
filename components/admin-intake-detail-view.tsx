@@ -289,7 +289,9 @@ export function AdminIntakeDetailView({
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
-  const payAtPharmacy = isWeightLoss && !hasStripeHold
+  const payAtPharmacy =
+    isWeightLoss &&
+    (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
   const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
   const canMarkPharmacyPaid =
     isWeightLoss &&
@@ -404,6 +406,9 @@ export function AdminIntakeDetailView({
         } else {
           parts.push(`Prescription created (${result.prescriptionId}).`)
         }
+      }
+      if (result.paymentNote) {
+        parts.push(result.paymentNote)
       }
       if (result.dropboxError) {
         parts.push(`Prescription issue: ${result.dropboxError}`)

@@ -63,7 +63,9 @@ export function AdminIntakePharmacyFulfillmentPanel({
   const paymentStatus = String(detail.payment_status ?? "none")
   const isWeightLoss = serviceType === "weight_loss"
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
-  const payAtPharmacy = isWeightLoss && !hasStripeHold
+  const payAtPharmacy =
+    isWeightLoss &&
+    (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
   const isPaid = PAID_STATUSES.has(paymentStatus)
   const isShipped =
     status === INTAKE_STATUS.shipped || status === INTAKE_STATUS.completed

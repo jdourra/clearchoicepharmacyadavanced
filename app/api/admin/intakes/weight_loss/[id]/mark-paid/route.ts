@@ -46,7 +46,11 @@ export async function POST(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Intake not found" }, { status: 404 })
     }
 
-    if (intake.stripe_payment_intent_id) {
+    if (
+      intake.stripe_payment_intent_id &&
+      intake.payment_status !== "awaiting_pharmacy" &&
+      intake.payment_status !== "failed"
+    ) {
       return NextResponse.json(
         {
           error:

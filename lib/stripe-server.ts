@@ -74,17 +74,82 @@ export async function verifyPaymentHoldReady(paymentIntentId: string): Promise<{
   return { ok: false, error: `Payment is not authorized (status: ${intent.status})` }
 }
 
+export type CaptureHoldResult = {
+  ok: boolean
+  /** Money was already taken on an earlier attempt. Do not capture again. */
+  alreadyCaptured?: boolean
+  amountReceivedCents?: number
+  error?: string
+}
+
+function holdAlreadyPaid(intent: { status: string; amount_received: number }): boolean {
+  return intent.status === "succeeded" && intent.amount_received > 0
+}
+
+/**
+ * Capture an approval hold. A lower amount releases the unused remainder, and Stripe
+ * will reject a second capture. If that already happened, treat the earlier charge as paid.
+ */
 export async function capturePaymentHold(
   paymentIntentId: string,
   amountCents?: number
-): Promise<boolean> {
-  if (!isStripeConfigured()) return paymentIntentId.startsWith("dev_mock_")
+): Promise<CaptureHoldResult> {
+  if (!isStripeConfigured()) {
+    return { ok: paymentIntentId.startsWith("dev_mock_") }
+  }
   const stripe = getStripe()
-  const intent = await stripe.paymentIntents.capture(
-    paymentIntentId,
-    amountCents != null && amountCents > 0 ? { amount_to_capture: amountCents } : undefined
-  )
-  return intent.status === "succeeded"
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId)
+
+  if (holdAlreadyPaid(intent)) {
+    return {
+      ok: true,
+      alreadyCaptured: true,
+      amountReceivedCents: intent.amount_received,
+    }
+  }
+
+  if (intent.status !== "requires_capture" || intent.amount_capturable <= 0) {
+    return {
+      ok: false,
+      error:
+        "The card hold was released and nothing was charged. Collect payment at the pharmacy.",
+    }
+  }
+
+  const capturable = intent.amount_capturable
+  const requested =
+    amountCents != null && amountCents > 0 ? Math.min(amountCents, capturable) : capturable
+  const partial = requested < capturable
+
+  try {
+    const captured = await stripe.paymentIntents.capture(
+      paymentIntentId,
+      partial ? { amount_to_capture: requested } : undefined
+    )
+    return {
+      ok: captured.status === "succeeded",
+      amountReceivedCents: captured.amount_received,
+      error: captured.status === "succeeded" ? undefined : "Stripe did not capture the card hold.",
+    }
+  } catch (error) {
+    const again = await stripe.paymentIntents.retrieve(paymentIntentId).catch(() => null)
+    if (again && holdAlreadyPaid(again)) {
+      return {
+        ok: true,
+        alreadyCaptured: true,
+        amountReceivedCents: again.amount_received,
+      }
+    }
+    const message = error instanceof Error ? error.message : "Failed to capture payment hold."
+    if (message.includes("remainder of the authorized amount has been released")) {
+      return {
+        ok: false,
+        error:
+          "The card hold was released and nothing was charged. Collect payment at the pharmacy.",
+      }
+    }
+    return { ok: false, error: message }
+  }
 }
 
 /** Release an uncaptured authorization hold after provider denial. */
