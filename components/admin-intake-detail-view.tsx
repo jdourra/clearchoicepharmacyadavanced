@@ -289,10 +289,10 @@ export function AdminIntakeDetailView({
   const hasFrontId = Boolean(detail.id_front_key)
   const hasBackId = Boolean(detail.id_back_key)
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
+  const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
   const payAtPharmacy =
     isWeightLoss &&
     (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
-  const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
   const canMarkPharmacyPaid =
     isWeightLoss &&
     payAtPharmacy &&
