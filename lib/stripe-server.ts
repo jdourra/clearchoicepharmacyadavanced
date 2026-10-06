@@ -29,7 +29,8 @@ export async function createPaymentHold(params: {
     amount: params.amountCents,
     currency: "usd",
     capture_method: "manual",
-    automatic_payment_methods: { enabled: true },
+    // Card only. A manual hold cannot include payment methods that must be captured immediately.
+    payment_method_types: ["card"],
     receipt_email: params.email,
     metadata: params.metadata ?? {},
   })

@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
+import Stripe from "stripe"
 import { createPaymentHold, isStripeConfigured } from "@/lib/stripe-server"
 import { getStripePublishableKey, stripeConfigStatus } from "@/lib/stripe-env"
+
+function paymentSetupError(error: unknown): string {
+  if (error instanceof Stripe.errors.StripeError && error.message) return error.message
+  if (error instanceof Error && error.message) return error.message
+  return "Failed to initialize payment authorization"
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,6 +71,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("[payments/create-hold]", error)
-    return NextResponse.json({ error: "Failed to initialize payment authorization" }, { status: 500 })
+    return NextResponse.json({ error: paymentSetupError(error) }, { status: 500 })
   }
 }

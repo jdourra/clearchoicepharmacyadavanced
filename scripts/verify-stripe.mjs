@@ -74,7 +74,7 @@ async function main() {
     amount: 100,
     currency: "usd",
     capture_method: "manual",
-    automatic_payment_methods: { enabled: true },
+    payment_method_types: ["card"],
     metadata: { verify: "clearchoice-stripe-verify" },
   })
 
