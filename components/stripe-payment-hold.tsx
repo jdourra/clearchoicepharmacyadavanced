@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
+import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js"
 import { loadStripe, type Stripe } from "@stripe/stripe-js"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -23,18 +23,19 @@ function StripePaymentHoldInner({
   const stripe = useStripe()
   const elements = useElements()
   const [busy, setBusy] = useState(false)
-  const [ready, setReady] = useState(false)
+  const [complete, setComplete] = useState(false)
 
   const authorize = async () => {
     if (!stripe || !elements) return
+    const card = elements.getElement(CardElement)
+    if (!card) {
+      onError("Enter your card number, expiration date, and security code.")
+      return
+    }
     setBusy(true)
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        redirect: "if_required",
-        confirmParams: {
-          return_url: `${window.location.origin}/account?tab=programs`,
-        },
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card },
       })
 
       if (error) {
@@ -57,8 +58,28 @@ function StripePaymentHoldInner({
 
   return (
     <div className="space-y-4">
-      <PaymentElement onReady={() => setReady(true)} />
-      <Button type="button" className="w-full" disabled={!stripe || !ready || busy} onClick={authorize}>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Card number, expiration, and security code</p>
+        <div className="rounded-md border bg-background px-3 py-3">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: "16px",
+                  color: "#111827",
+                  "::placeholder": { color: "#6b7280" },
+                },
+                invalid: { color: "#b91c1c" },
+              },
+            }}
+            onChange={(event) => {
+              setComplete(event.complete)
+              onError(event.error?.message || "")
+            }}
+          />
+        </div>
+      </div>
+      <Button type="button" className="w-full" disabled={!stripe || !complete || busy} onClick={authorize}>
         {busy ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Authorizing...
@@ -182,17 +203,12 @@ export function StripePaymentHold({ amount, email, serviceType, onAuthorized, in
     )
   }
 
-  const options = {
-    clientSecret,
-    appearance: { theme: "stripe" as const },
-  }
-
   return (
     <div
       data-field="stripePayment"
       className={invalid ? "rounded-lg ring-2 ring-destructive p-2 -m-2" : undefined}
     >
-      <Elements stripe={stripePromise} options={options}>
+      <Elements stripe={stripePromise}>
         <StripePaymentHoldInner
           clientSecret={clientSecret}
           paymentIntentId={paymentIntentId}
