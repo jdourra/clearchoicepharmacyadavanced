@@ -8,6 +8,7 @@ import {
   validateInjectionTelehealthConsents,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
 
 type SpecialtyIntakePayload = {
@@ -382,7 +383,7 @@ export async function POST(request: NextRequest) {
       message:
         "Your specialty transfer request has been submitted. Our team will contact you within 1 business day.",
       submissionId,
-      estimatedReviewTime: "1 business day",
+      estimatedReviewTime: PRIMARY_PHYSICIAN.reviewSla,
     })
 
     if (sessionId) {

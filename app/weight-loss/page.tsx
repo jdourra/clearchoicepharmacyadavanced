@@ -23,6 +23,7 @@ import {
   WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
   WEIGHT_LOSS_PROGRAMS,
 } from "@/lib/weight-loss-catalog"
+import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
@@ -326,14 +327,12 @@ export default function WeightLossPage() {
           {
             step: 3,
             title: "Clinician evaluation",
-            description:
-              "A licensed clinician reviews your information, may request follow-up, and decides whether to prescribe.",
+            description: `${PATIENT_REVIEW_TIMELINE} Approval depends on that clinical review.`,
           },
           {
             step: 4,
             title: "Pharmacy fulfillment",
-            description:
-              "If approved, Clear Choice Pharmacy compounds your kit and ships or prepares pickup for Michigan patients.",
+            description: PATIENT_FULFILLMENT_TIMELINE,
           },
         ]}
       />

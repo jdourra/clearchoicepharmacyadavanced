@@ -4,6 +4,7 @@ import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { getEdTrocheProduct, type EdBillingPlan } from "@/lib/ed-troche-catalog"
 import { parseEdAddOns } from "@/lib/ed-add-ons"
 
@@ -37,8 +38,8 @@ const trustFeatures = [
   },
   {
     icon: Clock,
-    title: "Fast Review",
-    description: "Physician review typically within 2-4 business hours",
+    title: "Review time",
+    description: PATIENT_REVIEW_TIMELINE,
   },
 ]
 
@@ -46,8 +47,8 @@ const processSteps = [
   "Review your selected troche formulation",
   "Complete the secure medical questionnaire",
   "Upload ID and authorize payment hold",
-  "Licensed physician reviews your information",
-  "If approved, Clear Choice Pharmacy compounds and ships discreetly",
+  PATIENT_REVIEW_TIMELINE,
+  PATIENT_FULFILLMENT_TIMELINE,
 ]
 
 type PageProps = {

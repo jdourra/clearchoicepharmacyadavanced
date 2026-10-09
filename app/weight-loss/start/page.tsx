@@ -3,6 +3,7 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import {
   WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
   WEIGHT_LOSS_PROGRAMS,
@@ -161,8 +162,8 @@ const trustFeatures = [
   },
   {
     icon: Clock,
-    title: "Fast Review",
-    description: "Provider review typically within 2-4 business hours",
+    title: "Review time",
+    description: PATIENT_REVIEW_TIMELINE,
   },
 ]
 
@@ -170,8 +171,8 @@ const processSteps = [
   "Review your selected Semaglutide or Tirzepatide kit",
   "Complete the secure medical questionnaire and vitals",
   "Answer clinical screening questions and upload photo ID",
-  "Licensed clinician reviews your eligibility",
+  PATIENT_REVIEW_TIMELINE,
   WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-    ? "If approved, the card hold is charged, then we compound and ship"
-    : "If approved, pay at the pharmacy, then we compound and ship",
+    ? `If approved, the card hold is charged. ${PATIENT_FULFILLMENT_TIMELINE}`
+    : `If approved, pay at the pharmacy. ${PATIENT_FULFILLMENT_TIMELINE}`,
 ]

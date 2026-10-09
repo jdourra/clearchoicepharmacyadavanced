@@ -3,6 +3,7 @@ import { TrtIntakeForm } from "@/components/trt-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
@@ -61,7 +62,7 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                     {[
                       { icon: Shield, title: "HIPAA Compliant", description: "Protected by federal healthcare privacy laws" },
                       { icon: Lock, title: "256-bit Encryption", description: "Bank-level security for medical data" },
-                      { icon: Clock, title: "Fast Review", description: "Physician review typically within 2-4 business hours" },
+                      { icon: Clock, title: "Review time", description: PATIENT_REVIEW_TIMELINE },
                     ].map((feature) => (
                       <div key={feature.title} className="flex items-start gap-3">
                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">

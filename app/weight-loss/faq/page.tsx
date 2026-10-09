@@ -10,6 +10,7 @@ import {
   SectionIntro,
 } from "@/components/clinical-landing-shell"
 import { SITE_URL, WEIGHT_LOSS_FAQS, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/clinical-seo"
+import { PATIENT_ORDER_TIMELINE } from "@/lib/clinical-provider"
 
 export const metadata: Metadata = {
   title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan" },
@@ -26,6 +27,10 @@ export const metadata: Metadata = {
 }
 
 const EXTRA_FAQS = [
+  {
+    question: "How long does review, preparation, and shipping take?",
+    answer: PATIENT_ORDER_TIMELINE,
+  },
   {
     question: "What does Clear Choice Pharmacy do versus the prescribing clinician?",
     answer:

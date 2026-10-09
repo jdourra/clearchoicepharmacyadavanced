@@ -6,7 +6,7 @@ export const PRIMARY_PHYSICIAN = {
   name: "Licensed clinician",
   credentials: "Michigan-licensed clinician",
   state: "Michigan",
-  reviewSla: "typically within one week",
+  reviewSla: "usually 4–5 days",
   pharmacyPhone: PHARMACY_PHONE_DISPLAY,
 } as const
 
@@ -29,12 +29,20 @@ export function getClinicalIntakeRecipientEmails(): string[] {
   return [...new Set([getAdminInboxEmail(), getClinicianInboxEmail()].filter(Boolean))]
 }
 
+export const PATIENT_REVIEW_TIMELINE =
+  "Dr. Dourra usually takes 4–5 days to review your intake."
+
+export const PATIENT_FULFILLMENT_TIMELINE =
+  "After approval, the pharmacy needs about 3 days to prepare the order, then about 3 days to ship it."
+
+export const PATIENT_ORDER_TIMELINE = `${PATIENT_REVIEW_TIMELINE} ${PATIENT_FULFILLMENT_TIMELINE}`
+
 export function physicianReviewPendingLabel(): string {
   return "Pending clinician review"
 }
 
 export function physicianReviewDescription(): string {
-  return "Dr. Dourra is reviewing intakes in the order they were received. A high number of GLP weight-loss requests means review is taking longer than usual."
+  return PATIENT_ORDER_TIMELINE
 }
 
 export function physicianReviewShort(): string {
@@ -42,7 +50,7 @@ export function physicianReviewShort(): string {
 }
 
 export const DEFAULT_INTAKE_SUCCESS_STEPS = [
-  `A licensed clinician will review your medical information (${PRIMARY_PHYSICIAN.reviewSla})`,
+  PATIENT_REVIEW_TIMELINE,
   "You'll receive an email when the review is finished. Approval depends on that clinical review.",
-  "If approved, Clear Choice Pharmacy will contact you to collect payment and prepare your order",
+  PATIENT_FULFILLMENT_TIMELINE,
 ] as const

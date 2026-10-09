@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Upload, Check, Stethoscope, ArrowRightLeft, CreditCard, Phone } from "lucide-react"
 import Link from "next/link"
+import { PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { authFetch } from "@/lib/session"
 import { buildPrescriptionNotes } from "@/lib/order-prescription-notes"
 import { hydrateCartItems, type CartItem } from "@/lib/cart"
@@ -607,7 +608,7 @@ export default function CheckoutPage() {
                               <p className="font-medium">What happens next</p>
                               <ul className="list-disc list-inside text-muted-foreground space-y-1">
                                 <li>Your order is placed and intake is sent for physician review</li>
-                                <li>A licensed clinician reviews your intake. Review is currently delayed about one week.</li>
+                                <li>{PATIENT_REVIEW_TIMELINE}</li>
                                 <li>If approved, your prescription is sent to Clear Choice Pharmacy</li>
                               </ul>
                             </div>
@@ -730,7 +731,7 @@ export default function CheckoutPage() {
                         <div className="text-sm space-y-1">
                           <p>Telemedicine visit — physician review required</p>
                           <p className="text-muted-foreground">
-                            Intake will be reviewed by a licensed clinician before prescribing. Review is currently delayed about one week.
+                            {PATIENT_REVIEW_TIMELINE}
                           </p>
                         </div>
                       ) : (

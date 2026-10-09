@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
   DEFAULT_INTAKE_SUCCESS_STEPS,
+  PATIENT_REVIEW_TIMELINE,
   physicianReviewDescription,
   physicianReviewPendingLabel,
 } from "@/lib/clinical-provider"
@@ -564,7 +565,7 @@ export function ClinicalIntakeForm({
       await new Promise((r) => setTimeout(r, 500))
       addLog("Submission received successfully!")
       addLog("Routing to physician review panel...")
-      addLog("Estimated review time: typically within one week")
+      addLog(`Estimated review time: ${PATIENT_REVIEW_TIMELINE}`)
       
       setSubmissionStatus("success")
       setStep(4)

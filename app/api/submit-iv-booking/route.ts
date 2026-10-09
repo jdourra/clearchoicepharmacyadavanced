@@ -11,6 +11,7 @@ import {
 } from "@/lib/telehealth/types"
 import { formatPaymentSummary, requireIntakePaymentSubmission } from "@/lib/intake-payment"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
+import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
 import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 import {
@@ -310,7 +311,7 @@ export async function POST(request: NextRequest) {
         "Your intake has been securely submitted. A licensed telehealth provider will review your request. If approved, your prescription will be sent to Clear Choice Pharmacy for preparation before RN dispatch.",
       submissionId,
       status: STANDARD_INTAKE_STATUS.pending,
-      estimatedReviewTime: "2-4 business hours",
+      estimatedReviewTime: PRIMARY_PHYSICIAN.reviewSla,
       fulfillmentPharmacy: CLEAR_CHOICE_PHARMACY.name,
     })
   } catch (error) {

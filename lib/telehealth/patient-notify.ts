@@ -1,5 +1,5 @@
 import "server-only"
-import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
+import { PATIENT_FULFILLMENT_TIMELINE, PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { sendPatientEmail } from "@/lib/ses-mail"
 
 export type IntakeDecision = "approved" | "denied" | "follow_up"
@@ -37,7 +37,7 @@ export async function notifyPatientIntakeDecision(params: {
 
 Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
-Next step: Clear Choice Pharmacy in Novi will contact you to collect payment for your kit on our pharmacy card terminal (or by phone/cash). Once payment is arranged, we prepare and ship your prescription.
+Next step: Clear Choice Pharmacy in Novi will contact you to collect payment for your kit on our pharmacy card terminal (or by phone/cash). ${PATIENT_FULFILLMENT_TIMELINE}
 
 Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 
@@ -46,7 +46,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 
 Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
-Clear Choice Pharmacy in Novi, MI is now preparing your prescription. You'll receive another update when your order ships or is ready for dispatch.
+Clear Choice Pharmacy in Novi, MI is now preparing your prescription. ${PATIENT_FULFILLMENT_TIMELINE} You'll receive another update when your order ships or is ready for pickup.
 
 Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 

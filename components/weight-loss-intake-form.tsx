@@ -24,6 +24,7 @@ import { formatPhoneInput } from "@/lib/phone"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
+import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import {
@@ -864,12 +865,12 @@ export function WeightLossIntakeForm({
         returnHref="/weight-loss"
         returnLabel="Return to Weight Loss"
         steps={[
-          "A licensed clinician will review your medical information",
+          PATIENT_REVIEW_TIMELINE,
           "You'll receive an email with the decision and any follow-up questions",
           WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
             ? "Your card is charged only if treatment is approved. If it is not approved, the hold is released"
             : "If treatment is approved, pay at the pharmacy in person, on the card terminal, or by phone. Nothing was charged online",
-          "After approval, the pharmacy compounds and ships your kit",
+          PATIENT_FULFILLMENT_TIMELINE,
         ]}
       >
         <p className="text-sm text-muted-foreground">
