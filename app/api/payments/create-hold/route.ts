@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { createPaymentHold, isStripeConfigured } from "@/lib/stripe-server"
-import { getStripePublishableKey, stripeConfigStatus } from "@/lib/stripe-env"
+import { getStripePublishableKey, stripeConfigStatus, stripeKeysMismatch } from "@/lib/stripe-env"
 
 function paymentSetupError(error: unknown): string {
   if (error instanceof Stripe.errors.StripeError && error.message) return error.message
@@ -25,6 +25,17 @@ export async function POST(request: NextRequest) {
     }
 
     const amountCents = Math.round(amount * 100)
+
+    if (stripeKeysMismatch()) {
+      console.error("[payments/create-hold] Stripe keys are from different accounts:", stripeConfigStatus().issues)
+      return NextResponse.json(
+        {
+          error:
+            "Online card authorization is temporarily unavailable. Please call (248) 987-6182 to complete your order.",
+        },
+        { status: 503 }
+      )
+    }
 
     if (!isStripeConfigured()) {
       if (process.env.NODE_ENV === "development") {

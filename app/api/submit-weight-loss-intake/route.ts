@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import {
   formatPaymentSummary,
+  requireIntakeIdentitySubmission,
   requireIntakePaymentSubmission,
   type IntakeConsents,
   type IntakePaymentMetadata,
@@ -11,7 +12,11 @@ import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
-import { getWeightLossDose, formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
+import {
+  formatWeightLossSupplyFromKitCount,
+  getWeightLossDose,
+  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
+} from "@/lib/weight-loss-catalog"
 import { snapshotBillingKitCountForNewIntake } from "@/lib/weight-loss-dose-review"
 import {
   formatInjectionConsentsSummary,
@@ -339,14 +344,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
-    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
+    if (!WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED) {
+      data.identity.stripePaymentIntentId = null
+      data.identity.paymentOnFile = false
+    }
+
+    const paymentError = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+      ? requireIntakePaymentSubmission(data.consents, data.identity)
+      : requireIntakeIdentitySubmission(data.consents, data.identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
     }
 
-    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
-    if (!stripeCheck.ok) {
-      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
+    if (WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED) {
+      const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
+      if (!stripeCheck.ok) {
+        return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
+      }
     }
 
     if (!data.consents?.injection) {
@@ -419,7 +433,12 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       })
-      const paymentStatus = paymentStatusFromHold(data.identity.stripePaymentIntentId)
+      const stripePaymentIntentId = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+        ? data.identity.stripePaymentIntentId
+        : null
+      const paymentStatus = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+        ? paymentStatusFromHold(stripePaymentIntentId)
+        : "awaiting_pharmacy"
 
       const values = [
           submissionId,
@@ -465,7 +484,7 @@ export async function POST(request: NextRequest) {
           data.identity.shippingState,
           data.identity.shippingZip,
           STANDARD_INTAKE_STATUS.pending,
-          null,
+          stripePaymentIntentId,
           data.identity.idFrontKey,
           data.identity.idBackKey,
           partnerResult.partnerName,
@@ -572,7 +591,7 @@ export async function POST(request: NextRequest) {
             data.identity.shippingState,
             data.identity.shippingZip,
             STANDARD_INTAKE_STATUS.pending,
-            null,
+            stripePaymentIntentId,
             data.identity.idFrontKey,
             data.identity.idBackKey,
             partnerResult.partnerName,

@@ -17,7 +17,12 @@ import {
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
-import { MIC_B12_HOW_IT_WORKS, MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
+import {
+  MIC_B12_HOW_IT_WORKS,
+  MIC_B12_WEIGHT_LOSS,
+  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
+  WEIGHT_LOSS_PROGRAMS,
+} from "@/lib/weight-loss-catalog"
 import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
@@ -314,7 +319,9 @@ export default function WeightLossPage() {
             step: 2,
             title: "Complete intake & ID",
             description:
-              "Submit a secure health questionnaire, upload photo ID, and place a card hold. You are charged only if a clinician approves.",
+              WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+                ? "Submit a secure health questionnaire, upload photo ID, and place a card hold. You are charged only if a clinician approves."
+                : "Submit a secure health questionnaire and upload photo ID. Payment is collected at the pharmacy after a clinician approves.",
           },
           {
             step: 3,

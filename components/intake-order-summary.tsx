@@ -9,6 +9,7 @@ type IntakeOrderSummaryProps = {
   productSubtitle?: string
   billingLabel?: string
   priceLine?: string
+  paymentNote?: string
   addOns?: EdFormulationAddOn[]
   orderPricing?: EdOrderPricing
   changeHref: string
@@ -19,6 +20,7 @@ export function IntakeOrderSummary({
   productSubtitle,
   billingLabel,
   priceLine,
+  paymentNote = "Prescription required after clinician review. Payment is authorized as a hold and captured only if approved.",
   addOns,
   orderPricing,
   changeHref,
@@ -61,9 +63,7 @@ export function IntakeOrderSummary({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
-        Prescription required after clinician review. Payment is authorized as a hold and captured only if approved.
-      </p>
+      <p className="text-xs text-muted-foreground">{paymentNote}</p>
     </div>
   )
 }

@@ -13,20 +13,43 @@ const PUBLISHABLE_ENV_KEYS = [
   "Stripe_Publishable_Key",
 ] as const
 
-function readStripeValue(keys: readonly string[], prefix: "sk_" | "pk_"): string | undefined {
+function readStripeValues(keys: readonly string[], prefix: "sk_" | "pk_"): string[] {
+  const values: string[] = []
   for (const key of keys) {
     const value = normalizeEnvValue(process.env[key], key)
-    if (value?.startsWith(prefix)) return value
+    if (value?.startsWith(prefix)) values.push(value)
   }
-  return undefined
+  return values
 }
 
-export function getStripeSecretKey(): string | undefined {
-  return readStripeValue(SECRET_ENV_KEYS, "sk_")
+/** Live and test keys from one Stripe account share a long prefix. The rest of each key is different. */
+export function sameStripeAccount(left: string, right: string): boolean {
+  const leftMatch = left.match(/^(?:pk|sk)_(live|test)_(.+)$/)
+  const rightMatch = right.match(/^(?:pk|sk)_(live|test)_(.+)$/)
+  if (!leftMatch || !rightMatch || leftMatch[1] !== rightMatch[1]) return false
+  const leftBody = leftMatch[2]
+  const rightBody = rightMatch[2]
+  let shared = 0
+  const max = Math.min(leftBody.length, rightBody.length)
+  while (shared < max && leftBody[shared] === rightBody[shared]) shared++
+  return shared >= 16
 }
 
 export function getStripePublishableKey(): string | undefined {
-  return readStripeValue(PUBLISHABLE_ENV_KEYS, "pk_")
+  return readStripeValues(PUBLISHABLE_ENV_KEYS, "pk_")[0]
+}
+
+export function getStripeSecretKey(): string | undefined {
+  const secrets = readStripeValues(SECRET_ENV_KEYS, "sk_")
+  const publishable = getStripePublishableKey()
+  if (!publishable) return secrets[0]
+  return secrets.find((secret) => sameStripeAccount(secret, publishable))
+}
+
+export function stripeKeysMismatch(): boolean {
+  const publishable = getStripePublishableKey()
+  const secrets = readStripeValues(SECRET_ENV_KEYS, "sk_")
+  return Boolean(publishable && secrets.length > 0 && !getStripeSecretKey())
 }
 
 export function isStripeConfigured(): boolean {
@@ -73,6 +96,11 @@ export function stripeConfigStatus(): {
   if (!publishableEnvKey) {
     issues.push("Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (Vercel → Production + Preview).")
   }
+  if (stripeKeysMismatch()) {
+    issues.push(
+      "STRIPE_SECRET_KEY and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY are from different Stripe accounts or different modes (test vs live). Paste both keys from the same account."
+    )
+  }
 
   const rawSecret = process.env.STRIPE_SECRET_KEY
   if (rawSecret?.includes("STRIPE_SECRET_KEY=")) {
@@ -87,7 +115,7 @@ export function stripeConfigStatus(): {
   }
 
   return {
-    configured: Boolean(secretEnvKey && publishableEnvKey),
+    configured: Boolean(getStripeSecretKey() && publishableEnvKey),
     hasSecretKey: Boolean(secretEnvKey),
     hasPublishableKey: Boolean(publishableEnvKey),
     secretEnvKey,

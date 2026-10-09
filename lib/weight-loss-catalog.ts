@@ -75,6 +75,21 @@ export const WEIGHT_LOSS_INTAKE_HOLD_NOTE =
 export const WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE =
   "If a card hold was not placed online, the pharmacy collects payment after approval on the card terminal, by phone, or in cash."
 
+/**
+ * Online card holds stay off until LegitScript certification unlocks the live Stripe secret key.
+ * Set this to true only after STRIPE_SECRET_KEY and the publishable key are from the same live account.
+ */
+export const WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED = false
+
+export const WEIGHT_LOSS_PHARMACY_COLLECTION_NOTE =
+  "No card is charged during intake. After a clinician approves your prescription, Clear Choice Pharmacy collects payment in person, on the pharmacy card terminal, or by phone."
+
+export function weightLossPaymentPatientNote(): string {
+  return WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+    ? WEIGHT_LOSS_INTAKE_HOLD_NOTE
+    : WEIGHT_LOSS_PHARMACY_COLLECTION_NOTE
+}
+
 export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
 
 export const WEIGHT_LOSS_DOSE_SELECT_HINT =

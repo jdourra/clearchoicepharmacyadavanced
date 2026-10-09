@@ -28,8 +28,9 @@ import type { WeightLossBillingPlan, WeightLossDoseId, WeightLossProgram } from 
 import {
   WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_DOSE_SELECT_TITLE,
-  WEIGHT_LOSS_INTAKE_HOLD_NOTE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
+  weightLossPaymentPatientNote,
   WEIGHT_LOSS_PRICE_PERIOD_BADGE,
   formatDoseOptionLabel,
   formatKitBillingLabel,
@@ -257,16 +258,20 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. A ${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly
-                      billing if your clinician requires a live visit. A card hold is placed during intake and charged
-                      only if treatment is approved.
+                      billing if your clinician requires a live visit.{" "}
+                      {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+                        ? "A card hold is placed during intake and charged only if treatment is approved."
+                        : "Payment is collected at the pharmacy after a clinician approves treatment."}
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
-                      Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on. A card hold is placed
-                      during intake and charged only if treatment is approved.
+                      Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on.{" "}
+                      {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+                        ? "A card hold is placed during intake and charged only if treatment is approved."
+                        : "Payment is collected at the pharmacy after a clinician approves treatment."}
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground pt-1">{WEIGHT_LOSS_INTAKE_HOLD_NOTE}</p>
+                  <p className="text-xs text-muted-foreground pt-1">{weightLossPaymentPatientNote()}</p>
                 </div>
               )}
 
