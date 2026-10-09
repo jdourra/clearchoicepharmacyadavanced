@@ -79,6 +79,7 @@ export default function AdminOrderDetailPage() {
             <AdminMarkOrderShipped
               order={order}
               staffId={staffId}
+              onProcessing={() => setOrder({ ...order, status: "processing" })}
               onShipped={() => setOrder({ ...order, status: "shipped" })}
             />
 

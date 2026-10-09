@@ -85,7 +85,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
     !isPaid &&
     approvedOrLater.has(status)
 
-  const canMarkPreparing = approvedOrLater.has(status) && !isShipped && status !== INTAKE_STATUS.preparing
+  const canMarkPreparing = approvedOrLater.has(status) && !isShipped
 
   const canMarkShipped = isPaid && !isShipped && approvedOrLater.has(status)
   const courtesyPercent = intakeDelayCourtesyPercent(detail)
@@ -142,7 +142,11 @@ export function AdminIntakePharmacyFulfillmentPanel({
         if (action === "send_payment_reminder") {
           setMessage("Payment reminder email sent to patient.")
         } else if (action === "mark_preparing") {
-          setMessage("Intake marked as preparing.")
+          setMessage(
+            result.emailSent
+              ? "Marked processing and emailed the patient."
+              : `Marked processing.${result.emailError ? ` Email failed: ${result.emailError}` : ""}`
+          )
         } else if (action === "mark_shipped") {
           setMessage(
             result.emailSent
@@ -248,14 +252,23 @@ export function AdminIntakePharmacyFulfillmentPanel({
                   size="sm"
                   variant="outline"
                   disabled={!!busy}
-                  onClick={() => runAction("mark_preparing", "mark preparing")}
+                  onClick={() => {
+                    if (
+                      !confirm(
+                        "Email the patient that this order has been placed and that processing and shipping may take up to 6 days?"
+                      )
+                    ) {
+                      return
+                    }
+                    void runAction("mark_preparing", "mark processing")
+                  }}
                 >
                   {busy === "mark_preparing" ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : (
                     <Package className="h-4 w-4 mr-2" />
                   )}
-                  Mark preparing
+                  Order placed & email patient
                 </Button>
               )}
               {canMarkShipped && (
@@ -294,6 +307,11 @@ export function AdminIntakePharmacyFulfillmentPanel({
                 </>
               )}
             </div>
+            {canMarkPreparing && (
+              <p className="text-xs text-muted-foreground">
+                Order placed emails the patient that the order is processing and that processing and shipping may take up to 6 days.
+              </p>
+            )}
             {canMarkShipped && (
               <p className="text-xs text-muted-foreground">
                 Use “no email” if you already told the patient by phone or don’t want a shipping notification.

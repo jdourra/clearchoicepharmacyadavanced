@@ -344,6 +344,13 @@ export default function AdminOrdersPage() {
                           order={order}
                           staffId={staffId}
                           compact
+                          onProcessing={() =>
+                            setAllOrders((prev) =>
+                              prev.map((item) =>
+                                item.id === order.id ? { ...item, status: "processing" } : item
+                              )
+                            )
+                          }
                           onShipped={() =>
                             setAllOrders((prev) =>
                               prev.map((item) =>

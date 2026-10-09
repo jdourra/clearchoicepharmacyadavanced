@@ -50,7 +50,7 @@ export function formatPortalStatus(status: string): string {
     copay_assistance: "Copay assistance in progress",
     ready_for_fulfillment: "Ready for fulfillment",
     rx_at_pharmacy: "Prescription at pharmacy",
-    preparing: "Pharmacy preparing",
+    preparing: "Processing",
     shipped: "Shipped",
     ready_for_dispatch: "Ready for RN dispatch",
     dispatched: "RN dispatched",

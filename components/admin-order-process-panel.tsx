@@ -300,6 +300,10 @@ export function AdminOrderProcessPanel({
       <AdminMarkOrderShipped
         order={order}
         staffId={staffId}
+        onProcessing={() => {
+          onOrderUpdate({ ...order, status: "processing" })
+          setSuccessMessage("Order marked processing.")
+        }}
         onShipped={() => {
           onOrderUpdate({ ...order, status: "shipped" })
           setSuccessMessage("Order shipped — returning to queue for the next order.")

@@ -7,6 +7,7 @@ export function messageSubjectForType(
     payment_request: "Payment request",
     mobile_pay_link: "Pay on your phone",
     missing_prescription_info: "Prescription information needed",
+    order_placed: "Order placed",
     shipped: "Order shipped",
     delivered: "Order delivered",
     custom: "Message from pharmacy",

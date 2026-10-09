@@ -2,8 +2,10 @@ import "server-only"
 import { sql } from "@/lib/db"
 import {
   buildIntakePharmacyPaymentReminderEmail,
+  buildIntakeProcessingEmail,
   buildIntakeShippedEmail,
   INTAKE_PAYMENT_REMINDER_SUBJECT,
+  INTAKE_PROCESSING_SUBJECT,
   INTAKE_SHIPPED_SUBJECT,
 } from "@/lib/intake-pharmacy-payment-reminder-email"
 import { sendPatientEmail } from "@/lib/ses-mail"
@@ -184,6 +186,60 @@ export async function updateIntakeFulfillmentStatus(params: {
   }
 
   return { success: true, intake: updated[0] as Record<string, unknown> }
+}
+
+export async function markIntakePreparingAndNotify(params: {
+  serviceType: AdminIntakeServiceType
+  id: string
+  staffLabel: string
+}): Promise<{
+  success: boolean
+  error?: string
+  emailSent?: boolean
+  emailError?: string
+}> {
+  const row = await getIntakeRowForFulfillment(params.serviceType, params.id)
+  if (!row) return { success: false, error: "Intake not found" }
+
+  const currentStatus = String(row.status ?? "")
+  const alreadyPreparing = currentStatus === STANDARD_INTAKE_STATUS.preparing
+
+  const update = alreadyPreparing
+    ? { success: true as const, intake: row }
+    : await updateIntakeFulfillmentStatus({
+        serviceType: params.serviceType,
+        id: params.id,
+        nextStatus: "preparing",
+        staffLabel: params.staffLabel,
+      })
+
+  if (!update.success || !update.intake) {
+    return { success: false, error: update.error }
+  }
+
+  const email = String(update.intake.email ?? "").trim()
+  if (!email) {
+    return { success: true, emailSent: false, emailError: "Patient email missing — status updated only." }
+  }
+
+  const { text, html } = buildIntakeProcessingEmail({
+    firstName: String(update.intake.first_name ?? ""),
+    serviceLabel: SERVICE_LABELS[params.serviceType],
+    submissionId: params.id,
+  })
+
+  const emailResult = await sendPatientEmail({
+    to: email,
+    subject: INTAKE_PROCESSING_SUBJECT,
+    text,
+    html,
+  })
+
+  return {
+    success: true,
+    emailSent: emailResult.success,
+    emailError: emailResult.error,
+  }
 }
 
 export async function markIntakeShippedAndNotify(params: {

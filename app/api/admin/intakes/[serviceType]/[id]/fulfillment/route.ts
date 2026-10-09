@@ -2,10 +2,10 @@ import { NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
 import { isAdminRole, isClinicianRole } from "@/lib/staff-roles"
 import {
+  markIntakePreparingAndNotify,
   markIntakeShippedAndNotify,
   sendIntakePharmacyPaymentReminder,
   supportsPharmacyFulfillment,
-  updateIntakeFulfillmentStatus,
 } from "@/lib/intake-pharmacy-fulfillment"
 import { isAdminIntakeServiceType } from "@/lib/telehealth/intake-registry"
 
@@ -45,16 +45,20 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     if (action === "mark_preparing") {
-      const result = await updateIntakeFulfillmentStatus({
+      const result = await markIntakePreparingAndNotify({
         serviceType,
         id,
-        nextStatus: "preparing",
         staffLabel,
       })
       if (!result.success) {
         return NextResponse.json({ error: result.error || "Could not update status" }, { status: 400 })
       }
-      return NextResponse.json({ success: true, status: result.intake?.status })
+      return NextResponse.json({
+        success: true,
+        status: "preparing",
+        emailSent: result.emailSent,
+        emailError: result.emailError,
+      })
     }
 
     if (action === "mark_shipped") {

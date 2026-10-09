@@ -30,6 +30,20 @@ export function isCancelledOrderStatus(status: string): boolean {
   return status === CANCELLED_ORDER_STATUS
 }
 
+/** Paid catalog orders that can be marked processing and emailed. */
+export function canMarkCatalogOrderProcessing(order: {
+  status: string
+  payment_status?: string | null
+}): boolean {
+  return (
+    isOrderPaid({ payment_status: order.payment_status ?? "" } as Order) &&
+    (order.status === "pending" ||
+      order.status === "pending_rx" ||
+      order.status === "processing" ||
+      order.status === "ready")
+  )
+}
+
 /** Paid catalog orders the pharmacy can mark shipped (processing or ready). */
 export function canMarkCatalogOrderShipped(order: {
   status: string
