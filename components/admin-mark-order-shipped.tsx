@@ -23,7 +23,7 @@ function shippedMessage(order: MarkShippedOrder): string {
 
 function processingMessage(order: MarkShippedOrder): string {
   const number = order.order_number || order.id
-  return `Your order #${number} has been placed and is now processing at Clear Choice Pharmacy. Processing and shipping may take up to 6 days.`
+  return `Your medication has been ordered for order #${number}. Please allow a few days for processing and shipping.`
 }
 
 async function resolveStaffId(staffId?: string): Promise<string> {
@@ -58,7 +58,7 @@ export function AdminMarkOrderShipped({
   const label = `#${order.order_number || order.id}`
 
   const markProcessing = async () => {
-    if (!confirm(`Mark order ${label} as placed and email the patient that processing and shipping may take up to 6 days?`)) {
+    if (!confirm(`Mark order ${label} as ordered and email the patient that the medication was ordered? The email asks them to allow a few days for processing and shipping.`)) {
       return
     }
 
@@ -78,7 +78,7 @@ export function AdminMarkOrderShipped({
       }
 
       if (!order.patient_id) {
-        setMessage("Marked processing. This order has no patient account, so no email was sent.")
+        setMessage("Marked ordered. This order has no patient account, so no email was sent.")
         if (shouldAdvance) onProcessing?.()
         return
       }
@@ -100,13 +100,13 @@ export function AdminMarkOrderShipped({
       const emailData = await emailRes.json().catch(() => ({}))
       if (!emailRes.ok) {
         setMessage(
-          `Marked processing. Email failed: ${emailData.error || "could not send the patient message."}`
+          `Marked ordered. Email failed: ${emailData.error || "could not send the patient message."}`
         )
       } else if (emailData.emailed) {
-        setMessage("Marked processing and emailed the patient.")
+        setMessage("Marked ordered and emailed the patient.")
       } else {
         setMessage(
-          `Marked processing. Portal message saved.${emailData.emailError ? ` Email: ${emailData.emailError}` : ""}`
+          `Marked ordered. Portal message saved.${emailData.emailError ? ` Email: ${emailData.emailError}` : ""}`
         )
       }
       if (shouldAdvance) onProcessing?.()
@@ -190,19 +190,11 @@ export function AdminMarkOrderShipped({
           ) : (
             <Package className="h-4 w-4 mr-2" />
           )}
-          Order placed & email patient
+          Mark ordered & email patient
         </Button>
       ) : null}
       {canShip ? (
         <>
-          <Button type="button" size="sm" disabled={!!busy} onClick={() => void markShipped(true)}>
-            {busy === "email" ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : (
-              <Truck className="h-4 w-4 mr-2" />
-            )}
-            Mark shipped & email patient
-          </Button>
           <Button
             type="button"
             size="sm"
@@ -238,7 +230,7 @@ export function AdminMarkOrderShipped({
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Order placed emails the patient that the order is processing and that processing and shipping may take up to 6 days. Mark shipped when the package goes out.
+          Mark ordered emails the patient that the medication was ordered and to allow a few days for processing and shipping. Mark shipped when the package goes out.
         </p>
         {buttons}
         {error ? <p className="text-sm text-destructive">{error}</p> : null}

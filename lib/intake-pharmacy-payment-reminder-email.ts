@@ -52,7 +52,7 @@ ${CONTACT_EMAIL}`
   return { text, html }
 }
 
-export const INTAKE_PROCESSING_SUBJECT = "Your order has been placed | Clear Choice Pharmacy"
+export const INTAKE_PROCESSING_SUBJECT = "Your medication has been ordered | Clear Choice Pharmacy"
 
 export function buildIntakeProcessingEmail(params: {
   firstName?: string | null
@@ -64,9 +64,9 @@ export function buildIntakeProcessingEmail(params: {
 
   const text = `${greeting}
 
-Your ${params.serviceLabel} order (Reference: ${params.submissionId}) has been placed and is now processing at Clear Choice Pharmacy.
+Your medication has been ordered (Reference: ${params.submissionId}).
 
-Processing and shipping may take up to 6 days.
+Please allow a few days for processing and shipping.
 
 View your account: ${accountUrl}
 
@@ -78,8 +78,8 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
 <html>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
   <p>${greeting}</p>
-  <p>Your <strong>${params.serviceLabel}</strong> order (Reference: <strong>${params.submissionId}</strong>) has been <strong>placed</strong> and is now processing at Clear Choice Pharmacy.</p>
-  <p>Processing and shipping may take up to 6 days.</p>
+  <p>Your medication has been ordered (Reference: <strong>${params.submissionId}</strong>).</p>
+  <p>Please allow a few days for processing and shipping.</p>
   <p><a href="${accountUrl}">View your patient portal</a></p>
   <p>Questions? Call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">— Clear Choice Pharmacy</p>

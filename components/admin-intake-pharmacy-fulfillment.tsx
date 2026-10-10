@@ -144,8 +144,8 @@ export function AdminIntakePharmacyFulfillmentPanel({
         } else if (action === "mark_preparing") {
           setMessage(
             result.emailSent
-              ? "Marked processing and emailed the patient."
-              : `Marked processing.${result.emailError ? ` Email failed: ${result.emailError}` : ""}`
+              ? "Marked ordered and emailed the patient."
+              : `Marked ordered.${result.emailError ? ` Email failed: ${result.emailError}` : ""}`
           )
         } else if (action === "mark_shipped") {
           setMessage(
@@ -250,17 +250,16 @@ export function AdminIntakePharmacyFulfillmentPanel({
                 <Button
                   type="button"
                   size="sm"
-                  variant="outline"
                   disabled={!!busy}
                   onClick={() => {
                     if (
                       !confirm(
-                        "Email the patient that this order has been placed and that processing and shipping may take up to 6 days?"
+                        "Email the patient that the medication was ordered and to allow a few days for processing and shipping?"
                       )
                     ) {
                       return
                     }
-                    void runAction("mark_preparing", "mark processing")
+                    void runAction("mark_preparing", "mark ordered")
                   }}
                 >
                   {busy === "mark_preparing" ? (
@@ -268,24 +267,11 @@ export function AdminIntakePharmacyFulfillmentPanel({
                   ) : (
                     <Package className="h-4 w-4 mr-2" />
                   )}
-                  Order placed & email patient
+                  Mark ordered & email patient
                 </Button>
               )}
               {canMarkShipped && (
                 <>
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={!!busy}
-                    onClick={() => runAction("mark_shipped", "mark shipped", { notifyPatient: true })}
-                  >
-                    {busy === "mark_shipped" ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : (
-                      <Truck className="h-4 w-4 mr-2" />
-                    )}
-                    Mark shipped &amp; email patient
-                  </Button>
                   <Button
                     type="button"
                     size="sm"
@@ -309,7 +295,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
             </div>
             {canMarkPreparing && (
               <p className="text-xs text-muted-foreground">
-                Order placed emails the patient that the order is processing and that processing and shipping may take up to 6 days.
+                Mark ordered emails the patient that the medication was ordered and to allow a few days for processing and shipping.
               </p>
             )}
             {canMarkShipped && (
