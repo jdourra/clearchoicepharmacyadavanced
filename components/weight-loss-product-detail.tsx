@@ -29,7 +29,6 @@ import {
   WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
-  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
   weightLossPaymentPatientNote,
   WEIGHT_LOSS_PRICE_PERIOD_BADGE,
   formatDoseOptionLabel,
@@ -139,7 +138,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               <span className="text-muted-foreground ml-1">/mo on 90-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Monthly starter kits from ${startingPrice}/mo · intake review, compounding &amp; shipping included
+              Monthly starter kits from ${startingPrice}/mo · you pay here · a partner pharmacy ships if approved
             </p>
             <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
@@ -252,23 +251,18 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                       : `First shipment — 2 × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
-                    Price is for the full kit, not per week. Intake physician review, compounding, syringes, supplies,
-                    and shipping included.
+                    Price is for the full kit, not per week. Doctor review and partner-pharmacy shipping are included.
                   </p>
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. A ${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly
                       billing if your clinician requires a live visit.{" "}
-                      {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                        ? "A card hold is placed during intake and charged only if treatment is approved."
-                        : "Payment is collected at the pharmacy after a clinician approves treatment."}
+                      You pay on this website. If a doctor does not approve treatment, you are refunded.
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on.{" "}
-                      {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                        ? "A card hold is placed during intake and charged only if treatment is approved."
-                        : "Payment is collected at the pharmacy after a clinician approves treatment."}
+                      You pay on this website. If a doctor does not approve treatment, you are refunded.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground pt-1">{weightLossPaymentPatientNote()}</p>

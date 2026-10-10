@@ -20,10 +20,10 @@ import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   MIC_B12_HOW_IT_WORKS,
   MIC_B12_WEIGHT_LOSS,
-  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
+  WEIGHT_LOSS_DOCTOR_REVIEW,
+  WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
 } from "@/lib/weight-loss-catalog"
-import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
@@ -52,16 +52,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
     description:
-      "Provider-guided Semaglutide and Tirzepatide kits for qualifying Michigan patients. Compounded in Novi after clinician review.",
+      "Provider-guided Semaglutide and Tirzepatide kits for qualifying Michigan patients. Pay on this website. A partner pharmacy ships if a doctor approves.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
 }
 
 const glpBenefits = [
-  "Custom Titration: Semaglutide and Tirzepatide formulations compounded to match your clinician's titration schedule.",
-  "Transparent Pricing: Clear cash-pay kit pricing with physician review, supplies, and Michigan shipping or pickup included.",
-  "Licensed Provider Review: Complete a secure online intake reviewed by a licensed clinician before any compounding.",
+  "Custom titration: Semaglutide and Tirzepatide doses chosen to match the doctor's plan.",
+  "Transparent pricing: You pay on this website. Doctor review and partner-pharmacy shipping are included.",
+  "Licensed doctor review: Complete a secure online intake. A doctor usually reviews it within 24 hours.",
   "Structured Support: Provider-guided weight management designed to support healthy habits alongside medication when appropriate.",
 ]
 
@@ -100,11 +100,11 @@ export default function WeightLossPage() {
             </span>
           </>
         }
-        subheadline="Provider-guided compounded kits from $134/mo after clinician review."
+        subheadline="Provider-guided Semaglutide and Tirzepatide kits from $134/mo."
         description={
-          "Clear Choice Pharmacy helps qualifying Michigan patients access structured weight management with pharmacy-compounded Semaglutide and Tirzepatide. A licensed clinician reviews your health history before any prescription is written. Individual results may vary."
+          "You pay on this website. A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, a partner pharmacy fills and ships your medication. Individual results may vary."
         }
-        highlight="Clinician review · Pharmacy compounded in Novi · Transparent cash-pay kits"
+        highlight="You pay on this website · Doctor review within 24 hours · Partner pharmacy ships"
         heroImage={{
           src: "/images/home-hero-clinical.png",
           alt: "Licensed clinician supporting medical weight management at Clear Choice Pharmacy",
@@ -125,9 +125,9 @@ export default function WeightLossPage() {
         />
         <div className="mt-6 prose prose-sm max-w-3xl text-muted-foreground">
           <p>
-            At Clear Choice Pharmacy, the pathway starts with an online intake. A licensed clinician reviews your
-            information and decides whether a prescription is appropriate. If approved, our Novi pharmacy compounds and
-            fulfills patient-specific Semaglutide or Tirzepatide kits for Michigan patients. Learn more about{" "}
+            At Clear Choice Pharmacy, the pathway starts with an online intake and payment on this website. A licensed
+            doctor reviews your information and decides whether a prescription is appropriate. If approved, a partner
+            pharmacy fills and ships Semaglutide or Tirzepatide for Michigan patients. Learn more about{" "}
             <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
               GLP-1 weight management
             </Link>
@@ -148,7 +148,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Medication options"
           title="Semaglutide, Tirzepatide & MIC + B12"
-          description="All-in kit pricing includes clinician review, compounding, supplies, and Michigan shipping or pickup. No separate membership fee. Individual results may vary."
+          description="All-in kit pricing includes doctor review and shipping from a partner pharmacy. No separate membership fee. Individual results may vary."
         />
         <AllInInclusions items={ALL_IN_INCLUSIONS.weightLoss} className="mt-6" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -224,7 +224,7 @@ export default function WeightLossPage() {
         <PricingCompareNote
           className="mt-8"
           title="Transparent Semaglutide & Tirzepatide pricing"
-          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front, include provider review and supplies, and are compounded in Novi for Michigan patients—no separate membership fee."
+          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front and include doctor review. A partner pharmacy ships approved medication. There is no separate membership fee."
         />
         <p className="text-xs text-muted-foreground mt-4">
           Prescription required after provider review. Kit price reflects prescribed dose strength (4 weekly injections).
@@ -308,7 +308,7 @@ export default function WeightLossPage() {
       <ProcessSteps
         id="how-it-works"
         title="How our medical weight loss program works"
-        subtitle="Four clear steps from kit selection to pharmacy fulfillment"
+        subtitle="Four clear steps from kit selection to a partner pharmacy"
         steps={[
           {
             step: 1,
@@ -320,19 +320,17 @@ export default function WeightLossPage() {
             step: 2,
             title: "Complete intake & ID",
             description:
-              WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                ? "Submit a secure health questionnaire, upload photo ID, and place a card hold. You are charged only if a clinician approves."
-                : "Submit a secure health questionnaire and upload photo ID. Payment is collected at the pharmacy after a clinician approves.",
+              "Submit a secure health questionnaire, upload photo ID, and pay on this website. You are charged only if a doctor approves.",
           },
           {
             step: 3,
             title: "Clinician evaluation",
-            description: `${PATIENT_REVIEW_TIMELINE} Approval depends on that clinical review.`,
+            description: WEIGHT_LOSS_DOCTOR_REVIEW,
           },
           {
             step: 4,
-            title: "Pharmacy fulfillment",
-            description: PATIENT_FULFILLMENT_TIMELINE,
+            title: "Partner pharmacy",
+            description: WEIGHT_LOSS_PARTNER_FULFILLMENT,
           },
         ]}
       />
@@ -341,7 +339,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Trust & roles"
           title="Pharmacy vs prescribing clinician"
-          description="Clear Choice Pharmacy compounds and dispenses medications. A licensed clinician evaluates medical appropriateness and writes the prescription when indicated."
+          description="You complete your intake and pay on this website. A licensed doctor decides whether a prescription is appropriate. A partner pharmacy fills and ships approved medication."
         />
         <FeatureGrid
           items={[
@@ -352,8 +350,8 @@ export default function WeightLossPage() {
             },
             {
               icon: "flask-conical",
-              title: "Pharmacy compounding",
-              description: "Patient-specific preparations, quality controls, and Michigan fulfillment from our Novi pharmacy.",
+              title: "Partner pharmacy",
+              description: "Approved prescriptions are filled and shipped by a partner pharmacy. Clear Choice does not compound these vials.",
             },
             {
               icon: "shield",

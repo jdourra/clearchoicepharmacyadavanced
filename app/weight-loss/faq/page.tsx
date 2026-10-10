@@ -10,7 +10,7 @@ import {
   SectionIntro,
 } from "@/components/clinical-landing-shell"
 import { SITE_URL, WEIGHT_LOSS_FAQS, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/clinical-seo"
-import { PATIENT_ORDER_TIMELINE } from "@/lib/clinical-provider"
+import { WEIGHT_LOSS_DOCTOR_REVIEW, WEIGHT_LOSS_PARTNER_FULFILLMENT } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
   title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan" },
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
 const EXTRA_FAQS = [
   {
     question: "How long does review, preparation, and shipping take?",
-    answer: PATIENT_ORDER_TIMELINE,
+    answer: `${WEIGHT_LOSS_DOCTOR_REVIEW} ${WEIGHT_LOSS_PARTNER_FULFILLMENT}`,
   },
   {
     question: "What does Clear Choice Pharmacy do versus the prescribing clinician?",
     answer:
-      "A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear Choice Pharmacy compounds and fulfills approved, patient-specific medications for qualifying Michigan patients from our Novi location.",
+      "You pay on this website and a licensed doctor reviews your intake. If treatment is approved, a partner pharmacy fills the prescription and ships it. Clear Choice does not compound these vials.",
   },
   {
     question: "Do you guarantee weight loss results?",

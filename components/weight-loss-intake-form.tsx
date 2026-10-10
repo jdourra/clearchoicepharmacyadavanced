@@ -24,7 +24,6 @@ import { formatPhoneInput } from "@/lib/phone"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
-import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import {
@@ -45,9 +44,11 @@ import {
 import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pricing"
 import {
   WEIGHT_LOSS_PROGRAMS,
+  WEIGHT_LOSS_DOCTOR_REVIEW,
   WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
   weightLossPaymentPatientNote,
   formatDoseOptionLabel,
@@ -865,18 +866,15 @@ export function WeightLossIntakeForm({
         returnHref="/weight-loss"
         returnLabel="Return to Weight Loss"
         steps={[
-          PATIENT_REVIEW_TIMELINE,
-          "You'll receive an email with the decision and any follow-up questions",
-          WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-            ? "Your card is charged only if treatment is approved. If it is not approved, the hold is released"
-            : "If treatment is approved, pay at the pharmacy in person, on the card terminal, or by phone. Nothing was charged online",
-          PATIENT_FULFILLMENT_TIMELINE,
+          "You pay on this website before the intake is sent to the doctor",
+          WEIGHT_LOSS_DOCTOR_REVIEW,
+          "You'll receive an email with the decision. If treatment is not approved, you are refunded",
+          WEIGHT_LOSS_PARTNER_FULFILLMENT,
         ]}
       >
         <p className="text-sm text-muted-foreground">
-          {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-            ? "Thank you for completing your weight loss intake. Your card hold is not a charge yet. It is captured only if a clinician approves treatment."
-            : "Thank you for completing your weight loss intake. Nothing was charged online. If a clinician approves treatment, the pharmacy will collect payment before your kit is prepared."}
+          Thank you for completing your weight loss intake. A licensed doctor reviews it, and a partner pharmacy ships
+          the medication if treatment is approved.
         </p>
       </IntakeSuccessPanel>
     )
@@ -1615,9 +1613,7 @@ export function WeightLossIntakeForm({
           <CardHeader>
             <CardTitle>Identity &amp; Consent</CardTitle>
             <CardDescription>
-              {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                ? "Verify your identity and place a card hold. You are charged only if a clinician approves treatment."
-                : "Verify your identity. Payment is collected at the pharmacy after a clinician approves treatment."}
+              Verify your photo ID and pay on this website. A licensed doctor reviews your intake, usually within 24 hours.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -1631,9 +1627,7 @@ export function WeightLossIntakeForm({
                     Kit total: ${holdQuote.totalBilled}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                      ? "A card hold for this amount is placed now and captured only if treatment is approved."
-                      : "This amount is not charged online. The pharmacy collects it after a clinician approves treatment."}
+                    You pay this amount on this website. If a doctor does not approve treatment, you are refunded.
                     {holdQuote.liveVisitAddon > 0
                       ? ` A $${holdQuote.liveVisitAddon} live-visit add-on may be added on monthly billing if your clinician requires a live visit.`
                       : " The live-visit add-on is waived on a 90-day supply."}
@@ -1743,19 +1737,9 @@ export function WeightLossIntakeForm({
                     isFieldInvalid("authorizeHold") && "text-destructive"
                   )}
                 >
-                  {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED ? (
-                    <>
-                      I authorize a card hold of <strong>${holdQuote?.totalBilled ?? 0}</strong> for my{" "}
-                      {selectedTierMeta?.label ?? "selected"} kit(s). This amount is charged only if a clinician
-                      approves treatment. If treatment is not approved, the hold is released. *
-                    </>
-                  ) : (
-                    <>
-                      I understand Clear Choice Pharmacy will collect <strong>${holdQuote?.totalBilled ?? 0}</strong>{" "}
-                      for my {selectedTierMeta?.label ?? "selected"} kit(s) after a clinician approves treatment, in
-                      person, on the pharmacy card terminal, or by phone. Nothing is charged online. *
-                    </>
-                  )}
+                  I agree to pay <strong>${holdQuote?.totalBilled ?? 0}</strong> on this website for my{" "}
+                  {selectedTierMeta?.label ?? "selected"} kit(s). This amount is charged only if a doctor approves
+                  treatment. If treatment is not approved, I am refunded. *
                 </Label>
               </div>
               <p className="text-xs text-muted-foreground">{weightLossPaymentPatientNote()}</p>

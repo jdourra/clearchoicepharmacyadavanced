@@ -488,8 +488,8 @@ function OrdersTab({
                   {program.type === "weight_loss" &&
                     program.paymentStatus === "awaiting_pharmacy" && (
                       <p className="text-sm text-muted-foreground mt-4">
-                        After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
-                        Call (248) 987-6182 with questions.
+                        Pay on this website before your intake is sent to the doctor. Call (248) 987-6182 if you need help
+                        paying. If treatment is approved, a partner pharmacy ships your medication.
                       </p>
                     )}
                   <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -714,7 +714,7 @@ function ProgramsTab({
               </div>
               {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
                 <p className="text-sm text-muted-foreground mt-4">
-                  After clinician approval, pay at Clear Choice Pharmacy in Novi (card terminal, phone, or cash).
+                  Pay on this website before your intake is sent to the doctor. If treatment is approved, a partner pharmacy ships your medication.
                   Call (248) 987-6182 with questions.
                 </p>
               )}

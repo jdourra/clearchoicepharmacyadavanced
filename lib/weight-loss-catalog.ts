@@ -82,7 +82,14 @@ export const WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE =
 export const WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED = false
 
 export const WEIGHT_LOSS_PHARMACY_COLLECTION_NOTE =
-  "No card is charged during intake. After a clinician approves your prescription, Clear Choice Pharmacy collects payment in person, on the pharmacy card terminal, or by phone."
+  "You pay on this website before your intake is sent to the doctor. Call (248) 987-6182 if the card form is not available yet."
+
+/** Shown on weight-loss pages. Do not name the outside clinician network. */
+export const WEIGHT_LOSS_DOCTOR_REVIEW =
+  "A licensed doctor usually reviews your intake within 24 hours. Approval depends on that review."
+
+export const WEIGHT_LOSS_PARTNER_FULFILLMENT =
+  "If treatment is approved, a partner pharmacy fills your prescription and ships it."
 
 export function weightLossPaymentPatientNote(): string {
   return WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED

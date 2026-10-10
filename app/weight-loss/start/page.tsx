@@ -3,9 +3,9 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
-import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import {
-  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
+  WEIGHT_LOSS_DOCTOR_REVIEW,
+  WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
   getDefaultWeightLossDoseId,
   getWeightLossDose,
@@ -19,9 +19,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
   description:
-    WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-      ? "Complete a secure medical intake for provider-guided Semaglutide or Tirzepatide. A card hold is placed during intake and charged only if a clinician approves."
-      : "Complete a secure medical intake for provider-guided Semaglutide or Tirzepatide. Payment is collected at the pharmacy after a clinician approves.",
+    "Complete a secure medical intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor usually reviews your intake within 24 hours.",
   robots: { index: false, follow: false },
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
@@ -29,9 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
     description:
-      WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-        ? "Secure medical intake for Semaglutide and Tirzepatide. Card hold charged only if approved — Clear Choice Pharmacy, Novi, MI."
-        : "Secure medical intake for Semaglutide and Tirzepatide. Pay at the pharmacy after approval — Clear Choice Pharmacy, Novi, MI.",
+      "Secure medical intake for Semaglutide and Tirzepatide. Pay on this website. A partner pharmacy ships approved medication.",
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
@@ -71,8 +67,8 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                   Complete Your GLP Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for custom compounded Semaglutide or Tirzepatide. A licensed provider
-                  reviews your information before Clear Choice Pharmacy prepares your therapy.{" "}
+                  Finish your secure intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor
+                  usually reviews your intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
                   {weightLossPaymentPatientNote()}
                 </p>
               </div>
@@ -163,7 +159,7 @@ const trustFeatures = [
   {
     icon: Clock,
     title: "Review time",
-    description: PATIENT_REVIEW_TIMELINE,
+    description: WEIGHT_LOSS_DOCTOR_REVIEW,
   },
 ]
 
@@ -171,8 +167,7 @@ const processSteps = [
   "Review your selected Semaglutide or Tirzepatide kit",
   "Complete the secure medical questionnaire and vitals",
   "Answer clinical screening questions and upload photo ID",
-  PATIENT_REVIEW_TIMELINE,
-  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-    ? `If approved, the card hold is charged. ${PATIENT_FULFILLMENT_TIMELINE}`
-    : `If approved, pay at the pharmacy. ${PATIENT_FULFILLMENT_TIMELINE}`,
+  "Pay on this website",
+  WEIGHT_LOSS_DOCTOR_REVIEW,
+  WEIGHT_LOSS_PARTNER_FULFILLMENT,
 ]

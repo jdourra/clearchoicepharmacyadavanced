@@ -7,8 +7,6 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
-import { WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED } from "@/lib/weight-loss-catalog"
-
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -168,9 +166,9 @@ export default function HomePage() {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 Clear Choice Pharmacy helps qualifying Michigan patients access provider-guided Semaglutide and
-                Tirzepatide weight management. A licensed clinician reviews your intake before any prescription is
-                written. When appropriate, our Novi pharmacy compounds and fulfills patient-specific kits with clear
-                cash-pay pricing—no membership fee surprises.
+                Tirzepatide weight management. You pay on this website. A licensed doctor reviews your intake before
+                any prescription is written. If treatment is approved, a partner pharmacy fills and ships the
+                medication.
               </p>
             </div>
 
@@ -178,11 +176,9 @@ export default function HomePage() {
               <Card className="p-5">
                 <h3 className="font-semibold mb-2">How the program works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Choose a kit, complete a secure intake, and upload your photo ID. Your clinician reviews
-                  eligibility.{" "}
-                  {WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-                    ? "If approved, the card hold is charged and we prepare your kit."
-                    : "If approved, pay at the pharmacy and we prepare your kit."}
+                  Choose a kit, complete a secure intake, upload your photo ID, and pay on this website. A licensed
+                  doctor reviews your intake, usually within 24 hours. If approved, a partner pharmacy ships your
+                  medication.
                 </p>
                 <Link href="/weight-loss#how-it-works" className="text-sm text-primary hover:underline">
                   See program steps

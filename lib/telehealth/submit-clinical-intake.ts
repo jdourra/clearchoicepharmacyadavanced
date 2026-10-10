@@ -39,6 +39,20 @@ export async function submitClinicalIntakeToPartner(
     return { ...result, partnerName }
   }
 
+  if (payload.serviceType === "weight_loss") {
+    await notifyClinicianQueue({
+      submissionId: payload.submissionId,
+      subject: `[WEIGHT_LOSS ${payload.submissionId}] Ready for the clinician network — ${payload.patient.firstName} ${payload.patient.lastName}`,
+      body: payload.clinicalSummary,
+    })
+    return {
+      success: true,
+      mode: "manual",
+      partnerStatus: "ready_for_clinician_network",
+      partnerName: "Clinician network",
+    }
+  }
+
   // Manual queue + optional future partner adapters per service line
   await notifyClinicianQueue({
     submissionId: payload.submissionId,

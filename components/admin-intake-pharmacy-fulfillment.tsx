@@ -165,9 +165,11 @@ export function AdminIntakePharmacyFulfillmentPanel({
   return (
     <Card className="border-primary/20">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Pharmacy fulfillment</CardTitle>
+        <CardTitle className="text-lg">{isWeightLoss ? "Clinician network" : "Pharmacy fulfillment"}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Collect payment, update status, and notify the patient after clinician approval.
+          {isWeightLoss
+            ? "The patient pays on this website. A licensed doctor reviews the intake, and a partner pharmacy fills and ships the vial. Do not mark this medication as shipped from Clear Choice."
+            : "Collect payment, update status, and notify the patient after clinician approval."}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -230,7 +232,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
           </div>
         )}
 
-        {(canMarkPreparing || canMarkShipped) && (
+        {!isWeightLoss && (canMarkPreparing || canMarkShipped) && (
           <div className="space-y-2 rounded-lg border p-3">
             <p className="text-sm font-medium">Fulfillment status</p>
             <div className="flex flex-wrap gap-2">
