@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     const body = (await request.json()) as Record<string, unknown>
     const subject = typeof body.subject === "string" ? body.subject : ""
     const message = typeof body.body === "string" ? body.body : ""
-    const noteCourtesyHold = body.noteCourtesyHold !== false
+    const noteCourtesyHold = body.noteCourtesyHold === true
 
     const result = await sendIntakePatientMessage({
       serviceType,

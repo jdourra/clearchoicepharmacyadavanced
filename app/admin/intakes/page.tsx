@@ -50,8 +50,6 @@ export default function AdminIntakesPage() {
   const [intakes, setIntakes] = useState<IntakeRow[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter)
-  const [notifying, setNotifying] = useState(false)
-  const [notifyStatus, setNotifyStatus] = useState("")
 
   useEffect(() => {
     if (
@@ -140,50 +138,8 @@ export default function AdminIntakesPage() {
           <Button variant="outline" size="sm" onClick={() => loadIntakes(statusFilter)}>
             Refresh
           </Button>
-          {statusFilter === "pending" ? (
-            <Button
-              size="sm"
-              disabled={notifying || loading || intakes.length === 0}
-              onClick={async () => {
-                if (
-                  !confirm(
-                    `Email the delay note and 5% courtesy to patients who submitted an intake and have been waiting more than one day for clinician review? Intakes from the last 24 hours are not included. Patients who already received this note are skipped.`
-                  )
-                ) {
-                  return
-                }
-                setNotifying(true)
-                setNotifyStatus("")
-                try {
-                  const res = await staffAuthFetch("/api/admin/intakes/notify-clinician-delay", {
-                    method: "POST",
-                  })
-                  const data = await res.json().catch(() => ({}))
-                  if (!res.ok) throw new Error(data.error || "Failed to send notices")
-                  setNotifyStatus(
-                    `Sent ${data.emailed ?? 0}, skipped ${data.skipped ?? 0}, failed ${data.failed ?? 0}. ${data.eligible ?? 0} had been waiting more than one day.`
-                  )
-                  loadIntakes(statusFilter)
-                } catch (err) {
-                  setNotifyStatus(err instanceof Error ? err.message : "Failed to send notices")
-                } finally {
-                  setNotifying(false)
-                }
-              }}
-            >
-              {notifying ? "Sending…" : "Email delay + 5% to waiting"}
-            </Button>
-          ) : null}
         </div>
-        {statusFilter === "pending" ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            This note sends on its own every 6 hours to intakes that have been waiting more than one
-            day. Patients who already received it are skipped.
-          </p>
-        ) : null}
       </div>
-
-      {notifyStatus ? <p className="mb-4 text-sm text-muted-foreground">{notifyStatus}</p> : null}
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading intakes…</p>

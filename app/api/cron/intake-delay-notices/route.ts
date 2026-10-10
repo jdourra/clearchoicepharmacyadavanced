@@ -10,7 +10,7 @@ function authorizeCron(request: Request): boolean {
   return auth === `Bearer ${secret}`
 }
 
-/** Send the clinician-delay note once an intake has been waiting more than one day. */
+/** Delay notices are turned off so patients are not emailed a 5% courtesy. */
 export async function GET(request: Request) {
   if (!authorizeCron(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

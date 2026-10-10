@@ -33,11 +33,7 @@ import {
 import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
-import {
-  INTAKE_CLINICIAN_DELAY_SUBJECT,
-  buildClinicianDelayCourtesyBody,
-  intakeDelayCourtesyPercent,
-} from "@/lib/intake-patient-message-copy"
+import { intakeDelayCourtesyPercent } from "@/lib/intake-patient-message-copy"
 import { staffAuthFetch } from "@/lib/staff-session"
 import {
   buildWeightLossApprovalNote,
@@ -222,10 +218,8 @@ export function AdminIntakeDetailView({
   const [rxQuantity, setRxQuantity] = useState(suggestedPrescription?.quantity ?? "")
   const [rxRefills, setRxRefills] = useState(String(suggestedPrescription?.refills ?? 0))
   const [clinicianEsignName, setClinicianEsignName] = useState("")
-  const [messageSubject, setMessageSubject] = useState(INTAKE_CLINICIAN_DELAY_SUBJECT)
-  const [messageBody, setMessageBody] = useState(() =>
-    buildClinicianDelayCourtesyBody(String(detail.first_name ?? ""))
-  )
+  const [messageSubject, setMessageSubject] = useState("")
+  const [messageBody, setMessageBody] = useState("")
   const [sendingMessage, setSendingMessage] = useState(false)
   const [messageStatus, setMessageStatus] = useState("")
 
@@ -653,19 +647,6 @@ export function AdminIntakeDetailView({
                   <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setMessageSubject(INTAKE_CLINICIAN_DELAY_SUBJECT)
-                        setMessageBody(
-                          buildClinicianDelayCourtesyBody(String(detail.first_name ?? ""))
-                        )
-                      }}
-                    >
-                      Load delay + 5% template
-                    </Button>
-                    <Button
-                      type="button"
                       disabled={sendingMessage || !messageSubject.trim() || !messageBody.trim()}
                       onClick={async () => {
                         setSendingMessage(true)
@@ -680,7 +661,6 @@ export function AdminIntakeDetailView({
                               body: JSON.stringify({
                                 subject: messageSubject,
                                 body: messageBody,
-                                noteCourtesyHold: true,
                               }),
                             }
                           )

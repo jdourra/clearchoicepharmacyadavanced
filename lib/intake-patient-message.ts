@@ -185,7 +185,7 @@ ${portalUrl}`
   }
 
   let courtesyNoted = false
-  if (params.noteCourtesyHold !== false) {
+  if (params.noteCourtesyHold === true) {
     courtesyNoted = await appendCourtesyStaffNote(
       params.serviceType,
       params.intakeId,
