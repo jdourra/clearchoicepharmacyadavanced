@@ -23,7 +23,7 @@ function shippedMessage(order: MarkShippedOrder): string {
 
 function processingMessage(order: MarkShippedOrder): string {
   const number = order.order_number || order.id
-  return `Your medication has been ordered for order #${number}. Please allow a few days for processing and shipping.`
+  return `Your medication has been ordered for order #${number}. After payment is received, processing and shipping take about 5 business days.`
 }
 
 async function resolveStaffId(staffId?: string): Promise<string> {
@@ -58,7 +58,7 @@ export function AdminMarkOrderShipped({
   const label = `#${order.order_number || order.id}`
 
   const markProcessing = async () => {
-    if (!confirm(`Mark order ${label} as ordered and email the patient that the medication was ordered? The email asks them to allow a few days for processing and shipping.`)) {
+    if (!confirm(`Mark order ${label} as ordered and email the patient that the medication was ordered? The email says processing and shipping take about 5 business days after payment.`)) {
       return
     }
 
@@ -230,7 +230,7 @@ export function AdminMarkOrderShipped({
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Mark ordered emails the patient that the medication was ordered and to allow a few days for processing and shipping. Mark shipped when the package goes out.
+          Mark ordered emails the patient that the medication was ordered and that processing and shipping take about 5 business days after payment. Mark shipped when the package goes out.
         </p>
         {buttons}
         {error ? <p className="text-sm text-destructive">{error}</p> : null}

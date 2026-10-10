@@ -33,7 +33,7 @@ export const PATIENT_REVIEW_TIMELINE =
   "Dr. Dourra usually takes 4–5 days to review your intake."
 
 export const PATIENT_FULFILLMENT_TIMELINE =
-  "After approval, the pharmacy needs about 3 days to prepare the order, then about 3 days to ship it."
+  "After payment is received, processing and shipping take about 5 business days."
 
 export const PATIENT_ORDER_TIMELINE = `${PATIENT_REVIEW_TIMELINE} ${PATIENT_FULFILLMENT_TIMELINE}`
 

@@ -24,15 +24,11 @@ export function delayCourtesyPercentFromNotes(
   return null
 }
 
+/** The 5% and 10% review-delay discounts are no longer offered or applied. */
 export function intakeDelayCourtesyPercent(
-  detail: Record<string, unknown> | null | undefined
+  _detail?: Record<string, unknown> | null
 ): DelayCourtesyPercent | null {
-  if (!detail) return null
-  return delayCourtesyPercentFromNotes(
-    detail.additional_concerns != null ? String(detail.additional_concerns) : "",
-    detail.additional_notes != null ? String(detail.additional_notes) : "",
-    detail.order_notes != null ? String(detail.order_notes) : ""
-  )
+  return null
 }
 
 export function courtesyDiscountedAmount(amount: number, percent: DelayCourtesyPercent) {

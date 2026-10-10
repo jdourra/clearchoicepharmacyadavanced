@@ -66,7 +66,7 @@ export function buildIntakeProcessingEmail(params: {
 
 Your medication has been ordered (Reference: ${params.submissionId}).
 
-Please allow a few days for processing and shipping.
+After payment is received, processing and shipping take about 5 business days.
 
 View your account: ${accountUrl}
 
@@ -79,7 +79,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone}.
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
   <p>${greeting}</p>
   <p>Your medication has been ordered (Reference: <strong>${params.submissionId}</strong>).</p>
-  <p>Please allow a few days for processing and shipping.</p>
+  <p>After payment is received, processing and shipping take about 5 business days.</p>
   <p><a href="${accountUrl}">View your patient portal</a></p>
   <p>Questions? Call <a href="tel:+12489876182">${PRIMARY_PHYSICIAN.pharmacyPhone}</a>.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">— Clear Choice Pharmacy</p>

@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
 import { formatPortalStatus } from "@/lib/patient-portal-types"
-import { intakeDelayCourtesyPercent } from "@/lib/intake-patient-message-copy"
 import { staffAuthFetch } from "@/lib/staff-session"
 
 const PAID_STATUSES = new Set(["captured", "paid_in_person", "paid"])
@@ -88,8 +87,6 @@ export function AdminIntakePharmacyFulfillmentPanel({
   const canMarkPreparing = approvedOrLater.has(status) && !isShipped
 
   const canMarkShipped = isPaid && !isShipped && approvedOrLater.has(status)
-  const courtesyPercent = intakeDelayCourtesyPercent(detail)
-
   if (
     !canSendPaymentReminder &&
     !canMarkPharmacyPaid &&
@@ -210,15 +207,6 @@ export function AdminIntakePharmacyFulfillmentPanel({
         {canMarkPharmacyPaid && (
           <div className="space-y-2 rounded-lg border p-3">
             <p className="text-sm font-medium">Mark paid at pharmacy</p>
-            {courtesyPercent ? (
-              <p className="text-sm font-medium text-emerald-800">
-                This patient was promised {courtesyPercent}% off the original medication price for the
-                review delay.
-                {isWeightLoss
-                  ? " Charge the courtesy amount shown above, not the original price."
-                  : " Take that percent off when you collect payment."}
-              </p>
-            ) : null}
             <p className="text-xs text-muted-foreground">
               After collecting payment on the terminal (or cash/phone). Do not store card numbers.
             </p>
@@ -254,7 +242,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
                   onClick={() => {
                     if (
                       !confirm(
-                        "Email the patient that the medication was ordered and to allow a few days for processing and shipping?"
+                        "Email the patient that the medication was ordered and that processing and shipping take about 5 business days after payment?"
                       )
                     ) {
                       return
@@ -295,7 +283,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
             </div>
             {canMarkPreparing && (
               <p className="text-xs text-muted-foreground">
-                Mark ordered emails the patient that the medication was ordered and to allow a few days for processing and shipping.
+                Mark ordered emails the patient that the medication was ordered and that processing and shipping take about 5 business days after payment.
               </p>
             )}
             {canMarkShipped && (

@@ -38,10 +38,6 @@ import {
   isWeightLossDiabetesStatus,
   type WeightLossDiabetesStatus,
 } from "@/lib/weight-loss-approval-note"
-import {
-  courtesyDiscountedAmount,
-  intakeDelayCourtesyPercent,
-} from "@/lib/intake-patient-message-copy"
 
 export type IntakeReviewAction = "approve" | "deny" | "follow_up"
 
@@ -227,9 +223,7 @@ export async function reviewClinicalIntake(params: {
         if (quote) {
           const includeLiveVisit = Boolean(liveVisitRequired) && quote.liveVisitAddon > 0
           const billed = includeLiveVisit ? quote.authorizationHold : quote.totalBilled
-          const courtesy = intakeDelayCourtesyPercent(detail)
-          const due = courtesy ? courtesyDiscountedAmount(billed, courtesy).due : billed
-          amountCents = Math.round(due * 100)
+          amountCents = Math.round(billed * 100)
         }
       }
       const captured = await capturePaymentHold(stripeId, amountCents)

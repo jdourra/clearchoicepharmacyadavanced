@@ -135,20 +135,11 @@ export async function sendIntakePatientMessage(params: {
       [patientId, subject]
     ).catch(() => [])
     if (prior.length > 0) {
-      const courtesyNoted = await appendCourtesyStaffNote(
-        params.serviceType,
-        params.intakeId,
-        detail.additional_concerns != null
-          ? String(detail.additional_concerns)
-          : detail.additional_notes != null
-            ? String(detail.additional_notes)
-            : null
-      )
       return {
         success: true,
         emailed: false,
         portalSaved: true,
-        courtesyNoted,
+        courtesyNoted: false,
         skipped: true,
       }
     }
@@ -205,17 +196,9 @@ ${portalUrl}`
   }
 }
 
-export async function noteIntakeDelayCourtesy(serviceType: string, intakeId: string): Promise<boolean> {
-  if (!isAdminIntakeServiceType(serviceType)) return false
-  const detail = await getClinicalIntakeDetail(serviceType, intakeId)
-  if (!detail || notesAlreadyHaveCourtesy(detail)) return true
-  return appendCourtesyStaffNote(
-    serviceType,
-    intakeId,
-    detail.additional_concerns != null
-      ? String(detail.additional_concerns)
-      : detail.additional_notes != null
-        ? String(detail.additional_notes)
-        : null
-  )
+export async function noteIntakeDelayCourtesy(
+  _serviceType?: string,
+  _intakeId?: string
+): Promise<boolean> {
+  return false
 }

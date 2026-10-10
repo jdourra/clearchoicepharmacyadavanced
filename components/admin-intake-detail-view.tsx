@@ -33,7 +33,6 @@ import {
 import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
-import { intakeDelayCourtesyPercent } from "@/lib/intake-patient-message-copy"
 import { staffAuthFetch } from "@/lib/staff-session"
 import {
   buildWeightLossApprovalNote,
@@ -292,7 +291,6 @@ export function AdminIntakeDetailView({
     payAtPharmacy &&
     !["captured", "paid_in_person"].includes(paymentStatus) &&
     ["rx_at_pharmacy", "preparing", "shipped", "completed"].includes(String(detail.status ?? ""))
-  const courtesyPercent = intakeDelayCourtesyPercent(detail)
   const canChargeLiveVisit =
     isWeightLoss && Number(prescribedKitCount) <= 1 && hasStripeHold
   const needsPrescription = RX_SERVICES.has(String(serviceType))
@@ -671,7 +669,6 @@ export function AdminIntakeDetailView({
                           const bits = [
                             data.emailed ? "emailed" : null,
                             data.portalSaved ? "saved to portal" : "no patient portal account",
-                            data.courtesyNoted ? "5% courtesy noted on intake" : null,
                           ].filter(Boolean)
                           setMessageStatus(`Sent (${bits.join(", ")}).`)
                           onReload?.()
@@ -796,12 +793,6 @@ export function AdminIntakeDetailView({
                               After collecting payment on the pharmacy terminal (or cash/phone), mark this intake paid.
                               Do not store card numbers in this system.
                             </p>
-                            {courtesyPercent ? (
-                              <p className="text-sm font-medium text-emerald-800">
-                                This patient was promised {courtesyPercent}% off the original medication
-                                price. Charge the courtesy amount, not the original price.
-                              </p>
-                            ) : null}
                             <div className="flex flex-wrap gap-2">
                               <Button
                                 type="button"
@@ -1171,12 +1162,6 @@ export function AdminIntakeDetailView({
                       <p className="text-xs text-muted-foreground">
                         After the pharmacy collects payment, mark this intake paid (terminal / phone / cash).
                       </p>
-                      {courtesyPercent ? (
-                        <p className="text-sm font-medium text-emerald-800">
-                          This patient was promised {courtesyPercent}% off the original medication price.
-                          Charge the courtesy amount, not the original price.
-                        </p>
-                      ) : null}
                       <div className="flex flex-wrap gap-2">
                         <Button
                           type="button"

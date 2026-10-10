@@ -192,11 +192,6 @@ export default function AdminIntakesPage() {
                   >
                     {formatPaymentStatus(intake.paymentStatus)}
                   </Badge>
-                  {intake.delayCourtesyPercent ? (
-                    <Badge className="bg-emerald-100 text-emerald-900 hover:bg-emerald-100">
-                      {intake.delayCourtesyPercent}% off at payment
-                    </Badge>
-                  ) : null}
                   {intake.patientId ? (
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/admin/customers/${intake.patientId}`}>Customer</Link>
