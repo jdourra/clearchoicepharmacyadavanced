@@ -118,9 +118,10 @@ export async function listClinicalIntakes(options?: {
     statusClause = [...APPROVED_INTAKE_STATUSES]
     paymentClause = ` AND payment_status = 'awaiting_pharmacy'`
   } else if (statusFilter === "awaiting_shipment") {
-    // Paid and approved, but not yet shipped/completed
-    statusClause = ["rx_at_pharmacy", "preparing", "ready_for_fulfillment", "ready_for_dispatch"]
-    paymentClause = ` AND payment_status IN ('captured', 'paid_in_person')`
+    // Paid and approved, still waiting for the pharmacy to start processing.
+    // "preparing" has left this queue.
+    statusClause = ["rx_at_pharmacy", "ready_for_fulfillment", "ready_for_dispatch"]
+    paymentClause = ` AND payment_status IN ('captured', 'paid_in_person', 'paid')`
   } else if (statusFilter === "all") {
     statusClause = null
   } else {

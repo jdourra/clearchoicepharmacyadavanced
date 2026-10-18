@@ -84,12 +84,16 @@ export function AdminIntakePharmacyFulfillmentPanel({
     !isPaid &&
     approvedOrLater.has(status)
 
-  const canMarkPreparing = approvedOrLater.has(status) && !isShipped
+  const canMarkProcessing =
+    isPaid && !isShipped && status !== INTAKE_STATUS.preparing && SHIPPABLE_STATUSES.has(status)
+
+  const canMarkPreparing = canMarkProcessing && !isWeightLoss
 
   const canMarkShipped = isPaid && !isShipped && approvedOrLater.has(status)
   if (
     !canSendPaymentReminder &&
     !canMarkPharmacyPaid &&
+    !canMarkProcessing &&
     !canMarkPreparing &&
     !canMarkShipped &&
     !isShipped
@@ -117,10 +121,16 @@ export function AdminIntakePharmacyFulfillmentPanel({
         if (!res.ok) throw new Error(result.error || "Could not mark paid")
         setMessage(`Marked paid (${method}) at pharmacy.`)
       } else {
-        const notifyPatient =
-          action === "mark_shipped_silent" ? false : options?.notifyPatient !== false
         const apiAction =
-          action === "mark_shipped_silent" ? "mark_shipped" : action
+          action === "mark_shipped_silent"
+            ? "mark_shipped"
+            : action === "mark_processing"
+              ? "mark_preparing"
+              : action
+        const notifyPatient =
+          action === "mark_shipped_silent" || action === "mark_processing"
+            ? false
+            : options?.notifyPatient !== false
 
         const res = await staffAuthFetch(
           `/api/admin/intakes/${serviceType}/${intakeId}/fulfillment`,
@@ -129,7 +139,9 @@ export function AdminIntakePharmacyFulfillmentPanel({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               action: apiAction,
-              ...(apiAction === "mark_shipped" ? { notifyPatient } : {}),
+              ...(apiAction === "mark_shipped" || apiAction === "mark_preparing"
+                ? { notifyPatient }
+                : {}),
             }),
           }
         )
@@ -138,6 +150,8 @@ export function AdminIntakePharmacyFulfillmentPanel({
 
         if (action === "send_payment_reminder") {
           setMessage("Payment reminder email sent to patient.")
+        } else if (action === "mark_processing") {
+          setMessage("Marked processing. This intake left the awaiting shipment queue.")
         } else if (action === "mark_preparing") {
           setMessage(
             result.emailSent
@@ -232,10 +246,26 @@ export function AdminIntakePharmacyFulfillmentPanel({
           </div>
         )}
 
-        {!isWeightLoss && (canMarkPreparing || canMarkShipped) && (
+        {(canMarkProcessing || canMarkPreparing || canMarkShipped) && (
           <div className="space-y-2 rounded-lg border p-3">
             <p className="text-sm font-medium">Fulfillment status</p>
             <div className="flex flex-wrap gap-2">
+              {canMarkProcessing && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!!busy}
+                  onClick={() => runAction("mark_processing", "mark processing")}
+                >
+                  {busy === "mark_processing" ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Package className="h-4 w-4 mr-2" />
+                  )}
+                  Mark processing
+                </Button>
+              )}
               {canMarkPreparing && (
                 <Button
                   type="button"
@@ -260,7 +290,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
                   Mark ordered & email patient
                 </Button>
               )}
-              {canMarkShipped && (
+              {canMarkShipped && !isWeightLoss && (
                 <>
                   <Button
                     type="button"
@@ -283,12 +313,17 @@ export function AdminIntakePharmacyFulfillmentPanel({
                 </>
               )}
             </div>
+            {canMarkProcessing && (
+              <p className="text-xs text-muted-foreground">
+                Mark processing takes this paid intake out of the awaiting shipment queue. It does not email the patient.
+              </p>
+            )}
             {canMarkPreparing && (
               <p className="text-xs text-muted-foreground">
                 Mark ordered emails the patient that the medication was ordered and that processing and shipping take about 5 business days after payment.
               </p>
             )}
-            {canMarkShipped && (
+            {canMarkShipped && !isWeightLoss && (
               <p className="text-xs text-muted-foreground">
                 Use “no email” if you already told the patient by phone or don’t want a shipping notification.
               </p>

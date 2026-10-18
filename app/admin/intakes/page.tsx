@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { Loader2 } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { AdminShell } from "@/components/admin-shell"
@@ -50,6 +51,8 @@ export default function AdminIntakesPage() {
   const [intakes, setIntakes] = useState<IntakeRow[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter)
+  const [processingId, setProcessingId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState("")
 
   useEffect(() => {
     if (
@@ -84,6 +87,28 @@ export default function AdminIntakesPage() {
   useEffect(() => {
     loadIntakes(statusFilter)
   }, [loadIntakes, statusFilter])
+
+  const markProcessing = async (intake: IntakeRow) => {
+    setProcessingId(intake.id)
+    setActionError("")
+    try {
+      const res = await staffAuthFetch(
+        `/api/admin/intakes/${intake.serviceType}/${intake.id}/fulfillment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "mark_preparing", notifyPatient: false }),
+        }
+      )
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || "Could not mark processing")
+      loadIntakes(statusFilter)
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Could not mark processing")
+    } finally {
+      setProcessingId(null)
+    }
+  }
 
   useEffect(() => {
     const onVisible = () => {
@@ -151,12 +176,13 @@ export default function AdminIntakesPage() {
               : statusFilter === "awaiting_payment"
                 ? "No intakes awaiting pharmacy payment. Approved GLP patients waiting to pay will appear here."
                 : statusFilter === "awaiting_shipment"
-                  ? "No paid intakes waiting to ship. Mark paid intakes appear here until you mark them shipped."
+                  ? "No paid intakes waiting to ship. Mark processing moves a paid patient out of this queue."
                   : "No intakes in this view."}
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
+          {actionError ? <p className="text-sm text-destructive">{actionError}</p> : null}
           {intakes.map((intake) => (
             <Card key={`${intake.serviceType}-${intake.id}`} className="overflow-hidden">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
@@ -195,6 +221,19 @@ export default function AdminIntakesPage() {
                   {intake.patientId ? (
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/admin/customers/${intake.patientId}`}>Customer</Link>
+                    </Button>
+                  ) : null}
+                  {statusFilter === "awaiting_shipment" ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={processingId === intake.id}
+                      onClick={() => void markProcessing(intake)}
+                    >
+                      {processingId === intake.id ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : null}
+                      Mark processing
                     </Button>
                   ) : null}
                   {canAdminCancelIntake(intake.status, intake.paymentStatus) ? (

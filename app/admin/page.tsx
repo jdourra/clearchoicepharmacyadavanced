@@ -371,7 +371,7 @@ export default function AdminDashboard() {
                     {counts.awaitingShipmentIntakes === 1 ? "" : "s"} awaiting shipment
                   </p>
                   <p className="text-sm text-violet-800/80">
-                    Payment received — pack and mark shipped from the intake page.
+                    Payment received. Mark processing to take the patient out of this queue.
                   </p>
                 </div>
                 <Button asChild size="sm" variant="outline" className="bg-background">

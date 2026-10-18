@@ -49,6 +49,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         serviceType,
         id,
         staffLabel,
+        notifyPatient: body.notifyPatient !== false,
       })
       if (!result.success) {
         return NextResponse.json({ error: result.error || "Could not update status" }, { status: 400 })
