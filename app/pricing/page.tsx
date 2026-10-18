@@ -8,14 +8,14 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Prescription Prices | Low Cost Prescription Drugs Formula",
   description:
-    "Compare low cost prescription drug prices. Transparent formula: Drug Cost + 15% + $5. Cash-pay pharmacy—no insurance required. Clear Choice Pharmacy, Novi, MI.",
+    "Compare low cost prescription drug prices. Transparent formula: Drug Cost + 15% + $5. Cash-pay pharmacy—no insurance required. Clear Choice Pharmacy, Westland, MI.",
   alternates: {
     canonical: `${SITE_URL}/pricing`,
   },
   openGraph: {
     title: "Low Cost Prescription Drug Prices | Transparent Cash-Pay Formula",
     description:
-      "See exactly how we price prescriptions. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
+      "See exactly how we price prescriptions. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Westland, MI.",
     url: `${SITE_URL}/pricing`,
     type: "website",
   },
@@ -63,7 +63,7 @@ export default function PricingTransparencyPage() {
         name: "Can I buy generic drugs online through Clear Choice Pharmacy?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, you can browse and price generic drugs online at Clear Choice Pharmacy. Search our catalog of 1,600+ cheap generic drugs online, see instant pricing, and place your order for pickup or delivery at our Novi, MI location.",
+          text: "Yes, you can browse and price generic drugs online at Clear Choice Pharmacy. Search our catalog of 1,600+ cheap generic drugs online, see instant pricing, and place your order for pickup or delivery at our Westland, MI location.",
         },
       },
       {

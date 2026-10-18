@@ -63,6 +63,6 @@ If you have questions, or if you would rather cancel while you wait, call us at 
 
 Thank you for your patience,
 Clear Choice Pharmacy
-40890 Grand River Ave, Novi, MI
+8278 N Merriman Rd, Westland, MI
 (248) 987-6182`
 }

@@ -13,7 +13,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Buy ED Troches | Clear Choice Pharmacy",
   description:
-    "Complete secure checkout for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Novi, MI.",
+    "Complete secure checkout for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Westland, MI.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/start`,
   },

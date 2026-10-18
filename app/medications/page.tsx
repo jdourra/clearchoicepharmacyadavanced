@@ -6,7 +6,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Medication Prices | Low Cost Prescription Drug Lookup",
   description:
-    "Search medications and see transparent cash-pay prices. Build your list and order online. Clear Choice Pharmacy, Novi, MI.",
+    "Search medications and see transparent cash-pay prices. Build your list and order online. Clear Choice Pharmacy, Westland, MI.",
   alternates: {
     canonical: `${SITE_URL}/medications`,
   },

@@ -37,6 +37,15 @@ export function formatPhoneDisplay(value: string | null | undefined): string {
   return formatPhoneInput(String(value)) || String(value)
 }
 
+/** +1 and 10 digits, the shape the clinician network requires. */
+export function toUsE164(value: string | null | undefined): string | null {
+  if (value == null || value === "") return null
+  let d = digitsOnly(String(value))
+  if (d.length === 11 && d.startsWith("1")) d = d.slice(1)
+  if (d.length !== 10) return null
+  return `+1${d}`
+}
+
 /** Build a tel: href from any phone string. */
 export function phoneTelHref(value: string | null | undefined): string {
   let d = digitsOnly(String(value ?? ""))

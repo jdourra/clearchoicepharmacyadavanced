@@ -4,7 +4,7 @@ export const HOME_TITLE =
   "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Novi. Transparent cash-pay pricing for qualifying patients."
+  "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Westland. Transparent cash-pay pricing for qualifying patients."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -53,10 +53,10 @@ import { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
 
 export const PHARMACY_ADDRESS = {
   "@type": "PostalAddress" as const,
-  streetAddress: "40890 Grand River Ave",
-  addressLocality: "Novi",
+  streetAddress: "8278 N Merriman Rd",
+  addressLocality: "Westland",
   addressRegion: "MI",
-  postalCode: "48375",
+  postalCode: "48185",
   addressCountry: "US",
 }
 
@@ -64,6 +64,7 @@ export const PHARMACY_ADDRESS = {
 export const AREA_SERVED = [
   { "@type": "State" as const, name: "Michigan" },
   { "@type": "AdministrativeArea" as const, name: "Metro Detroit" },
+  { "@type": "City" as const, name: "Westland", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Novi", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Northville", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Farmington Hills", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
@@ -89,7 +90,7 @@ export const SITE_KEYWORDS = [
   "compounded Tirzepatide Novi",
   "weight loss pharmacy Michigan",
   "GLP-1 pharmacy Michigan",
-  "Clear Choice Pharmacy Novi",
+  "Clear Choice Pharmacy Westland",
 ]
 
 export type FaqItem = { question: string; answer: string }
@@ -163,7 +164,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Is the consultation private?",
     answer:
-      "Yes. The online consultation is confidential, and medication is prepared and delivered discreetly from our Novi pharmacy.",
+      "Yes. The online consultation is confidential, and medication is prepared and delivered discreetly from our Westland pharmacy.",
   },
 ]
 
@@ -171,7 +172,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Novi, MI. Individual results may vary.",
+      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Westland, MI. Individual results may vary.",
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",

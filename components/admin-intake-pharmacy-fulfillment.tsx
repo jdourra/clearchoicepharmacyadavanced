@@ -188,7 +188,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
           <div className="space-y-2 rounded-lg border p-3 bg-muted/30">
             <p className="text-sm font-medium">Awaiting pharmacy payment</p>
             <p className="text-xs text-muted-foreground">
-              Patient is approved. Email them to pay at the Novi pharmacy (terminal, phone, or cash).
+              Patient is approved. Email them to pay at the Westland pharmacy (terminal, phone, or cash).
             </p>
             <Button
               type="button"

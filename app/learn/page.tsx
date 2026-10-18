@@ -13,7 +13,7 @@ import { SITE_URL } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: "Learn | Semaglutide, Tirzepatide, ED & Pharmacy Guides",
   description:
-    "Educational guides on Semaglutide, Tirzepatide, Tadalafil, Sildenafil, TRT, Myers Cocktail IV, and low cost prescription drugs from Clear Choice Pharmacy in Novi, MI.",
+    "Educational guides on Semaglutide, Tirzepatide, Tadalafil, Sildenafil, TRT, Myers Cocktail IV, and low cost prescription drugs from Clear Choice Pharmacy in Westland, MI.",
   keywords: [
     "semaglutide",
     "tirzepatide",

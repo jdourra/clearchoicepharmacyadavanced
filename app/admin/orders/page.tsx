@@ -26,15 +26,24 @@ import {
 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import Loading from "./loading"
-import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
+import {
+  isActiveOrderStatus,
+  isCompletedOrderStatus,
+  isReadyToShipCatalogOrder,
+  isSoldCatalogOrder,
+  isUnpaidCatalogOrder,
+} from "@/lib/admin-order-buckets"
 import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
-import { isOrderPaid } from "@/lib/order-payment"
 import { canAdminCancelCatalogOrder } from "@/lib/admin-cancel-eligibility"
 import { AdminCancelCatalogOrderButton } from "@/components/admin-cancel-actions"
 import { AdminMarkOrderShipped } from "@/components/admin-mark-order-shipped"
 
 const STATUS_FILTER_OPTIONS = [
   "active",
+  "sold",
+  "unpaid",
+  "paid",
+  "shipped_all",
   "awaiting_shipment",
   "awaiting_telehealth",
   "pending",
@@ -113,13 +122,18 @@ export default function AdminOrdersPage() {
         if (o.prescription_method !== "telemedicine") return true
         return !isTelemedicineAwaitingApprovalStatus(o.telemedicine_intake_status)
       })
-    } else if (statusFilter === "awaiting_shipment") {
-      // Paid catalog orders ready to leave the pharmacy (processing / ready)
+    } else if (statusFilter === "sold") {
+      filtered = filtered.filter((o) => isSoldCatalogOrder(o))
+    } else if (statusFilter === "unpaid") {
+      filtered = filtered.filter((o) => isUnpaidCatalogOrder(o))
+    } else if (statusFilter === "paid") {
       filtered = filtered.filter(
-        (o) =>
-          isOrderPaid(o) &&
-          (o.status === "processing" || o.status === "ready")
+        (o) => isSoldCatalogOrder(o) && o.status !== "shipped" && o.status !== "delivered"
       )
+    } else if (statusFilter === "shipped_all") {
+      filtered = filtered.filter((o) => o.status === "shipped" || o.status === "delivered")
+    } else if (statusFilter === "awaiting_shipment") {
+      filtered = filtered.filter((o) => isReadyToShipCatalogOrder(o))
     } else if (statusFilter === "awaiting_telehealth") {
       filtered = filtered.filter(
         (o) =>
@@ -239,9 +253,17 @@ export default function AdminOrdersPage() {
             <p className="text-muted-foreground mt-1">
               {statusFilter === "active"
                 ? "Active work queue — pending and in-progress orders"
-                : statusFilter === "awaiting_shipment"
-                  ? "Paid orders in processing or ready — waiting to ship"
-                  : "View and manage customer orders"}
+                : statusFilter === "sold"
+                  ? "Catalog orders marked paid, including ones already shipped."
+                  : statusFilter === "unpaid"
+                    ? "Open orders with no payment recorded. Dashboard Waiting for payment also includes unpaid intakes."
+                    : statusFilter === "paid"
+                      ? "Paid catalog orders that have not shipped. Dashboard Paid also includes paid intakes."
+                      : statusFilter === "shipped_all"
+                        ? "Catalog orders marked shipped or delivered."
+                        : statusFilter === "awaiting_shipment"
+                      ? "Paid orders in processing or ready — waiting to ship"
+                      : "View and manage customer orders"}
             </p>
           </div>
 
@@ -263,14 +285,18 @@ export default function AdminOrdersPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">Active queue</SelectItem>
-                    <SelectItem value="awaiting_shipment">Awaiting shipment</SelectItem>
+                    <SelectItem value="sold">Sold (paid)</SelectItem>
+                    <SelectItem value="unpaid">Waiting for payment</SelectItem>
+                    <SelectItem value="paid">Paid, not shipped</SelectItem>
+                    <SelectItem value="shipped_all">Shipped or delivered</SelectItem>
+                    <SelectItem value="awaiting_shipment">Ready to ship</SelectItem>
                     <SelectItem value="awaiting_telehealth">Awaiting telehealth approval</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="ready">Ready</SelectItem>
                     <SelectItem value="shipped">Shipped</SelectItem>
                     <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="completed">Completed (ready, shipped & delivered)</SelectItem>
+                    <SelectItem value="completed">Ready, shipped, or delivered</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                     <SelectItem value="all">All statuses</SelectItem>
                   </SelectContent>

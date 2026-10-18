@@ -76,7 +76,7 @@ export default function Glp1Page() {
             "Semaglutide: GLP-1 receptor agonist pathway used in provider-guided weight management kits at Clear Choice Pharmacy.",
             "Tirzepatide: Dual GLP-1/GIP pathway option when a clinician determines it is appropriate.",
             "Evaluation first: Intake, photo ID, and clinician review occur before any compounding or charge capture.",
-            "Pharmacy role: Clear Choice compounds and fulfills approved kits for qualifying Michigan patients from Novi.",
+            "Pharmacy role: Clear Choice compounds and fulfills approved kits for qualifying Michigan patients from Westland.",
           ]}
         />
         <div className="mt-8 flex flex-wrap gap-3">

@@ -37,7 +37,7 @@ export async function notifyPatientIntakeDecision(params: {
 
 Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
-Next step: Clear Choice Pharmacy in Novi will contact you to collect payment for your kit on our pharmacy card terminal (or by phone/cash). ${PATIENT_FULFILLMENT_TIMELINE}
+Next step: Clear Choice Pharmacy in Westland will contact you to collect payment for your kit on our pharmacy card terminal (or by phone/cash). ${PATIENT_FULFILLMENT_TIMELINE}
 
 Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 
@@ -46,7 +46,7 @@ Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 
 Good news — a licensed clinician has approved your ${serviceLabel} intake (Reference: ${submissionId}).
 
-Clear Choice Pharmacy in Novi, MI is now preparing your prescription. ${PATIENT_FULFILLMENT_TIMELINE} You'll receive another update when your order ships or is ready for pickup.
+Clear Choice Pharmacy in Westland, MI is now preparing your prescription. ${PATIENT_FULFILLMENT_TIMELINE} You'll receive another update when your order ships or is ready for pickup.
 
 Questions? Call ${PRIMARY_PHYSICIAN.pharmacyPhone} or reply to this email.
 

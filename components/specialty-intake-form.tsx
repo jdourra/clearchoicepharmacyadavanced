@@ -749,7 +749,7 @@ export function SpecialtyIntakeForm({ initialMedication }: SpecialtyIntakeFormPr
                       <div className="mt-4 space-y-4">
                         <div className="bg-muted/50 rounded-lg p-4 text-sm">
                           <p className="font-semibold mb-1">Clear Choice Pharmacy</p>
-                          <p className="text-muted-foreground">40890 Grand River Ave, Novi, MI 48375</p>
+                          <p className="text-muted-foreground">8278 N Merriman Rd, Westland, MI 48185</p>
                           <p className="text-muted-foreground">Phone: (248) 987-6182 · Fax: (248) 987-4963</p>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">

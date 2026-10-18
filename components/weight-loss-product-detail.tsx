@@ -122,7 +122,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             />
           </div>
           <p className="text-center lg:text-left text-xs text-muted-foreground mt-3">
-            Compounded at Clear Choice Pharmacy · Novi, MI
+            Compounded at Clear Choice Pharmacy · Westland, MI
           </p>
         </div>
 

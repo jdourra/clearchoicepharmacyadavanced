@@ -27,7 +27,7 @@ export const CASH_PAY_ED_TABLETS: Record<CashPayEdTabletSlug, CashPayEdTabletGui
     path: "/prescriptions/sildenafil",
     pageTitle: "Low Cost Sildenafil (Viagra Generic) Tablets | Cash-Pay | Clear Choice Pharmacy",
     metaDescription:
-      "Low cost Sildenafil tablets—the generic for Viagra—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Novi.",
+      "Low cost Sildenafil tablets—the generic for Viagra—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Westland.",
     h1: "Low Cost Sildenafil Tablets (Viagra Generic)",
     lead: "Cash-pay generic Sildenafil tablets priced with our transparent formula—Drug Cost + 15% + $5 dispensing fee. This page is for standard oral tablets, not compounded troches.",
     bullets: [
@@ -70,7 +70,7 @@ export const CASH_PAY_ED_TABLETS: Record<CashPayEdTabletSlug, CashPayEdTabletGui
     path: "/prescriptions/tadalafil",
     pageTitle: "Low Cost Tadalafil (Cialis Generic) Tablets | Cash-Pay | Clear Choice Pharmacy",
     metaDescription:
-      "Low cost Tadalafil tablets—the generic for Cialis—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Novi.",
+      "Low cost Tadalafil tablets—the generic for Cialis—with transparent cash-pay pricing: Drug Cost + 15% + $5. Look up your strength for Michigan patients at Clear Choice Pharmacy, Westland.",
     h1: "Low Cost Tadalafil Tablets (Cialis Generic)",
     lead: "Cash-pay generic Tadalafil tablets priced with our transparent formula—Drug Cost + 15% + $5 dispensing fee. This page is for standard oral tablets, not compounded troches.",
     bullets: [

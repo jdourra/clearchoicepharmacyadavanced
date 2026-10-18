@@ -180,7 +180,7 @@ export default function SignUpPage() {
                       <Label htmlFor="city">City</Label>
                       <Input
                         id="city"
-                        placeholder="Novi"
+                        placeholder="Westland"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                       />
@@ -204,7 +204,7 @@ export default function SignUpPage() {
                       <Label htmlFor="zip">ZIP Code</Label>
                       <Input
                         id="zip"
-                        placeholder="48375"
+                        placeholder="48185"
                         value={zip}
                         onChange={(e) => setZip(e.target.value)}
                       />

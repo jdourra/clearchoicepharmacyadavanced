@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Mobile IV Therapy | Myers Cocktail, NAD+ & Hydration",
   description:
-    "Mobile IV therapy in Metro Detroit: Myers' Cocktail, NAD+ IV, hydration, immunity, and hangover drips. Pharmacy-formulated at Clear Choice Pharmacy in Novi. Licensed RNs.",
+    "Mobile IV therapy in Metro Detroit: Myers' Cocktail, NAD+ IV, hydration, immunity, and hangover drips. Pharmacy-formulated at Clear Choice Pharmacy in Westland. Licensed RNs.",
   keywords: [
     "mobile IV therapy",
     "IV therapy near me",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mobile IV Therapy | Myers Cocktail & NAD+ | Clear Choice Pharmacy",
     description:
-      "Hospital-grade mobile IV therapy across Metro Detroit. Myers' Cocktail, NAD+, hydration, and more—formulated in Novi, MI.",
+      "Hospital-grade mobile IV therapy across Metro Detroit. Myers' Cocktail, NAD+, hydration, and more—formulated in Westland, MI.",
     url: `${SITE_URL}/iv-rejuvenation`,
     type: "website",
   },

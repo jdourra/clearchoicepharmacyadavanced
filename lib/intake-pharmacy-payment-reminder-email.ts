@@ -15,7 +15,7 @@ export function buildIntakePharmacyPaymentReminderEmail(params: {
   const accountUrl = params.accountUrl || `${SITE_URL.replace(/\/$/, "")}/account?tab=orders`
   const amountLine = params.amountLabel
     ? `Amount due: ${params.amountLabel} (pay at the pharmacy — card terminal, phone, or cash).`
-    : "Pay at Clear Choice Pharmacy in Novi by card terminal, phone, or cash."
+    : "Pay at Clear Choice Pharmacy in Westland by card terminal, phone, or cash."
 
   const text = `${greeting}
 
@@ -28,7 +28,7 @@ Visit us or call ${PRIMARY_PHYSICIAN.pharmacyPhone} to arrange payment. Once pai
 View your account: ${accountUrl}
 
 — Clear Choice Pharmacy
-40890 Grand River Ave, Novi, MI 48375
+8278 N Merriman Rd, Westland, MI 48185
 ${CONTACT_EMAIL}`
 
   const html = `<!DOCTYPE html>
@@ -43,7 +43,7 @@ ${CONTACT_EMAIL}`
   </p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
-    40890 Grand River Ave, Novi, MI 48375<br>
+    8278 N Merriman Rd, Westland, MI 48185<br>
     <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
   </p>
 </body>

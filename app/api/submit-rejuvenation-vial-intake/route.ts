@@ -72,7 +72,7 @@ ${data.injectionConsents ? formatInjectionConsentsSummary(data.injectionConsents
 ═══════════════════════════════════════════════════════════════════════════════
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth
-2. Issue patient-specific eRx routed to Clear Choice Pharmacy (Novi, MI)
+2. Issue patient-specific eRx routed to Clear Choice Pharmacy (Westland, MI)
 3. Pharmacy compounds homekit → ship to patient address
 ═══════════════════════════════════════════════════════════════════════════════
 `

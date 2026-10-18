@@ -84,11 +84,11 @@ export const metadata: Metadata = {
   classification: "Medical Weight Loss, Semaglutide, Tirzepatide, Compounding Pharmacy",
   other: {
     "geo.region": "US-MI",
-    "geo.placename": "Novi",
+    "geo.placename": "Westland",
     "geo.position": "42.4806;-83.4755",
     ICBM: "42.4806, -83.4755",
     subject:
-      "Semaglutide and Tirzepatide medical weight loss in Michigan | Clear Choice Pharmacy Novi",
+      "Semaglutide and Tirzepatide medical weight loss in Michigan | Clear Choice Pharmacy Westland",
     topic: "Medical Weight Loss",
     coverage: "Michigan",
     ...(process.env.GOOGLE_SITE_VERIFICATION
@@ -126,19 +126,20 @@ export default function RootLayout({
     faxNumber: "+12489874963",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "40890 Grand River Ave",
-      addressLocality: "Novi",
+      streetAddress: "8278 N Merriman Rd",
+      addressLocality: "Westland",
       addressRegion: "MI",
-      postalCode: "48375",
+      postalCode: "48185",
       addressCountry: "US",
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 42.4806,
-      longitude: -83.4755,
+      latitude: 42.3486,
+      longitude: -83.3507,
     },
     areaServed: [
       { "@type": "State", name: "Michigan" },
+      { "@type": "City", name: "Westland" },
       { "@type": "City", name: "Novi" },
       { "@type": "City", name: "Northville" },
       { "@type": "City", name: "Farmington Hills" },
@@ -184,7 +185,7 @@ export default function RootLayout({
         {
           "@type": "OfferCatalog",
           name: "Compounding",
-          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Novi, MI",
+          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Westland, MI",
           url: `${SITE_URL}/compounding`,
         },
         {

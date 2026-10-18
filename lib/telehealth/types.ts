@@ -104,10 +104,10 @@ export type TelehealthWebhookEvent = {
 
 export const CLEAR_CHOICE_PHARMACY = {
   name: "Clear Choice Pharmacy",
-  streetAddress: "40890 Grand River Ave",
-  city: "Novi",
+  streetAddress: "8278 N Merriman Rd",
+  city: "Westland",
   state: "MI",
-  zip: "48375",
+  zip: "48185",
   phone: "(248) 987-6182",
   ncpdpEnvKey: "CLEAR_CHOICE_NCPDP_ID",
 } as const

@@ -491,7 +491,7 @@ export default function CheckoutPage() {
                             <div className="mt-4 space-y-4">
                               <div className="bg-muted/50 rounded-lg p-4 text-sm">
                                 <p className="font-semibold mb-2">Clear Choice Pharmacy</p>
-                                <p className="text-muted-foreground">40890 Grand River Ave, Novi, MI 48375</p>
+                                <p className="text-muted-foreground">8278 N Merriman Rd, Westland, MI 48185</p>
                                 <p className="text-muted-foreground">Phone: (248) 987-6182</p>
                                 <p className="text-muted-foreground">Fax: (248) 987-4963</p>
                               </div>
@@ -653,8 +653,8 @@ export default function CheckoutPage() {
                           {deliveryMethod === "pickup" && (
                             <div className="mt-4 bg-muted/50 rounded-lg p-4 text-sm">
                               <p className="font-semibold mb-2">Pickup Location:</p>
-                              <p>40890 Grand River Ave</p>
-                              <p>Novi, MI 48375</p>
+                              <p>8278 N Merriman Rd</p>
+                              <p>Westland, MI 48185</p>
                               <p className="mt-2 text-muted-foreground">Hours: Mon-Fri 9am-7pm, Sat 9am-5pm</p>
                             </div>
                           )}

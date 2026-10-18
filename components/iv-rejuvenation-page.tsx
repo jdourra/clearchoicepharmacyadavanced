@@ -67,7 +67,7 @@ const STEPS = [
   {
     step: 3,
     title: "Pharmacy Preparation",
-    description: "If approved, your eRx is sent to Clear Choice Pharmacy in Novi, MI to compound your IV bag.",
+    description: "If approved, your eRx is sent to Clear Choice Pharmacy in Westland, MI to compound your IV bag.",
   },
   {
     step: 4,

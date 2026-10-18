@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Medications for Michigan Patients | Clear Choice Pharmacy",
   description:
-    "Search prescription medications and see transparent cash-pay pricing for Michigan patients at Clear Choice Pharmacy in Novi, MI.",
+    "Search prescription medications and see transparent cash-pay pricing for Michigan patients at Clear Choice Pharmacy in Westland, MI.",
 }
 
 export default function MedicationsLayout({

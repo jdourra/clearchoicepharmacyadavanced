@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const program = getTrtProgram(slug)!
   const startingPrice = getTrtStartingMonthlyPrice(program)
   const title = getTrtProductPageTitle(program)
-  const description = `${program.name} for testosterone replacement therapy (TRT) from $${startingPrice}/mo. Physician supervision, medication, supplies, and Michigan shipping or pickup. Clear Choice Pharmacy, Novi.`
+  const description = `${program.name} for testosterone replacement therapy (TRT) from $${startingPrice}/mo. Physician supervision, medication, supplies, and Michigan shipping or pickup. Clear Choice Pharmacy, Westland.`
 
   return {
     title,

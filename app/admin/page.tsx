@@ -16,17 +16,14 @@ import {
   Users,
   DollarSign,
   Clock,
-  CheckCircle,
-  Truck,
   MessageSquare,
   FileText,
   ArrowRight,
   XCircle,
   PackageCheck,
 } from "lucide-react"
-import { isActiveOrderStatus, isCompletedOrderStatus } from "@/lib/admin-order-buckets"
+import { isActiveOrderStatus, isReadyToShipCatalogOrder } from "@/lib/admin-order-buckets"
 import { isTelemedicineAwaitingApprovalStatus } from "@/lib/admin-order-processing-rules"
-import { isOrderPaid } from "@/lib/order-payment"
 
 type DashboardCounts = {
   pendingIntakes: number
@@ -35,6 +32,17 @@ type DashboardCounts = {
   messageCount: number
   followupEligible: number
   customerCount: number
+}
+
+type SalesSummary = {
+  waitingAmount: number
+  waitingCount: number
+  paidAmount: number
+  paidCount: number
+  shippedAmount: number
+  shippedCount: number
+  missedAmount: number
+  missedCount: number
 }
 
 export default function AdminDashboard() {
@@ -47,6 +55,16 @@ export default function AdminDashboard() {
     messageCount: 0,
     followupEligible: 0,
     customerCount: 0,
+  })
+  const [sales, setSales] = useState<SalesSummary>({
+    waitingAmount: 0,
+    waitingCount: 0,
+    paidAmount: 0,
+    paidCount: 0,
+    shippedAmount: 0,
+    shippedCount: 0,
+    missedAmount: 0,
+    missedCount: 0,
   })
   const [loading, setLoading] = useState(true)
 
@@ -62,7 +80,7 @@ export default function AdminDashboard() {
         return
       }
 
-      const [ordersRes, intakesRes, awaitingPayRes, awaitingShipRes, messagesRes, customersRes, followupRes] =
+      const [ordersRes, intakesRes, awaitingPayRes, awaitingShipRes, messagesRes, customersRes, followupRes, salesRes] =
         await Promise.all([
         staffAuthFetch("/api/admin/orders"),
         staffAuthFetch("/api/admin/intakes?status=pending"),
@@ -71,6 +89,7 @@ export default function AdminDashboard() {
         staffAuthFetch("/api/admin/messages"),
         staffAuthFetch("/api/admin/customers"),
         staffAuthFetch("/api/admin/customers/signup-followup"),
+        staffAuthFetch("/api/admin/sales-summary"),
       ])
 
       if (ordersRes.ok) {
@@ -91,6 +110,20 @@ export default function AdminDashboard() {
         customerCount: customersRes.ok ? (await customersRes.json()).users?.length || 0 : 0,
         followupEligible: followupRes.ok ? (await followupRes.json()).eligibleCount || 0 : 0,
       })
+
+      if (salesRes.ok) {
+        const data = await salesRes.json()
+        setSales({
+          waitingAmount: Number(data.waitingAmount) || 0,
+          waitingCount: Number(data.waitingCount) || 0,
+          paidAmount: Number(data.paidAmount) || 0,
+          paidCount: Number(data.paidCount) || 0,
+          shippedAmount: Number(data.shippedAmount) || 0,
+          shippedCount: Number(data.shippedCount) || 0,
+          missedAmount: Number(data.missedAmount) || 0,
+          missedCount: Number(data.missedCount) || 0,
+        })
+      }
     } catch {
       // Keep dashboard visible if secondary loads fail.
     } finally {
@@ -111,19 +144,13 @@ export default function AdminDashboard() {
   }
 
   const pendingOrders = allOrders.filter((o) => o.status === "pending").length
-  const processingOrders = allOrders.filter((o) => o.status === "processing").length
-  const shippedOrders = allOrders.filter((o) => o.status === "shipped").length
-  const awaitingShipmentOrders = allOrders.filter(
-    (o) => isOrderPaid(o) && (o.status === "processing" || o.status === "ready")
-  ).length
+  const awaitingShipmentOrders = allOrders.filter((o) => isReadyToShipCatalogOrder(o)).length
   const awaitingTelehealthOrders = allOrders.filter(
     (o) =>
       isActiveOrderStatus(o.status) &&
       o.prescription_method === "telemedicine" &&
       isTelemedicineAwaitingApprovalStatus(o.telemedicine_intake_status)
   ).length
-  const completedOrders = allOrders.filter((o) => isCompletedOrderStatus(o.status)).length
-  const cancelledOrders = allOrders.filter((o) => o.status === "cancelled").length
   const activeOrders = allOrders.filter((o) => {
     if (!isActiveOrderStatus(o.status)) return false
     if (o.prescription_method !== "telemedicine") return true
@@ -131,16 +158,10 @@ export default function AdminDashboard() {
   }).length
 
   const stats = {
-    totalOrders: pendingOrders + processingOrders + completedOrders + cancelledOrders,
     activeOrders,
     pendingOrders,
-    processingOrders,
     awaitingTelehealthOrders,
     awaitingShipmentOrders,
-    shippedOrders,
-    completedOrders,
-    cancelledOrders,
-    totalRevenue: allOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0),
   }
 
   const recentActiveOrders = allOrders.filter((o) => {
@@ -168,77 +189,38 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground mt-1">Manage orders, prescriptions, and customer communications</p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-8">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
             <AdminDashboardStatCard
-              href="/admin/orders"
-              title="Active Queue"
-              value={stats.activeOrders}
-              icon={Package}
-              subtitle={`${stats.pendingOrders} pending · ${stats.processingOrders} processing`}
-            />
-            <AdminDashboardStatCard
-              href="/admin/orders?status=awaiting_telehealth"
-              title="Awaiting Telehealth"
-              value={stats.awaitingTelehealthOrders}
-              icon={Clock}
-              valueClassName="text-amber-700"
-              subtitle="Pending provider approval →"
-            />
-            <AdminDashboardStatCard
-              href="/admin/orders?status=pending"
-              title="Pending"
-              value={stats.pendingOrders}
+              href="/admin/orders?status=unpaid"
+              title="Waiting for payment"
+              value={`$${sales.waitingAmount.toFixed(2)}`}
               icon={Clock}
               valueClassName="text-yellow-600"
-              subtitle="Process pending →"
+              subtitle={`${sales.waitingCount} not paid · catalog, GLP, TRT, ED, IV`}
             />
             <AdminDashboardStatCard
-              href="/admin/orders?status=awaiting_shipment"
-              title="Awaiting Shipment"
-              value={stats.awaitingShipmentOrders}
-              icon={Truck}
-              valueClassName="text-violet-700"
-              subtitle="Paid · processing / ready →"
+              href="/admin/orders?status=paid"
+              title="Paid"
+              value={`$${sales.paidAmount.toFixed(2)}`}
+              icon={DollarSign}
+              valueClassName="text-primary"
+              subtitle={`${sales.paidCount} paid, not shipped yet`}
             />
             <AdminDashboardStatCard
-              href="/admin/orders?status=processing"
-              title="Processing"
-              value={stats.processingOrders}
-              icon={Truck}
-              valueClassName="text-blue-600"
-              subtitle="View in progress →"
-            />
-            <AdminDashboardStatCard
-              href="/admin/orders?status=shipped"
+              href="/admin/orders?status=shipped_all"
               title="Shipped"
-              value={stats.shippedOrders}
+              value={`$${sales.shippedAmount.toFixed(2)}`}
               icon={PackageCheck}
               valueClassName="text-purple-600"
-              subtitle="View shipped orders →"
-            />
-            <AdminDashboardStatCard
-              href="/admin/orders?status=completed"
-              title="Completed"
-              value={stats.completedOrders}
-              icon={CheckCircle}
-              valueClassName="text-green-600"
-              subtitle="Ready, shipped & delivered →"
+              subtitle={`${sales.shippedCount} shipped or delivered`}
             />
             <AdminDashboardStatCard
               href="/admin/orders?status=cancelled"
-              title="Cancelled"
-              value={stats.cancelledOrders}
+              title="Missed"
+              value={`$${sales.missedAmount.toFixed(2)}`}
               icon={XCircle}
               valueClassName="text-red-600"
-              subtitle="View cancelled →"
-            />
-            <AdminDashboardStatCard
-              href="/admin/orders?status=all"
-              title="Revenue"
-              value={`$${stats.totalRevenue.toFixed(2)}`}
-              icon={DollarSign}
-              valueClassName="text-primary"
-              subtitle={`${stats.totalOrders} total orders →`}
+              subtitle={`${sales.missedCount} cancelled`}
             />
           </div>
 
@@ -307,6 +289,28 @@ export default function AdminDashboard() {
                 <Button asChild size="sm" variant="outline" className="bg-background">
                   <Link href="/admin/orders?status=pending">
                     Open pending queue
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {stats.awaitingTelehealthOrders > 0 ? (
+            <Card className="mb-6 border-amber-200 bg-amber-50/50">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="font-medium text-amber-900">
+                    {stats.awaitingTelehealthOrders} order
+                    {stats.awaitingTelehealthOrders === 1 ? "" : "s"} awaiting provider approval
+                  </p>
+                  <p className="text-sm text-amber-800/80">
+                    These stay out of the ship queue until the visit is approved.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="bg-background">
+                  <Link href="/admin/orders?status=awaiting_telehealth">
+                    Open telehealth queue
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -412,7 +416,7 @@ export default function AdminDashboard() {
               {recentActiveOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No active orders — check Completed or Shipped</p>
+                  <p className="text-muted-foreground">No active orders — check Shipped or Delivered</p>
                 </div>
               ) : (
                 <div className="space-y-3">

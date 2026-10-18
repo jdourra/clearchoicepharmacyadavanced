@@ -44,7 +44,7 @@ const EXTRA_FAQS = [
   {
     question: "Can patients outside Michigan enroll?",
     answer:
-      "Clear Choice Pharmacy currently dispenses these clinical weight management programs to Michigan patients only. Contact the pharmacy if you have questions about service area.",
+      "Yes. Weight-loss intake is open to patients in other U.S. states. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit. Men's health, hormone, IV, and regular pharmacy checkout are still limited to Michigan. A partner pharmacy ships the medication if a doctor approves.",
   },
   {
     question: "Where can I read more educational content?",

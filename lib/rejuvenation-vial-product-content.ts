@@ -22,7 +22,7 @@ const SHARED_VIAL_KIT_INCLUDES = [
 const SHARED_PHYSICIAN =
   "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed."
 
-const SHARED_SHIPPING = "Shipped from Clear Choice Pharmacy in Novi, MI."
+const SHARED_SHIPPING = "Shipped from Clear Choice Pharmacy in Westland, MI."
 
 export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   b12: {
@@ -63,7 +63,7 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
     benefits: ["Cellular health support", "Focus and stamina support", "Healthy aging support"],
     kitIncludes: ["30-day NAD+ injection supply", ...SHARED_VIAL_KIT_INCLUDES],
     physicianConsent: SHARED_PHYSICIAN,
-    shipping: "Shipped cold from Clear Choice Pharmacy in Novi, MI. Refrigerate upon arrival.",
+    shipping: "Shipped cold from Clear Choice Pharmacy in Westland, MI. Refrigerate upon arrival.",
   },
   biotin: {
     homeKitTitle: "Biotin Injection HomeKit",

@@ -7,9 +7,9 @@ import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
 
 export const metadata: Metadata = {
-  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Novi, MI" },
+  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
   description:
-    "Clear Choice Pharmacy in Novi, Michigan provides provider-guided medical weight management and GLP-1 compounding, plus full-service prescriptions, specialty care, men's health, and IV therapy.",
+    "Clear Choice Pharmacy in Westland, Michigan provides provider-guided medical weight management and GLP-1 compounding, plus full-service prescriptions, specialty care, men's health, and IV therapy.",
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -29,7 +29,7 @@ export default function AboutPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">About us</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              Clear Choice Pharmacy is a full-service compounding and retail pharmacy in Novi, Michigan. Our website
+              Clear Choice Pharmacy is a full-service compounding and retail pharmacy in Westland, Michigan. Our website
               focuses primarily on provider-guided medical weight management and GLP-1 care, while continuing to serve
               patients with everyday prescriptions and other clinical pharmacy services.
             </p>
@@ -41,7 +41,7 @@ export default function AboutPage() {
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
               We prepare patient-specific compounded medications—including Semaglutide and Tirzepatide kits when
-              prescribed—and fill cash-pay and specialty prescriptions from our Novi location at 40890 Grand River Ave.
+              prescribed—and fill cash-pay and specialty prescriptions from our Westland location at 8278 N Merriman Rd.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Primary clinical focus on this site:{" "}
@@ -86,7 +86,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Location &amp; contact</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-              40890 Grand River Ave, Novi, MI 48375
+              8278 N Merriman Rd, Westland, MI 48185
               <br />
               Phone:{" "}
               <a href={PHARMACY_PHONE_TEL_HREF} className="text-primary hover:underline">

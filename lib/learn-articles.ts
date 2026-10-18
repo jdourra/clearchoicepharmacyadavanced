@@ -31,7 +31,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      "At Clear Choice Pharmacy in Novi, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide through our medical weight loss program after a licensed clinician approves therapy.",
+      "At Clear Choice Pharmacy in Westland, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide through our medical weight loss program after a licensed clinician approves therapy.",
     ],
     sections: [
       {
@@ -69,7 +69,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         ],
       },
       {
-        heading: "Cash-pay Semaglutide in Novi, MI",
+        heading: "Cash-pay Semaglutide in Westland, MI",
         paragraphs: [
           "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy offers transparent cash-pay Semaglutide kits for qualifying Michigan patients after provider approval. Each 30-day kit includes four weekly injections priced by dose tier—physician review, compounding, supplies, and shipping included.",
           "For current kit pricing and intake steps, visit the Semaglutide program page. For broader program context—eligibility, monitoring, and Michigan fulfillment—start with the medical weight loss hub or GLP-1 overview.",
@@ -122,7 +122,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This article covers Tirzepatide education—mechanism, brand-name context (Zepbound, Mounjaro), side effects, and clinical candidacy questions. Kit pricing and checkout are on the Tirzepatide program page; program overview lives on the medical weight loss hub.",
-      "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients after clinician approval, with transparent cash-pay kits fulfilled from our Novi pharmacy.",
+      "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients after clinician approval, with transparent cash-pay kits fulfilled from our Westland pharmacy.",
     ],
     sections: [
       {
@@ -634,7 +634,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "pharmacy without insurance",
       "prescription prices",
       "cheap generic drugs",
-      "Novi pharmacy",
+      "Westland pharmacy",
     ],
     category: "prescriptions",
     categoryLabel: "Prescriptions",
@@ -665,7 +665,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Michigan fill and ship only",
         paragraphs: [
-          "Clear Choice Pharmacy currently fills and ships prescriptions for Michigan patients only. Pickup is available in Novi, with delivery options for eligible Michigan addresses.",
+          "Clear Choice Pharmacy currently fills and ships prescriptions for Michigan patients only. Pickup is available in Westland, with delivery options for eligible Michigan addresses.",
         ],
       },
     ],

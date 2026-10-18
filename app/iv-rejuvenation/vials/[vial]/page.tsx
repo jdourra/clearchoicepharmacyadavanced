@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const vial = getRejuvenationVial(slug)!
   const title = getVialProductPageTitle(vial)
-  const description = `${vial.title} for $${vial.price}. ${vial.supply}. Physician review and pharmacy fulfillment for Michigan patients. Clear Choice Pharmacy, Novi.`
+  const description = `${vial.title} for $${vial.price}. ${vial.supply}. Physician review and pharmacy fulfillment for Michigan patients. Clear Choice Pharmacy, Westland.`
   return {
     title,
     description,

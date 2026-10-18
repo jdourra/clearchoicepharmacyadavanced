@@ -29,7 +29,7 @@ export default function HomePage() {
           />
           <div className="relative container max-w-5xl mx-auto px-4 py-10 sm:py-14 md:py-20 min-h-[min(85vh,640px)] flex flex-col justify-center">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-sky-200 mb-3">
-              Clear Choice Pharmacy · Novi, MI
+              Clear Choice Pharmacy · Westland, MI
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance max-w-2xl mb-3 sm:mb-4">
               <span className="block text-sky-300">Semaglutide</span>
@@ -40,7 +40,7 @@ export default function HomePage() {
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
               Provider-guided medical weight management with pharmacy-compounded Semaglutide and Tirzepatide kits after
-              licensed clinician review—fulfilled from Novi. Individual results may vary.
+              licensed clinician review—fulfilled from Westland. Individual results may vary.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
               <Button
@@ -143,7 +143,7 @@ export default function HomePage() {
             <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center sm:text-left text-xs sm:text-sm text-slate-600">
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <MapPin className="h-4 w-4 text-primary shrink-0" />
-                <span>Serving Michigan patients from Novi</span>
+                <span>Serving Michigan patients from Westland</span>
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <Stethoscope className="h-4 w-4 text-primary shrink-0" />
@@ -209,7 +209,7 @@ export default function HomePage() {
             <div className="rounded-lg border bg-muted/30 p-6 md:p-8">
               <h2 className="text-xl font-bold mb-3">Michigan service area</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Clear Choice Pharmacy is located at 40890 Grand River Ave in Novi and currently dispenses clinical
+                Clear Choice Pharmacy is located at 8278 N Merriman Rd in Westland and currently dispenses clinical
                 weight management programs to qualifying Michigan patients. We commonly serve patients from Novi,
                 Northville, Farmington Hills, Wixom, South Lyon, and greater Metro Detroit.
               </p>
@@ -309,7 +309,7 @@ export default function HomePage() {
             <div className="prose prose-sm max-w-none text-muted-foreground">
               <h2 className="text-2xl font-bold text-foreground mb-4">About Clear Choice Pharmacy</h2>
               <p className="leading-relaxed mb-4">
-                Clear Choice Pharmacy is a Novi, Michigan compounding pharmacy focused on{" "}
+                Clear Choice Pharmacy is a Westland, Michigan compounding pharmacy focused on{" "}
                 <Link href="/weight-loss" className="text-primary hover:underline">
                   provider-guided Semaglutide and Tirzepatide weight management
                 </Link>

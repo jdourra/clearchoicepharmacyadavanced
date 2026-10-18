@@ -45,14 +45,14 @@ const PROGRAMS_URL = "/weight-loss#programs"
 export const metadata: Metadata = {
   title: { absolute: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy" },
   description:
-    "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Novi. Transparent cash-pay pricing.",
+    "Provider-guided Semaglutide and Tirzepatide weight management. You pay on this website, a doctor reviews your intake, and a partner pharmacy ships if treatment is approved.",
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
     title: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
     description:
-      "Provider-guided Semaglutide and Tirzepatide kits for qualifying Michigan patients. Pay on this website. A partner pharmacy ships if a doctor approves.",
+      "Provider-guided Semaglutide and Tirzepatide kits. Pay on this website. A partner pharmacy ships if a doctor approves.",
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -72,7 +72,7 @@ export default function WeightLossPage() {
     name: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Provider-guided Semaglutide and Tirzepatide weight management at Clear Choice Pharmacy in Novi, MI.",
+      "Provider-guided Semaglutide and Tirzepatide weight management at Clear Choice Pharmacy in Westland, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Medical Weight Management" },
       { "@type": "MedicalTherapy", name: "GLP-1 Weight Management" },
@@ -90,13 +90,13 @@ export default function WeightLossPage() {
   return (
     <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(WEIGHT_LOSS_FAQS), breadcrumbs]}>
       <PremiumHero
-        badge="Medical Weight Loss · Michigan"
+        badge="Medical Weight Loss"
         headline={
           <>
             <span className="block text-sky-300">Semaglutide</span>
             <span className="block text-sky-300">&amp; Tirzepatide</span>
             <span className="block mt-1 text-white text-[0.72em] sm:text-[0.78em] font-bold leading-tight">
-              Weight Loss in Michigan
+              Medical Weight Loss
             </span>
           </>
         }
@@ -127,7 +127,7 @@ export default function WeightLossPage() {
           <p>
             At Clear Choice Pharmacy, the pathway starts with an online intake and payment on this website. A licensed
             doctor reviews your information and decides whether a prescription is appropriate. If approved, a partner
-            pharmacy fills and ships Semaglutide or Tirzepatide for Michigan patients. Learn more about{" "}
+            pharmacy fills and ships Semaglutide or Tirzepatide. Learn more about{" "}
             <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
               GLP-1 weight management
             </Link>
@@ -247,7 +247,7 @@ export default function WeightLossPage() {
           {
             icon: "flask-conical",
             title: "Pharmacy Compounded",
-            description: "Patient-specific Semaglutide & Tirzepatide prepared in Novi",
+            description: "Patient-specific Semaglutide & Tirzepatide prepared in Westland",
           },
           {
             icon: "activity",
@@ -376,12 +376,13 @@ export default function WeightLossPage() {
       <ContentSection id="michigan">
         <SectionIntro
           eyebrow="Local care"
-          title="Medical weight loss in Michigan"
-          description="Programs are available to qualifying Michigan patients. Clear Choice Pharmacy is located in Novi and commonly serves Metro Detroit communities."
+          title="Care from Westland, available in other states"
+          description="Clear Choice Pharmacy is in Westland and still serves Metro Detroit. Weight-loss intake is open to patients in other U.S. states. A few states require a live video visit."
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           Patients from Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby
-          communities can complete telehealth intake online. Dispensing is currently limited to Michigan.{" "}
+          communities can complete the intake online. If a doctor approves treatment, a partner pharmacy ships it. Men's
+          health, hormone, IV, and regular checkout stay limited to Michigan.{" "}
           <Link href="/contact" className="text-primary hover:underline">
             Contact the pharmacy
           </Link>{" "}

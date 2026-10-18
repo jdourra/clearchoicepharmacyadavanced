@@ -19,7 +19,7 @@ import { COMMON_SPECIALTY_MEDICATIONS } from "@/lib/specialty-pharmacy-catalog"
 export const metadata: Metadata = {
   title: "Specialty Pharmacy | Prior Authorization & Copay Assistance",
   description:
-    "Specialty pharmacy for high-cost medications. All major insurance accepted. In-house prior authorization and copay assistance. Clear Choice Pharmacy, Novi, MI.",
+    "Specialty pharmacy for high-cost medications. All major insurance accepted. In-house prior authorization and copay assistance. Clear Choice Pharmacy, Westland, MI.",
   keywords: [
     "specialty pharmacy",
     "specialty medications",
@@ -76,7 +76,7 @@ export default function SpecialtyPharmacyPage() {
         name: "How do I transfer my specialty prescriptions to Clear Choice Pharmacy?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Call us at (248) 987-6182 or visit our Novi, MI location. We coordinate with your doctor and current pharmacy to transfer your specialty care and begin the prior authorization and copay support process from day one.",
+          text: "Call us at (248) 987-6182 or visit our Westland, MI location. We coordinate with your doctor and current pharmacy to transfer your specialty care and begin the prior authorization and copay support process from day one.",
         },
       },
     ],
@@ -193,7 +193,7 @@ export default function SpecialtyPharmacyPage() {
           {
             step: 1,
             title: "Contact Our Team",
-            description: "Call (248) 987-6182 or visit our Novi location to begin your specialty transfer.",
+            description: "Call (248) 987-6182 or visit our Westland location to begin your specialty transfer.",
           },
           {
             step: 2,
@@ -230,7 +230,7 @@ export default function SpecialtyPharmacyPage() {
           {
             question: "How do I transfer my specialty prescriptions?",
             answer:
-              "Call (248) 987-6182 or visit us at 40890 Grand River Ave, Novi, MI 48375. We will coordinate the transfer and start PA and copay support right away.",
+              "Call (248) 987-6182 or visit us at 8278 N Merriman Rd, Westland, MI 48185. We will coordinate the transfer and start PA and copay support right away.",
           },
         ]}
       />

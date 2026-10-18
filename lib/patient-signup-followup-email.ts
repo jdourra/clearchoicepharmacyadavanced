@@ -11,7 +11,7 @@ export function buildSignupFollowupEmail(params: {
 
   const text = `${greeting}
 
-Thanks for creating an account with Clear Choice Pharmacy in Novi, MI. We wanted to check in — sometimes people pause because of pricing questions, transferring a prescription, or not having a script yet.
+Thanks for creating an account with Clear Choice Pharmacy in Westland, MI. We wanted to check in — sometimes people pause because of pricing questions, transferring a prescription, or not having a script yet.
 
 We're happy to help with:
 • A quick price lookup for your medication
@@ -24,14 +24,14 @@ Build a medication list: ${medicationsUrl}
 Reply to this email or call us at (248) 987-6182 if you have any questions. No pressure — we're here when you're ready.
 
 — Clear Choice Pharmacy
-40890 Grand River Ave, Novi, MI 48375
+8278 N Merriman Rd, Westland, MI 48185
 ${CONTACT_EMAIL}`
 
   const html = `<!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
   <p>${greeting}</p>
-  <p>Thanks for creating an account with <strong>Clear Choice Pharmacy</strong> in Novi, MI. We wanted to check in — sometimes people pause because of pricing questions, transferring a prescription, or not having a script yet.</p>
+  <p>Thanks for creating an account with <strong>Clear Choice Pharmacy</strong> in Westland, MI. We wanted to check in — sometimes people pause because of pricing questions, transferring a prescription, or not having a script yet.</p>
   <p>We're happy to help with:</p>
   <ul>
     <li>A quick price lookup for your medication</li>
@@ -45,7 +45,7 @@ ${CONTACT_EMAIL}`
   <p>Reply to this email or call us at <a href="tel:+12489876182">(248) 987-6182</a> if you have any questions. No pressure — we're here when you're ready.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
-    40890 Grand River Ave, Novi, MI 48375<br>
+    8278 N Merriman Rd, Westland, MI 48185<br>
     <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
   </p>
 </body>

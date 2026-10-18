@@ -154,7 +154,7 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
             <div className="mt-10 rounded-xl border p-5 bg-primary/5">
               <p className="font-semibold mb-2">{article.serviceCta}</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Clear Choice Pharmacy · Novi, MI · Michigan patients only for dispensing and clinical programs.
+                Clear Choice Pharmacy · Westland, MI · Michigan patients only for dispensing and clinical programs.
               </p>
               <Button asChild>
                 <Link href={article.serviceHref}>

@@ -28,7 +28,7 @@ export default function PrescriptionsPage() {
 
             <div className="text-center mb-8">
               <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-3">
-                Cash-pay prescriptions · Novi, MI
+                Cash-pay prescriptions · Westland, MI
               </p>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance mb-4">
                 Low Cost Prescription Drugs with Cash-Pay Pricing
@@ -38,7 +38,7 @@ export default function PrescriptionsPage() {
                 Also cash-pay generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets.
               </p>
               <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
-                Michigan patients only — we fill and ship prescriptions within Michigan from our Novi pharmacy.
+                Michigan patients only — we fill and ship prescriptions within Michigan from our Westland pharmacy.
               </p>
             </div>
 
@@ -199,7 +199,7 @@ export default function PrescriptionsPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes. All our low cost generic drugs meet the same FDA standards for quality, safety, and effectiveness as
                   their brand-name counterparts. Michigan patients get the same medication at a fraction of the cost
-                  through Clear Choice Pharmacy in Novi.
+                  through Clear Choice Pharmacy in Westland.
                 </p>
               </div>
               <div>
@@ -232,7 +232,7 @@ export default function PrescriptionsPage() {
                 <h3 className="font-semibold text-lg mb-2">Can I order if I live outside Michigan?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Not at this time. Clear Choice Pharmacy can currently fill and ship prescriptions only for Michigan
-                  patients. Pickup is available at our Novi location, and delivery is available to eligible Michigan
+                  patients. Pickup is available at our Westland location, and delivery is available to eligible Michigan
                   addresses. We plan to expand with a telehealth partner and will update eligibility when multi-state
                   coverage is available.
                 </p>
@@ -272,14 +272,14 @@ export default function PrescriptionsPage() {
                 About Our Michigan Low-Cost Prescription Service
               </h2>
               <p className="leading-relaxed mb-4">
-                Clear Choice Pharmacy is a cash-pay pharmacy in Novi, Michigan, serving Michigan patients with
+                Clear Choice Pharmacy is a cash-pay pharmacy in Westland, Michigan, serving Michigan patients with
                 transparent prescription pricing. Our model—Drug Cost + 15% + $5 dispensing fee—means you always know
                 what you will pay. No hidden fees, no PBM middlemen, no surprises. That includes everyday generics and
                 cash-pay ED tablets such as Sildenafil (Viagra generic) and Tadalafil (Cialis generic).
               </p>
               <p className="leading-relaxed">
                 Whether you need a pharmacy without insurance in Metro Detroit, want to compare cash-pay prescription
-                prices, or prefer pickup in Novi with Michigan delivery options, Clear Choice Pharmacy has you covered.
+                prices, or prefer pickup in Westland with Michigan delivery options, Clear Choice Pharmacy has you covered.
                 We carry thousands of commonly prescribed generics at prices that can save you up to 80% compared to
                 traditional retail pharmacies—Michigan patients only.
               </p>

@@ -37,7 +37,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Your provider may recommend periodic lab work to monitor testosterone, hematocrit, and related markers during therapy.",
     physicianConsent:
       "Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. Additional labs or follow-up may be required.",
-    shipping: "Shipped from Clear Choice Pharmacy in Novi, MI. Refrigerate upon receipt.",
+    shipping: "Shipped from Clear Choice Pharmacy in Westland, MI. Refrigerate upon receipt.",
   },
   "testosterone-cream": {
     homeKitTitle: "Testosterone Cream TRT HomeKit",
@@ -61,7 +61,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Topical protocols still require physician oversight and periodic labs to confirm therapeutic levels and safety.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Shipped discreetly from Clear Choice Pharmacy in Novi, MI.",
+    shipping: "Shipped discreetly from Clear Choice Pharmacy in Westland, MI.",
   },
   enclomiphene: {
     homeKitTitle: "Enclomiphene Oral TRT HomeKit",
@@ -84,7 +84,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Lab monitoring helps your provider titrate your oral protocol and confirm response over time.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Shipped discreetly from Clear Choice Pharmacy in Novi, MI.",
+    shipping: "Shipped discreetly from Clear Choice Pharmacy in Westland, MI.",
   },
 }
 

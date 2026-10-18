@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: { absolute: "Compounding Pharmacy in Novi, MI | Clear Choice Pharmacy" },
+  title: { absolute: "Compounding Pharmacy in Westland, MI | Clear Choice Pharmacy" },
   description:
-    "Clear Choice Pharmacy compounds patient-specific medications in Novi, Michigan—including Semaglutide and Tirzepatide kits after clinician review—plus other customized pharmacy preparations.",
+    "Clear Choice Pharmacy compounds patient-specific medications in Westland, Michigan—including Semaglutide and Tirzepatide kits after clinician review—plus other customized pharmacy preparations.",
   alternates: { canonical: `${SITE_URL}/compounding` },
 }
 
@@ -26,7 +26,7 @@ export default function CompoundingPage() {
         <section className="border-b bg-slate-50">
           <div className="container max-w-3xl mx-auto px-4 py-12 md:py-16">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Pharmacy services</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Compounding Pharmacy in Novi, MI</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Compounding Pharmacy in Westland, MI</h1>
             <p className="text-muted-foreground leading-relaxed">
               Compounding prepares patient-specific medications pursuant to a valid prescription. Clear Choice Pharmacy
               compounds GLP-1 weight management kits and other customized formulations for qualifying Michigan patients.

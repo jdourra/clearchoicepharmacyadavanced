@@ -55,12 +55,35 @@ export function canMarkCatalogOrderShipped(order: {
   )
 }
 
-/** True when an order is counted in one of the dashboard stat buckets. */
-export function isDashboardBucketOrderStatus(status: string): boolean {
-  return (
-    status === "pending" ||
-    status === "processing" ||
-    isCompletedOrderStatus(status) ||
-    isCancelledOrderStatus(status)
-  )
+type CatalogMoneyOrder = {
+  status: string
+  payment_status?: string | null
+  total_amount?: number | null
+}
+
+/** Paid catalog order that was not cancelled. This is the only revenue bucket. */
+export function isSoldCatalogOrder(order: CatalogMoneyOrder): boolean {
+  return !isCancelledOrderStatus(order.status) && order.payment_status === "paid"
+}
+
+/**
+ * Open catalog order with no payment. Shipped and delivered stay in those
+ * tiles even when payment was never recorded.
+ */
+export function isUnpaidCatalogOrder(order: CatalogMoneyOrder): boolean {
+  if (isCancelledOrderStatus(order.status)) return false
+  if (order.status === "shipped" || order.status === "delivered") return false
+  return order.payment_status !== "paid"
+}
+
+/** Paid orders packed or in progress and not yet marked shipped. */
+export function isReadyToShipCatalogOrder(order: CatalogMoneyOrder): boolean {
+  return order.payment_status === "paid" && (order.status === "processing" || order.status === "ready")
+}
+
+export function soldCatalogRevenue(orders: CatalogMoneyOrder[]): number {
+  return orders.reduce((sum, order) => {
+    if (!isSoldCatalogOrder(order)) return sum
+    return sum + (Number(order.total_amount) || 0)
+  }, 0)
 }

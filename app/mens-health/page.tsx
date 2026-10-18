@@ -40,7 +40,7 @@ const TRT_LANDING_URL = "/mens-health#trt"
 export const metadata: Metadata = {
   title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Men's Health",
   description:
-    "Sildenafil ED troches from $39/mo, Tadalafil from $49/mo on quarterly billing, and physician-supervised TRT from $109/mo. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Novi.",
+    "Sildenafil ED troches from $39/mo, Tadalafil from $49/mo on quarterly billing, and physician-supervised TRT from $109/mo. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Westland.",
   keywords: [
     "tadalafil",
     "sildenafil",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
     description:
-      "ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo with discreet pharmacy fulfillment in Novi, MI.",
+      "ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo with discreet pharmacy fulfillment in Westland, MI.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -77,7 +77,7 @@ export default function MensHealthPage() {
     name: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo at Clear Choice Pharmacy in Novi, MI.",
+      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo at Clear Choice Pharmacy in Westland, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
@@ -279,7 +279,7 @@ export default function MensHealthPage() {
           {
             step: 3,
             title: "Pharmacy Compounding",
-            description: "Clear Choice Pharmacy compounds your medication and ships discreetly—or prepares it for pickup in Novi.",
+            description: "Clear Choice Pharmacy compounds your medication and ships discreetly—or prepares it for pickup in Westland.",
           },
         ]}
       />

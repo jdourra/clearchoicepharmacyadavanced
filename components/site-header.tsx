@@ -94,14 +94,14 @@ export function SiteHeader() {
       <div className="w-full bg-primary text-primary-foreground">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 py-1.5 text-xs sm:text-sm">
           <a
-            href="https://maps.google.com/?q=40890+Grand+River+Ave,+Novi,+MI+48375"
+            href="https://maps.google.com/?q=8278+N+Merriman+Rd,+Westland,+MI+48185"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:underline"
           >
             <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden min-[420px]:inline">40890 Grand River Ave, Novi, MI 48375</span>
-            <span className="min-[420px]:hidden">Novi, MI</span>
+            <span className="hidden min-[420px]:inline">8278 N Merriman Rd, Westland, MI 48185</span>
+            <span className="min-[420px]:hidden">Westland, MI</span>
           </a>
           <a href={PHARMACY_PHONE_TEL_HREF} className="flex items-center gap-1.5 hover:underline">
             <Phone className="h-3.5 w-3.5 shrink-0" />

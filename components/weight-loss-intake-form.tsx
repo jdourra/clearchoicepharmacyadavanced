@@ -32,9 +32,8 @@ import {
   getIntakePaymentInvalidFields,
   paymentCapturedOnClient,
 } from "@/lib/intake-payment"
-import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
-import { MichiganStateField } from "@/components/michigan-state-field"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
+import { parseUsState, requiresSyncVisit, US_STATES } from "@/lib/us-states"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -85,7 +84,9 @@ type FormData = {
   email: string
   phone: string
   dateOfBirth: string
+  gender: "" | "female" | "male" | "other"
   state: string
+  visitSlotKey: string
   address: string
   city: string
   zipCode: string
@@ -145,7 +146,9 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
+  gender: "",
   state: MICHIGAN_STATE_NAME,
+  visitSlotKey: "",
   address: "",
   city: "",
   zipCode: "",
@@ -193,15 +196,23 @@ const initialFormData: FormData = {
 
 const programs = WEIGHT_LOSS_PROGRAMS
 
-const states = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
-  "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
-  "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
-  "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-  "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
-  "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
-]
+function formatVisitSlot(start: string): string {
+  const date = new Date(start)
+  if (Number.isNaN(date.getTime())) return start
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date)
+}
+
+function selectedVisit(key: string): { scheduleStart: string; scheduleEnd: string; providerGuid: string } | null {
+  const [scheduleStart, scheduleEnd, providerGuid] = key.split("||")
+  if (!scheduleStart || !scheduleEnd || !providerGuid) return null
+  return { scheduleStart, scheduleEnd, providerGuid }
+}
 
 const comorbidityOptions = [
   { id: "type2-diabetes", label: "Type 2 diabetes" },
@@ -276,7 +287,12 @@ type StepValidation = {
   fields: string[]
 }
 
-function getStepValidation(formData: FormData, bmi: number | null, currentStep: number): StepValidation {
+function getStepValidation(
+  formData: FormData,
+  bmi: number | null,
+  currentStep: number,
+  visitTimes: { status: "idle" | "loading" | "ready" | "empty" | "error"; message: string }
+): StepValidation {
   const fields: string[] = []
   const add = (...keys: string[]) => {
     for (const key of keys) {
@@ -298,7 +314,20 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
       if (!formData.email) add("email")
       if (!formData.phone) add("phone")
       if (!formData.dateOfBirth) add("dateOfBirth")
+      if (!formData.gender) add("gender")
       if (!formData.state) add("state")
+      if (requiresSyncVisit(formData.state)) {
+        if (visitTimes.status === "loading" || visitTimes.status === "idle") {
+          return { valid: false, message: "Loading video visit times…", fields: ["visitSlot"] }
+        }
+        if (!formData.visitSlotKey) {
+          return {
+            valid: false,
+            message: visitTimes.message || "This state requires a live video visit. Choose an appointment time.",
+            fields: ["visitSlot"],
+          }
+        }
+      }
       if (fields.length > 0) {
         return { valid: false, message: "Please complete all required demographic information.", fields }
       }
@@ -408,6 +437,9 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
     }
 
     case 4: {
+      if (!formData.address.trim()) add("address")
+      if (!formData.city.trim()) add("city")
+      if (!formData.zipCode.trim()) add("zipCode")
       if (!formData.sameAsResidential) {
         if (!formData.shippingAddress) add("shippingAddress")
         if (!formData.shippingCity) add("shippingCity")
@@ -416,6 +448,9 @@ function getStepValidation(formData: FormData, bmi: number | null, currentStep: 
         if (fields.length > 0) {
           return { valid: false, message: "Please complete shipping address information.", fields }
         }
+      }
+      if (fields.length > 0) {
+        return { valid: false, message: "Please complete your street address, city, and ZIP code.", fields }
       }
       const paymentValues = {
         idFrontFile: formData.idFrontFile,
@@ -567,6 +602,11 @@ export function WeightLossIntakeForm({
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
   const [statusLogs, setStatusLogs] = useState<string[]>([])
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
+  const [visitSlots, setVisitSlots] = useState<
+    { scheduleStart: string; scheduleEnd: string; providerGuid: string }[]
+  >([])
+  const [visitTimesStatus, setVisitTimesStatus] = useState<"idle" | "loading" | "ready" | "empty" | "error">("idle")
+  const [visitTimesMessage, setVisitTimesMessage] = useState("")
   const [validationFields, setValidationFields] = useState<string[]>([])
   const { profile } = usePatientProfilePrefill()
 
@@ -661,8 +701,53 @@ export function WeightLossIntakeForm({
     return true
   }, [formData])
 
+  useEffect(() => {
+    const state = parseUsState(formData.state)
+    if (!state || !requiresSyncVisit(state.code)) {
+      setVisitSlots([])
+      setVisitTimesStatus("idle")
+      setVisitTimesMessage("")
+      return
+    }
+
+    let cancelled = false
+    setVisitTimesStatus("loading")
+    setVisitTimesMessage("")
+    fetch(`/api/weight-loss/visit-times?state=${encodeURIComponent(state.code)}`)
+      .then(async (response) => {
+        const body = (await response.json()) as {
+          slots?: { scheduleStart?: string; scheduleEnd?: string; providerGuid?: string }[]
+          message?: string
+        }
+        if (cancelled) return
+        const slots = (body.slots || [])
+          .filter((slot) => slot.scheduleStart && slot.scheduleEnd && slot.providerGuid)
+          .map((slot) => ({
+            scheduleStart: slot.scheduleStart || "",
+            scheduleEnd: slot.scheduleEnd || "",
+            providerGuid: slot.providerGuid || "",
+          }))
+        setVisitSlots(slots)
+        setVisitTimesMessage(typeof body.message === "string" ? body.message : "")
+        setVisitTimesStatus(slots.length > 0 ? "ready" : response.ok ? "empty" : "error")
+      })
+      .catch(() => {
+        if (cancelled) return
+        setVisitSlots([])
+        setVisitTimesStatus("error")
+        setVisitTimesMessage("Video visit times could not be loaded. Please try again.")
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [formData.state])
+
   const validateStep = (currentStep: number): boolean => {
-    const result = getStepValidation(formData, bmi, currentStep)
+    const result = getStepValidation(formData, bmi, currentStep, {
+      status: visitTimesStatus,
+      message: visitTimesMessage,
+    })
     if (!result.valid) {
       setError(result.message)
       setValidationFields(result.fields)
@@ -727,7 +812,8 @@ export function WeightLossIntakeForm({
           email: formData.email,
           phone: formData.phone,
           dateOfBirth: formData.dateOfBirth,
-          state: MICHIGAN_STATE_NAME,
+          gender: formData.gender,
+          state: formData.state,
           address: formData.address,
           city: formData.city,
           zipCode: formData.zipCode,
@@ -768,10 +854,11 @@ export function WeightLossIntakeForm({
           comorbidities: formData.comorbidities,
           additionalConcerns: formData.additionalConcerns,
         },
+        visit: requiresSyncVisit(formData.state) ? selectedVisit(formData.visitSlotKey) : null,
         identity: {
           shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
           shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-          shippingState: MICHIGAN_STATE_NAME,
+          shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
           shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
           ...paymentCapturedOnClient({
             idFrontFile: formData.idFrontFile,
@@ -1164,10 +1251,72 @@ export function WeightLossIntakeForm({
                 <Label htmlFor="dob" className={cn(isFieldInvalid("dateOfBirth") && "text-destructive")}>Date of birth *</Label>
                 <Input id="dob" type="date" className={cn(isFieldInvalid("dateOfBirth") && "border-destructive ring-2 ring-destructive")} value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} />
               </div>
+              <div className="space-y-2" data-field="gender">
+                <Label htmlFor="wl-gender" className={cn(isFieldInvalid("gender") && "text-destructive")}>Sex *</Label>
+                <Select value={formData.gender || undefined} onValueChange={(value) => updateFormData("gender", value as FormData["gender"])}>
+                  <SelectTrigger id="wl-gender" className={cn(isFieldInvalid("gender") && "border-destructive ring-2 ring-destructive")}>
+                    <SelectValue placeholder="Select sex" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2" data-field="state">
-                <MichiganStateField id="wl-state" invalid={isFieldInvalid("state")} />
+                <Label htmlFor="wl-state" className={cn(isFieldInvalid("state") && "text-destructive")}>State *</Label>
+                <Select
+                  value={formData.state}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({ ...prev, state: value, visitSlotKey: "" }))
+                    clearFieldError("state")
+                    clearFieldError("visitSlot")
+                  }}
+                >
+                  <SelectTrigger id="wl-state" className={cn(isFieldInvalid("state") && "border-destructive ring-2 ring-destructive")}>
+                    <SelectValue placeholder="Select your state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {US_STATES.map((state) => (
+                      <SelectItem key={state.code} value={state.name}>
+                        {state.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+
+            {requiresSyncVisit(formData.state) && (
+              <div className="space-y-2" data-field="visitSlot">
+                <Label htmlFor="wl-visit" className={cn(isFieldInvalid("visitSlot") && "text-destructive")}>
+                  Video visit time *
+                </Label>
+                <Select
+                  value={formData.visitSlotKey || undefined}
+                  onValueChange={(value) => updateFormData("visitSlotKey", value)}
+                  disabled={visitTimesStatus === "loading" || visitSlots.length === 0}
+                >
+                  <SelectTrigger id="wl-visit" className={cn(isFieldInvalid("visitSlot") && "border-destructive ring-2 ring-destructive")}>
+                    <SelectValue placeholder={visitTimesStatus === "loading" ? "Loading times…" : "Choose a time"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visitSlots.map((slot) => {
+                      const key = `${slot.scheduleStart}||${slot.scheduleEnd}||${slot.providerGuid}`
+                      return (
+                        <SelectItem key={key} value={key}>
+                          {formatVisitSlot(slot.scheduleStart)}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {visitTimesMessage || "This state requires a live video visit before a doctor can review your intake."}
+                </p>
+              </div>
+            )}
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2" data-field="heightFeet">
@@ -1643,17 +1792,17 @@ export function WeightLossIntakeForm({
               ) : null}
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="address">Street address</Label>
-                <Input id="address" value={formData.address} onChange={(e) => updateFormData("address", e.target.value)} />
+              <div className="space-y-2 sm:col-span-2" data-field="address">
+                <Label htmlFor="address" className={cn(isFieldInvalid("address") && "text-destructive")}>Street address *</Label>
+                <Input id="address" className={cn(isFieldInvalid("address") && "border-destructive ring-2 ring-destructive")} value={formData.address} onChange={(e) => updateFormData("address", e.target.value)} />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input id="city" value={formData.city} onChange={(e) => updateFormData("city", e.target.value)} />
+              <div className="space-y-2" data-field="city">
+                <Label htmlFor="city" className={cn(isFieldInvalid("city") && "text-destructive")}>City *</Label>
+                <Input id="city" className={cn(isFieldInvalid("city") && "border-destructive ring-2 ring-destructive")} value={formData.city} onChange={(e) => updateFormData("city", e.target.value)} />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="zip">ZIP code</Label>
-                <Input id="zip" value={formData.zipCode} onChange={(e) => updateFormData("zipCode", e.target.value)} />
+              <div className="space-y-2" data-field="zipCode">
+                <Label htmlFor="zip" className={cn(isFieldInvalid("zipCode") && "text-destructive")}>ZIP code *</Label>
+                <Input id="zip" className={cn(isFieldInvalid("zipCode") && "border-destructive ring-2 ring-destructive")} value={formData.zipCode} onChange={(e) => updateFormData("zipCode", e.target.value)} />
               </div>
             </div>
 
@@ -1677,7 +1826,19 @@ export function WeightLossIntakeForm({
                   <Input className={cn(isFieldInvalid("shippingCity") && "border-destructive ring-2 ring-destructive")} value={formData.shippingCity} onChange={(e) => updateFormData("shippingCity", e.target.value)} />
                 </div>
                 <div className="space-y-2" data-field="shippingState">
-                  <MichiganStateField id="wl-shipping-state" label="Shipping state" invalid={isFieldInvalid("shippingState")} />
+                  <Label htmlFor="wl-shipping-state" className={cn(isFieldInvalid("shippingState") && "text-destructive")}>Shipping state *</Label>
+                  <Select value={formData.shippingState} onValueChange={(value) => updateFormData("shippingState", value)}>
+                    <SelectTrigger id="wl-shipping-state" className={cn(isFieldInvalid("shippingState") && "border-destructive ring-2 ring-destructive")}>
+                      <SelectValue placeholder="Select shipping state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {US_STATES.map((state) => (
+                        <SelectItem key={state.code} value={state.name}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2" data-field="shippingZip">
                   <Label className={cn(isFieldInvalid("shippingZip") && "text-destructive")}>Shipping ZIP</Label>

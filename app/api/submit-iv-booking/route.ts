@@ -93,7 +93,7 @@ ${payload.injectionConsents ? formatInjectionConsentsSummary(payload.injectionCo
 ═══════════════════════════════════════════════════════════════════════════════
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth platform
-2. Issue patient-specific eRx routed to Clear Choice Pharmacy (Novi, MI)
+2. Issue patient-specific eRx routed to Clear Choice Pharmacy (Westland, MI)
 3. Pharmacy compounds IV → RN dispatch after preparation complete
 ═══════════════════════════════════════════════════════════════════════════════
 `

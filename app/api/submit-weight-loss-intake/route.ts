@@ -9,10 +9,14 @@ import {
 } from "@/lib/intake-payment"
 import { paymentStatusFromHold } from "@/lib/intake-payment-status"
 import { verifyPaymentHoldReady } from "@/lib/stripe-server"
-import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { notifyClinicianQueue } from "@/lib/telehealth/manual-queue"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { listOlaScheduleSlots, OlaApiError } from "@/lib/ola/client"
+import { isOlaConfigured } from "@/lib/ola/config"
+import { handoffWeightLossToOla } from "@/lib/ola/weight-loss-handoff"
+import { PHARMACY_PHONE_DISPLAY, toUsE164 } from "@/lib/phone"
+import { parseUsState, requiresSyncVisit } from "@/lib/us-states"
 import {
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
@@ -35,6 +39,7 @@ type WeightLossIntakePayload = {
     email: string
     phone: string
     dateOfBirth: string
+    gender: "male" | "female" | "other" | ""
     state: string
     address: string
     city: string
@@ -76,6 +81,11 @@ type WeightLossIntakePayload = {
     comorbidities: string[]
     additionalConcerns: string
   }
+  visit?: {
+    scheduleStart: string
+    scheduleEnd: string
+    providerGuid: string
+  } | null
   identity: IntakePaymentMetadata & {
     shippingAddress: string
     shippingCity: string
@@ -116,6 +126,7 @@ Priority: ${riskFlags.length > 0 ? "ELEVATED - Review Soft Flags" : "STANDARD"}
 ───────────────────────────────────────────────────────────────────────────────
 Name:           ${data.patientInfo.firstName} ${data.patientInfo.lastName}
 DOB:            ${data.patientInfo.dateOfBirth}
+Sex:            ${data.patientInfo.gender || "Not provided"}
 Email:          ${data.patientInfo.email}
 Phone:          ${data.patientInfo.phone}
 State:          ${data.patientInfo.state}
@@ -192,6 +203,16 @@ ${data.consents?.injection ? formatInjectionConsentsSummary(data.consents.inject
 `
 }
 
+function parseVisit(value: unknown): WeightLossIntakePayload["visit"] {
+  if (!value || typeof value !== "object") return null
+  const visit = value as Record<string, unknown>
+  const scheduleStart = String(visit.scheduleStart || "")
+  const scheduleEnd = String(visit.scheduleEnd || "")
+  const providerGuid = String(visit.providerGuid || "")
+  if (!scheduleStart || !scheduleEnd || !providerGuid) return null
+  return { scheduleStart, scheduleEnd, providerGuid }
+}
+
 function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload {
   const patient = (rawData.patient || {}) as Record<string, string>
   const vitals = (rawData.vitals || {}) as Record<string, string | number>
@@ -215,6 +236,10 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
       email: patient.email || "",
       phone: patient.phone || "",
       dateOfBirth: patient.dateOfBirth || "",
+      gender:
+        patient.gender === "male" || patient.gender === "female" || patient.gender === "other"
+          ? patient.gender
+          : "",
       state: patient.state || "",
       address: patient.address || "",
       city: patient.city || "",
@@ -256,6 +281,7 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
       comorbidities: (treatment.comorbidities as string[]) || [],
       additionalConcerns: String(treatment.additionalConcerns || ""),
     },
+    visit: parseVisit(rawData.visit),
     identity: {
       shippingAddress: String(identity.shippingAddress || patient.address || ""),
       shippingCity: String(identity.shippingCity || patient.city || ""),
@@ -334,11 +360,55 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
     }
 
-    const miError =
-      requireMichiganState(data.patientInfo.state, "Patient state") ||
-      requireMichiganState(data.identity.shippingState, "Shipping state")
-    if (miError) {
-      return NextResponse.json({ error: miError }, { status: 403 })
+    const homeState = parseUsState(data.patientInfo.state)
+    const shippingState = parseUsState(data.identity.shippingState)
+    if (!homeState || !shippingState) {
+      return NextResponse.json({ error: "Enter a U.S. state for your home address and shipping address." }, { status: 400 })
+    }
+    if (!data.patientInfo.gender) {
+      return NextResponse.json({ error: "Sex is required." }, { status: 400 })
+    }
+    if (!toUsE164(data.patientInfo.phone)) {
+      return NextResponse.json({ error: "Enter a 10-digit U.S. phone number." }, { status: 400 })
+    }
+    if (!data.patientInfo.address.trim() || !data.patientInfo.city.trim() || !data.patientInfo.zipCode.trim()) {
+      return NextResponse.json({ error: "Street address, city, and ZIP code are required." }, { status: 400 })
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.patientInfo.dateOfBirth)) {
+      return NextResponse.json({ error: "Enter a valid date of birth." }, { status: 400 })
+    }
+
+    if (requiresSyncVisit(homeState.code)) {
+      if (!data.visit) {
+        return NextResponse.json(
+          { error: `${homeState.name} requires a live video visit. Choose an appointment time.` },
+          { status: 400 }
+        )
+      }
+      if (!isOlaConfigured()) {
+        return NextResponse.json(
+          { error: `Live video visits are not available yet. Call ${PHARMACY_PHONE_DISPLAY}.` },
+          { status: 400 }
+        )
+      }
+      try {
+        const slots = await listOlaScheduleSlots(homeState.code)
+        const matched = slots.some(
+          (slot) =>
+            slot.scheduleStart === data.visit?.scheduleStart &&
+            slot.scheduleEnd === data.visit?.scheduleEnd &&
+            slot.providerGuid === data.visit?.providerGuid
+        )
+        if (!matched) {
+          return NextResponse.json(
+            { error: "That video visit time is no longer available. Choose another time." },
+            { status: 400 }
+          )
+        }
+      } catch (error) {
+        const message = error instanceof OlaApiError ? error.message : "Video visit times could not be confirmed."
+        return NextResponse.json({ error: `${message} Call ${PHARMACY_PHONE_DISPLAY}.` }, { status: 502 })
+      }
     }
 
     if (!data.treatmentInfo.selectedProgram) {
@@ -383,22 +453,8 @@ export async function POST(request: NextRequest) {
 
     const submissionId = `CCR-WL-${Date.now().toString(36).toUpperCase()}`
     const clinicalSummary = formatClinicalSummary(data, submissionId)
-
-    const partnerResult = await submitClinicalIntakeToPartner({
-      serviceType: "weight_loss",
-      submissionId,
-      patient: {
-        firstName: data.patientInfo.firstName,
-        lastName: data.patientInfo.lastName,
-        email: data.patientInfo.email,
-        phone: data.patientInfo.phone,
-      },
-      clinicalSummary,
-    })
-
-    if (!partnerResult.success) {
-      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
-    }
+    const partnerName = "Clinician network"
+    const partnerStatus = "ready_for_clinician_network"
 
     try {
       const resolved =
@@ -488,8 +544,8 @@ export async function POST(request: NextRequest) {
           stripePaymentIntentId,
           data.identity.idFrontKey,
           data.identity.idBackKey,
-          partnerResult.partnerName,
-          partnerResult.partnerStatus || "queued_for_manual_review",
+          partnerName,
+          partnerStatus,
           patientId,
           paymentStatus,
           billingKitCount,
@@ -595,8 +651,8 @@ export async function POST(request: NextRequest) {
             stripePaymentIntentId,
             data.identity.idFrontKey,
             data.identity.idBackKey,
-            partnerResult.partnerName,
-            partnerResult.partnerStatus || "queued_for_manual_review",
+            partnerName,
+            partnerStatus,
             patientId,
             paymentStatus,
           ]
@@ -609,6 +665,67 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    const billingPlanForHandoff =
+      data.treatmentInfo.selectedBillingPlan === "quarterly" ? "quarterly" : "monthly"
+    const doseForHandoff =
+      getWeightLossDose(data.treatmentInfo.selectedProgram, data.treatmentInfo.selectedDoseTier) ||
+      getWeightLossDose(data.treatmentInfo.selectedProgram, "starter")
+    let handoffDetail = "Saved for staff review."
+    try {
+      const handoff = await handoffWeightLossToOla({
+        submissionId,
+        firstName: data.patientInfo.firstName,
+        lastName: data.patientInfo.lastName,
+        email: data.patientInfo.email,
+        phone: data.patientInfo.phone,
+        dateOfBirth: data.patientInfo.dateOfBirth,
+        gender: data.patientInfo.gender || "other",
+        address: data.patientInfo.address,
+        city: data.patientInfo.city,
+        state: homeState.name,
+        zipCode: data.patientInfo.zipCode,
+        program: data.treatmentInfo.selectedProgram,
+        billingPlan: billingPlanForHandoff,
+        doseLabel: doseForHandoff?.label || data.treatmentInfo.selectedDoseTier,
+        allergies: data.medicalHistory.allergies,
+        paymentOnFile: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED && Boolean(data.identity.stripePaymentIntentId),
+        questions: [
+          { question: "Program", answer: data.treatmentInfo.selectedProgram },
+          { question: "Billing plan", answer: billingPlanForHandoff },
+          { question: "Height inches", answer: String(data.vitals.heightInches) },
+          { question: "Weight lbs", answer: String(data.vitals.weightLbs) },
+          { question: "BMI", answer: data.vitals.bmi.toFixed(1) },
+          { question: "Blood pressure", answer: `${data.vitals.systolicBP}/${data.vitals.diastolicBP}` },
+          { question: "Current medications", answer: data.medicalHistory.currentMedications || "None reported" },
+          { question: "Allergies", answer: data.medicalHistory.allergies || "None reported" },
+          { question: "Additional concerns", answer: data.treatmentInfo.additionalConcerns || "None" },
+        ],
+        schedule: data.visit ?? null,
+        idFrontKey: data.identity.idFrontKey,
+        idBackKey: data.identity.idBackKey,
+      })
+      handoffDetail = handoff.detail
+      await sql(
+        `ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS partner_case_id TEXT`,
+        []
+      ).catch(() => [])
+      await sql(
+        `UPDATE weight_loss_intake
+         SET partner_name = $2, partner_status = $3, partner_case_id = $4
+         WHERE id = $1`,
+        [submissionId, handoff.partnerName, handoff.partnerStatus, handoff.partnerCaseId]
+      )
+    } catch (handoffError) {
+      console.error("Weight loss clinician handoff failed:", handoffError)
+      handoffDetail = "Clinician network handoff failed after the intake was saved."
+    }
+
+    await notifyClinicianQueue({
+      submissionId,
+      subject: `[WEIGHT_LOSS ${submissionId}] Ready for the clinician network — ${data.patientInfo.firstName} ${data.patientInfo.lastName}`,
+      body: `${clinicalSummary}\nClinician network: ${handoffDetail}\n`,
+    })
 
     return NextResponse.json(
       {
