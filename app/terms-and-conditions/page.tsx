@@ -9,15 +9,18 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <LegalPageShell title="Terms and Conditions">
-      <p>Last updated: June 2026</p>
+      <p>Last updated: October 2026</p>
       <p>
-        These Terms and Conditions govern your use of Clear Choice Pharmacy&apos;s website, telehealth consultations,
-        and compounded medication services. By submitting an intake or placing an order, you agree to these terms.
+        These Terms and Conditions govern your use of the Clear Choice Pharmacy website, intakes, and pharmacy orders.
+        Clear Choice Pharmacy is the name used by LNR Associates LLC. By submitting an intake or placing an order, you
+        agree to these terms.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
       <p>
-        Clear Choice Pharmacy provides pharmacy compounding and fulfillment pursuant to patient-specific prescriptions
-        issued by licensed healthcare providers following telehealth evaluation. We do not replace your primary care
+        LNR Associates LLC is a Michigan pharmacy, license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
+        prescriptions to Michigan patients from 8278 N Merriman Rd, Westland, MI 48185. Semaglutide and tirzepatide
+        ordered through this website are compounded and shipped by a licensed partner pharmacy after a doctor approves
+        the intake. Clear Choice Pharmacy does not compound or ship those vials. We do not replace your primary care
         physician.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Eligibility</h2>

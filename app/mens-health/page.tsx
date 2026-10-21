@@ -22,9 +22,8 @@ import {
   buildFaqJsonLd,
   pharmacyProviderSchema,
 } from "@/lib/clinical-seo"
-import { TRT_PROGRAMS, getTrtStartingMonthlyPrice } from "@/lib/trt-catalog"
 import { ED_FORMULATIONS, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
-import { buildEdProductUrl, buildTrtProductUrl } from "@/lib/intake-prefill"
+import { buildEdProductUrl } from "@/lib/intake-prefill"
 import {
   ALL_IN_INCLUSIONS,
   formatUsd,
@@ -35,12 +34,11 @@ import {
 import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarity"
 
 const ED_LANDING_URL = "/mens-health#ed-troches"
-const TRT_LANDING_URL = "/mens-health#trt"
 
 export const metadata: Metadata = {
-  title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Men's Health",
+  title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Men's Health",
   description:
-    "Sildenafil ED troches from $39/mo, Tadalafil from $49/mo on quarterly billing, and physician-supervised TRT from $109/mo. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Westland.",
+    "Sildenafil ED troches from $39/mo and Tadalafil from $49/mo on quarterly billing. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Westland.",
   keywords: [
     "tadalafil",
     "sildenafil",
@@ -49,11 +47,6 @@ export const metadata: Metadata = {
     "ED medication",
     "erectile dysfunction",
     "ED troches",
-    "TRT",
-    "TRT cost",
-    "testosterone replacement therapy",
-    "testosterone cypionate",
-    "low testosterone",
     "men's health",
     "tadalafil Michigan",
     "sildenafil Novi",
@@ -62,9 +55,9 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/mens-health`,
   },
   openGraph: {
-    title: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
+    title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     description:
-      "ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo with discreet pharmacy fulfillment in Westland, MI.",
+      "ED medications from $39/mo on quarterly billing with discreet pharmacy fulfillment in Westland, MI.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -74,14 +67,13 @@ export default function MensHealthPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Sildenafil from $39/mo, Tadalafil & TRT from $109/mo | Clear Choice Pharmacy",
+    name: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing and testosterone replacement therapy from $109/mo at Clear Choice Pharmacy in Westland, MI.",
+      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing at Clear Choice Pharmacy in Westland, MI.",
     about: [
       { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
-      { "@type": "MedicalTherapy", name: "Testosterone Replacement Therapy" },
     ],
     provider: pharmacyProviderSchema(),
   }
@@ -89,17 +81,16 @@ export default function MensHealthPage() {
   return (
     <ClinicalLandingShell jsonLd={[pageJsonLd, buildFaqJsonLd(MENS_HEALTH_FAQS)]}>
       <PremiumHero
-        badge="Men's Health · ED & TRT"
-        headline="Tadalafil, Sildenafil & TRT"
-        subheadline="Sildenafil from $39/mo, Tadalafil from $49/mo on quarterly billing, and TRT from $109/mo—transparent cash-pay pricing."
-        description="Get compounded Tadalafil and Sildenafil troches (active ingredients in Cialis and Viagra) or start TRT with testosterone cypionate, cream, or enclomiphene—after provider review for Michigan patients."
-        highlight="Buy online · Provider review · Pharmacy-compounded · Discreet delivery"
+        badge="Men's Health · ED"
+        headline="Tadalafil & Sildenafil"
+        subheadline="Sildenafil from $39/mo and Tadalafil from $49/mo on quarterly billing—transparent cash-pay pricing."
+        description="Compounded tadalafil and sildenafil troches for Michigan patients, after a licensed clinician reviews your intake."
+        highlight="Start your intake · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
-          label: "Shop Tadalafil & Sildenafil",
+          label: "Start your intake",
           href: ED_LANDING_URL,
           scrollTo: "#ed-troches",
         }}
-        secondaryCta={{ label: "Shop TRT Programs", href: TRT_LANDING_URL, scrollTo: "#trt" }}
       />
 
       <ContentSection id="ed-troches">
@@ -152,7 +143,7 @@ export default function MensHealthPage() {
                     </p>
                   ) : null}
                   <div className="mt-4">
-                    <ServiceBuyButton href={buildEdProductUrl(formulation.id)} fullWidth label="Shop now" />
+                    <ServiceBuyButton href={buildEdProductUrl(formulation.id)} fullWidth label="Start your intake" />
                   </div>
                 </div>
                 </div>
@@ -172,77 +163,12 @@ export default function MensHealthPage() {
         </p>
       </ContentSection>
 
-      <ContentSection id="trt" tone="muted">
-        <SectionIntro
-          eyebrow="TRT · Testosterone Replacement Therapy"
-          title="Physician-Supervised Testosterone Therapy"
-          description="All-in cash-pay programs from $109/mo on quarterly billing—medication, supplies, and Michigan shipping or pickup included."
-        />
-        <AllInInclusions items={ALL_IN_INCLUSIONS.trt} className="mt-6" />
-        <div className="grid md:grid-cols-3 gap-4 mt-8">
-          {TRT_PROGRAMS.map((program) => {
-            const startingPrice = getTrtStartingMonthlyPrice(program)
-            const quarterly = program.pricing.find((p) => p.plan === "quarterly")
-            const monthly = program.pricing.find((p) => p.plan === "monthly")
-            return (
-              <Card key={program.id} className="overflow-hidden p-0 flex flex-col h-full">
-                <div className="relative aspect-[4/3] w-full bg-muted/40">
-                  <Image
-                    src={program.image.src}
-                    alt={program.image.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover object-center"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  {program.highlight && <Badge variant="secondary">{program.highlight}</Badge>}
-                </div>
-                <h3 className="text-xl font-bold">{program.name}</h3>
-                <p className="text-sm text-primary font-medium mt-1">{program.subtitle}</p>
-                <p className="text-sm text-muted-foreground mt-3 flex-1">{program.description}</p>
-                <div className="mt-5 pt-4 border-t space-y-2">
-                  <p className="text-3xl font-bold text-primary">
-                    {formatUsd(startingPrice)}
-                    <span className="text-base font-normal text-muted-foreground">/mo all-in</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {monthly ? `${formatUsd(monthly.pricePerMonth)} monthly` : null}
-                    {monthly && quarterly ? " · " : null}
-                    {quarterly ? `${formatUsd(quarterly.pricePerMonth)} quarterly` : null}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Labs may be ordered separately when clinically required—ask during intake.
-                  </p>
-                  <div className="mt-4">
-                    <ServiceBuyButton href={buildTrtProductUrl(program.id)} fullWidth label="Shop now" />
-                  </div>
-                </div>
-                </div>
-              </Card>
-            )
-          })}
-        </div>
-
-        <PricingCompareNote
-          className="mt-8"
-          title="How our TRT pricing compares"
-          body="Online TRT platforms commonly charge $99–$300/mo. Budget ads near $99 often exclude labs or use thinner monitoring. Our injectable program starts at $109/mo quarterly ($129 monthly) with medication, supplies, and shipping included for Michigan patients after physician review."
-        />
-
-        <p className="text-sm text-muted-foreground mt-6 max-w-2xl">
-          Unlike nutrient-only hormone balance injections, our TRT programs deliver physician-supervised testosterone
-          therapy with pharmacy fulfillment—designed for men seeking provider-guided hormone support with upfront pricing.
-        </p>
-      </ContentSection>
-
       <TrustRibbon
         items={[
           {
             icon: "flask-conical",
             title: "Pharmacy Compounded",
-            description: "ED troches and TRT prepared by licensed pharmacists",
+            description: "ED troches prepared by licensed pharmacists",
           },
           {
             icon: "sparkles",
@@ -269,7 +195,7 @@ export default function MensHealthPage() {
           {
             step: 1,
             title: "Review Your HomeKit",
-            description: "Explore ED troche or TRT kit details, optional add-ons, and pricing — then start your secure intake.",
+            description: "Explore ED troche details and pricing, then start your secure intake.",
           },
           {
             step: 2,
@@ -285,8 +211,8 @@ export default function MensHealthPage() {
       />
 
       <FaqSection
-        title="Tadalafil, Sildenafil & TRT FAQs"
-        subtitle="ED medications, Cialis/Viagra comparisons, and testosterone therapy"
+        title="Tadalafil and Sildenafil FAQs"
+        subtitle="ED medications and how they compare with brand-name products"
         items={MENS_HEALTH_FAQS}
       />
 
@@ -294,7 +220,7 @@ export default function MensHealthPage() {
         <SectionIntro
           eyebrow="Learn"
           title="Men's Health Guides"
-          description="Educational articles on Tadalafil, Sildenafil, Cialis/Viagra comparisons, and testosterone replacement therapy."
+          description="Educational articles on tadalafil, sildenafil, and how they compare with brand-name products."
         />
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild variant="outline">
@@ -304,9 +230,6 @@ export default function MensHealthPage() {
             <Link href="/learn/sildenafil-vs-viagra">Sildenafil vs Viagra</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/learn/testosterone-replacement-therapy-trt">TRT guide</Link>
-          </Button>
-          <Button asChild variant="outline">
             <Link href="/learn">All Learn articles</Link>
           </Button>
         </div>
@@ -314,23 +237,17 @@ export default function MensHealthPage() {
 
       <PremiumDisclaimer>
         Compounded medications are prepared pursuant to a patient-specific prescription. Provider clinical
-        evaluation is required. Individual results may vary. Testosterone is a controlled substance requiring
-        physician supervision.
+        evaluation is required. Individual results may vary.
       </PremiumDisclaimer>
 
       <PremiumCta
         icon="heart"
         title="Ready to Get Started?"
-        description="Buy ED troches or testosterone replacement therapy with transparent pricing and discreet fulfillment."
+        description="Start your intake for ED troches with transparent pricing and discreet fulfillment for Michigan patients."
         primaryCta={{
-          label: "Shop ED Troches",
+          label: "Start your intake",
           href: ED_LANDING_URL,
           scrollTo: "#ed-troches",
-        }}
-        secondaryCta={{
-          label: "Shop TRT Programs",
-          href: TRT_LANDING_URL,
-          scrollTo: "#trt",
         }}
       />
     </ClinicalLandingShell>

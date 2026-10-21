@@ -63,7 +63,7 @@ export function EdBuyButton({
         className={fullWidth ? `w-full ${className ?? ""}` : className}
         onClick={() => setOpen(true)}
       >
-        Buy
+        Start your intake
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>

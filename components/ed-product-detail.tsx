@@ -191,7 +191,7 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
               </div>
 
               <Button asChild size="lg" className="w-full text-base">
-                <Link href={intakeUrl}>Buy now</Link>
+                <Link href={intakeUrl}>Start your intake</Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground">
                 Secure health questionnaire · Charged only after provider approval

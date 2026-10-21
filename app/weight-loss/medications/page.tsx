@@ -13,17 +13,17 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 import { formatUsd, getWeightLossPriceRange } from "@/lib/pricing-clarity"
-import { MIC_B12_WEIGHT_LOSS, WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
+import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
   title: { absolute: "Weight Loss Medications in Michigan | Clear Choice Pharmacy" },
   description:
-    "Compare provider-guided Semaglutide, Tirzepatide, and MIC + B12 metabolic support options compounded for qualifying Michigan patients at Clear Choice Pharmacy.",
+    "Compare provider-guided semaglutide and tirzepatide filled by a licensed partner pharmacy.",
   alternates: { canonical: `${SITE_URL}/weight-loss/medications` },
   openGraph: {
     title: "Weight Loss Medications in Michigan | Clear Choice Pharmacy",
     description:
-      "Overview of Semaglutide, Tirzepatide, and MIC + B12 options for provider-guided weight management in Michigan.",
+      "Overview of semaglutide and tirzepatide filled by a licensed partner pharmacy.",
     url: `${SITE_URL}/weight-loss/medications`,
     type: "website",
   },
@@ -46,8 +46,8 @@ export default function WeightLossMedicationsPage() {
       <PremiumHero
         badge="Medication options"
         headline="Weight Loss Medications in Michigan"
-        subheadline="Semaglutide, Tirzepatide, and metabolic support—after clinician review."
-        description="Use this page to compare the therapies Clear Choice Pharmacy compounds for qualifying Michigan patients. Your licensed clinician decides which option, if any, is appropriate."
+        subheadline="Semaglutide and tirzepatide, after a doctor reviews your intake."
+        description="A licensed partner pharmacy fills semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
         highlight="Not a drug catalog search · Clinical evaluation required"
         primaryCta={{ label: "View Semaglutide kits", href: "/weight-loss/semaglutide" }}
         secondaryCta={{ label: "View Tirzepatide kits", href: "/weight-loss/tirzepatide" }}
@@ -57,7 +57,7 @@ export default function WeightLossMedicationsPage() {
         <SectionIntro
           eyebrow="Compare"
           title="Primary GLP-1 options"
-          description="Both kits include clinician review, compounding, supplies, and Michigan shipping or pickup when prescribed."
+          description="Both kits include doctor review. A licensed partner pharmacy compounds and ships the medication. Clear Choice Pharmacy does not compound or ship these vials."
         />
         <div className="mt-8 grid md:grid-cols-2 gap-4">
           <Card className="p-6 flex flex-col">
@@ -98,22 +98,11 @@ export default function WeightLossMedicationsPage() {
         </div>
       </ContentSection>
 
-      <ContentSection tone="muted">
-        <SectionIntro
-          eyebrow="Supportive option"
-          title="MIC + B12 metabolic support"
-          description={`${MIC_B12_WEIGHT_LOSS.description} Priced at $${MIC_B12_WEIGHT_LOSS.price} per kit.`}
-        />
-        <Button asChild variant="outline" className="mt-6">
-          <Link href={`/iv-rejuvenation/vials/${MIC_B12_WEIGHT_LOSS.id}`}>MIC + B12 kit details</Link>
-        </Button>
-      </ContentSection>
-
       <ContentSection>
         <SectionIntro
           eyebrow="Important"
           title="How to choose responsibly"
-          description="Medication selection is a clinical decision—not a shopping preference alone."
+          description="Medication selection is a clinical decision. Start your intake after a provider reviews it."
         />
         <FeatureGrid
           items={[

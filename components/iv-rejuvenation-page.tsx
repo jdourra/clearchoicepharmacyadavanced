@@ -136,7 +136,7 @@ export function IvRejuvenationPage() {
                   className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-lg shadow-sky-500/25"
                   onClick={scrollToMenu}
                 >
-                  Buy Mobile IV
+                  Start your intake
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button
@@ -145,7 +145,7 @@ export function IvRejuvenationPage() {
                   className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
                   onClick={scrollToVialMenu}
                 >
-                  Shop Vial Kits
+                  Start your intake
                 </Button>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm text-sky-100">
@@ -229,7 +229,7 @@ export function IvRejuvenationPage() {
                   <CardFooter className="px-6 pb-6">
                     <Button className="w-full bg-slate-900 hover:bg-slate-800" asChild>
                       <Link href={buildIvPackageProductUrl(pkg.id)}>
-                        Shop now
+                        Start your intake
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -313,7 +313,7 @@ export function IvRejuvenationPage() {
                   <CardFooter className="px-6 pb-6">
                     <Button className="w-full bg-sky-600 hover:bg-sky-500" asChild>
                       <Link href={buildVialProductUrl(vial.id)}>
-                        Shop now
+                        Start your intake
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -432,7 +432,7 @@ export function IvRejuvenationPage() {
                 className="bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/25"
                 onClick={scrollToMenu}
               >
-                Buy Mobile IV
+                Start your intake
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
@@ -441,7 +441,7 @@ export function IvRejuvenationPage() {
                 className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
                 onClick={scrollToVialMenu}
               >
-                Shop Vial Kits
+                Start your intake
               </Button>
             </div>
           </div>

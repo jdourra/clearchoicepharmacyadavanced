@@ -15,7 +15,7 @@ import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: { absolute: "GLP-1 Weight Management in Michigan | Clear Choice Pharmacy" },
   description:
-    "Learn how GLP-1 medications support provider-guided weight management. Clear Choice Pharmacy compounds Semaglutide and Tirzepatide for qualifying Michigan patients after clinician review.",
+    "Learn how GLP-1 medications support provider-guided weight management. A licensed partner pharmacy fills approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
   alternates: { canonical: `${SITE_URL}/weight-loss/glp-1` },
   openGraph: {
     title: "GLP-1 Weight Management in Michigan | Clear Choice Pharmacy",
@@ -74,10 +74,10 @@ export default function Glp1Page() {
         <BenefitList
           items={[
             "Semaglutide: GLP-1 receptor agonist pathway used in provider-guided weight management kits at Clear Choice Pharmacy.",
-            "Tirzepatide: Dual GLP-1/GIP pathway option when a clinician determines it is appropriate.",
-            "Evaluation first: Intake, photo ID, and clinician review occur before any compounding or charge capture.",
-            "Pharmacy role: Clear Choice compounds and fulfills approved kits for qualifying Michigan patients from Westland.",
-          ]}
+            "Semaglutide: GLP-1 receptor agonist used in provider-guided weight management kits filled by a partner pharmacy.",
+            "Tirzepatide: Dual GLP-1/GIP pathway option when a doctor determines it is appropriate.",
+            "Evaluation first: Intake, photo ID, and doctor review happen before a partner pharmacy prepares medication.",
+            "Pharmacy role: A licensed partner pharmacy compounds and ships approved kits. Clear Choice does not.",
         />
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild>

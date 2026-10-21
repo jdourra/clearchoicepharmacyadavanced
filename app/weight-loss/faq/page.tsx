@@ -15,7 +15,7 @@ import { WEIGHT_LOSS_DOCTOR_REVIEW, WEIGHT_LOSS_PARTNER_FULFILLMENT } from "@/li
 export const metadata: Metadata = {
   title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan" },
   description:
-    "Answers about provider-guided medical weight loss in Michigan: Semaglutide, Tirzepatide, eligibility, pricing, and how Clear Choice Pharmacy compounds GLP-1 kits after clinician review.",
+    "Answers about provider-guided semaglutide and tirzepatide: who reviews the intake, who fills the prescription, eligibility, pricing, and refunds.",
   alternates: { canonical: `${SITE_URL}/weight-loss/faq` },
   openGraph: {
     title: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan",

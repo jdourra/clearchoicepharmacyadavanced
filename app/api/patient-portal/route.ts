@@ -148,7 +148,7 @@ export async function GET(request: Request) {
           title: "Testosterone Replacement Therapy",
           subtitle: row.selected_program ? String(row.selected_program) : undefined,
           submittedAt: String(row.created_at),
-          href: "/mens-health/trt/start",
+          href: "/account",
         })
       ),
       ...weightLossRows.map((row: Record<string, unknown>) =>
@@ -175,7 +175,7 @@ export async function GET(request: Request) {
             ? String(row.selected_package)
             : undefined,
         submittedAt: String(row.created_at),
-        href: "/iv-rejuvenation",
+        href: "/account",
       })),
       ...vialRows.map((row: Record<string, unknown>) => ({
         type: "rejuvenation_vial" as const,
@@ -188,7 +188,7 @@ export async function GET(request: Request) {
             ? String(row.selected_vial)
             : undefined,
         submittedAt: String(row.created_at),
-        href: "/iv-rejuvenation#vial-menu",
+        href: "/account",
       })),
       ...specialtyRows.map((row: Record<string, unknown>) => ({
         type: "specialty_pharmacy" as const,

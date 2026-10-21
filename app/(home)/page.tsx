@@ -39,8 +39,9 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
-              Provider-guided medical weight management with pharmacy-compounded Semaglutide and Tirzepatide kits after
-              licensed clinician review—fulfilled from Westland. Individual results may vary.
+              Provider-guided medical weight management with compounded semaglutide and tirzepatide after a licensed
+              doctor reviews your intake. A partner pharmacy fills and ships approved medication. Individual results may
+              vary.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
               <Button
@@ -73,8 +74,8 @@ export default function HomePage() {
                 Semaglutide &amp; Tirzepatide kits from $134/mo
               </h2>
               <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Transparent cash-pay pricing for qualifying Michigan patients after clinician review—physician review,
-                compounding, supplies, and shipping or pickup included.
+                Cash-pay pricing is shown before you pay. A doctor reviews the intake. A licensed partner pharmacy
+                compounds and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -92,7 +93,7 @@ export default function HomePage() {
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
                     Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 90-day
-                    starter billing for qualifying Michigan patients after clinician review.
+                    starter billing after a doctor approves treatment. A partner pharmacy fills and ships the kit.
                   </p>
                   <Button asChild size="sm" className="w-fit">
                     <Link href="/weight-loss/semaglutide">
@@ -143,7 +144,7 @@ export default function HomePage() {
             <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center sm:text-left text-xs sm:text-sm text-slate-600">
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <MapPin className="h-4 w-4 text-primary shrink-0" />
-                <span>Serving Michigan patients from Westland</span>
+                <span>Westland pharmacy · Michigan license 5301013716</span>
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <Stethoscope className="h-4 w-4 text-primary shrink-0" />
@@ -151,7 +152,7 @@ export default function HomePage() {
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                <span>Pharmacy-compounded · transparent pricing</span>
+                <span>Partner pharmacy fills approved GLP-1 kits</span>
               </li>
             </ul>
           </div>
@@ -209,9 +210,10 @@ export default function HomePage() {
             <div className="rounded-lg border bg-muted/30 p-6 md:p-8">
               <h2 className="text-xl font-bold mb-3">Michigan service area</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Clear Choice Pharmacy is located at 8278 N Merriman Rd in Westland and currently dispenses clinical
-                weight management programs to qualifying Michigan patients. We commonly serve patients from Novi,
-                Northville, Farmington Hills, Wixom, South Lyon, and greater Metro Detroit.
+                Clear Choice Pharmacy is located at 8278 N Merriman Rd in Westland. Prescriptions we dispense are for
+                Michigan patients, including Novi, Northville, Farmington Hills, Wixom, South Lyon, and greater Metro
+                Detroit. Approved semaglutide and tirzepatide are filled and shipped by a licensed partner pharmacy,
+                not from this store.
               </p>
               <Link href="/contact" className="text-sm text-primary hover:underline">
                 Contact the pharmacy
@@ -258,8 +260,9 @@ export default function HomePage() {
                   Do you offer Semaglutide and Tirzepatide weight loss in Michigan?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. Clear Choice Pharmacy offers provider-guided weight management with compounded Semaglutide and
-                  Tirzepatide for qualifying Michigan patients after clinician review. Individual results may vary.{" "}
+                  Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed
+                  partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not
+                  compound or ship these vials. Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
                     Explore the medical weight loss program
                   </Link>
@@ -269,9 +272,10 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Is compounded Semaglutide the same as Ozempic?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. We compound
-                  Semaglutide pursuant to a patient-specific prescription when a clinician determines it is appropriate.
-                  We do not dispense brand-name Ozempic or Wegovy through this program.{" "}
+                  No. Ozempic and Wegovy are FDA-approved brand products that contain semaglutide. Compounded semaglutide
+                  in this program is prepared by a licensed partner pharmacy pursuant to a patient-specific prescription.
+                  Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy, and we do not compound these
+                  vials.{" "}
                   <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
                     Learn about Semaglutide kits
                   </Link>
@@ -281,8 +285,10 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Who evaluates and who fills the medication?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear
-                  Choice Pharmacy compounds and fulfills approved prescriptions for Michigan patients.{" "}
+                  A licensed doctor reviews your intake and decides whether a prescription is appropriate. A licensed
+                  partner pharmacy compounds and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy
+                  collects payment and does not dispense the vial. Other prescriptions we fill are dispensed from
+                  Westland to Michigan patients.{" "}
                   <Link href="/about" className="text-primary hover:underline">
                     About Clear Choice Pharmacy
                   </Link>
@@ -292,8 +298,9 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">How do Semaglutide and Tirzepatide kits work?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  After clinician approval, Clear Choice Pharmacy compounds a patient-specific kit with transparent
-                  cash-pay pricing. Review dosing, inclusions, and starter options on each program page.{" "}
+                  After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and
+                  ships it. Pricing is shown before you pay on this website. Review dosing and starter options on each
+                  program page.{" "}
                   <Link href="/weight-loss/medications" className="text-primary hover:underline">
                     Compare medication options
                   </Link>
@@ -313,8 +320,8 @@ export default function HomePage() {
                 <Link href="/weight-loss" className="text-primary hover:underline">
                   provider-guided Semaglutide and Tirzepatide weight management
                 </Link>
-                . Kits are prepared after licensed clinician review for qualifying Michigan patients. Individual results
-                may vary. This content is informational and does not replace medical advice from your provider.
+                . Approved kits are prepared and shipped by a licensed partner pharmacy, not by Clear Choice. Individual
+                results may vary. This content is informational and does not replace medical advice from your provider.
               </p>
               <p className="leading-relaxed">
                 Serving Novi, Northville, Farmington Hills, Wixom, South Lyon, and Metro Detroit communities.{" "}

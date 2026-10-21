@@ -34,7 +34,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Do you offer Semaglutide and Tirzepatide weight loss in Michigan?",
     answer:
-      "Yes. Clear Choice Pharmacy offers provider-guided weight management with compounded Semaglutide and Tirzepatide for qualifying Michigan patients after clinician review. Individual results may vary.",
+      "Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.",
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
@@ -44,12 +44,12 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Who evaluates and who fills the medication?",
     answer:
-      "A licensed clinician reviews your intake and decides whether a prescription is appropriate. Clear Choice Pharmacy compounds and fulfills approved prescriptions for Michigan patients.",
+      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. A licensed partner pharmacy compounds and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
   },
   {
     question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      "After clinician approval, Clear Choice Pharmacy compounds a patient-specific kit with transparent cash-pay pricing. Review dosing, inclusions, and starter options on each program page.",
+      "After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and ships it. Pricing is shown before you pay on this website.",
   },
 ])
 

@@ -9,7 +9,7 @@ import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
 export const metadata: Metadata = {
   title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
   description:
-    "Clear Choice Pharmacy in Westland, Michigan provides provider-guided medical weight management and GLP-1 compounding, plus full-service prescriptions, specialty care, men's health, and IV therapy.",
+    "LNR Associates LLC, doing business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy license 5301013716. Pharmacist-in-charge Joseph Dourra.",
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -29,9 +29,10 @@ export default function AboutPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">About us</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              Clear Choice Pharmacy is a full-service compounding and retail pharmacy in Westland, Michigan. Our website
-              focuses primarily on provider-guided medical weight management and GLP-1 care, while continuing to serve
-              patients with everyday prescriptions and other clinical pharmacy services.
+              LNR Associates LLC does business as Clear Choice Pharmacy, a compounding and retail pharmacy in Westland,
+              Michigan. Michigan pharmacy license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
+              prescriptions to Michigan patients. Approved semaglutide and tirzepatide are filled and shipped by a
+              licensed partner pharmacy, not by Clear Choice.
             </p>
           </div>
         </section>
@@ -40,8 +41,9 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-              We prepare patient-specific compounded medications—including Semaglutide and Tirzepatide kits when
-              prescribed—and fill cash-pay and specialty prescriptions from our Westland location at 8278 N Merriman Rd.
+              From 8278 N Merriman Rd we fill cash-pay and specialty prescriptions and compound other patient-specific
+              medications for Michigan patients. Semaglutide and tirzepatide weight-loss vials are not compounded or
+              shipped from this pharmacy. A licensed partner pharmacy fills those after a doctor approves the intake.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Primary clinical focus on this site:{" "}
@@ -60,10 +62,6 @@ export default function AboutPage() {
               <Link href="/mens-health" className="text-primary hover:underline">
                 men&apos;s health
               </Link>
-              ,{" "}
-              <Link href="/iv-rejuvenation" className="text-primary hover:underline">
-                mobile IV therapy
-              </Link>
               , and{" "}
               <Link href="/specialty-pharmacy" className="text-primary hover:underline">
                 specialty pharmacy
@@ -75,11 +73,11 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Pharmacy vs prescribing clinician</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              A licensed clinician reviews telehealth intakes and decides whether a prescription is medically
-              appropriate. Clear Choice Pharmacy compounds and dispenses medications pursuant to valid prescriptions for
-              qualifying Michigan patients. We do not invent or advertise credentials beyond this factual workflow. For
-              clinician identity used in current intake messaging, see program pages referencing the reviewing physician
-              process.
+              A licensed doctor reviews a weight-loss intake and decides whether a prescription is appropriate. If it
+              is approved, a licensed partner pharmacy compounds and ships the semaglutide or tirzepatide. Clear Choice
+              Pharmacy collects the intake and the payment for that program and does not dispense the vial. Other
+              prescriptions we fill are dispensed by Clear Choice Pharmacy to Michigan patients under Michigan pharmacy
+              license 5301013716.
             </p>
           </div>
 

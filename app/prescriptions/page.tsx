@@ -184,7 +184,7 @@ export default function PrescriptionsPage() {
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
                 <h3 className="font-semibold text-lg mb-2">
-                  How do I buy low cost prescription drugs at Clear Choice Pharmacy?
+                  How do I start your intake for low cost prescription drugs at Clear Choice Pharmacy?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Simply search for your medication using our online tool, compare prescription drug prices, and place
@@ -224,7 +224,7 @@ export default function PrescriptionsPage() {
                 <h3 className="font-semibold text-lg mb-2">What are the best ways to save money on prescriptions?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   The best way to save money on prescriptions is to use a low cost pharmacy like Clear Choice. We offer
-                  discount prescription drugs by eliminating insurance middlemen, buying directly from wholesalers, and
+                  discount prescription drugs by eliminating insurance middlemen, purchasing directly from wholesalers, and
                   passing the savings to you. Choosing low cost generic drugs over brand names saves even more.
                 </p>
               </div>

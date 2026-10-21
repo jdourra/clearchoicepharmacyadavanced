@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { Heart, Pill, Scale, Stethoscope, Syringe } from "lucide-react"
+import { Heart, Pill, Scale, Stethoscope } from "lucide-react"
 
 export type ServicePathType = "cash-pay" | "consultation" | "insurance"
 
@@ -45,30 +45,16 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
   },
   {
     href: "/mens-health",
-    title: "Tadalafil, Sildenafil & TRT",
+    title: "Tadalafil & Sildenafil",
     description:
-      "Sildenafil from $39/mo, Tadalafil from $49/mo, and TRT from $109/mo with physician review.",
+      "Sildenafil from $39/mo and Tadalafil from $49/mo on quarterly billing, after physician review.",
     pathType: "consultation",
     pathLabel: "Provider review required",
-    cta: "Buy now",
+    cta: "Start your intake",
     icon: Heart,
     image: {
       src: "/images/mens-health-card.png",
       alt: "Athlete running outdoors as part of an active men's health lifestyle",
-    },
-  },
-  {
-    href: "/iv-rejuvenation",
-    title: "Mobile IV Therapy",
-    description:
-      "Myers' Cocktail, NAD+ IV, hydration, and more—licensed RNs across Metro Detroit.",
-    pathType: "consultation",
-    pathLabel: "Provider review required",
-    cta: "Buy IV therapy",
-    icon: Syringe,
-    image: {
-      src: "/images/iv-rejuvenation-card.png",
-      alt: "Pharmacist compounding IV therapy in a sterile pharmacy lab",
     },
   },
   {

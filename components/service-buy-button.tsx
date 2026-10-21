@@ -14,7 +14,7 @@ export function ServiceBuyButton({
   className,
   size = "default",
   fullWidth,
-  label = "Buy",
+  label = "Start your intake",
 }: ServiceBuyButtonProps) {
   return (
     <Button asChild size={size} className={fullWidth ? `w-full ${className ?? ""}` : className}>

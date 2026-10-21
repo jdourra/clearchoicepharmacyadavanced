@@ -3,6 +3,9 @@ import type { LearnArticle } from "@/lib/learn-types"
 const MI_DISCLAIMER =
   "This article is for educational purposes only and is not medical advice. Compounded medications require a valid prescription after clinician review. Clear Choice Pharmacy currently serves Michigan patients only. Individual results vary. Discuss your health history with a licensed provider before starting any therapy."
 
+const GLP_DISCLAIMER =
+  "This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. A licensed partner pharmacy compounds and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary."
+
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
     slug: "semaglutide-weight-loss",
@@ -31,7 +34,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      "At Clear Choice Pharmacy in Westland, Michigan, qualifying patients can access physician-reviewed compounded Semaglutide through our medical weight loss program after a licensed clinician approves therapy.",
+      "At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake and pay on this website. After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.",
     ],
     sections: [
       {
@@ -71,8 +74,8 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Cash-pay Semaglutide in Westland, MI",
         paragraphs: [
-          "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy offers transparent cash-pay Semaglutide kits for qualifying Michigan patients after provider approval. Each 30-day kit includes four weekly injections priced by dose tier—physician review, compounding, supplies, and shipping included.",
-          "For current kit pricing and intake steps, visit the Semaglutide program page. For broader program context—eligibility, monitoring, and Michigan fulfillment—start with the medical weight loss hub or GLP-1 overview.",
+          "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay on this website. Each 30-day kit includes four weekly injections. A licensed partner pharmacy compounds and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.",
+          "For current kit pricing and intake steps, visit the Semaglutide program page.",
         ],
       },
     ],
@@ -90,10 +93,10 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide available to Michigan patients only?",
         answer:
-          "Yes. Clear Choice Pharmacy currently fulfills provider-guided weight management programs for qualifying Michigan patients only.",
+          "Clear Choice Pharmacy does not dispense these GLP-1 medications. A licensed partner pharmacy fills and ships an approved prescription where that pharmacy is licensed.",
       },
     ],
-    disclaimer: MI_DISCLAIMER,
+    disclaimer: GLP_DISCLAIMER,
   },
   {
     slug: "tirzepatide-weight-loss",
@@ -122,14 +125,14 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This article covers Tirzepatide education—mechanism, brand-name context (Zepbound, Mounjaro), side effects, and clinical candidacy questions. Kit pricing and checkout are on the Tirzepatide program page; program overview lives on the medical weight loss hub.",
-      "Clear Choice Pharmacy offers physician-reviewed compounded Tirzepatide for qualifying Michigan patients after clinician approval, with transparent cash-pay kits fulfilled from our Westland pharmacy.",
+      "A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy compounds and ships tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
     ],
     sections: [
       {
         heading: "What is Tirzepatide?",
         paragraphs: [
           "Tirzepatide activates both GLP-1 and GIP receptors—two incretin pathways involved in appetite regulation and metabolic signaling. That dual action is why many patients and clinicians consider it when more advanced metabolic support may be appropriate.",
-          "Brand-name medications that contain Tirzepatide include Zepbound and Mounjaro. Clear Choice Pharmacy compounds Tirzepatide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Zepbound or Mounjaro through this program.",
+          "Brand-name medications that contain tirzepatide include Zepbound and Mounjaro. In this program a licensed partner pharmacy compounds tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound or Mounjaro.",
         ],
       },
       {
@@ -170,7 +173,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Tirzepatide the same as Zepbound?",
         answer:
-          "Zepbound contains Tirzepatide as its active ingredient. Our program compounds Tirzepatide pursuant to a patient-specific prescription. We do not dispense brand-name Zepbound through this program.",
+          "Zepbound contains tirzepatide as its active ingredient. In this program a licensed partner pharmacy compounds tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound.",
       },
       {
         question: "How is Tirzepatide different from Semaglutide?",
@@ -180,10 +183,10 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can Michigan patients start Tirzepatide online?",
         answer:
-          "Yes. Qualifying Michigan patients complete a secure online intake. After provider approval, Clear Choice Pharmacy compounds and fulfills your kit.",
+          "You complete a secure online intake and pay on this website. After a doctor approves treatment, a licensed partner pharmacy compounds and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.",
       },
     ],
-    disclaimer: MI_DISCLAIMER,
+    disclaimer: GLP_DISCLAIMER,
   },
   {
     slug: "semaglutide-vs-tirzepatide",
@@ -222,7 +225,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Brand names patients often compare",
         paragraphs: [
-          "People searching Semaglutide often compare Ozempic and Wegovy. People searching Tirzepatide often compare Zepbound and Mounjaro. Clear Choice Pharmacy compounds Semaglutide and Tirzepatide after provider review; we do not dispense those brand-name products through our weight loss program.",
+          "People searching semaglutide often compare Ozempic and Wegovy. People searching tirzepatide often compare Zepbound and Mounjaro. A licensed partner pharmacy compounds semaglutide and tirzepatide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense those brand-name products.",
         ],
       },
       {
@@ -256,7 +259,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "Possibly, after clinician review. Do not switch on your own. Dose conversion and timing should be managed by a licensed provider.",
       },
     ],
-    disclaimer: MI_DISCLAIMER,
+    disclaimer: GLP_DISCLAIMER,
   },
   {
     slug: "compounded-semaglutide-vs-ozempic",
@@ -296,7 +299,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What compounded Semaglutide is",
         paragraphs: [
           "Compounded Semaglutide is prepared by a compounding pharmacy pursuant to a patient-specific prescription after a licensed clinician determines it is appropriate. Compounded medications are not FDA-approved brand products, even when they use the same active ingredient class patients associate with Ozempic or Wegovy.",
-          "Clear Choice Pharmacy compounds Semaglutide for qualifying Michigan patients after provider review. We clearly disclose that we do not dispense brand-name Ozempic or Wegovy through this program.",
+          "A licensed partner pharmacy compounds semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -322,7 +325,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Does Clear Choice Pharmacy sell Ozempic?",
         answer:
-          "No. Our provider-guided weight management program compounds Semaglutide or Tirzepatide pursuant to a patient-specific prescription. Brand-name Ozempic and Wegovy are not dispensed through this program.",
+          "No. A licensed partner pharmacy compounds semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
       },
       {
         question: "Why do patients look at compounded Semaglutide?",
@@ -330,7 +333,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "Common reasons include coverage denials, high cash brand cost, access delays, or clinician-directed compounding after individualized review. Suitability always depends on clinical judgment.",
       },
     ],
-    disclaimer: MI_DISCLAIMER,
+    disclaimer: GLP_DISCLAIMER,
   },
   {
     slug: "tadalafil-vs-cialis",
@@ -685,16 +688,25 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
 ]
 
+const HIDDEN_LEARN_SLUGS = new Set([
+  "testosterone-replacement-therapy-trt",
+  "myers-cocktail-mobile-iv",
+])
+
+function isPublicLearnArticle(article: LearnArticle): boolean {
+  return !HIDDEN_LEARN_SLUGS.has(article.slug)
+}
+
 export function getLearnArticles(): LearnArticle[] {
-  return [...LEARN_ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+  return LEARN_ARTICLES.filter(isPublicLearnArticle).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
 }
 
 export function getLearnArticle(slug: string): LearnArticle | undefined {
-  return LEARN_ARTICLES.find((article) => article.slug === slug)
+  return LEARN_ARTICLES.filter(isPublicLearnArticle).find((article) => article.slug === slug)
 }
 
 export function getLearnArticleSlugs(): string[] {
-  return LEARN_ARTICLES.map((article) => article.slug)
+  return getLearnArticles().map((article) => article.slug)
 }
 
 export function getRelatedLearnArticles(article: LearnArticle): LearnArticle[] {

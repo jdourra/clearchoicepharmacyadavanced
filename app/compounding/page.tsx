@@ -8,7 +8,7 @@ import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: { absolute: "Compounding Pharmacy in Westland, MI | Clear Choice Pharmacy" },
   description:
-    "Clear Choice Pharmacy compounds patient-specific medications in Westland, Michigan—including Semaglutide and Tirzepatide kits after clinician review—plus other customized pharmacy preparations.",
+    "Clear Choice Pharmacy compounds patient-specific medications in Westland, Michigan for Michigan patients. Semaglutide and tirzepatide weight-loss vials are filled by a licensed partner pharmacy.",
   alternates: { canonical: `${SITE_URL}/compounding` },
 }
 
@@ -52,8 +52,9 @@ export default function CompoundingPage() {
               <Link href="/weight-loss" className="text-primary hover:underline">
                 medical weight loss program
               </Link>
-              , compounded Semaglutide and Tirzepatide kits are prepared only after a licensed clinician reviews the
-              patient intake and writes an appropriate prescription. Learn more about{" "}
+              , semaglutide and tirzepatide are compounded by a licensed partner pharmacy only after a doctor reviews
+              the intake and writes a prescription. Clear Choice Pharmacy does not compound or ship those vials. Learn
+              more about{" "}
               <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
                 Semaglutide kits
               </Link>{" "}
@@ -68,15 +69,11 @@ export default function CompoundingPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Other compounded services</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We also compound therapies related to{" "}
+              We also compound{" "}
               <Link href="/mens-health" className="text-primary hover:underline">
-                men&apos;s health
+                sildenafil and tadalafil troches
               </Link>{" "}
-              and support{" "}
-              <Link href="/iv-rejuvenation" className="text-primary hover:underline">
-                IV and injectable wellness preparations
-              </Link>{" "}
-              under appropriate clinical pathways. Everyday retail prescriptions remain available via our{" "}
+              for Michigan patients. Everyday retail prescriptions remain available via our{" "}
               <Link href="/prescriptions" className="text-primary hover:underline">
                 cash-pay medication lookup
               </Link>

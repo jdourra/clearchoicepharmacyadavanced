@@ -66,7 +66,7 @@ export function RejuvenationVialProductDetail({ vial, content }: RejuvenationVia
           </div>
 
           <Button asChild size="lg" className="w-full bg-sky-600 hover:bg-sky-500">
-            <Link href={intakeUrl}>Buy now</Link>
+            <Link href={intakeUrl}>Start your intake</Link>
           </Button>
           <p className="text-xs text-center text-muted-foreground">
             Secure intake · Charged only after provider approval · No mobile dispatch fee
@@ -149,7 +149,7 @@ export function RejuvenationVialProductDetail({ vial, content }: RejuvenationVia
 
       <div className="mt-12 text-center rounded-2xl bg-sky-50 border border-sky-200 p-8">
         <Button asChild size="lg" className="bg-sky-600 hover:bg-sky-500">
-          <Link href={intakeUrl}>Buy now</Link>
+          <Link href={intakeUrl}>Start your intake</Link>
         </Button>
       </div>
     </div>

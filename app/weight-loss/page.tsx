@@ -18,13 +18,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
-  MIC_B12_HOW_IT_WORKS,
-  MIC_B12_WEIGHT_LOSS,
   WEIGHT_LOSS_DOCTOR_REVIEW,
   WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
 } from "@/lib/weight-loss-catalog"
-import { buildVialProductUrl, buildWeightLossProductUrl } from "@/lib/intake-prefill"
+import { buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
   WEIGHT_LOSS_FAQS,
@@ -187,39 +185,13 @@ export default function WeightLossPage() {
                       {program.doses.length} vial strengths · choose your mg at checkout
                     </p>
                     <div className="mt-4">
-                      <ServiceBuyButton href={buildWeightLossProductUrl(program.id)} fullWidth label="Shop now" />
+                      <ServiceBuyButton href={buildWeightLossProductUrl(program.id)} fullWidth label="Start your intake" />
                     </div>
                   </div>
                 </div>
               </Card>
             )
           })}
-          <Card className="overflow-hidden p-0 flex flex-col h-full">
-            <div className="relative aspect-[4/3] w-full bg-muted/40">
-              <Image
-                src={MIC_B12_WEIGHT_LOSS.image.src}
-                alt={MIC_B12_WEIGHT_LOSS.image.alt}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-contain object-center p-3"
-              />
-            </div>
-            <div className="p-6 flex flex-col flex-1">
-              <h3 className="text-xl font-bold">MIC + B12 Metabolic Support</h3>
-              <p className="text-sm text-primary font-medium mt-1">Lipotropic Metabolic Support</p>
-              <p className="text-sm text-muted-foreground mt-3 flex-1">{MIC_B12_WEIGHT_LOSS.description}</p>
-              <div className="mt-5 pt-4 border-t">
-                <p className="text-3xl font-bold text-primary">
-                  ${MIC_B12_WEIGHT_LOSS.price}
-                  <span className="text-base font-normal text-muted-foreground">/kit</span>
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">{MIC_B12_WEIGHT_LOSS.supply}</p>
-                <div className="mt-4">
-                  <ServiceBuyButton href={buildVialProductUrl(MIC_B12_WEIGHT_LOSS.id)} fullWidth label="Shop now" />
-                </div>
-              </div>
-            </div>
-          </Card>
         </div>
         <PricingCompareNote
           className="mt-8"
@@ -362,17 +334,6 @@ export default function WeightLossPage() {
         />
       </ContentSection>
 
-      <ContentSection id="mic-b12" tone="muted">
-        <SectionIntro
-          eyebrow="Metabolic support"
-          title="How MIC + B12 supports weight management"
-          description="A lipotropic injection kit that supports metabolic wellness and energy—on its own or alongside GLP-1 therapy under provider guidance."
-        />
-        <BenefitList
-          items={MIC_B12_HOW_IT_WORKS.map(({ title, description }) => `${title}: ${description}`)}
-        />
-      </ContentSection>
-
       <ContentSection id="michigan">
         <SectionIntro
           eyebrow="Local care"
@@ -382,7 +343,7 @@ export default function WeightLossPage() {
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           Patients from Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby
           communities can complete the intake online. If a doctor approves treatment, a partner pharmacy ships it. Men's
-          health, hormone, IV, and regular checkout stay limited to Michigan.{" "}
+          health and regular checkout stay limited to Michigan.{" "}
           <Link href="/contact" className="text-primary hover:underline">
             Contact the pharmacy
           </Link>{" "}
@@ -439,7 +400,7 @@ export default function WeightLossPage() {
         title="Explore medical weight loss kits"
         description="Review Semaglutide and Tirzepatide options for provider-guided weight management through Clear Choice Pharmacy."
         primaryCta={{
-          label: "Shop GLP programs",
+          label: "Start your intake",
           href: "/weight-loss#programs",
         }}
         secondaryCta={{

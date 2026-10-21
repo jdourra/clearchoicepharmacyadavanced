@@ -91,7 +91,7 @@ export default function CartPage() {
           <div className="container max-w-4xl mx-auto px-4">
             <Card className="p-12 text-center">
               <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
-              <p className="text-sm text-muted-foreground mb-8">Start shopping to add medications to your cart</p>
+              <p className="text-sm text-muted-foreground mb-8">Start your intake to add medications to your cart</p>
               <Button asChild>
                 <Link href="/prescriptions">Search Medications</Link>
               </Button>
@@ -107,7 +107,7 @@ export default function CartPage() {
       <SiteHeader />
       <main className="flex-1 py-8 md:py-12">
         <div className="container max-w-5xl mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Shopping Cart</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-8">Your cart</h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
@@ -207,7 +207,7 @@ export default function CartPage() {
                   className="w-full mb-4 bg-transparent"
                   onClick={() => router.push("/")}
                 >
-                  Continue Shopping
+                  Start your intake
                 </Button>
 
                 <div className="text-xs text-muted-foreground space-y-2 pt-4 border-t">

@@ -17,7 +17,7 @@ import type { WeightLossDoseId } from "@/lib/weight-loss-catalog"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
+  title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
   description:
     "Complete a secure medical intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor usually reviews your intake within 24 hours.",
   robots: { index: false, follow: false },
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/weight-loss/start`,
   },
   openGraph: {
-    title: "Buy GLP Weight Loss Program | Clear Choice Pharmacy",
+    title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
     description:
       "Secure medical intake for Semaglutide and Tirzepatide. Pay on this website. A partner pharmacy ships approved medication.",
     url: `${SITE_URL}/weight-loss/start`,

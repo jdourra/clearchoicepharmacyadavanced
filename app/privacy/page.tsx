@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <LegalPageShell title="Privacy Policy">
-      <p>Last updated: June 2026</p>
+      <p>Last updated: October 2026</p>
       <p>
-        Clear Choice Pharmacy respects your privacy and protects health information in accordance with HIPAA and
-        applicable state law.
+        LNR Associates LLC, doing business as Clear Choice Pharmacy, protects health information in accordance with
+        HIPAA and applicable state law. Michigan pharmacy license 5301013716. Pharmacist-in-charge: Joseph Dourra.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Information we collect</h2>
       <p>

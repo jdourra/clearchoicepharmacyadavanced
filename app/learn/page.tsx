@@ -13,15 +13,13 @@ import { SITE_URL } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: "Learn | Semaglutide, Tirzepatide, ED & Pharmacy Guides",
   description:
-    "Educational guides on Semaglutide, Tirzepatide, Tadalafil, Sildenafil, TRT, Myers Cocktail IV, and low cost prescription drugs from Clear Choice Pharmacy in Westland, MI.",
+    "Educational guides on semaglutide, tirzepatide, tadalafil, sildenafil, and low cost prescription drugs from Clear Choice Pharmacy in Westland, MI.",
   keywords: [
     "semaglutide",
     "tirzepatide",
     "ozempic",
     "tadalafil",
     "sildenafil",
-    "TRT",
-    "Myers Cocktail",
     "low cost prescription drugs",
     "provider-guided weight management guide",
   ],
@@ -31,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Learn | Clear Choice Pharmacy Guides",
     description:
-      "Patient guides for Semaglutide, Tirzepatide, ED medications, TRT, mobile IV, and cash-pay prescriptions.",
+      "Patient guides for semaglutide, tirzepatide, ED medications, and cash-pay prescriptions.",
     url: `${SITE_URL}/learn`,
     type: "website",
   },
@@ -61,11 +59,11 @@ export default function LearnIndexPage() {
           <div className="max-w-2xl mb-10">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Clear Choice Learn</p>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-balance mb-3">
-              Guides for Semaglutide, ED Meds, TRT & More
+              Guides for Semaglutide, Tirzepatide, and ED Medications
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Practical educational articles for Michigan patients comparing Semaglutide, Tirzepatide, Tadalafil,
-              Sildenafil, TRT, mobile IV therapy, and low cost prescription drugs—with clear CTAs to our service pages.
+              Practical educational articles comparing semaglutide, tirzepatide, tadalafil, sildenafil, and low cost
+              prescription drugs.
             </p>
           </div>
 
@@ -104,9 +102,9 @@ export default function LearnIndexPage() {
           </div>
 
           <div className="mt-14 rounded-xl border bg-muted/30 p-6 text-center">
-            <h2 className="text-xl font-bold mb-2">Prefer to shop programs directly?</h2>
+            <h2 className="text-xl font-bold mb-2">Ready to start your intake?</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Browse Semaglutide, Tirzepatide, ED medications, TRT, IV therapy, and prescriptions.
+              Browse semaglutide, tirzepatide, ED medications, and prescriptions.
             </p>
             <Button asChild>
               <Link href="/services">

@@ -17,8 +17,7 @@ export const SITE_NAV_LINKS = [
   { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
   { name: "Compounding", path: "/compounding" },
   { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
-  { name: "Tadalafil, Sildenafil & TRT", path: "/mens-health" },
-  { name: "Mobile IV Therapy", path: "/iv-rejuvenation" },
+  { name: "Tadalafil & Sildenafil", path: "/mens-health" },
   { name: "About", path: "/about" },
   { name: "Contact", path: "/contact" },
   { name: "Learn", path: "/learn" },
@@ -142,16 +141,6 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
       "Troches absorb through the oral mucosa, often working in half the time of swallowed tablets. Because they bypass the digestive tract, they are not affected by food or heavy meals.",
   },
   {
-    question: "Does Clear Choice Pharmacy offer TRT?",
-    answer:
-      "Yes. We offer physician-supervised testosterone replacement therapy (TRT) with injectable testosterone cypionate, topical cream, and enclomiphene. Cash-pay pricing starts from $109/mo on quarterly billing for Michigan patients.",
-  },
-  {
-    question: "How much does TRT cost?",
-    answer:
-      "Injectable testosterone cypionate starts at $129/mo or $109/mo on quarterly billing. Topical testosterone cream starts at $149/mo ($129/mo quarterly). Enclomiphene starts at $119/mo ($99/mo quarterly). Pricing includes physician review, medication, supplies, and Michigan shipping or pickup.",
-  },
-  {
     question: "Can you combine Sildenafil and Tadalafil?",
     answer:
       "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available as a single retail tablet.",
@@ -172,17 +161,17 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      "Yes. Clear Choice Pharmacy offers physician-reviewed compounded Semaglutide and Tirzepatide programs for qualifying Michigan patients, with transparent cash-pay kit pricing and pharmacy fulfillment from Westland, MI. Individual results may vary.",
+      "Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.",
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
     answer:
-      "Ozempic and Wegovy are brand-name medications that contain Semaglutide. We compound Semaglutide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Ozempic or Wegovy through this program. Your clinician determines whether compounded Semaglutide is appropriate for you.",
+      "Ozempic and Wegovy are brand-name medications that contain semaglutide. Compounded semaglutide in this program is prepared by a licensed partner pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Is compounded Tirzepatide the same as Zepbound or Mounjaro?",
     answer:
-      "Zepbound and Mounjaro are brand-name medications that contain Tirzepatide. We compound Tirzepatide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Zepbound or Mounjaro through this program.",
+      "Zepbound and Mounjaro are brand-name medications that contain tirzepatide. Compounded tirzepatide in this program is prepared by a licensed partner pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Zepbound or Mounjaro.",
   },
   {
     question: "What is the difference between Semaglutide and Tirzepatide?",
@@ -197,22 +186,12 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "How much does provider-guided weight management cost?",
     answer:
-      "Compounded Semaglutide kits are priced by weekly injection dose from $134–$289 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, intake physician review, compounding, supplies, and shipping for Michigan patients. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply. MIC + B12 metabolic support kits are $119.",
+      "Compounded semaglutide kits are priced by weekly injection dose from $134–$289 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, doctor review, supplies, and shipping by a licensed partner pharmacy. Clear Choice Pharmacy does not compound or ship these vials. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply.",
   },
   {
     question: "Who is eligible for provider-guided weight management?",
     answer:
-      "Eligibility is determined by a licensed clinician after your online health review. Programs are available to qualifying Michigan patients seeking Semaglutide or Tirzepatide provider-guided weight management.",
-  },
-  {
-    question: "What is the MIC + B12 metabolic support kit?",
-    answer:
-      "MIC + B12 is a lipotropic injection blend (Methionine, Inositol, Choline, Vitamin B12, and L-Carnitine) used as provider-guided metabolic support on its own or alongside Semaglutide or Tirzepatide therapy.",
-  },
-  {
-    question: "Can I use MIC + B12 with GLP-1 therapy?",
-    answer:
-      "Many patients use MIC + B12 as complementary metabolic support while on Semaglutide or Tirzepatide. Your provider confirms whether combining therapies is appropriate.",
+      "Eligibility is determined by a licensed doctor after your online health review. Approval is not guaranteed. If treatment is approved, a licensed partner pharmacy fills and ships the medication.",
   },
 ]
 

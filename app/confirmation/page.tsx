@@ -103,7 +103,7 @@ function ConfirmationContent() {
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button asChild variant="outline">
-          <Link href="/">Continue Shopping</Link>
+          <Link href="/">Start your intake</Link>
         </Button>
         <Button asChild>
           <Link href="/account">View My Orders</Link>

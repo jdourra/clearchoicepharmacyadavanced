@@ -85,7 +85,7 @@ export default function LoginPage() {
                     {isLoading ? "Logging in..." : "Login"}
                   </Button>
                   <Button type="button" variant="outline" className="w-full bg-transparent" asChild>
-                    <Link href="/">Continue Shopping as Guest</Link>
+                    <Link href="/">Start your intake</Link>
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">

@@ -117,7 +117,9 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Pharmacy",
     name: "Clear Choice Pharmacy",
+    legalName: "LNR Associates LLC",
     alternateName: "Clear Choice Rx",
+    identifier: "5301013716",
     url: SITE_URL,
     logo: `${SITE_URL}/icon.svg`,
     image: `${SITE_URL}/og-image.jpg`,
@@ -172,7 +174,7 @@ export default function RootLayout({
           "@type": "OfferCatalog",
           name: "Semaglutide & Tirzepatide Weight Loss",
           description:
-            "Provider-guided weight management with compounded Semaglutide and Tirzepatide after clinician review",
+            "Provider-guided weight management. A licensed partner pharmacy fills and ships approved semaglutide and tirzepatide.",
           url: `${SITE_URL}/weight-loss`,
         },
         {
@@ -190,15 +192,9 @@ export default function RootLayout({
         },
         {
           "@type": "OfferCatalog",
-          name: "ED Medications & TRT",
-          description: "Custom sublingual ED troches and physician-supervised testosterone replacement therapy",
+          name: "ED Medications",
+          description: "Custom sublingual sildenafil and tadalafil troches for Michigan patients",
           url: `${SITE_URL}/mens-health`,
-        },
-        {
-          "@type": "OfferCatalog",
-          name: "IV Rejuvenation",
-          description: "Mobile IV therapy and physician-reviewed rejuvenation vials in Metro Detroit",
-          url: `${SITE_URL}/iv-rejuvenation`,
         },
         {
           "@type": "OfferCatalog",

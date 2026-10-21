@@ -11,14 +11,14 @@ import { parseEdAddOns } from "@/lib/ed-add-ons"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
-  title: "Buy ED Troches | Clear Choice Pharmacy",
+  title: "Start Your Intake | ED Troches | Clear Choice Pharmacy",
   description:
     "Complete secure checkout for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Westland, MI.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/start`,
   },
   openGraph: {
-    title: "Buy ED Troches | Clear Choice Pharmacy",
+    title: "Start Your Intake | ED Troches | Clear Choice Pharmacy",
     description: "Secure intake for custom compounded ED troches. Transparent pricing and discreet delivery.",
     url: `${SITE_URL}/mens-health/start`,
     type: "website",

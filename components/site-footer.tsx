@@ -6,6 +6,12 @@ import {
   PHARMACY_PHONE_DISPLAY,
   PHARMACY_PHONE_TEL_HREF,
 } from "@/lib/phone"
+import {
+  LEGAL_BUSINESS_NAME,
+  MICHIGAN_PHARMACY_LICENSE,
+  PHARMACIST_IN_CHARGE,
+  PHARMACY_DBA,
+} from "@/lib/site-config"
 
 export function SiteFooter() {
   return (
@@ -38,8 +44,12 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed pt-1">
-              Michigan pharmacy focused on provider-guided medical weight management and GLP-1 care, with full-service
-              prescriptions and compounding.
+              {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}. Michigan pharmacy license{" "}
+              {MICHIGAN_PHARMACY_LICENSE}. Pharmacist-in-charge: {PHARMACIST_IN_CHARGE}.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Prescriptions we dispense are for Michigan patients. Approved semaglutide and tirzepatide are filled and
+              shipped by a licensed partner pharmacy.
             </p>
           </div>
 
@@ -93,9 +103,6 @@ export function SiteFooter() {
               </Link>
               <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
                 Men&apos;s health
-              </Link>
-              <Link href="/iv-rejuvenation" className="text-muted-foreground hover:text-foreground transition-colors">
-                Mobile IV therapy
               </Link>
               <Link href="/services" className="text-muted-foreground hover:text-foreground transition-colors">
                 All services

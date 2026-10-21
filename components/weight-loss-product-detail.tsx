@@ -428,7 +428,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
           {program.id === "semaglutide" ? "Semaglutide" : "Tirzepatide"} therapy.
         </p>
         <Button asChild size="lg">
-          <Link href={intakeUrl}>Buy now</Link>
+          <Link href={intakeUrl}>Start your intake</Link>
         </Button>
       </div>
 

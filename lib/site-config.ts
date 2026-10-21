@@ -5,6 +5,12 @@ export const SITE_URL =
 export const CONTACT_EMAIL = "info@clearchoicepharmacy.com"
 export const INTAKE_EMAIL = "intake@clearchoicepharmacy.com"
 
+/** Legal identity shown for pharmacy certification. */
+export const LEGAL_BUSINESS_NAME = "LNR Associates LLC"
+export const PHARMACY_DBA = "Clear Choice Pharmacy"
+export const PHARMACIST_IN_CHARGE = "Joseph Dourra"
+export const MICHIGAN_PHARMACY_LICENSE = "5301013716"
+
 /**
  * Direct Google Business Profile review link.
  * Set GOOGLE_REVIEW_URL (or NEXT_PUBLIC_GOOGLE_REVIEW_URL) in Vercel to your

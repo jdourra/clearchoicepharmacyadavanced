@@ -30,7 +30,7 @@ export type WeightLossProductContent = {
 
 const SHARED_KIT_INCLUDES = [
   "Physician-reviewed prescription and titration plan",
-  "Compounded medication prepared at Clear Choice Pharmacy",
+  "Compounded medication prepared by a licensed partner pharmacy",
   "Syringes and alcohol pads",
   "Step-by-step injection instructions",
   "Secure shipping to your door",
@@ -78,11 +78,6 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       "4 once-weekly injections per 30-day kit (dose strength per your provider's protocol)",
       ...SHARED_KIT_INCLUDES,
     ],
-    optionalAddon: {
-      label: "MIC + B12 Metabolic Support HomeKit",
-      description: "Optional lipotropic metabolic support alongside GLP-1 therapy.",
-      href: "/iv-rejuvenation/vials/start?vial=mic-skinny",
-    },
   },
   tirzepatide: {
     homeKitTitle: "Tirzepatide Weight Management HomeKit",
@@ -116,7 +111,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       { phase: "Maintenance phase", detail: "Personalized ongoing dose with pharmacy fulfillment." },
     ],
     shipping:
-      "Shipped from Clear Choice Pharmacy in Westland, MI. Refrigerate upon receipt. Supplies and instructions included.",
+      "Shipped by a licensed partner pharmacy, not from Clear Choice Pharmacy. Refrigerate upon receipt. Supplies and instructions included.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
     scienceSummary:
@@ -125,11 +120,6 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       "4 once-weekly injections per 30-day kit (dose strength per your provider's protocol)",
       ...SHARED_KIT_INCLUDES,
     ],
-    optionalAddon: {
-      label: "MIC + B12 Metabolic Support HomeKit",
-      description: "Optional lipotropic metabolic support alongside GLP-1/GIP therapy.",
-      href: "/iv-rejuvenation/vials/start?vial=mic-skinny",
-    },
   },
 }
 

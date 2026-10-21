@@ -36,10 +36,10 @@ export default function PricingTransparencyPage() {
       },
       {
         "@type": "Question",
-        name: "Do I need insurance to buy affordable prescription drugs at Clear Choice Pharmacy?",
+        name: "Do I need insurance to start your intake for affordable prescription drugs at Clear Choice Pharmacy?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "No insurance is needed. Clear Choice Pharmacy is a cash-pay pharmacy. Our prices are often lower than insurance copays, making us one of the best options for buying cheap generic drugs without insurance.",
+          text: "No insurance is needed. Clear Choice Pharmacy is a cash-pay pharmacy. Our prices are often lower than insurance copays, making us one of the best options when you start your intake for generic drugs without insurance.",
         },
       },
       {
@@ -60,7 +60,7 @@ export default function PricingTransparencyPage() {
       },
       {
         "@type": "Question",
-        name: "Can I buy generic drugs online through Clear Choice Pharmacy?",
+        name: "Can I start your intake for generic drugs online through Clear Choice Pharmacy?",
         acceptedAnswer: {
           "@type": "Answer",
           text: "Yes, you can browse and price generic drugs online at Clear Choice Pharmacy. Search our catalog of 1,600+ cheap generic drugs online, see instant pricing, and place your order for pickup or delivery at our Westland, MI location.",
@@ -290,7 +290,7 @@ export default function PricingTransparencyPage() {
                   <li className="flex gap-3">
                     <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
                     <p className="text-sm">
-                      <span className="font-semibold">Anyone seeking transparency:</span> Know your price before you buy
+                      <span className="font-semibold">Anyone seeking transparency:</span> Know your price before you start your intake
                     </p>
                   </li>
                 </ul>
