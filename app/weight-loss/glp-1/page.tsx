@@ -39,8 +39,8 @@ export default function Glp1Page() {
         badge="GLP-1 education"
         headline="GLP-1 Weight Management in Michigan"
         subheadline="How glucagon-like peptide-1 therapies fit into provider-guided care."
-        description="GLP-1 receptor agonists are prescription medications used under clinician supervision for weight management and related metabolic care. Clear Choice Pharmacy compounds patient-specific Semaglutide and Tirzepatide after a licensed clinician reviews your intake."
-        highlight="Educational overview · Not medical advice · Michigan pharmacy fulfillment"
+        description="GLP-1 receptor agonists are prescription medications used under clinician supervision for weight management and related metabolic care. A licensed partner pharmacy fills approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials."
+        highlight="Educational overview · Not medical advice · Partner pharmacy fulfillment"
         primaryCta={{ label: "View medical weight loss program", href: "/weight-loss" }}
         secondaryCta={{ label: "Compare medications", href: "/weight-loss/medications" }}
       />
@@ -59,8 +59,9 @@ export default function Glp1Page() {
           </p>
           <p>
             Brand-name products patients often research include Ozempic and Wegovy (Semaglutide) and Mounjaro and Zepbound
-            (Tirzepatide). Clear Choice Pharmacy compounds Semaglutide and Tirzepatide pursuant to patient-specific
-            prescriptions. Compounded medications are not the same as FDA-approved brand products.
+            (Tirzepatide). A licensed partner pharmacy compounds semaglutide and tirzepatide pursuant to a
+            patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Compounded
+            medications are not the same as FDA-approved brand products.
           </p>
         </div>
       </ContentSection>
@@ -73,11 +74,11 @@ export default function Glp1Page() {
         />
         <BenefitList
           items={[
-            "Semaglutide: GLP-1 receptor agonist pathway used in provider-guided weight management kits at Clear Choice Pharmacy.",
             "Semaglutide: GLP-1 receptor agonist used in provider-guided weight management kits filled by a partner pharmacy.",
             "Tirzepatide: Dual GLP-1/GIP pathway option when a doctor determines it is appropriate.",
             "Evaluation first: Intake, photo ID, and doctor review happen before a partner pharmacy prepares medication.",
             "Pharmacy role: A licensed partner pharmacy compounds and ships approved kits. Clear Choice does not.",
+          ]}
         />
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild>
