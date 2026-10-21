@@ -13,7 +13,7 @@ import { notifyClinicianQueue } from "@/lib/telehealth/manual-queue"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { listOlaScheduleSlots, OlaApiError } from "@/lib/ola/client"
-import { isOlaConfigured } from "@/lib/ola/config"
+import { isOlaConfigured, isOlaHandoffEnabled } from "@/lib/ola/config"
 import { handoffWeightLossToOla } from "@/lib/ola/weight-loss-handoff"
 import { PHARMACY_PHONE_DISPLAY, toUsE164 } from "@/lib/phone"
 import { parseUsState, requiresSyncVisit } from "@/lib/us-states"
@@ -415,23 +415,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
-    if (!WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED) {
+    const requireCardPayment = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED || isOlaHandoffEnabled()
+
+    if (!requireCardPayment) {
       data.identity.stripePaymentIntentId = null
       data.identity.paymentOnFile = false
     }
 
-    const paymentError = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+    const paymentError = requireCardPayment
       ? requireIntakePaymentSubmission(data.consents, data.identity)
       : requireIntakeIdentitySubmission(data.consents, data.identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
     }
 
-    if (WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED) {
+    let paymentReceived = false
+    if (requireCardPayment) {
       const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
       if (!stripeCheck.ok) {
         return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
       }
+      paymentReceived = true
     }
 
     if (!data.consents?.injection) {
@@ -490,10 +494,8 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       })
-      const stripePaymentIntentId = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
-        ? data.identity.stripePaymentIntentId
-        : null
-      const paymentStatus = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+      const stripePaymentIntentId = paymentReceived ? data.identity.stripePaymentIntentId : null
+      const paymentStatus = paymentReceived
         ? paymentStatusFromHold(stripePaymentIntentId)
         : "awaiting_pharmacy"
 
@@ -689,7 +691,7 @@ export async function POST(request: NextRequest) {
         billingPlan: billingPlanForHandoff,
         doseLabel: doseForHandoff?.label || data.treatmentInfo.selectedDoseTier,
         allergies: data.medicalHistory.allergies,
-        paymentOnFile: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED && Boolean(data.identity.stripePaymentIntentId),
+        paymentOnFile: paymentReceived,
         questions: [
           { question: "Program", answer: data.treatmentInfo.selectedProgram },
           { question: "Billing plan", answer: billingPlanForHandoff },

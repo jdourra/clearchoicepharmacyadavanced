@@ -3,8 +3,10 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
+import { isOlaHandoffEnabled } from "@/lib/ola/config"
 import {
   WEIGHT_LOSS_DOCTOR_REVIEW,
+  WEIGHT_LOSS_INTAKE_HOLD_NOTE,
   WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
   getDefaultWeightLossDoseId,
@@ -54,6 +56,8 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
     initialDoseTier = getDefaultWeightLossDoseId(initialProgram)
   }
 
+  const requireOnlinePayment = isOlaHandoffEnabled()
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -69,7 +73,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 <p className="mt-4 text-lg text-muted-foreground">
                   Finish your secure intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor
                   usually reviews your intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
-                  {weightLossPaymentPatientNote()}
+                  {requireOnlinePayment ? WEIGHT_LOSS_INTAKE_HOLD_NOTE : weightLossPaymentPatientNote()}
                 </p>
               </div>
 
@@ -77,6 +81,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 initialProgram={initialProgram}
                 initialBillingPlan={initialBillingPlan}
                 initialDoseTier={initialDoseTier}
+                requireOnlinePayment={requireOnlinePayment}
               />
             </div>
 

@@ -61,6 +61,13 @@ export async function handoffWeightLossToOla(
     return queued("Clinician network handoff is off. The intake is saved for staff.")
   }
 
+  if (!input.paymentOnFile) {
+    return queued(
+      "Payment has not been received, so this intake was not sent to the clinician network.",
+      "waiting_for_payment"
+    )
+  }
+
   const config = getOlaConfig()
   if (!config) {
     return queued("Clinician network credentials are missing. The intake is saved for staff.")

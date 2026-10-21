@@ -462,14 +462,14 @@ function getStepValidation(
         stripePaymentIntentId: formData.stripePaymentIntentId,
         paymentAuthorized: formData.paymentAuthorized,
       }
-      const paymentFields = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+      const paymentFields = requireCardPayment
         ? getIntakePaymentInvalidFields(paymentValues)
         : getIntakeIdentityInvalidFields(paymentValues)
       for (const field of paymentFields) add(field)
       if (fields.length > 0) {
         return {
           valid: false,
-          message: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+          message: requireCardPayment
             ? "Please upload your ID and authorize the card hold."
             : "Please upload front and back of your photo ID.",
           fields,
@@ -485,7 +485,7 @@ function getStepValidation(
       if (fields.length > 0) {
         return {
           valid: false,
-          message: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+          message: requireCardPayment
             ? "Please complete all required telemedicine consents and authorize the card hold."
             : "Please complete all required telemedicine consents and acknowledge pharmacy payment.",
           fields,
@@ -576,13 +576,17 @@ export type WeightLossIntakeFormProps = {
   initialProgram?: string
   initialBillingPlan?: BillingPlan
   initialDoseTier?: WeightLossDoseId
+  /** When the clinician network is live, a card payment is required before the intake can be sent. */
+  requireOnlinePayment?: boolean
 }
 
 export function WeightLossIntakeForm({
   initialProgram,
   initialBillingPlan = "monthly",
   initialDoseTier,
+  requireOnlinePayment = false,
 }: WeightLossIntakeFormProps = {}) {
+  const requireCardPayment = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED || requireOnlinePayment
   const programPrefilled = Boolean(initialProgram && programs.some((p) => p.id === initialProgram))
   const minStep = programPrefilled ? 2 : 1
   const resolvedInitialDose =
@@ -867,13 +871,13 @@ export function WeightLossIntakeForm({
             idBackKey: formData.idBackKey,
             idFrontUploading: formData.idFrontUploading,
             idBackUploading: formData.idBackUploading,
-            stripePaymentIntentId: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED ? formData.stripePaymentIntentId : null,
-            paymentAuthorized: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED ? formData.paymentAuthorized : false,
+            stripePaymentIntentId: requireCardPayment ? formData.stripePaymentIntentId : null,
+            paymentAuthorized: requireCardPayment ? formData.paymentAuthorized : false,
           }),
         },
         consents: {
-          authorizeHold: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED ? formData.authorizeHold : false,
-          acknowledgePayAtPharmacy: WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED ? false : formData.authorizeHold,
+          authorizeHold: requireCardPayment ? formData.authorizeHold : false,
+          acknowledgePayAtPharmacy: requireCardPayment ? false : formData.authorizeHold,
           injection: formData.injectionConsents,
         },
       }
@@ -1173,12 +1177,12 @@ export function WeightLossIntakeForm({
                   productSubtitle={`${selectedProgram.subtitle} · ${selectedTierMeta?.label ?? "Selected"}`}
                   billingLabel={formData.selectedBillingPlan === "monthly" ? "Monthly" : "90-day (3-kit)"}
                   priceLine={
-                    WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+                    requireCardPayment
                       ? `Kit: $${holdQuote.totalBilled} · card hold, charged only if approved`
                       : `Kit: $${holdQuote.totalBilled} · pay at the pharmacy after approval`
                   }
                   paymentNote={
-                    WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+                    requireCardPayment
                       ? "Prescription required after clinician review. Payment is authorized as a hold and captured only if approved."
                       : "Prescription required after clinician review. Nothing is charged online. Pay at the pharmacy after approval."
                   }
@@ -1865,7 +1869,7 @@ export function WeightLossIntakeForm({
               onChange={updateFormData}
               totalBilled={holdQuote?.totalBilled ?? 0}
               invalidFields={fieldErrors}
-              showPayment={WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED}
+              showPayment={requireCardPayment}
             />
 
             <InjectionTelehealthConsents
