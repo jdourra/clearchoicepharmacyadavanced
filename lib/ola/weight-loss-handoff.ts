@@ -27,12 +27,15 @@ export type WeightLossOlaHandoffInput = {
   idFrontKey: string | null
   idBackKey: string | null
   medicationPhotoKeys?: string[]
+  existingPatientGuid?: string | null
+  paymentNote?: string
 }
 
 export type WeightLossOlaHandoffResult = {
   partnerName: "Clinician network"
   partnerStatus: string
   partnerCaseId: string | null
+  patientGuid: string | null
   detail: string
 }
 
@@ -41,6 +44,7 @@ function queued(detail: string, status = "ready_for_clinician_network"): WeightL
     partnerName: "Clinician network",
     partnerStatus: status,
     partnerCaseId: null,
+    patientGuid: null,
     detail,
   }
 }
@@ -56,9 +60,10 @@ function allergyList(value: string): string[] {
 }
 
 export async function handoffWeightLossToOla(
-  input: WeightLossOlaHandoffInput
+  input: WeightLossOlaHandoffInput,
+  options?: { staffConfirmedPayment?: boolean }
 ): Promise<WeightLossOlaHandoffResult> {
-  if (!isOlaHandoffEnabled()) {
+  if (!options?.staffConfirmedPayment && !isOlaHandoffEnabled()) {
     return queued("Clinician network handoff is off. The intake is saved for staff.")
   }
 
@@ -83,8 +88,8 @@ export async function handoffWeightLossToOla(
     )
   }
 
-  let patientGuid: string
-  try {
+  let patientGuid = input.existingPatientGuid?.trim() || ""
+  if (!patientGuid) try {
     patientGuid = await createOlaPatient({
       firstName: input.firstName,
       lastName: input.lastName,
@@ -109,6 +114,7 @@ export async function handoffWeightLossToOla(
       partnerName: "Clinician network",
       partnerStatus: "waiting_for_service_key",
       partnerCaseId: patientGuid,
+      patientGuid,
       detail: `Patient ${patientGuid} was created. This program still needs its own service key, so the consult was not sent.`,
     }
   }
@@ -118,6 +124,7 @@ export async function handoffWeightLossToOla(
       partnerName: "Clinician network",
       partnerStatus: "waiting_for_pharmacy",
       partnerCaseId: patientGuid,
+      patientGuid,
       detail: `Patient ${patientGuid} was created. Partner pharmacy name, address, and phone are not set, so the consult was not sent.`,
     }
   }
@@ -128,6 +135,7 @@ export async function handoffWeightLossToOla(
       partnerName: "Clinician network",
       partnerStatus: "needs_video_visit",
       partnerCaseId: patientGuid,
+      patientGuid,
       detail: `Patient ${patientGuid} was created. This state needs a video visit time before the consult can be sent.`,
     }
   }
@@ -140,8 +148,8 @@ export async function handoffWeightLossToOla(
         ...input.questions.map((item) => ({ question_text: item.question, answer: item.answer })),
         { question_text: "Selected dose", answer: input.doseLabel || "Not selected" },
         {
-          question_text: "Payment collected on the Clear Choice website",
-          answer: input.paymentOnFile ? "yes" : "not yet",
+          question_text: "Payment collected by Clear Choice Pharmacy",
+          answer: input.paymentNote || (input.paymentOnFile ? "yes" : "not yet"),
         },
       ],
       serviceKey: service.serviceKey,
@@ -157,6 +165,7 @@ export async function handoffWeightLossToOla(
       partnerName: "Clinician network",
       partnerStatus: "clinician_network_error",
       partnerCaseId: patientGuid,
+      patientGuid,
       detail: `Patient ${patientGuid} was created. Consult was not created: ${message}`,
     }
   }
@@ -200,6 +209,7 @@ export async function handoffWeightLossToOla(
     partnerName: "Clinician network",
     partnerStatus: "sent_to_clinician_network",
     partnerCaseId: orderGuid,
+    patientGuid,
     detail,
   }
 }

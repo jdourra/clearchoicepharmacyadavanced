@@ -208,6 +208,12 @@ export function AdminIntakeDetailView({
   const [reviewMessage, setReviewMessage] = useState("")
   const [liveVisitRequired, setLiveVisitRequired] = useState(false)
   const [markingPaid, setMarkingPaid] = useState<string | null>(null)
+  const [confirmingZelle, setConfirmingZelle] = useState(false)
+  const [zelleReceipt, setZelleReceipt] = useState<{
+    transactionId: string
+    orderId: string
+    sentAt: string | null
+  } | null>(null)
   const [sesSandbox, setSesSandbox] = useState<boolean | null>(null)
   const [sesHint, setSesHint] = useState<string | null>(null)
   const [sesReviewStatus, setSesReviewStatus] = useState<string | null>(null)
@@ -286,14 +292,54 @@ export function AdminIntakeDetailView({
   const payAtPharmacy =
     isWeightLoss &&
     (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
+  const alreadySentToClinician =
+    isWeightLoss &&
+    String(detail.partner_status ?? "") === "sent_to_clinician_network" &&
+    Boolean(detail.partner_case_id)
+  const canConfirmZelle =
+    isWeightLoss &&
+    !hasStripeHold &&
+    !alreadySentToClinician &&
+    !zelleReceipt &&
+    !["provider_denied", "cancelled"].includes(String(detail.status ?? ""))
   const canMarkPharmacyPaid =
     isWeightLoss &&
     payAtPharmacy &&
-    !["captured", "paid_in_person"].includes(paymentStatus) &&
+    !["captured", "paid_in_person", "paid_zelle"].includes(paymentStatus) &&
     ["rx_at_pharmacy", "preparing", "shipped", "completed"].includes(String(detail.status ?? ""))
   const canChargeLiveVisit =
     isWeightLoss && Number(prescribedKitCount) <= 1 && hasStripeHold
   const needsPrescription = RX_SERVICES.has(String(serviceType))
+
+  const confirmZelleAndSend = async () => {
+    setConfirmingZelle(true)
+    setError("")
+    setReviewMessage("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/intakes/weight_loss/${id}/zelle-received`, {
+        method: "POST",
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        throw new Error(result.error || "Could not send this intake")
+      }
+      setZelleReceipt({
+        transactionId: String(result.transactionId || id),
+        orderId: String(result.orderId || ""),
+        sentAt: typeof result.sentAt === "string" ? result.sentAt : null,
+      })
+      setReviewMessage(
+        result.alreadySent
+          ? "This intake was already sent."
+          : "Zelle payment confirmed. The intake was sent for clinician review."
+      )
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send this intake")
+    } finally {
+      setConfirmingZelle(false)
+    }
+  }
 
   const markPaidAtPharmacy = async (method: "terminal" | "cash" | "phone") => {
     setMarkingPaid(method)
@@ -718,11 +764,37 @@ export function AdminIntakeDetailView({
                         <strong>Payment:</strong> {formatPaymentStatus(String(detail.payment_status))}
                       </p>
                     )}
-                    {payAtPharmacy && (
+                    {payAtPharmacy && !alreadySentToClinician && (
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Collect payment at pharmacy terminal after approval (no online card charge).
+                        Waiting for Zelle at payment@clearchoicepharmacy.com. The payment shows as LNR Associates LLC.
+                        Send the intake only after that deposit is in the bank.
                       </p>
                     )}
+                    {isWeightLoss && (alreadySentToClinician || zelleReceipt) ? (
+                      <div className="mt-3 rounded-md border bg-muted/40 p-3 text-sm space-y-1">
+                        <p className="font-medium">Sent for clinician review</p>
+                        <p>Transaction id: {zelleReceipt?.transactionId || id}</p>
+                        <p className="break-all">
+                          Order id: {zelleReceipt?.orderId || String(detail.partner_case_id ?? "")}
+                        </p>
+                        <p>
+                          Sent at:{" "}
+                          {zelleReceipt?.sentAt ||
+                            (detail.ola_sent_at ? new Date(String(detail.ola_sent_at)).toISOString() : "recorded")}
+                        </p>
+                      </div>
+                    ) : null}
+                    {canConfirmZelle ? (
+                      <div className="mt-3 space-y-2">
+                        <Button type="button" disabled={confirmingZelle} onClick={confirmZelleAndSend}>
+                          {confirmingZelle ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                          Zelle payment received
+                        </Button>
+                        <p className="text-xs text-muted-foreground">
+                          Confirms the Zelle deposit and sends this intake for review. This does not charge a card.
+                        </p>
+                      </div>
+                    ) : null}
                     {detail.patient_id != null && String(detail.patient_id).trim() !== "" && (
                       <p className="mt-1 text-sm space-x-3">
                         {portal === "admin" ? (
@@ -853,8 +925,7 @@ export function AdminIntakeDetailView({
                     <div className="rounded-lg border p-3 space-y-2">
                       {payAtPharmacy ? (
                         <p className="text-xs text-muted-foreground">
-                          No card payment on this intake. Confirm the Zelle payment to payment@clearchoicepharmacy.com
-                          (LNR Associates LLC) before this intake is sent to the clinician, then mark it paid.
+                          No card payment on this intake. Use Zelle payment received above after the deposit arrives. That sends the intake for review.
                         </p>
                       ) : canChargeLiveVisit ? (
                         <div className="flex items-start gap-2">
@@ -1200,7 +1271,7 @@ export function AdminIntakeDetailView({
                   )}
                   {payAtPharmacy && (
                     <p className="text-xs text-muted-foreground">
-                      This intake has no card payment. Confirm the Zelle payment to payment@clearchoicepharmacy.com, which shows as LNR Associates LLC, before sending it to the clinician.
+                      This intake has no card payment. Use Zelle payment received after the deposit arrives. That sends the intake for review.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

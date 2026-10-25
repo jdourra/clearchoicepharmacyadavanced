@@ -681,9 +681,18 @@ export async function POST(request: NextRequest) {
     }
 
     await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS protocol_answers JSONB`, []).catch(() => [])
+    await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS gender TEXT`, []).catch(() => [])
+    await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS visit_schedule JSONB`, []).catch(() => [])
     await sql(
-      `UPDATE weight_loss_intake SET protocol_answers = $2::jsonb WHERE id = $1`,
-      [submissionId, JSON.stringify(data.protocol)]
+      `UPDATE weight_loss_intake
+       SET protocol_answers = $2::jsonb, gender = $3, visit_schedule = $4::jsonb
+       WHERE id = $1`,
+      [
+        submissionId,
+        JSON.stringify(data.protocol),
+        data.patientInfo.gender || null,
+        data.visit ? JSON.stringify(data.visit) : null,
+      ]
     ).catch((error) => {
       console.error("Failed to store GLP-1 protocol answers:", error)
     })
