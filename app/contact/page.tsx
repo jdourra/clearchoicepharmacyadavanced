@@ -35,7 +35,7 @@ export default function ContactPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
               Reach our Westland pharmacy team about medical weight management programs, prescriptions, compounding, or
-              specialty care. We currently dispense clinical weight management kits to Michigan patients.
+              specialty care. Weight loss, hormone therapy, and ED intakes are open nationwide. Prescriptions we dispense ourselves are for Michigan patients.
             </p>
           </div>
         </section>
@@ -44,14 +44,14 @@ export default function ContactPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold">Pharmacy details</h2>
             <a
-              href="https://maps.google.com/?q=8278+N+Merriman+Rd,+Westland,+MI+48185"
+              href="https://maps.google.com/?q=8276+N+Merriman+Rd,+Westland,+MI+48185"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-start gap-3 text-sm text-muted-foreground hover:text-foreground"
             >
               <MapPin className="h-5 w-5 shrink-0 text-primary mt-0.5" />
               <span>
-                8278 N Merriman Rd
+                8276 N Merriman Rd
                 <br />
                 Westland, MI 48185
               </span>

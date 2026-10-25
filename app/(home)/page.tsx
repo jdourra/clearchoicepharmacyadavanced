@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
+import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -166,8 +167,8 @@ export default function HomePage() {
                 Why choose Clear Choice Pharmacy for weight management
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Clear Choice Pharmacy helps qualifying Michigan patients access provider-guided Semaglutide and
-                Tirzepatide weight management. You pay on this website. A licensed doctor reviews your intake before
+                Patients across the United States can start provider-guided Semaglutide and
+                Tirzepatide weight management. {weightLossHowYouPay()} A clinician licensed in your state reviews the intake before
                 any prescription is written. If treatment is approved, a partner pharmacy fills and ships the
                 medication.
               </p>
@@ -177,7 +178,7 @@ export default function HomePage() {
               <Card className="p-5">
                 <h3 className="font-semibold mb-2">How the program works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Choose a kit, complete a secure intake, upload your photo ID, and pay on this website. A licensed
+                  Choose a kit, complete a secure intake, and upload your photo ID. {weightLossHowYouPay()} A licensed
                   doctor reviews your intake, usually within 24 hours. If approved, a partner pharmacy ships your
                   medication.
                 </p>
@@ -208,12 +209,12 @@ export default function HomePage() {
             </div>
 
             <div className="rounded-lg border bg-muted/30 p-6 md:p-8">
-              <h2 className="text-xl font-bold mb-3">Michigan service area</h2>
+              <h2 className="text-xl font-bold mb-3">Who can start an intake</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Clear Choice Pharmacy is located at 8278 N Merriman Rd in Westland. Prescriptions we dispense are for
-                Michigan patients, including Novi, Northville, Farmington Hills, Wixom, South Lyon, and greater Metro
-                Detroit. Approved semaglutide and tirzepatide are filled and shipped by a licensed partner pharmacy,
-                not from this store.
+                Clear Choice Pharmacy is located at 8276 N Merriman Rd in Westland and is licensed in Michigan.
+                Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state. A
+                clinician licensed in your state reviews the intake, and a pharmacy licensed to dispense in your state
+                fills an approved prescription. Prescriptions this pharmacy dispenses itself remain for Michigan patients.
               </p>
               <Link href="/contact" className="text-sm text-primary hover:underline">
                 Contact the pharmacy
@@ -260,7 +261,7 @@ export default function HomePage() {
                   Do you offer Semaglutide and Tirzepatide weight loss in Michigan?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed
+                  Yes. {weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, a licensed
                   partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not
                   compound or ship these vials. Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
@@ -299,7 +300,7 @@ export default function HomePage() {
                 <h3 className="font-semibold text-lg mb-2">How do Semaglutide and Tirzepatide kits work?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and
-                  ships it. Pricing is shown before you pay on this website. Review dosing and starter options on each
+                  ships it. {weightLossHowYouPay()} Review dosing and starter options on each
                   program page.{" "}
                   <Link href="/weight-loss/medications" className="text-primary hover:underline">
                     Compare medication options

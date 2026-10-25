@@ -230,7 +230,7 @@ export default function SpecialtyPharmacyPage() {
           {
             question: "How do I transfer my specialty prescriptions?",
             answer:
-              "Call (248) 987-6182 or visit us at 8278 N Merriman Rd, Westland, MI 48185. We will coordinate the transfer and start PA and copay support right away.",
+              "Call (248) 987-6182 or visit us at 8276 N Merriman Rd, Westland, MI 48185. We will coordinate the transfer and start PA and copay support right away.",
           },
         ]}
       />

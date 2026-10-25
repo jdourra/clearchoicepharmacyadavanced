@@ -31,8 +31,9 @@ export default function AboutPage() {
             <p className="text-muted-foreground leading-relaxed">
               LNR Associates LLC does business as Clear Choice Pharmacy, a compounding and retail pharmacy in Westland,
               Michigan. Michigan pharmacy license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
-              prescriptions to Michigan patients. Approved semaglutide and tirzepatide are filled and shipped by a
-              licensed partner pharmacy, not by Clear Choice.
+              prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
+              clinician licensed in the patient's state and filled by a pharmacy licensed to dispense there. Clear
+              Choice does not dispense those medications under its Michigan license.
             </p>
           </div>
         </section>
@@ -41,7 +42,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-              From 8278 N Merriman Rd we fill cash-pay and specialty prescriptions and compound other patient-specific
+              From 8276 N Merriman Rd we fill cash-pay and specialty prescriptions and compound other patient-specific
               medications for Michigan patients. Semaglutide and tirzepatide weight-loss vials are not compounded or
               shipped from this pharmacy. A licensed partner pharmacy fills those after a doctor approves the intake.
             </p>
@@ -84,7 +85,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Location &amp; contact</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-              8278 N Merriman Rd, Westland, MI 48185
+              8276 N Merriman Rd, Westland, MI 48185
               <br />
               Phone:{" "}
               <a href={PHARMACY_PHONE_TEL_HREF} className="text-primary hover:underline">

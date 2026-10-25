@@ -84,7 +84,7 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
             <div className="rounded-xl border bg-muted/30 p-5 mb-10">
               <p className="font-semibold mb-2">Ready to take the next step?</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Michigan patients can review current pricing and start a secure clinical intake.
+                Patients in the U.S. can review pricing and start an intake. A clinician licensed in your state reviews weight loss, hormone therapy, and ED medication.
               </p>
               <Button asChild>
                 <Link href={article.serviceHref}>
@@ -154,7 +154,7 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
             <div className="mt-10 rounded-xl border p-5 bg-primary/5">
               <p className="font-semibold mb-2">{article.serviceCta}</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Clear Choice Pharmacy · Westland, MI · Michigan patients only for dispensing and clinical programs.
+                Clear Choice Pharmacy · Westland, MI · Licensed in Michigan. Partner clinicians and pharmacies serve the patient's state for weight loss, hormone therapy, and ED.
               </p>
               <Button asChild>
                 <Link href={article.serviceHref}>

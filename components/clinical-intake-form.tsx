@@ -38,9 +38,7 @@ import {
 } from "@/lib/ed-troche-catalog"
 import { checkBloodPressureHardStop, checkEdContraindicationHardStop } from "@/lib/ed-clinical-intake"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
-import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
-import { MichiganStateField } from "@/components/michigan-state-field"
-import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
+import { UsStateField } from "@/components/us-state-field"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
@@ -136,7 +134,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: MICHIGAN_STATE_NAME,
+  state: "",
   address: "",
   city: "",
   zipCode: "",
@@ -167,7 +165,7 @@ const initialFormData: FormData = {
   additionalConcerns: "",
   shippingAddress: "",
   shippingCity: "",
-  shippingState: MICHIGAN_STATE_NAME,
+  shippingState: "",
   shippingZip: "",
   sameAsResidential: true,
   idFrontFile: null,
@@ -469,7 +467,7 @@ export function ClinicalIntakeForm({
           email: formData.email,
           phone: formData.phone,
           dateOfBirth: formData.dateOfBirth,
-          state: MICHIGAN_STATE_NAME,
+          state: formData.state,
           address: formData.address,
           city: formData.city,
           zipCode: formData.zipCode,
@@ -498,7 +496,7 @@ export function ClinicalIntakeForm({
         identity: {
           shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
           shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-          shippingState: MICHIGAN_STATE_NAME,
+          shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
           shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
           ...paymentCapturedOnClient({
             idFrontFile: formData.idFrontFile,
@@ -671,7 +669,7 @@ export function ClinicalIntakeForm({
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-6">
-            <IntakePhysicianCallNotice />
+            <IntakePhysicianCallNotice national />
             {/* Patient Dashboard Summary */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-lg border p-4">
@@ -882,7 +880,6 @@ export function ClinicalIntakeForm({
       })()}
       {/* Module 1: Demographics */}
       <div className="space-y-4">
-        <MichiganOnlyNotice className="mb-2" />
         <div className="flex items-center gap-2 border-b pb-2">
           <FileText className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">Demographics</h3>
@@ -948,7 +945,12 @@ export function ClinicalIntakeForm({
             />
           </div>
           <div className="space-y-2" data-field="state">
-            <MichiganStateField id="state" invalid={isInvalid("state")} />
+            <UsStateField
+              id="state"
+              value={formData.state}
+              invalid={isInvalid("state")}
+              onChange={(value) => updateFormData("state", value)}
+            />
           </div>
         </div>
         
@@ -1571,7 +1573,13 @@ export function ClinicalIntakeForm({
                   />
                 </div>
                 <div className="space-y-2" data-field="shippingState">
-                  <MichiganStateField id="shippingState" label="State" invalid={isInvalid("shippingState")} />
+                  <UsStateField
+                    id="shippingState"
+                    label="State"
+                    value={formData.shippingState}
+                    invalid={isInvalid("shippingState")}
+                    onChange={(value) => updateFormData("shippingState", value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="shippingZip">ZIP *</Label>
@@ -1667,7 +1675,7 @@ export function ClinicalIntakeForm({
   return (
     <Card className="border-border">
       <div className="px-6 pt-6">
-        <IntakePhysicianCallNotice />
+        <IntakePhysicianCallNotice national />
       </div>
       <CardHeader>
         {/* Progress Indicator */}

@@ -1,4 +1,5 @@
 import type { LearnArticle } from "@/lib/learn-types"
+import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 
 const MI_DISCLAIMER =
   "This article is for educational purposes only and is not medical advice. Compounded medications require a valid prescription after clinician review. Clear Choice Pharmacy currently serves Michigan patients only. Individual results vary. Discuss your health history with a licensed provider before starting any therapy."
@@ -34,7 +35,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      "At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake and pay on this website. After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.",
+      `At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
     ],
     sections: [
       {
@@ -61,7 +62,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "Who may be a candidate?",
         paragraphs: [
           "Eligibility depends on clinical review—not an online quiz alone. Providers commonly consider BMI, weight-related conditions, contraindications, and medication history. Patients with a personal or family history of medullary thyroid carcinoma or Multiple Endocrine Neoplasia syndrome type 2, or those who are pregnant or planning pregnancy, are generally not candidates for GLP-1 therapy.",
-          "Michigan patients can complete a secure intake through Clear Choice Pharmacy for clinician review before compounding and fulfillment.",
+          "Patients in the United States can complete a secure intake. A clinician licensed in your state reviews it before a pharmacy licensed in your state fills an approved prescription.",
         ],
       },
       {
@@ -74,7 +75,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Cash-pay Semaglutide in Westland, MI",
         paragraphs: [
-          "Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay on this website. Each 30-day kit includes four weekly injections. A licensed partner pharmacy compounds and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.",
+          `Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay. ${weightLossHowYouPay()} Each 30-day kit includes four weekly injections. A licensed partner pharmacy compounds and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.`,
           "For current kit pricing and intake steps, visit the Semaglutide program page.",
         ],
       },
@@ -91,7 +92,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "Yes. Semaglutide requires a valid prescription and clinical evaluation. Complete an online intake so a licensed provider can review your health profile.",
       },
       {
-        question: "Is Semaglutide available to Michigan patients only?",
+        question: "Can patients outside Michigan start semaglutide?",
         answer:
           "Clear Choice Pharmacy does not dispense these GLP-1 medications. A licensed partner pharmacy fills and ships an approved prescription where that pharmacy is licensed.",
       },
@@ -181,9 +182,9 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "Semaglutide targets the GLP-1 pathway. Tirzepatide targets both GLP-1 and GIP. Your clinician can help determine which option may fit your profile better.",
       },
       {
-        question: "Can Michigan patients start Tirzepatide online?",
+        question: "Can patients outside Michigan start tirzepatide?",
         answer:
-          "You complete a secure online intake and pay on this website. After a doctor approves treatment, a licensed partner pharmacy compounds and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.",
+          `You complete a secure online intake. ${weightLossHowYouPay()} After a doctor approves treatment, a licensed partner pharmacy compounds and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.`,
       },
     ],
     disclaimer: GLP_DISCLAIMER,
@@ -534,9 +535,9 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         ],
       },
       {
-        heading: "Starting TRT in Michigan",
+        heading: "Starting hormone therapy",
         paragraphs: [
-          "Browse program pricing on the men's health page, complete intake, and proceed only after provider approval and pharmacy fulfillment. Clear Choice Pharmacy currently serves Michigan patients for TRT dispensing.",
+          "Start an intake from the men's health page. A clinician licensed in your state reviews it, and a pharmacy licensed to dispense in your state fills an approved prescription. Testosterone is not dispensed by Clear Choice Pharmacy outside its Michigan license.",
         ],
       },
     ],
@@ -552,7 +553,8 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "Yes—clinical evaluation and appropriate laboratories are part of responsible testosterone care. Your provider determines what is needed before and during therapy.",
       },
     ],
-    disclaimer: MI_DISCLAIMER,
+    disclaimer:
+      "This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after a clinician licensed in your state reviews your intake. It is not offered for athletic performance or bodybuilding. A pharmacy licensed to dispense in your state fills an approved prescription. Individual results vary.",
   },
   {
     slug: "myers-cocktail-mobile-iv",
@@ -688,10 +690,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
 ]
 
-const HIDDEN_LEARN_SLUGS = new Set([
-  "testosterone-replacement-therapy-trt",
-  "myers-cocktail-mobile-iv",
-])
+const HIDDEN_LEARN_SLUGS = new Set(["myers-cocktail-mobile-iv"])
 
 function isPublicLearnArticle(article: LearnArticle): boolean {
   return !HIDDEN_LEARN_SLUGS.has(article.slug)

@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 import { ClinicalIntakeForm } from "@/components/clinical-intake-form"
-import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { NATIONAL_PARTNER_CARE_NOTE } from "@/lib/site-config"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
-import { PATIENT_FULFILLMENT_TIMELINE, PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { getEdTrocheProduct, type EdBillingPlan } from "@/lib/ed-troche-catalog"
 import { parseEdAddOns } from "@/lib/ed-add-ons"
 
@@ -13,7 +12,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Start Your Intake | ED Troches | Clear Choice Pharmacy",
   description:
-    "Complete secure checkout for custom sublingual ED troches. Licensed provider review and pharmacy compounding through Clear Choice Pharmacy in Westland, MI.",
+    "Start a secure intake for ED medication. A clinician licensed in your state reviews it. A pharmacy licensed in your state fills an approved prescription.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/start`,
   },
@@ -39,7 +38,7 @@ const trustFeatures = [
   {
     icon: Clock,
     title: "Review time",
-    description: PATIENT_REVIEW_TIMELINE,
+    description: "A clinician licensed in your state reviews your intake.",
   },
 ]
 
@@ -47,8 +46,8 @@ const processSteps = [
   "Review your selected troche formulation",
   "Complete the secure medical questionnaire",
   "Upload ID and authorize payment hold",
-  PATIENT_REVIEW_TIMELINE,
-  PATIENT_FULFILLMENT_TIMELINE,
+  "A clinician licensed in your state reviews your intake.",
+  "If approved, a pharmacy licensed in your state fills and ships the medication.",
 ]
 
 type PageProps = {
@@ -78,16 +77,14 @@ export default async function MensHealthStartPage({ searchParams }: PageProps) {
                   Complete Your ED Troche Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for custom compounded ED troches. A licensed provider reviews your
-                  information before Clear Choice Pharmacy prepares your prescription.
+                  Finish your secure intake for ED medication. A clinician licensed in your state reviews it. If
+                  approved, a pharmacy licensed to dispense in your state fills and ships it.
                 </p>
-                <div className="mt-4">
-                  <MichiganOnlyNotice />
-                </div>
+                <p className="mt-3 text-sm text-muted-foreground">{NATIONAL_PARTNER_CARE_NOTE}</p>
                 {linkedOrderId ? (
                   <p className="mt-3 text-sm rounded-lg border border-sky-200 bg-sky-50 text-sky-900 px-4 py-3">
                     Linked to prescription order <span className="font-mono font-medium">{linkedOrderId}</span>.
-                    Complete this intake so our physician can review your troche request.
+                    Complete this intake so a clinician licensed in your state can review your request.
                   </p>
                 ) : null}
               </div>

@@ -31,10 +31,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = getEdProductPageTitle(product)
   const description =
     slug === "tadalafil-daily"
-      ? `Tadalafil ED troches (Cialis active ingredient) from $${startingPrice}/mo. Up to 36-hour support. Physician review and discreet pharmacy fulfillment for Michigan patients.`
+      ? `Tadalafil ED medication from $${startingPrice}/mo. A clinician licensed in your state reviews the intake before a pharmacy licensed in your state fills an approved prescription.`
       : slug === "sildenafil-fast"
-        ? `Sildenafil ED troches (Viagra active ingredient) from $${startingPrice}/mo. Fast-acting sublingual. Physician review and discreet fulfillment for Michigan patients.`
-        : `Sildenafil + Tadalafil combination ED troches from $${startingPrice}/mo. Dual-action support with physician review for Michigan patients.`
+        ? `Sildenafil ED medication from $${startingPrice}/mo. A clinician licensed in your state reviews the intake before a pharmacy licensed in your state fills an approved prescription.`
+        : `Sildenafil and tadalafil combination from $${startingPrice}/mo. A clinician licensed in your state reviews the intake before a pharmacy licensed in your state fills an approved prescription.`
 
   return {
     title,

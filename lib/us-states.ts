@@ -88,3 +88,14 @@ export function requiresSyncVisit(value: unknown): boolean {
   const state = parseUsState(value)
   return state != null && SYNC_VISIT_STATE_CODES.has(state.code)
 }
+
+/** Any U.S. state or the District of Columbia. Does not allow territories. */
+export function requireUsState(value: unknown, fieldLabel = "State"): string | null {
+  if (value == null || String(value).trim() === "") {
+    return `${fieldLabel} is required.`
+  }
+  if (!parseUsState(value)) {
+    return `${fieldLabel} must be a U.S. state or the District of Columbia.`
+  }
+  return null
+}

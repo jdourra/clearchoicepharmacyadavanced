@@ -10,7 +10,7 @@ import {
   validateInjectionTelehealthConsents,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
-import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { requireUsState } from "@/lib/us-states"
 import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 type TrtIntakePayload = {
@@ -136,13 +136,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required patient information" }, { status: 400 })
     }
 
-    const miError =
-      requireMichiganState(data.patientInfo.state, "Patient state") ||
+    const stateError =
+      requireUsState(data.patientInfo.state, "Patient state") ||
       (data.identity?.shippingState
-        ? requireMichiganState(data.identity.shippingState, "Shipping state")
+        ? requireUsState(data.identity.shippingState, "Shipping state")
         : null)
-    if (miError) {
-      return NextResponse.json({ error: miError }, { status: 403 })
+    if (stateError) {
+      return NextResponse.json({ error: stateError }, { status: 400 })
     }
 
     if (!data.treatmentInfo?.selectedProgram) {

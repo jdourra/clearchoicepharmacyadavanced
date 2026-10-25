@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { buildFaqJsonLd, HOME_DESCRIPTION, HOME_TITLE, SITE_KEYWORDS, SITE_URL } from "@/lib/clinical-seo"
+import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -34,7 +35,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Do you offer Semaglutide and Tirzepatide weight loss in Michigan?",
     answer:
-      "Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.",
+      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
@@ -49,7 +50,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      "After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and ships it. Pricing is shown before you pay on this website.",
+      `After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and ships it. ${weightLossHowYouPay()}`,
   },
 ])
 

@@ -24,6 +24,7 @@ import {
 } from "@/lib/clinical-seo"
 import { ED_FORMULATIONS, formatEdBillingLabel } from "@/lib/ed-troche-catalog"
 import { buildEdProductUrl } from "@/lib/intake-prefill"
+import { HORMONE_THERAPY_CONTROLLED_NOTE } from "@/lib/site-config"
 import {
   ALL_IN_INCLUSIONS,
   formatUsd,
@@ -38,7 +39,7 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 export const metadata: Metadata = {
   title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Men's Health",
   description:
-    "Sildenafil ED troches from $39/mo and Tadalafil from $49/mo on quarterly billing. Transparent cash-pay pricing for Michigan patients. Clear Choice Pharmacy, Westland.",
+    "Sildenafil ED troches from $39/mo and Tadalafil from $49/mo on quarterly billing. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state fills an approved prescription.",
   keywords: [
     "tadalafil",
     "sildenafil",
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     description:
-      "ED medications from $39/mo on quarterly billing with discreet pharmacy fulfillment in Westland, MI.",
+      "ED medications from $39/mo. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state fills an approved prescription.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -70,7 +71,7 @@ export default function MensHealthPage() {
     name: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Sildenafil and Tadalafil ED medications from $39/mo on quarterly billing at Clear Choice Pharmacy in Westland, MI.",
+      "Sildenafil and tadalafil after a clinician licensed in your state reviews the intake. A pharmacy licensed in your state fills an approved prescription.",
     about: [
       { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
@@ -84,7 +85,7 @@ export default function MensHealthPage() {
         badge="Men's Health · ED"
         headline="Tadalafil & Sildenafil"
         subheadline="Sildenafil from $39/mo and Tadalafil from $49/mo on quarterly billing—transparent cash-pay pricing."
-        description="Compounded tadalafil and sildenafil troches for Michigan patients, after a licensed clinician reviews your intake."
+        description="Sildenafil and tadalafil after a clinician licensed in your state reviews your intake. If approved, a pharmacy licensed in your state fills and ships the medication."
         highlight="Start your intake · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
           label: "Start your intake",
@@ -190,22 +191,22 @@ export default function MensHealthPage() {
 
       <ProcessSteps
         title="How It Works"
-        subtitle="From purchase to compounded care at your door"
+        subtitle="From intake to a prescription filled in your state"
         steps={[
           {
             step: 1,
-            title: "Review Your HomeKit",
-            description: "Explore ED troche details and pricing, then start your secure intake.",
+            title: "Review the medication",
+            description: "Explore ED medication details and pricing, then start your secure intake.",
           },
           {
             step: 2,
-            title: "Physician Approval",
-            description: "A licensed clinician reviews your intake and approves a customized protocol.",
+            title: "Clinician review",
+            description: "A clinician licensed in your state reviews your intake and decides whether a prescription is appropriate.",
           },
           {
             step: 3,
-            title: "Pharmacy Compounding",
-            description: "Clear Choice Pharmacy compounds your medication and ships discreetly—or prepares it for pickup in Westland.",
+            title: "Pharmacy fulfillment",
+            description: "If approved, a pharmacy licensed to dispense in your state fills and ships the medication.",
           },
         ]}
       />
@@ -235,6 +236,19 @@ export default function MensHealthPage() {
         </div>
       </ContentSection>
 
+      <ContentSection id="hormone-therapy">
+        <SectionIntro
+          eyebrow="Hormone therapy"
+          title="Testosterone therapy after a state-licensed review"
+          description={HORMONE_THERAPY_CONTROLLED_NOTE}
+        />
+        <div className="mt-6">
+          <Button asChild>
+            <Link href="/mens-health/trt/start">Start your intake</Link>
+          </Button>
+        </div>
+      </ContentSection>
+
       <PremiumDisclaimer>
         Compounded medications are prepared pursuant to a patient-specific prescription. Provider clinical
         evaluation is required. Individual results may vary.
@@ -243,7 +257,7 @@ export default function MensHealthPage() {
       <PremiumCta
         icon="heart"
         title="Ready to Get Started?"
-        description="Start your intake for ED troches with transparent pricing and discreet fulfillment for Michigan patients."
+        description="Start your intake for ED medication. A clinician licensed in your state reviews it before a pharmacy licensed in your state fills an approved prescription."
         primaryCta={{
           label: "Start your intake",
           href: ED_LANDING_URL,

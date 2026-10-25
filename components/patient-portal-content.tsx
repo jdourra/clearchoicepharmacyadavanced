@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { authFetch, clearSession } from "@/lib/session"
 import { formatPhoneInput, formatPhoneDisplay } from "@/lib/phone"
 import toast from "react-hot-toast"
+import { weightLossPaymentPatientNote } from "@/lib/weight-loss-catalog"
 import type { Order, Message } from "@/lib/auth-types"
 import { getOrderPayPath, isOrderPaid } from "@/lib/order-payment"
 import { prescriptionMethodLabel, type PrescriptionMethod } from "@/lib/order-prescription"
@@ -488,8 +489,7 @@ function OrdersTab({
                   {program.type === "weight_loss" &&
                     program.paymentStatus === "awaiting_pharmacy" && (
                       <p className="text-sm text-muted-foreground mt-4">
-                        Pay on this website before your intake is sent to the doctor. Call (248) 987-6182 if you need help
-                        paying. If treatment is approved, a partner pharmacy ships your medication.
+                        {weightLossPaymentPatientNote()} If treatment is approved, a partner pharmacy ships your medication.
                       </p>
                     )}
                   <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -714,8 +714,7 @@ function ProgramsTab({
               </div>
               {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
                 <p className="text-sm text-muted-foreground mt-4">
-                  Pay on this website before your intake is sent to the doctor. If treatment is approved, a partner pharmacy ships your medication.
-                  Call (248) 987-6182 with questions.
+                  {weightLossPaymentPatientNote()} If treatment is approved, a partner pharmacy ships your medication.
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-4">
@@ -854,7 +853,7 @@ function ProfileTab({
                 id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="8278 N Merriman Rd"
+                placeholder="8276 N Merriman Rd"
               />
             </div>
             <div className="space-y-2">

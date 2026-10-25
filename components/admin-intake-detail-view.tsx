@@ -853,8 +853,8 @@ export function AdminIntakeDetailView({
                     <div className="rounded-lg border p-3 space-y-2">
                       {payAtPharmacy ? (
                         <p className="text-xs text-muted-foreground">
-                          No online card hold on this intake. After you approve, pharmacy collects payment on the
-                          terminal and marks the intake paid.
+                          No card payment on this intake. Confirm the Zelle payment to payment@clearchoicepharmacy.com
+                          (LNR Associates LLC) before this intake is sent to the clinician, then mark it paid.
                         </p>
                       ) : canChargeLiveVisit ? (
                         <div className="flex items-start gap-2">
@@ -1200,7 +1200,7 @@ export function AdminIntakeDetailView({
                   )}
                   {payAtPharmacy && (
                     <p className="text-xs text-muted-foreground">
-                      This intake has no online card hold. Collect payment on the pharmacy terminal, by phone, or in cash.
+                      This intake has no card payment. Confirm the Zelle payment to payment@clearchoicepharmacy.com, which shows as LNR Associates LLC, before sending it to the clinician.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

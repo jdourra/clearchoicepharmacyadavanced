@@ -60,19 +60,19 @@ export const ALL_IN_INCLUSIONS = {
     "Compounded medication",
     "4 weekly injections per kit",
     "Syringes & supplies",
-    "Michigan shipping or pickup",
+    "Shipped by a pharmacy licensed in your state",
   ],
   ed: [
     "Physician review",
     "Compounded sublingual troches",
     "Discreet packaging",
-    "Michigan shipping or pickup",
+    "Shipped by a pharmacy licensed in your state",
   ],
   trt: [
     "Physician review",
     "Medication & supplies",
     "Transparent cash-pay billing",
-    "Michigan shipping or pickup",
+    "Shipped by a pharmacy licensed in your state",
   ],
   iv: [
     "Pharmacy-formulated drip",

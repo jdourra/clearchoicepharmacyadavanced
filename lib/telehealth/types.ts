@@ -104,7 +104,7 @@ export type TelehealthWebhookEvent = {
 
 export const CLEAR_CHOICE_PHARMACY = {
   name: "Clear Choice Pharmacy",
-  streetAddress: "8278 N Merriman Rd",
+  streetAddress: "8276 N Merriman Rd",
   city: "Westland",
   state: "MI",
   zip: "48185",

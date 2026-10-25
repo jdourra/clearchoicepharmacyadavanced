@@ -7,7 +7,7 @@ import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { requireUsState } from "@/lib/us-states"
 import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 /**
@@ -271,11 +271,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required patient information" }, { status: 400 })
     }
 
-    const miError =
-      requireMichiganState(data.patientInfo.state, "Patient state") ||
-      requireMichiganState(data.identity.shippingState, "Shipping state")
-    if (miError) {
-      return NextResponse.json({ error: miError }, { status: 403 })
+    const stateError =
+      requireUsState(data.patientInfo.state, "Patient state") ||
+      requireUsState(data.identity.shippingState, "Shipping state")
+    if (stateError) {
+      return NextResponse.json({ error: stateError }, { status: 400 })
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/

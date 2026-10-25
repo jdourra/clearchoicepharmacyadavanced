@@ -18,10 +18,13 @@ export default function TermsPage() {
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
       <p>
         LNR Associates LLC is a Michigan pharmacy, license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
-        prescriptions to Michigan patients from 8278 N Merriman Rd, Westland, MI 48185. Semaglutide and tirzepatide
-        ordered through this website are compounded and shipped by a licensed partner pharmacy after a doctor approves
-        the intake. Clear Choice Pharmacy does not compound or ship those vials. We do not replace your primary care
-        physician.
+        our own prescriptions to Michigan patients from 8276 N Merriman Rd, Westland, MI 48185. Weight loss, hormone
+        therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. A
+        clinician licensed in the patient&apos;s state reviews those intakes. If treatment is approved, a pharmacy
+        licensed to dispense in that state fills and ships the medication. Clear Choice Pharmacy does not dispense those
+        partner-pharmacy medications under its Michigan license. Testosterone is a Schedule III controlled medication
+        and is prescribed only when clinically appropriate. A few states require a live video visit. We do not replace
+        your primary care physician.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Eligibility</h2>
       <p>
@@ -35,7 +38,7 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>
-        Clear Choice Pharmacy · 8278 N Merriman Rd, Westland, MI 48185 ·{" "}
+        Clear Choice Pharmacy · 8276 N Merriman Rd, Westland, MI 48185 ·{" "}
         <a href="tel:+12489876182" className="text-primary hover:underline">(248) 987-6182</a> ·{" "}
         <a href="mailto:info@clearchoicepharmacy.com" className="text-primary hover:underline">
           info@clearchoicepharmacy.com

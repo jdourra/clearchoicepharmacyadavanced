@@ -11,6 +11,7 @@ import {
   MICHIGAN_PHARMACY_LICENSE,
   PHARMACIST_IN_CHARGE,
   PHARMACY_DBA,
+  NATIONAL_PARTNER_CARE_NOTE,
 } from "@/lib/site-config"
 
 export function SiteFooter() {
@@ -22,14 +23,14 @@ export function SiteFooter() {
             <SiteLogo href="/" height={72} />
             <div className="space-y-2 text-sm text-muted-foreground">
               <a
-                href="https://maps.google.com/?q=8278+N+Merriman+Rd,+Westland,+MI+48185"
+                href="https://maps.google.com/?q=8276+N+Merriman+Rd,+Westland,+MI+48185"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-start gap-2 hover:text-foreground transition-colors"
               >
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>
-                  8278 N Merriman Rd
+                  8276 N Merriman Rd
                   <br />
                   Westland, MI 48185
                 </span>
@@ -48,8 +49,7 @@ export function SiteFooter() {
               {MICHIGAN_PHARMACY_LICENSE}. Pharmacist-in-charge: {PHARMACIST_IN_CHARGE}.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Prescriptions we dispense are for Michigan patients. Approved semaglutide and tirzepatide are filled and
-              shipped by a licensed partner pharmacy.
+              {NATIONAL_PARTNER_CARE_NOTE}
             </p>
           </div>
 

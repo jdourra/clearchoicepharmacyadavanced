@@ -10,7 +10,7 @@ import {
   SectionIntro,
 } from "@/components/clinical-landing-shell"
 import { SITE_URL, WEIGHT_LOSS_FAQS, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/clinical-seo"
-import { WEIGHT_LOSS_DOCTOR_REVIEW, WEIGHT_LOSS_PARTNER_FULFILLMENT } from "@/lib/weight-loss-catalog"
+import { WEIGHT_LOSS_DOCTOR_REVIEW, WEIGHT_LOSS_PARTNER_FULFILLMENT, weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
   title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan" },
@@ -34,7 +34,7 @@ const EXTRA_FAQS = [
   {
     question: "What does Clear Choice Pharmacy do versus the prescribing clinician?",
     answer:
-      "You pay on this website and a licensed doctor reviews your intake. If treatment is approved, a partner pharmacy fills the prescription and ships it. Clear Choice does not compound these vials.",
+      `${weightLossHowYouPay()} A licensed doctor reviews your intake. If treatment is approved, a partner pharmacy fills the prescription and ships it. Clear Choice does not compound these vials.`,
   },
   {
     question: "Do you guarantee weight loss results?",
@@ -44,7 +44,7 @@ const EXTRA_FAQS = [
   {
     question: "Can patients outside Michigan enroll?",
     answer:
-      "Yes. Weight-loss intake is open to patients in other U.S. states. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit. Men's health, hormone, IV, and regular pharmacy checkout are still limited to Michigan. A partner pharmacy ships the medication if a doctor approves.",
+      "Yes. Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. A clinician licensed in your state reviews the intake. A pharmacy licensed to dispense in your state ships an approved prescription. Prescriptions Clear Choice Pharmacy dispenses itself stay limited to Michigan.",
   },
   {
     question: "Where can I read more educational content?",

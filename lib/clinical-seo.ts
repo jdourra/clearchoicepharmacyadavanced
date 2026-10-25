@@ -1,3 +1,5 @@
+import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
+
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const HOME_TITLE =
@@ -52,7 +54,7 @@ import { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
 
 export const PHARMACY_ADDRESS = {
   "@type": "PostalAddress" as const,
-  streetAddress: "8278 N Merriman Rd",
+  streetAddress: "8276 N Merriman Rd",
   addressLocality: "Westland",
   addressRegion: "MI",
   postalCode: "48185",
@@ -123,7 +125,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      "Yes. Clear Choice Pharmacy compounds sublingual Tadalafil and Sildenafil troches for qualifying Michigan patients, plus a dual Sildenafil + Tadalafil combination. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing (monthly plans available at higher per-month rates).",
+      "Yes. Sildenafil, tadalafil, and a dual combination are available after a clinician licensed in your state reviews your intake. If approved, a pharmacy licensed to dispense in your state fills the prescription. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.",
   },
   {
     question: "Is Tadalafil the same as Cialis?",
@@ -143,17 +145,17 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Can you combine Sildenafil and Tadalafil?",
     answer:
-      "Yes. Our compounding pharmacy can create dual-action combination troches with tailored strengths that are not available as a single retail tablet.",
+      "Yes. A licensed pharmacy can prepare a dual-action combination with strengths that are not available as a single retail tablet, after a clinician licensed in your state approves it.",
   },
   {
     question: "Do you serve patients outside Michigan?",
     answer:
-      "Not at this time. Clear Choice Pharmacy is currently licensed to dispense only to Michigan patients.",
+      "Yes for weight loss, hormone therapy, and ED medication. A clinician licensed in your state reviews the intake, and a pharmacy licensed to dispense in your state fills an approved prescription. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. A few states require a live video visit.",
   },
   {
     question: "Is the consultation private?",
     answer:
-      "Yes. The online consultation is confidential, and medication is prepared and delivered discreetly from our Westland pharmacy.",
+      "Yes. The online consultation is confidential. Approved ED medication is filled by a pharmacy licensed to dispense in your state and shipped discreetly.",
   },
 ]
 
@@ -161,7 +163,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      "Yes. You pay on this website. A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.",
+      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",

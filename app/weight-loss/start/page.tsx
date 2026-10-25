@@ -3,15 +3,16 @@ import { WeightLossIntakeForm } from "@/components/weight-loss-intake-form"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
-import { isOlaHandoffEnabled } from "@/lib/ola/config"
 import {
   WEIGHT_LOSS_DOCTOR_REVIEW,
   WEIGHT_LOSS_INTAKE_HOLD_NOTE,
+  WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
   WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
   getDefaultWeightLossDoseId,
   getWeightLossDose,
   isWeightLossDoseId,
+  weightLossHowYouPay,
   weightLossPaymentPatientNote,
 } from "@/lib/weight-loss-catalog"
 import type { WeightLossDoseId } from "@/lib/weight-loss-catalog"
@@ -21,7 +22,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmac
 export const metadata: Metadata = {
   title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
   description:
-    "Complete a secure medical intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor usually reviews your intake within 24 hours.",
+    `Complete a secure medical intake for Semaglutide or Tirzepatide. ${weightLossHowYouPay()} A licensed doctor usually reviews your intake within 24 hours.`,
   robots: { index: false, follow: false },
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
     description:
-      "Secure medical intake for Semaglutide and Tirzepatide. Pay on this website. A partner pharmacy ships approved medication.",
+      `Secure medical intake for Semaglutide and Tirzepatide. ${weightLossHowYouPay()} A partner pharmacy ships approved medication.`,
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
@@ -56,7 +57,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
     initialDoseTier = getDefaultWeightLossDoseId(initialProgram)
   }
 
-  const requireOnlinePayment = isOlaHandoffEnabled()
+  const requireOnlinePayment = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -71,7 +72,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                   Complete Your GLP Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for Semaglutide or Tirzepatide. You pay on this website. A licensed doctor
+                  Finish your secure intake for Semaglutide or Tirzepatide. {weightLossHowYouPay()} A licensed doctor
                   usually reviews your intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
                   {requireOnlinePayment ? WEIGHT_LOSS_INTAKE_HOLD_NOTE : weightLossPaymentPatientNote()}
                 </p>
@@ -172,7 +173,7 @@ const processSteps = [
   "Review your selected Semaglutide or Tirzepatide kit",
   "Complete the secure medical questionnaire and vitals",
   "Answer clinical screening questions and upload photo ID",
-  "Pay on this website",
+  weightLossHowYouPay(),
   WEIGHT_LOSS_DOCTOR_REVIEW,
   WEIGHT_LOSS_PARTNER_FULFILLMENT,
 ]

@@ -1,4 +1,5 @@
 import type { RejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 
 export type WeightLossBillingPlan = "monthly" | "quarterly"
 
@@ -82,7 +83,14 @@ export const WEIGHT_LOSS_PAY_AT_PHARMACY_NOTE =
 export const WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED = false
 
 export const WEIGHT_LOSS_PHARMACY_COLLECTION_NOTE =
-  "You pay on this website before your intake is sent to the doctor. Call (248) 987-6182 if the card form is not available yet."
+  `After you submit, pay Clear Choice Pharmacy by Zelle at ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy. Put your name in the memo. Your intake is sent after the payment arrives. If treatment is not approved, the pharmacy refunds you. If the name on the Zelle screen is different, call (248) 987-6182 and do not send the payment.`
+
+/** One sentence for pages and metadata. Card wording returns when online card holds are turned on. */
+export function weightLossHowYouPay(): string {
+  return WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
+    ? "You pay on this website. You are charged only if a doctor approves treatment."
+    : `After you submit, pay by Zelle at ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}.`
+}
 
 /** Shown on weight-loss pages. Do not name the outside clinician network. */
 export const WEIGHT_LOSS_DOCTOR_REVIEW =

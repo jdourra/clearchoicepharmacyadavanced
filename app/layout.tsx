@@ -128,7 +128,7 @@ export default function RootLayout({
     faxNumber: "+12489874963",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "8278 N Merriman Rd",
+      streetAddress: "8276 N Merriman Rd",
       addressLocality: "Westland",
       addressRegion: "MI",
       postalCode: "48185",
@@ -193,7 +193,7 @@ export default function RootLayout({
         {
           "@type": "OfferCatalog",
           name: "ED Medications",
-          description: "Custom sublingual sildenafil and tadalafil troches for Michigan patients",
+          description: "Sildenafil and tadalafil after a clinician licensed in the patient's state reviews the intake",
           url: `${SITE_URL}/mens-health`,
         },
         {

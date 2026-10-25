@@ -29,7 +29,7 @@ export default function CompoundingPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Compounding Pharmacy in Westland, MI</h1>
             <p className="text-muted-foreground leading-relaxed">
               Compounding prepares patient-specific medications pursuant to a valid prescription. Clear Choice Pharmacy
-              compounds GLP-1 weight management kits and other customized formulations for qualifying Michigan patients.
+              compounds other patient-specific medications for Michigan patients. Semaglutide and tirzepatide are filled by a pharmacy licensed in the patient's state.
             </p>
           </div>
         </section>

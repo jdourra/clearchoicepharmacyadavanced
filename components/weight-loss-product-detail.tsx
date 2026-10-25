@@ -29,6 +29,7 @@ import {
   WEIGHT_LOSS_DOSE_SELECT_HINT,
   WEIGHT_LOSS_DOSE_SELECT_TITLE,
   WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE,
+  weightLossHowYouPay,
   weightLossPaymentPatientNote,
   WEIGHT_LOSS_PRICE_PERIOD_BADGE,
   formatDoseOptionLabel,
@@ -257,12 +258,12 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. A ${holdQuote.liveVisitAddon} live-visit add-on may apply on monthly
                       billing if your clinician requires a live visit.{" "}
-                      You pay on this website. If a doctor does not approve treatment, you are refunded.
+                      {weightLossHowYouPay()} If a doctor does not approve treatment, you are refunded.
                     </p>
                   ) : (
                     <p className="text-muted-foreground">
                       Kit ${holdQuote.totalBilled}. 90-day supply waives the live-visit add-on.{" "}
-                      You pay on this website. If a doctor does not approve treatment, you are refunded.
+                      {weightLossHowYouPay()} If a doctor does not approve treatment, you are refunded.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground pt-1">{weightLossPaymentPatientNote()}</p>
@@ -273,7 +274,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                 <Link href={intakeUrl}>Start intake</Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                Secure health questionnaire · Card hold, charged only if approved
+                Secure health questionnaire. {weightLossHowYouPay()}
               </p>
             </CardContent>
           </Card>

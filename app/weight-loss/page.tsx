@@ -21,6 +21,7 @@ import {
   WEIGHT_LOSS_DOCTOR_REVIEW,
   WEIGHT_LOSS_PARTNER_FULFILLMENT,
   WEIGHT_LOSS_PROGRAMS,
+  weightLossHowYouPay,
 } from "@/lib/weight-loss-catalog"
 import { buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
@@ -43,14 +44,14 @@ const PROGRAMS_URL = "/weight-loss#programs"
 export const metadata: Metadata = {
   title: { absolute: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy" },
   description:
-    "Provider-guided Semaglutide and Tirzepatide weight management. You pay on this website, a doctor reviews your intake, and a partner pharmacy ships if treatment is approved.",
+    `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} A doctor reviews your intake, and a partner pharmacy ships if treatment is approved.`,
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
     title: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
     description:
-      "Provider-guided Semaglutide and Tirzepatide kits. Pay on this website. A partner pharmacy ships if a doctor approves.",
+      `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} A partner pharmacy ships if a doctor approves.`,
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
 
 const glpBenefits = [
   "Custom titration: Semaglutide and Tirzepatide doses chosen to match the doctor's plan.",
-  "Transparent pricing: You pay on this website. Doctor review and partner-pharmacy shipping are included.",
+  `Transparent pricing: ${weightLossHowYouPay()} Doctor review and partner-pharmacy shipping are included.`,
   "Licensed doctor review: Complete a secure online intake. A doctor usually reviews it within 24 hours.",
   "Structured Support: Provider-guided weight management designed to support healthy habits alongside medication when appropriate.",
 ]
@@ -100,9 +101,9 @@ export default function WeightLossPage() {
         }
         subheadline="Provider-guided Semaglutide and Tirzepatide kits from $134/mo."
         description={
-          "You pay on this website. A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, a partner pharmacy fills and ships your medication. Individual results may vary."
+          `${weightLossHowYouPay()} A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, a partner pharmacy fills and ships your medication. Individual results may vary.`
         }
-        highlight="You pay on this website · Doctor review within 24 hours · Partner pharmacy ships"
+        highlight={`${weightLossHowYouPay()} Doctor review within 24 hours. Partner pharmacy ships.`}
         heroImage={{
           src: "/images/home-hero-clinical.png",
           alt: "Licensed clinician supporting medical weight management at Clear Choice Pharmacy",
@@ -123,7 +124,7 @@ export default function WeightLossPage() {
         />
         <div className="mt-6 prose prose-sm max-w-3xl text-muted-foreground">
           <p>
-            At Clear Choice Pharmacy, the pathway starts with an online intake and payment on this website. A licensed
+            At Clear Choice Pharmacy, the pathway starts with an online intake. {weightLossHowYouPay()} A licensed
             doctor reviews your information and decides whether a prescription is appropriate. If approved, a partner
             pharmacy fills and ships Semaglutide or Tirzepatide. Learn more about{" "}
             <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
@@ -292,7 +293,7 @@ export default function WeightLossPage() {
             step: 2,
             title: "Complete intake & ID",
             description:
-              "Submit a secure health questionnaire, upload photo ID, and pay on this website. You are charged only if a doctor approves.",
+              `Submit a secure health questionnaire and upload photo ID. ${weightLossHowYouPay()}`,
           },
           {
             step: 3,
@@ -311,7 +312,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Trust & roles"
           title="Pharmacy vs prescribing clinician"
-          description="You complete your intake and pay on this website. A licensed doctor decides whether a prescription is appropriate. A partner pharmacy fills and ships approved medication."
+          description={`${weightLossHowYouPay()} A licensed doctor decides whether a prescription is appropriate. A partner pharmacy fills and ships approved medication.`}
         />
         <FeatureGrid
           items={[
@@ -337,13 +338,12 @@ export default function WeightLossPage() {
       <ContentSection id="michigan">
         <SectionIntro
           eyebrow="Local care"
-          title="Care from Westland, available in other states"
-          description="Clear Choice Pharmacy is in Westland and still serves Metro Detroit. Weight-loss intake is open to patients in other U.S. states. A few states require a live video visit."
+          title="Available in every U.S. state"
+          description="Weight-loss intake is open nationwide. A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved prescription. A few states require a live video visit."
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
-          Patients from Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby
-          communities can complete the intake online. If a doctor approves treatment, a partner pharmacy ships it. Men's
-          health and regular checkout stay limited to Michigan.{" "}
+          ED medication and hormone therapy use the same state-licensed review and dispensing. Prescriptions that Clear
+          Choice Pharmacy dispenses itself, including regular checkout, stay limited to Michigan.{" "}
           <Link href="/contact" className="text-primary hover:underline">
             Contact the pharmacy
           </Link>{" "}

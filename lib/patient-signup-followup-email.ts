@@ -24,7 +24,7 @@ Build a medication list: ${medicationsUrl}
 Reply to this email or call us at (248) 987-6182 if you have any questions. No pressure — we're here when you're ready.
 
 — Clear Choice Pharmacy
-8278 N Merriman Rd, Westland, MI 48185
+8276 N Merriman Rd, Westland, MI 48185
 ${CONTACT_EMAIL}`
 
   const html = `<!DOCTYPE html>
@@ -45,7 +45,7 @@ ${CONTACT_EMAIL}`
   <p>Reply to this email or call us at <a href="tel:+12489876182">(248) 987-6182</a> if you have any questions. No pressure — we're here when you're ready.</p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
-    8278 N Merriman Rd, Westland, MI 48185<br>
+    8276 N Merriman Rd, Westland, MI 48185<br>
     <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
   </p>
 </body>

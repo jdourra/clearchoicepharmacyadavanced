@@ -13,8 +13,15 @@ import { notifyClinicianQueue } from "@/lib/telehealth/manual-queue"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { listOlaScheduleSlots, OlaApiError } from "@/lib/ola/client"
-import { isOlaConfigured, isOlaHandoffEnabled } from "@/lib/ola/config"
+import { isOlaConfigured } from "@/lib/ola/config"
 import { handoffWeightLossToOla } from "@/lib/ola/weight-loss-handoff"
+import {
+  bmiBand,
+  parseGlp1Protocol,
+  protocolQuestionPairs,
+  validateGlp1Protocol,
+  type Glp1ProtocolAnswers,
+} from "@/lib/glp1-intake-protocol"
 import { PHARMACY_PHONE_DISPLAY, toUsE164 } from "@/lib/phone"
 import { parseUsState, requiresSyncVisit } from "@/lib/us-states"
 import {
@@ -95,6 +102,7 @@ type WeightLossIntakePayload = {
   consents?: IntakeConsents & {
     injection?: InjectionTelehealthConsentValues
   }
+  protocol: Glp1ProtocolAnswers
 }
 
 function formatClinicalSummary(data: WeightLossIntakePayload, submissionId: string): string {
@@ -295,6 +303,7 @@ function parsePayload(rawData: Record<string, unknown>): WeightLossIntakePayload
       stripePaymentIntentId: identity.stripePaymentIntentId ? String(identity.stripePaymentIntentId) : null,
     },
     consents,
+    protocol: parseGlp1Protocol(rawData.protocol),
   }
 }
 
@@ -316,21 +325,21 @@ function checkEligibility(data: WeightLossIntakePayload): { hardStop: boolean; e
   }
 
   const bmi = data.vitals.bmi
-  const hasComorbidity = data.treatmentInfo.comorbidities.length > 0
-
-  if (bmi > 0 && bmi < 27) {
+  if (bmi > 0 && bmiBand(bmi) === "ineligible") {
     return {
       hardStop: true,
-      error:
-        "GLP-1 provider-guided weight management typically requires a BMI of 27+ with a related condition, or 30+. Please consult your primary care provider.",
+      error: "A BMI under 20 is not eligible for this weight-loss program. Please see an in-person clinician.",
     }
   }
 
-  if (bmi >= 27 && bmi < 30 && !hasComorbidity) {
+  const protocolCheck = validateGlp1Protocol(data.protocol, {
+    sex: data.patientInfo.gender,
+    threeMonth: data.treatmentInfo.selectedBillingPlan === "quarterly",
+  })
+  if (!protocolCheck.ok) {
     return {
-      hardStop: true,
-      error:
-        "With a BMI between 27 and 30, a qualifying medical condition is required for GLP-1 therapy. Please consult your primary care provider.",
+      hardStop: Boolean(protocolCheck.hardStop),
+      error: protocolCheck.hardStop || protocolCheck.message,
     }
   }
 
@@ -415,7 +424,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a treatment program" }, { status: 400 })
     }
 
-    const requireCardPayment = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED || isOlaHandoffEnabled()
+    const requireCardPayment = WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
 
     if (!requireCardPayment) {
       data.identity.stripePaymentIntentId = null
@@ -451,8 +460,11 @@ export async function POST(request: NextRequest) {
     }
 
     const eligibility = checkEligibility(data)
-    if (eligibility.hardStop) {
-      return NextResponse.json({ error: eligibility.error, hardStop: true }, { status: 422 })
+    if (eligibility.error) {
+      return NextResponse.json(
+        { error: eligibility.error, hardStop: eligibility.hardStop },
+        { status: eligibility.hardStop ? 422 : 400 }
+      )
     }
 
     const submissionId = `CCR-WL-${Date.now().toString(36).toUpperCase()}`
@@ -668,6 +680,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS protocol_answers JSONB`, []).catch(() => [])
+    await sql(
+      `UPDATE weight_loss_intake SET protocol_answers = $2::jsonb WHERE id = $1`,
+      [submissionId, JSON.stringify(data.protocol)]
+    ).catch((error) => {
+      console.error("Failed to store GLP-1 protocol answers:", error)
+    })
+
     const billingPlanForHandoff =
       data.treatmentInfo.selectedBillingPlan === "quarterly" ? "quarterly" : "monthly"
     const doseForHandoff =
@@ -697,15 +717,16 @@ export async function POST(request: NextRequest) {
           { question: "Billing plan", answer: billingPlanForHandoff },
           { question: "Height inches", answer: String(data.vitals.heightInches) },
           { question: "Weight lbs", answer: String(data.vitals.weightLbs) },
-          { question: "BMI", answer: data.vitals.bmi.toFixed(1) },
-          { question: "Blood pressure", answer: `${data.vitals.systolicBP}/${data.vitals.diastolicBP}` },
-          { question: "Current medications", answer: data.medicalHistory.currentMedications || "None reported" },
-          { question: "Allergies", answer: data.medicalHistory.allergies || "None reported" },
-          { question: "Additional concerns", answer: data.treatmentInfo.additionalConcerns || "None" },
+          ...protocolQuestionPairs(data.protocol, {
+            sex: data.patientInfo.gender,
+            threeMonth: billingPlanForHandoff === "quarterly",
+            bmi: data.vitals.bmi,
+          }),
         ],
         schedule: data.visit ?? null,
         idFrontKey: data.identity.idFrontKey,
         idBackKey: data.identity.idBackKey,
+        medicationPhotoKeys: data.protocol.medicationPhotoKeys,
       })
       handoffDetail = handoff.detail
       await sql(

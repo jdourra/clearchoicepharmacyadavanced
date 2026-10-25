@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const REMOVED_PREFIXES = ["/iv-rejuvenation", "/mens-health/trt"]
-const REMOVED_PATHS = new Set([
-  "/learn/testosterone-replacement-therapy-trt",
-  "/learn/myers-cocktail-mobile-iv",
-])
+const REMOVED_PREFIXES = ["/iv-rejuvenation"]
+const REMOVED_PATHS = new Set(["/learn/myers-cocktail-mobile-iv"])
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname

@@ -20,8 +20,7 @@ import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
-import { MichiganStateField } from "@/components/michigan-state-field"
-import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
+import { UsStateField } from "@/components/us-state-field"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
@@ -91,7 +90,7 @@ const initialFormData: FormData = {
   email: "",
   phone: "",
   dateOfBirth: "",
-  state: MICHIGAN_STATE_NAME,
+  state: "",
   address: "",
   city: "",
   zipCode: "",
@@ -120,7 +119,7 @@ const initialFormData: FormData = {
   additionalConcerns: "",
   shippingAddress: "",
   shippingCity: "",
-  shippingState: MICHIGAN_STATE_NAME,
+  shippingState: "",
   shippingZip: "",
   sameAsResidential: true,
   idFrontFile: null,
@@ -154,7 +153,7 @@ const symptomOptions = [
 const goalOptions = [
   "Increase energy",
   "Improve libido",
-  "Build muscle",
+  "Address muscle loss",
   "Improve mood",
   "Better sleep",
   "Overall hormone support",
@@ -254,7 +253,7 @@ export function TrtIntakeForm({
             email: formData.email,
             phone: formData.phone,
             dateOfBirth: formData.dateOfBirth,
-            state: MICHIGAN_STATE_NAME,
+            state: formData.state,
             address: formData.address,
             city: formData.city,
             zipCode: formData.zipCode,
@@ -294,7 +293,7 @@ export function TrtIntakeForm({
           identity: {
             shippingAddress: formData.sameAsResidential ? formData.address : formData.shippingAddress,
             shippingCity: formData.sameAsResidential ? formData.city : formData.shippingCity,
-            shippingState: MICHIGAN_STATE_NAME,
+            shippingState: formData.sameAsResidential ? formData.state : formData.shippingState,
             shippingZip: formData.sameAsResidential ? formData.zipCode : formData.shippingZip,
             ...paymentCapturedOnClient({
               idFrontFile: formData.idFrontFile,
@@ -342,7 +341,7 @@ export function TrtIntakeForm({
 
   return (
     <div className="space-y-4">
-      <IntakePhysicianCallNotice />
+      <IntakePhysicianCallNotice national />
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         {[1, 2, 3, 4].map((n) => (
           <div key={n} className={cn("flex-1 h-1.5 rounded-full", step >= n ? "bg-primary" : "bg-muted")} />
@@ -457,7 +456,12 @@ export function TrtIntakeForm({
                 <Input type="date" value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} required className={cn(isInvalid("dateOfBirth") && "border-destructive")} />
               </div>
               <div className="space-y-2" data-field="state">
-                <MichiganStateField id="trt-state" invalid={isInvalid("state")} />
+                <UsStateField
+                  id="trt-state"
+                  value={formData.state}
+                  invalid={isInvalid("state")}
+                  onChange={(value) => updateFormData("state", value)}
+                />
               </div>
             </div>
 
@@ -684,6 +688,15 @@ export function TrtIntakeForm({
               <Checkbox checked={formData.sameAsResidential} onCheckedChange={(c) => updateFormData("sameAsResidential", c === true)} />
               Shipping address same as above
             </label>
+            {!formData.sameAsResidential && (
+              <UsStateField
+                id="trt-shipping-state"
+                label="Shipping state"
+                value={formData.shippingState}
+                invalid={isInvalid("shippingState")}
+                onChange={(value) => updateFormData("shippingState", value)}
+              />
+            )}
 
             <IntakeIdentityPaymentSection
               idPrefix="trt"

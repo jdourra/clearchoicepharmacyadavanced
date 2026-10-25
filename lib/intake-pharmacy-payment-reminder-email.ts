@@ -28,7 +28,7 @@ Visit us or call ${PRIMARY_PHYSICIAN.pharmacyPhone} to arrange payment. Once pai
 View your account: ${accountUrl}
 
 — Clear Choice Pharmacy
-8278 N Merriman Rd, Westland, MI 48185
+8276 N Merriman Rd, Westland, MI 48185
 ${CONTACT_EMAIL}`
 
   const html = `<!DOCTYPE html>
@@ -43,7 +43,7 @@ ${CONTACT_EMAIL}`
   </p>
   <p style="margin-top: 32px; color: #666; font-size: 14px;">
     — Clear Choice Pharmacy<br>
-    8278 N Merriman Rd, Westland, MI 48185<br>
+    8276 N Merriman Rd, Westland, MI 48185<br>
     <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
   </p>
 </body>

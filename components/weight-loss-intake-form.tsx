@@ -34,7 +34,14 @@ import {
 } from "@/lib/intake-payment"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
 import { parseUsState, requiresSyncVisit, US_STATES } from "@/lib/us-states"
+import { Glp1ProtocolQuestions } from "@/components/glp1-protocol-questions"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
+import {
+  bmiBand,
+  emptyGlp1Protocol,
+  validateGlp1Protocol,
+  type Glp1ProtocolAnswers,
+} from "@/lib/glp1-intake-protocol"
 import {
   emptyInjectionTelehealthConsents,
   getInjectionConsentInvalidFields,
@@ -70,6 +77,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 
 type BillingPlan = WeightLossBillingPlan
 
@@ -135,6 +143,7 @@ type FormData = {
   paymentAuthorized: boolean
   injectionConsents: InjectionTelehealthConsentValues
   authorizeHold: boolean
+  protocol: Glp1ProtocolAnswers
 }
 
 const initialFormData: FormData = {
@@ -192,6 +201,7 @@ const initialFormData: FormData = {
   ...emptyIntakePaymentValues,
   injectionConsents: { ...emptyInjectionTelehealthConsents },
   authorizeHold: false,
+  protocol: emptyGlp1Protocol(),
 }
 
 const programs = WEIGHT_LOSS_PROGRAMS
@@ -291,7 +301,8 @@ function getStepValidation(
   formData: FormData,
   bmi: number | null,
   currentStep: number,
-  visitTimes: { status: "idle" | "loading" | "ready" | "empty" | "error"; message: string }
+  visitTimes: { status: "idle" | "loading" | "ready" | "empty" | "error"; message: string },
+  cardPayment: boolean
 ): StepValidation {
   const fields: string[] = []
   const add = (...keys: string[]) => {
@@ -340,99 +351,34 @@ function getStepValidation(
       if (fields.length > 0) {
         return { valid: false, message: "Please enter your height and current weight.", fields }
       }
-      if (bmi === null || bmi < 18) {
+      if (bmi === null || bmi <= 0) {
         return {
           valid: false,
           message: "Please enter valid height and weight values.",
           fields: ["heightFeet", "heightInches", "weightLbs"],
         }
       }
-      if (!formData.systolicBP) add("systolicBP")
-      if (!formData.diastolicBP) add("diastolicBP")
-      if (fields.length > 0) {
-        return { valid: false, message: "Please enter your blood pressure readings.", fields }
-      }
-      if (bmi >= 27 && bmi < 30 && formData.comorbidities.length === 0) {
+      if (bmiBand(bmi) === "ineligible") {
         return {
           valid: false,
-          message: "With a BMI between 27 and 30, please select at least one qualifying medical condition.",
-          fields: ["comorbidities"],
+          message: "A BMI under 20 is not eligible for this weight-loss program. Please see an in-person clinician.",
+          fields: ["heightFeet", "heightInches", "weightLbs"],
         }
-      }
-      if (!formData.priorGlpExperience) {
-        return { valid: false, message: "Please indicate your prior GLP-1 experience.", fields: ["priorGlpExperience"] }
-      }
-      if (needsPriorGlpDetails(formData)) {
-        if (!formData.priorGlpForm) add("priorGlpForm")
-        if (!formData.priorGlpCurrentDose.trim()) add("priorGlpCurrentDose")
-        if (!formData.priorGlpDuration.trim()) add("priorGlpDuration")
-        if (!formData.priorGlpTolerability) add("priorGlpTolerability")
-        if (fields.length > 0) {
-          return {
-            valid: false,
-            message: "Please share your current or last dose, form, duration, and how you tolerated it.",
-            fields,
-          }
-        }
-      }
-      if (formData.weightLossGoals.length === 0) {
-        return { valid: false, message: "Please select at least one weight loss goal.", fields: ["weightLossGoals"] }
       }
       return { valid: true, message: "", fields: [] }
     }
 
     case 3: {
-      if (!hasAnyContraindication(formData) && !formData.confirmedNoContraindications) {
-        return {
-          valid: false,
-          message: 'Please check "None of the above apply to me" if you do not have any listed contraindications.',
-          fields: ["confirmedNoContraindications"],
-        }
+      const protocol = validateGlp1Protocol(formData.protocol, {
+        sex: formData.gender,
+        threeMonth: formData.selectedBillingPlan === "quarterly",
+      })
+      if (protocol.hardStop) {
+        return { valid: false, message: protocol.hardStop, fields: protocol.fields }
       }
-      if (hasAnyContraindication(formData) && formData.confirmedNoContraindications) {
-        return {
-          valid: false,
-          message: 'Please uncheck "None of the above apply to me" if any contraindication applies to you.',
-          fields: ["confirmedNoContraindications"],
-        }
+      if (!protocol.ok) {
+        return { valid: false, message: protocol.message, fields: protocol.fields }
       }
-
-      const yesNoFields: { key: keyof FormData; field: string }[] = [
-        { key: "type2Diabetes", field: "type2Diabetes" },
-        { key: "hypertension", field: "hypertension" },
-        { key: "gallbladderDisease", field: "gallbladderDisease" },
-        { key: "diabeticRetinopathy", field: "diabeticRetinopathy" },
-        { key: "bariatricSurgery", field: "bariatricSurgery" },
-        { key: "sleepApnea", field: "sleepApnea" },
-        { key: "cardiovascularDisease", field: "cardiovascularDisease" },
-      ]
-
-      for (const { key, field } of yesNoFields) {
-        if (!isYesNoAnswered(formData[key] as string)) add(field)
-      }
-
-      if (fields.length > 0) {
-        return {
-          valid: false,
-          message: "Please answer Yes or No for each highlighted medical history question.",
-          fields,
-        }
-      }
-
-      if (formData.onOtherGlp) {
-        if (!formData.priorGlpForm) add("priorGlpForm")
-        if (!formData.priorGlpCurrentDose.trim()) add("priorGlpCurrentDose")
-        if (!formData.priorGlpDuration.trim()) add("priorGlpDuration")
-        if (!formData.priorGlpTolerability) add("priorGlpTolerability")
-        if (fields.length > 0) {
-          return {
-            valid: false,
-            message: "Since you are on another GLP-1, please provide dose, form, duration, and tolerability.",
-            fields,
-          }
-        }
-      }
-
       return { valid: true, message: "", fields: [] }
     }
 
@@ -462,14 +408,14 @@ function getStepValidation(
         stripePaymentIntentId: formData.stripePaymentIntentId,
         paymentAuthorized: formData.paymentAuthorized,
       }
-      const paymentFields = requireCardPayment
+      const paymentFields = cardPayment
         ? getIntakePaymentInvalidFields(paymentValues)
         : getIntakeIdentityInvalidFields(paymentValues)
       for (const field of paymentFields) add(field)
       if (fields.length > 0) {
         return {
           valid: false,
-          message: requireCardPayment
+          message: cardPayment
             ? "Please upload your ID and authorize the card hold."
             : "Please upload front and back of your photo ID.",
           fields,
@@ -485,7 +431,7 @@ function getStepValidation(
       if (fields.length > 0) {
         return {
           valid: false,
-          message: requireCardPayment
+          message: cardPayment
             ? "Please complete all required telemedicine consents and authorize the card hold."
             : "Please complete all required telemedicine consents and acknowledge pharmacy payment.",
           fields,
@@ -696,9 +642,12 @@ export function WeightLossIntakeForm({
   }, [clearFieldError])
 
   const validateScreening = useCallback(() => {
-    const contra = checkContraindicationHardStop(formData)
-    if (contra.isHardStop) {
-      setHardStop({ active: true, reason: contra.reason })
+    const protocol = validateGlp1Protocol(formData.protocol, {
+      sex: formData.gender,
+      threeMonth: formData.selectedBillingPlan === "quarterly",
+    })
+    if (protocol.hardStop) {
+      setHardStop({ active: true, reason: protocol.hardStop })
       return false
     }
     setHardStop({ active: false, reason: "" })
@@ -748,10 +697,16 @@ export function WeightLossIntakeForm({
   }, [formData.state])
 
   const validateStep = (currentStep: number): boolean => {
-    const result = getStepValidation(formData, bmi, currentStep, {
-      status: visitTimesStatus,
-      message: visitTimesMessage,
-    })
+    const result = getStepValidation(
+      formData,
+      bmi,
+      currentStep,
+      {
+        status: visitTimesStatus,
+        message: visitTimesMessage,
+      },
+      requireCardPayment
+    )
     if (!result.valid) {
       setError(result.message)
       setValidationFields(result.fields)
@@ -766,9 +721,8 @@ export function WeightLossIntakeForm({
   }
 
   const validateScreeningStep = (): boolean => {
-    if (!validateStep(3)) return false
     if (!validateScreening()) return false
-    return true
+    return validateStep(3)
   }
 
   const nextStep = () => {
@@ -831,32 +785,40 @@ export function WeightLossIntakeForm({
           diastolicBP: formData.diastolicBP,
         },
         contraindications: {
-          pregnantOrBreastfeeding: formData.pregnantOrBreastfeeding,
-          mtcOrMen2History: formData.mtcOrMen2History,
-          pancreatitisHistory: formData.pancreatitisHistory,
-          type1Diabetes: formData.type1Diabetes,
-          eatingDisorder: formData.eatingDisorder,
-          onOtherGlp: formData.onOtherGlp,
+          pregnantOrBreastfeeding:
+            formData.protocol.pregnant === "yes" ||
+            formData.protocol.breastfeeding === "yes" ||
+            formData.protocol.pregnancyPlanned === "yes",
+          mtcOrMen2History:
+            formData.protocol.exclusions.includes("mtc") || formData.protocol.exclusions.includes("men2"),
+          pancreatitisHistory: formData.protocol.exclusions.includes("pancreatitis"),
+          type1Diabetes: formData.protocol.exclusions.includes("type1"),
+          eatingDisorder: formData.protocol.exclusions.includes("eating-disorder"),
+          onOtherGlp: formData.protocol.priorGlp4Weeks === "yes",
         },
         medicalHistory: {
-          type2Diabetes: formData.type2Diabetes,
+          type2Diabetes: formData.protocol.exclusions.includes("type2-uncontrolled") ? "yes" : "no",
           hypertension: formData.hypertension,
-          gallbladderDisease: formData.gallbladderDisease,
-          diabeticRetinopathy: formData.diabeticRetinopathy,
+          gallbladderDisease: formData.protocol.exclusions.includes("gallbladder") ? "yes" : "no",
+          diabeticRetinopathy: formData.protocol.exclusions.includes("retinopathy") ? "yes" : "no",
           bariatricSurgery: formData.bariatricSurgery,
           sleepApnea: formData.sleepApnea,
-          cardiovascularDisease: formData.cardiovascularDisease,
-          currentMedications: formData.currentMedications,
-          allergies: formData.allergies,
+          cardiovascularDisease: formData.protocol.exclusions.includes("heart-failure") ? "yes" : "no",
+          currentMedications: formData.protocol.medications,
+          allergies: formData.protocol.allergies,
         },
+        protocol: formData.protocol,
         treatment: {
           selectedProgram: formData.selectedProgram,
           selectedBillingPlan: formData.selectedBillingPlan,
           selectedDoseTier: formData.selectedDoseTier,
-          priorGlpExperience: formatPriorGlpExperience(formData),
+          priorGlpExperience:
+            formData.protocol.priorGlp4Weeks === "yes"
+              ? `GLP-1 in the last 4 weeks. Last dose ${formData.protocol.lastDoseDate || "not dated"}.`
+              : "No GLP-1 in the last 4 weeks",
           weightLossGoals: formData.weightLossGoals,
           comorbidities: formData.comorbidities,
-          additionalConcerns: formData.additionalConcerns,
+          additionalConcerns: formData.protocol.concerns.join(", "),
         },
         visit: requiresSyncVisit(formData.state) ? selectedVisit(formData.visitSlotKey) : null,
         identity: {
@@ -956,16 +918,27 @@ export function WeightLossIntakeForm({
         treatmentLabel={selectedProgram?.name}
         returnHref="/weight-loss"
         returnLabel="Return to Weight Loss"
-        steps={[
-          "You pay on this website before the intake is sent to the doctor",
-          WEIGHT_LOSS_DOCTOR_REVIEW,
-          "You'll receive an email with the decision. If treatment is not approved, you are refunded",
-          WEIGHT_LOSS_PARTNER_FULFILLMENT,
-        ]}
+        steps={
+          requireCardPayment
+            ? [
+                "You pay on this website before the intake is sent to the doctor",
+                WEIGHT_LOSS_DOCTOR_REVIEW,
+                "You'll receive an email with the decision. If treatment is not approved, you are refunded",
+                WEIGHT_LOSS_PARTNER_FULFILLMENT,
+              ]
+            : [
+                `Pay $${holdQuote?.totalBilled ?? ""} by Zelle to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}. Put your name in the memo.`,
+                "Your intake is sent after the payment arrives. If the name on the Zelle screen is different, call (248) 987-6182 and do not send the payment.",
+                "A receipt comes from info@clearchoicepharmacy.com. If treatment is not approved, you are refunded.",
+                WEIGHT_LOSS_DOCTOR_REVIEW,
+                WEIGHT_LOSS_PARTNER_FULFILLMENT,
+              ]
+        }
       >
         <p className="text-sm text-muted-foreground">
-          Thank you for completing your weight loss intake. A licensed doctor reviews it, and a partner pharmacy ships
-          the medication if treatment is approved.
+          {requireCardPayment
+            ? "Thank you for completing your weight loss intake. A licensed doctor reviews it, and a partner pharmacy ships the medication if treatment is approved."
+            : `Thank you for completing your weight loss intake. Pay $${holdQuote?.totalBilled ?? ""} by Zelle to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy.`}
         </p>
       </IntakeSuccessPanel>
     )
@@ -973,7 +946,7 @@ export function WeightLossIntakeForm({
 
   return (
     <div className="space-y-6">
-      <IntakePhysicianCallNotice />
+      <IntakePhysicianCallNotice national />
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
           Step {step} of {totalSteps}
@@ -1179,12 +1152,12 @@ export function WeightLossIntakeForm({
                   priceLine={
                     requireCardPayment
                       ? `Kit: $${holdQuote.totalBilled} · card hold, charged only if approved`
-                      : `Kit: $${holdQuote.totalBilled} · pay at the pharmacy after approval`
+                      : `Kit: $${holdQuote.totalBilled} · pay by Zelle after you submit`
                   }
                   paymentNote={
                     requireCardPayment
                       ? "Prescription required after clinician review. Payment is authorized as a hold and captured only if approved."
-                      : "Prescription required after clinician review. Nothing is charged online. Pay at the pharmacy after approval."
+                      : `Prescription required after clinician review. Pay $${holdQuote.totalBilled} by Zelle at ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}.`
                   }
                   changeHref="/weight-loss#programs"
                 />
@@ -1256,7 +1229,7 @@ export function WeightLossIntakeForm({
                 <Input id="dob" type="date" className={cn(isFieldInvalid("dateOfBirth") && "border-destructive ring-2 ring-destructive")} value={formData.dateOfBirth} onChange={(e) => updateFormData("dateOfBirth", e.target.value)} />
               </div>
               <div className="space-y-2" data-field="gender">
-                <Label htmlFor="wl-gender" className={cn(isFieldInvalid("gender") && "text-destructive")}>Sex *</Label>
+                <Label htmlFor="wl-gender" className={cn(isFieldInvalid("gender") && "text-destructive")}>Sex assigned at birth *</Label>
                 <Select value={formData.gender || undefined} onValueChange={(value) => updateFormData("gender", value as FormData["gender"])}>
                   <SelectTrigger id="wl-gender" className={cn(isFieldInvalid("gender") && "border-destructive ring-2 ring-destructive")}>
                     <SelectValue placeholder="Select sex" />
@@ -1264,7 +1237,6 @@ export function WeightLossIntakeForm({
                   <SelectContent>
                     <SelectItem value="female">Female</SelectItem>
                     <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1342,227 +1314,13 @@ export function WeightLossIntakeForm({
                 <Activity className="h-4 w-4" />
                 <AlertDescription>
                   Calculated BMI: <strong>{bmi.toFixed(1)}</strong>
-                  {bmi >= 30 && " — Eligible for GLP-1 therapy"}
-                  {bmi >= 27 && bmi < 30 && " — Qualifying condition required (BMI 27-30)"}
-                  {bmi < 27 && bmi >= 18 && " — May not meet GLP-1 eligibility criteria"}
+                  {bmiBand(bmi) === "standard" && " — eligible for the standard dosing protocol."}
+                  {bmiBand(bmi) === "micro" && " — eligible for the microdosing protocol only."}
+                  {bmiBand(bmi) === "ineligible" && " — a BMI under 20 is not eligible for this program."}
                 </AlertDescription>
               </Alert>
             )}
 
-            <div
-              data-field="comorbidities"
-              className={cn(
-                "space-y-3 rounded-md transition-colors",
-                isFieldInvalid("comorbidities") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
-              )}
-            >
-              <Label className={cn(isFieldInvalid("comorbidities") && "text-destructive")}>
-                Qualifying conditions (required if BMI 27-30)
-              </Label>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {comorbidityOptions.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={item.id}
-                      checked={formData.comorbidities.includes(item.id)}
-                      onCheckedChange={(checked) => toggleArrayValue("comorbidities", item.id, checked === true)}
-                    />
-                    <Label htmlFor={item.id} className="font-normal cursor-pointer">{item.label}</Label>
-                  </div>
-                ))}
-              </div>
-              {isFieldInvalid("comorbidities") && (
-                <p className="text-xs text-destructive">Select at least one qualifying condition.</p>
-              )}
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="goalWeight">Goal weight (lbs)</Label>
-                <Input id="goalWeight" type="number" value={formData.goalWeightLbs} onChange={(e) => updateFormData("goalWeightLbs", e.target.value)} />
-              </div>
-              <div className="space-y-2" data-field="systolicBP">
-                <Label htmlFor="systolic" className={cn(isFieldInvalid("systolicBP") && "text-destructive")}>Systolic BP *</Label>
-                <Input id="systolic" type="number" className={cn(isFieldInvalid("systolicBP") && "border-destructive ring-2 ring-destructive")} value={formData.systolicBP} onChange={(e) => updateFormData("systolicBP", e.target.value)} />
-              </div>
-              <div className="space-y-2" data-field="diastolicBP">
-                <Label htmlFor="diastolic" className={cn(isFieldInvalid("diastolicBP") && "text-destructive")}>Diastolic BP *</Label>
-                <Input id="diastolic" type="number" className={cn(isFieldInvalid("diastolicBP") && "border-destructive ring-2 ring-destructive")} value={formData.diastolicBP} onChange={(e) => updateFormData("diastolicBP", e.target.value)} />
-              </div>
-            </div>
-
-            <div
-              data-field="priorGlpExperience"
-              className={cn(
-                "space-y-2 rounded-md transition-colors",
-                isFieldInvalid("priorGlpExperience") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
-              )}
-            >
-              <Label className={cn(isFieldInvalid("priorGlpExperience") && "text-destructive")}>Prior GLP-1 experience *</Label>
-              <RadioGroup value={formData.priorGlpExperience} onValueChange={(v) => updateFormData("priorGlpExperience", v)}>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="none" id="glp-none" /><Label htmlFor="glp-none" className="font-normal">Never used GLP-1 medication</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="semaglutide" id="glp-sema" /><Label htmlFor="glp-sema" className="font-normal">Previously used semaglutide</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="tirzepatide" id="glp-tirz" /><Label htmlFor="glp-tirz" className="font-normal">Previously used tirzepatide</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="brand" id="glp-brand" /><Label htmlFor="glp-brand" className="font-normal">Previously used brand-name (Ozempic, Wegovy, Mounjaro, etc.)</Label></div>
-              </RadioGroup>
-              {isFieldInvalid("priorGlpExperience") && (
-                <p className="text-xs text-destructive">Please select your prior GLP-1 experience.</p>
-              )}
-            </div>
-
-            {(needsPriorGlpDetails(formData) && formData.priorGlpExperience !== "none") && (
-              <div className="rounded-lg border p-4 space-y-4 bg-muted/20">
-                <p className="text-sm font-medium">Prior / current GLP-1 details</p>
-                <p className="text-xs text-muted-foreground">
-                  Helps your provider match your current dose instead of restarting at the lowest starter kit when
-                  appropriate.
-                </p>
-                <div
-                  data-field="priorGlpForm"
-                  className={cn(
-                    "space-y-2 rounded-md",
-                    isFieldInvalid("priorGlpForm") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
-                  )}
-                >
-                  <Label className={cn(isFieldInvalid("priorGlpForm") && "text-destructive")}>Form *</Label>
-                  <RadioGroup
-                    value={formData.priorGlpForm}
-                    onValueChange={(v) => updateFormData("priorGlpForm", v)}
-                    className="grid sm:grid-cols-2 gap-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="injectable" id="glp-form-inj" />
-                      <Label htmlFor="glp-form-inj" className="font-normal">
-                        Injectable
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="oral" id="glp-form-oral" />
-                      <Label htmlFor="glp-form-oral" className="font-normal">
-                        Oral / ODT
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2" data-field="priorGlpCurrentDose">
-                    <Label
-                      htmlFor="priorGlpCurrentDose"
-                      className={cn(isFieldInvalid("priorGlpCurrentDose") && "text-destructive")}
-                    >
-                      Current or last weekly dose *
-                    </Label>
-                    <Input
-                      id="priorGlpCurrentDose"
-                      className={cn(isFieldInvalid("priorGlpCurrentDose") && "border-destructive ring-2 ring-destructive")}
-                      value={formData.priorGlpCurrentDose}
-                      onChange={(e) => updateFormData("priorGlpCurrentDose", e.target.value)}
-                      placeholder="e.g. 5 mg weekly, 12.5 mg, 2 mg"
-                    />
-                  </div>
-                  <div className="space-y-2" data-field="priorGlpDuration">
-                    <Label
-                      htmlFor="priorGlpDuration"
-                      className={cn(isFieldInvalid("priorGlpDuration") && "text-destructive")}
-                    >
-                      How long on this therapy *
-                    </Label>
-                    <Input
-                      id="priorGlpDuration"
-                      className={cn(isFieldInvalid("priorGlpDuration") && "border-destructive ring-2 ring-destructive")}
-                      value={formData.priorGlpDuration}
-                      onChange={(e) => updateFormData("priorGlpDuration", e.target.value)}
-                      placeholder="e.g. 3 months"
-                    />
-                  </div>
-                </div>
-                {suggestedDoseTier && suggestedDoseTier !== formData.selectedDoseTier && (
-                  <div className="rounded-md border border-amber-200 bg-amber-50/60 p-3 text-sm">
-                    <p className="text-amber-950">
-                      Suggested weekly dose:{" "}
-                      <span className="font-medium">
-                        {selectedProgram
-                          ? getWeightLossDose(selectedProgram, suggestedDoseTier)?.label
-                          : suggestedDoseTier}
-                      </span>{" "}
-                      (currently {selectedTierMeta?.label ?? formData.selectedDoseTier}).
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => updateFormData("selectedDoseTier", suggestedDoseTier)}
-                    >
-                      Use{" "}
-                      {selectedProgram
-                        ? getWeightLossDose(selectedProgram, suggestedDoseTier)?.label
-                        : suggestedDoseTier}{" "}
-                      pricing
-                    </Button>
-                  </div>
-                )}
-                <div
-                  data-field="priorGlpTolerability"
-                  className={cn(
-                    "space-y-2 rounded-md",
-                    isFieldInvalid("priorGlpTolerability") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
-                  )}
-                >
-                  <Label className={cn(isFieldInvalid("priorGlpTolerability") && "text-destructive")}>
-                    Tolerability *
-                  </Label>
-                  <RadioGroup
-                    value={formData.priorGlpTolerability}
-                    onValueChange={(v) => updateFormData("priorGlpTolerability", v)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="well" id="glp-tol-well" />
-                      <Label htmlFor="glp-tol-well" className="font-normal">
-                        Tolerating well
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="mild-side-effects" id="glp-tol-mild" />
-                      <Label htmlFor="glp-tol-mild" className="font-normal">
-                        Mild side effects
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="significant-side-effects" id="glp-tol-sig" />
-                      <Label htmlFor="glp-tol-sig" className="font-normal">
-                        Significant side effects
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-            )}
-
-            <div
-              data-field="weightLossGoals"
-              className={cn(
-                "space-y-3 rounded-md transition-colors",
-                isFieldInvalid("weightLossGoals") && "ring-2 ring-destructive bg-destructive/5 p-3 -m-1"
-              )}
-            >
-              <Label className={cn(isFieldInvalid("weightLossGoals") && "text-destructive")}>Weight loss goals *</Label>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {weightLossGoalOptions.map((goal) => (
-                  <div key={goal} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={goal}
-                      checked={formData.weightLossGoals.includes(goal)}
-                      onCheckedChange={(checked) => toggleArrayValue("weightLossGoals", goal, checked === true)}
-                    />
-                    <Label htmlFor={goal} className="font-normal cursor-pointer">{goal}</Label>
-                  </div>
-                ))}
-              </div>
-              {isFieldInvalid("weightLossGoals") && (
-                <p className="text-xs text-destructive">Please select at least one goal.</p>
-              )}
-            </div>
           </CardContent>
           <CardFooter className="justify-between">
             <Button variant="outline" onClick={prevStep}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
@@ -1574,185 +1332,23 @@ export function WeightLossIntakeForm({
       {step === 3 && (
         <Card>
           <CardHeader>
-            <CardTitle>Medical Screening</CardTitle>
-            <CardDescription>Answer honestly—this helps our clinical team determine if GLP-1 therapy is safe for you.</CardDescription>
+            <CardTitle>Clinical questionnaire</CardTitle>
+            <CardDescription>
+              These questions follow the GLP-1 prescribing protocol. A clinician licensed in your state uses them to decide whether treatment is appropriate.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 space-y-4">
-              <p className="text-sm font-medium text-destructive">Absolute contraindications — answer carefully</p>
-              <p className="text-sm text-muted-foreground">
-                Check any condition that applies to you. If none apply, check the confirmation box at the bottom of this section.
-              </p>
-              {[
-                { field: "pregnantOrBreastfeeding" as const, label: "Are you pregnant, planning pregnancy, or breastfeeding?" },
-                { field: "mtcOrMen2History" as const, label: "Personal or family history of medullary thyroid cancer or MEN2?" },
-                { field: "pancreatitisHistory" as const, label: "History of pancreatitis?" },
-                { field: "type1Diabetes" as const, label: "Do you have Type 1 diabetes?" },
-                { field: "eatingDisorder" as const, label: "Active eating disorder (anorexia, bulimia, binge eating)?" },
-                { field: "onOtherGlp" as const, label: "Currently taking GLP-1 medication from another provider?" },
-              ].map(({ field, label }) => (
-                <div key={field} className="flex items-start space-x-3">
-                  <Checkbox
-                    id={field}
-                    checked={formData[field]}
-                    onCheckedChange={(checked) => {
-                      const isChecked = checked === true
-                      setFormData((prev) => {
-                        const updated = {
-                          ...prev,
-                          [field]: isChecked,
-                          confirmedNoContraindications: isChecked ? false : prev.confirmedNoContraindications,
-                        }
-                        if (isChecked && field !== "onOtherGlp") {
-                          const check = checkContraindicationHardStop(updated)
-                          if (check.isHardStop) setHardStop({ active: true, reason: check.reason })
-                        }
-                        return updated
-                      })
-                    }}
-                  />
-                  <Label htmlFor={field} className="font-normal cursor-pointer leading-snug">{label}</Label>
-                </div>
-              ))}
-              {formData.onOtherGlp && formData.priorGlpExperience === "none" && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4 space-y-3">
-                  <p className="text-sm font-medium text-amber-950">Current GLP-1 details required</p>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="space-y-2" data-field="priorGlpCurrentDose">
-                      <Label>Current weekly dose *</Label>
-                      <Input
-                        value={formData.priorGlpCurrentDose}
-                        onChange={(e) => updateFormData("priorGlpCurrentDose", e.target.value)}
-                        placeholder="e.g. 10 mg weekly"
-                        className={cn(isFieldInvalid("priorGlpCurrentDose") && "border-destructive")}
-                      />
-                    </div>
-                    <div className="space-y-2" data-field="priorGlpDuration">
-                      <Label>Duration *</Label>
-                      <Input
-                        value={formData.priorGlpDuration}
-                        onChange={(e) => updateFormData("priorGlpDuration", e.target.value)}
-                        placeholder="e.g. 4 months"
-                        className={cn(isFieldInvalid("priorGlpDuration") && "border-destructive")}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2" data-field="priorGlpForm">
-                    <Label>Form *</Label>
-                    <RadioGroup
-                      value={formData.priorGlpForm}
-                      onValueChange={(v) => updateFormData("priorGlpForm", v)}
-                      className="flex flex-wrap gap-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="injectable" id="glp-form-inj-s3" />
-                        <Label htmlFor="glp-form-inj-s3" className="font-normal">
-                          Injectable
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="oral" id="glp-form-oral-s3" />
-                        <Label htmlFor="glp-form-oral-s3" className="font-normal">
-                          Oral / ODT
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="space-y-2" data-field="priorGlpTolerability">
-                    <Label>Tolerability *</Label>
-                    <RadioGroup
-                      value={formData.priorGlpTolerability}
-                      onValueChange={(v) => updateFormData("priorGlpTolerability", v)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="well" id="glp-tol-well-s3" />
-                        <Label htmlFor="glp-tol-well-s3" className="font-normal">
-                          Tolerating well
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="mild-side-effects" id="glp-tol-mild-s3" />
-                        <Label htmlFor="glp-tol-mild-s3" className="font-normal">
-                          Mild side effects
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="significant-side-effects" id="glp-tol-sig-s3" />
-                        <Label htmlFor="glp-tol-sig-s3" className="font-normal">
-                          Significant side effects
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-              )}
-              <div
-                data-field="confirmedNoContraindications"
-                className={cn(
-                  "flex items-start space-x-3 border-t border-destructive/20 pt-4 rounded-md transition-colors",
-                  isFieldInvalid("confirmedNoContraindications") && "ring-2 ring-destructive bg-destructive/10 p-3 -mx-1"
-                )}
-              >
-                <Checkbox
-                  id="confirmedNoContraindications"
-                  checked={formData.confirmedNoContraindications}
-                  onCheckedChange={(checked) => {
-                    const isChecked = checked === true
-                    setFormData((prev) => ({
-                      ...prev,
-                      confirmedNoContraindications: isChecked,
-                      pregnantOrBreastfeeding: isChecked ? false : prev.pregnantOrBreastfeeding,
-                      mtcOrMen2History: isChecked ? false : prev.mtcOrMen2History,
-                      pancreatitisHistory: isChecked ? false : prev.pancreatitisHistory,
-                      type1Diabetes: isChecked ? false : prev.type1Diabetes,
-                      eatingDisorder: isChecked ? false : prev.eatingDisorder,
-                      onOtherGlp: isChecked ? false : prev.onOtherGlp,
-                    }))
-                    if (isChecked) {
-                      setHardStop({ active: false, reason: "" })
-                      clearFieldError("confirmedNoContraindications")
-                    }
-                  }}
-                />
-                <div>
-                  <Label
-                    htmlFor="confirmedNoContraindications"
-                    className={cn("font-medium cursor-pointer leading-snug", isFieldInvalid("confirmedNoContraindications") && "text-destructive")}
-                  >
-                    None of the above apply to me *
-                  </Label>
-                  {isFieldInvalid("confirmedNoContraindications") && (
-                    <p className="text-xs text-destructive mt-1">Please confirm if none of these apply to you.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium text-foreground mb-4">Additional medical history</p>
-              <div className="grid sm:grid-cols-2 gap-6">
-              <YesNoField field="type2Diabetes" label="Type 2 diabetes?" value={formData.type2Diabetes} onChange={(v) => updateFormData("type2Diabetes", v)} hasError={isFieldInvalid("type2Diabetes")} />
-              <YesNoField field="hypertension" label="High blood pressure?" value={formData.hypertension} onChange={(v) => updateFormData("hypertension", v)} hasError={isFieldInvalid("hypertension")} />
-              <YesNoField field="gallbladderDisease" label="Gallbladder disease?" value={formData.gallbladderDisease} onChange={(v) => updateFormData("gallbladderDisease", v)} hasError={isFieldInvalid("gallbladderDisease")} />
-              <YesNoField field="diabeticRetinopathy" label="Diabetic retinopathy?" value={formData.diabeticRetinopathy} onChange={(v) => updateFormData("diabeticRetinopathy", v)} hasError={isFieldInvalid("diabeticRetinopathy")} />
-              <YesNoField field="bariatricSurgery" label="Prior bariatric surgery?" value={formData.bariatricSurgery} onChange={(v) => updateFormData("bariatricSurgery", v)} hasError={isFieldInvalid("bariatricSurgery")} />
-              <YesNoField field="sleepApnea" label="Sleep apnea?" value={formData.sleepApnea} onChange={(v) => updateFormData("sleepApnea", v)} hasError={isFieldInvalid("sleepApnea")} />
-              <YesNoField field="cardiovascularDisease" label="Cardiovascular disease?" value={formData.cardiovascularDisease} onChange={(v) => updateFormData("cardiovascularDisease", v)} hasError={isFieldInvalid("cardiovascularDisease")} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="medications">Current medications</Label>
-              <Textarea id="medications" value={formData.currentMedications} onChange={(e) => updateFormData("currentMedications", e.target.value)} placeholder="List all medications and supplements" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="allergies">Known allergies</Label>
-              <Textarea id="allergies" value={formData.allergies} onChange={(e) => updateFormData("allergies", e.target.value)} placeholder="List any drug or food allergies" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="concerns">Additional concerns</Label>
-              <Textarea id="concerns" value={formData.additionalConcerns} onChange={(e) => updateFormData("additionalConcerns", e.target.value)} />
-            </div>
+          <CardContent>
+            <Glp1ProtocolQuestions
+              answers={formData.protocol}
+              sex={formData.gender}
+              threeMonth={formData.selectedBillingPlan === "quarterly"}
+              invalidFields={fieldErrors}
+              onChange={(protocol) => {
+                setFormData((prev) => ({ ...prev, protocol }))
+                setFieldErrors(new Set())
+                setError("")
+              }}
+            />
           </CardContent>
           <CardFooter className="justify-between">
             <Button variant="outline" onClick={prevStep}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
@@ -1766,7 +1362,9 @@ export function WeightLossIntakeForm({
           <CardHeader>
             <CardTitle>Identity &amp; Consent</CardTitle>
             <CardDescription>
-              Verify your photo ID and pay on this website. A licensed doctor reviews your intake, usually within 24 hours.
+              {requireCardPayment
+                ? "Verify your photo ID and pay on this website. A licensed doctor reviews your intake, usually within 24 hours."
+                : "Verify your photo ID, then pay by Zelle after you submit. A licensed doctor reviews your intake after payment arrives, usually within 24 hours."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -1780,7 +1378,9 @@ export function WeightLossIntakeForm({
                     Kit total: ${holdQuote.totalBilled}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    You pay this amount on this website. If a doctor does not approve treatment, you are refunded.
+                    {requireCardPayment
+                      ? "You pay this amount on this website. If a doctor does not approve treatment, you are refunded."
+                      : `Pay this amount by Zelle to ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}. If a doctor does not approve treatment, you are refunded.`}
                     {holdQuote.liveVisitAddon > 0
                       ? ` A $${holdQuote.liveVisitAddon} live-visit add-on may be added on monthly billing if your clinician requires a live visit.`
                       : " The live-visit add-on is waived on a 90-day supply."}
@@ -1902,9 +1502,20 @@ export function WeightLossIntakeForm({
                     isFieldInvalid("authorizeHold") && "text-destructive"
                   )}
                 >
-                  I agree to pay <strong>${holdQuote?.totalBilled ?? 0}</strong> on this website for my{" "}
-                  {selectedTierMeta?.label ?? "selected"} kit(s). This amount is charged only if a doctor approves
-                  treatment. If treatment is not approved, I am refunded. *
+                  {requireCardPayment ? (
+                    <>
+                      I agree to pay <strong>${holdQuote?.totalBilled ?? 0}</strong> on this website for my{" "}
+                      {selectedTierMeta?.label ?? "selected"} kit(s). This amount is charged only if a doctor approves
+                      treatment. If treatment is not approved, I am refunded. *
+                    </>
+                  ) : (
+                    <>
+                      I will pay <strong>${holdQuote?.totalBilled ?? 0}</strong> by Zelle to {ZELLE_PAYMENT_EMAIL} after
+                      I submit, for my {selectedTierMeta?.label ?? "selected"} kit(s). The payment will show as{" "}
+                      {LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy. If treatment is not approved, I
+                      will be refunded. *
+                    </>
+                  )}
                 </Label>
               </div>
               <p className="text-xs text-muted-foreground">{weightLossPaymentPatientNote()}</p>

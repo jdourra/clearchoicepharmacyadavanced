@@ -17,7 +17,7 @@ export default function RefundPolicyPage() {
     <LegalPageShell title="Refund Policy">
       <p>Last updated: October 2026</p>
       <p>
-        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 8278 N Merriman Rd, Westland, MI 48185. Michigan
+        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 8276 N Merriman Rd, Westland, MI 48185. Michigan
         pharmacy license {MICHIGAN_PHARMACY_LICENSE}. Pharmacist-in-charge: {PHARMACIST_IN_CHARGE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
@@ -34,8 +34,9 @@ export default function RefundPolicyPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Medications Clear Choice Pharmacy dispenses</h2>
       <p>
-        Men&apos;s health and other prescriptions filled at our Westland pharmacy are
-        for Michigan patients. If a prescription is not approved, you are not charged for medication that was not
+        Prescriptions filled at our Westland pharmacy are for Michigan patients. ED medication and hormone therapy
+        approved through this website are filled by a pharmacy licensed in the patient&apos;s state. If a prescription is
+        not approved, you are not charged for medication that was not
         dispensed. Once compounding or dispensing has started, that order is not refundable. A dispensed compounded
         prescription cannot be returned.
       </p>

@@ -26,6 +26,7 @@ export type WeightLossOlaHandoffInput = {
   schedule: { scheduleStart: string; scheduleEnd: string; providerGuid: string } | null
   idFrontKey: string | null
   idBackKey: string | null
+  medicationPhotoKeys?: string[]
 }
 
 export type WeightLossOlaHandoffResult = {
@@ -161,10 +162,12 @@ export async function handoffWeightLossToOla(
   }
 
   const files: { filename: string; contentType: string; body: Buffer }[] = []
-  for (const [key, filename] of [
+  const uploads: [string | null | undefined, string][] = [
     [input.idFrontKey, "id-front"],
     [input.idBackKey, "id-back"],
-  ] as const) {
+    ...(input.medicationPhotoKeys || []).map((key, index) => [key, `medication-${index + 1}`] as [string, string]),
+  ]
+  for (const [key, filename] of uploads) {
     if (!key) continue
     const loaded = await fetchIdDocument(key)
     if (!loaded.ok) continue
