@@ -193,13 +193,13 @@ export async function uploadOlaConsultFiles(
   if (!config) throw new OlaApiError("Clinician network is not configured", 503)
   const token = await accessToken(config)
   const form = new FormData()
-  for (const file of files) {
+  files.forEach((file, index) => {
     form.append(
-      "files",
+      `file${index + 1}`,
       new Blob([new Uint8Array(file.body)], { type: file.contentType || "application/octet-stream" }),
       file.filename
     )
-  }
+  })
 
   const response = await fetch(
     `${config.baseUrl}/api/v1/service/consults/${encodeURIComponent(orderGuid)}/upload-files`,

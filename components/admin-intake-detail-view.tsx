@@ -331,7 +331,7 @@ export function AdminIntakeDetailView({
       setReviewMessage(
         result.alreadySent
           ? "This intake was already sent."
-          : "Zelle payment confirmed. The intake was sent for clinician review."
+          : String(result.detail || "Zelle payment confirmed. The intake was sent for clinician review.")
       )
       router.refresh()
     } catch (err) {
