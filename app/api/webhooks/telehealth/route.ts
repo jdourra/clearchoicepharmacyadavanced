@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createHmac, timingSafeEqual } from "crypto"
+import { createHash, createHmac, timingSafeEqual } from "crypto"
+import { applyOlaWebhook, readOlaWebhook } from "@/lib/ola/apply-ola-webhook"
 import { applyIvWebhookEvent } from "@/lib/telehealth/iv-status"
 import type { ClinicalServiceType, TelehealthWebhookEvent } from "@/lib/telehealth/types"
 
@@ -11,6 +12,12 @@ import type { ClinicalServiceType, TelehealthWebhookEvent } from "@/lib/teleheal
  *
  * Set TELEHEALTH_WEBHOOK_SECRET; partner sends header x-telehealth-signature (HMAC-SHA256).
  */
+
+function apiKeysMatch(provided: string, expected: string): boolean {
+  const left = createHash("sha256").update(provided).digest()
+  const right = createHash("sha256").update(expected).digest()
+  return timingSafeEqual(left, right)
+}
 
 function verifyWebhookSignature(rawBody: string, signature: string | null): boolean {
   const secret = process.env.TELEHEALTH_WEBHOOK_SECRET
@@ -53,17 +60,31 @@ function parseWebhookEvent(body: unknown): TelehealthWebhookEvent | null {
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text()
-  const signature = request.headers.get("x-telehealth-signature")
-
-  if (!verifyWebhookSignature(rawBody, signature)) {
-    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 })
-  }
 
   let body: unknown
   try {
     body = JSON.parse(rawBody)
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+  }
+
+  const olaEvent = readOlaWebhook(body)
+  if (olaEvent) {
+    const expectedKey = process.env.OLA_WEBHOOK_API_KEY?.trim() || ""
+    const providedKey = request.headers.get("x-api-key")?.trim() || ""
+    if (!expectedKey || !providedKey || !apiKeysMatch(providedKey, expectedKey)) {
+      return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 })
+    }
+    const updated = await applyOlaWebhook(olaEvent)
+    if (!updated) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 })
+    }
+    return NextResponse.json({ received: true, caseId: olaEvent.caseId, event: olaEvent.eventType })
+  }
+
+  const signature = request.headers.get("x-telehealth-signature")
+  if (!verifyWebhookSignature(rawBody, signature)) {
+    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 })
   }
 
   const event = parseWebhookEvent(body)

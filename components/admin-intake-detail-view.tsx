@@ -33,6 +33,7 @@ import {
 import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
+import { olaDecisionNotice } from "@/lib/ola/webhook-decision"
 import { staffAuthFetch } from "@/lib/staff-session"
 import {
   buildWeightLossApprovalNote,
@@ -292,10 +293,8 @@ export function AdminIntakeDetailView({
   const payAtPharmacy =
     isWeightLoss &&
     (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
-  const alreadySentToClinician =
-    isWeightLoss &&
-    String(detail.partner_status ?? "") === "sent_to_clinician_network" &&
-    Boolean(detail.partner_case_id)
+  const clinicianDecision = isWeightLoss ? olaDecisionNotice(String(detail.ola_decision ?? "")) : null
+  const alreadySentToClinician = isWeightLoss && Boolean(String(detail.partner_case_id ?? "").trim())
   const canConfirmZelle =
     isWeightLoss &&
     !hasStripeHold &&
@@ -770,6 +769,18 @@ export function AdminIntakeDetailView({
                         Send the intake only after that deposit is in the bank.
                       </p>
                     )}
+                    {clinicianDecision ? (
+                      <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm space-y-1">
+                        <p className="font-medium">{clinicianDecision.title}</p>
+                        <p>{clinicianDecision.body}</p>
+                        {detail.ola_decision_detail ? <p>{String(detail.ola_decision_detail)}</p> : null}
+                        {detail.ola_decision_at ? (
+                          <p className="text-xs text-muted-foreground">
+                            Received {new Date(String(detail.ola_decision_at)).toISOString()}
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
                     {isWeightLoss && (alreadySentToClinician || zelleReceipt) ? (
                       <div className="mt-3 rounded-md border bg-muted/40 p-3 text-sm space-y-1">
                         <p className="font-medium">Sent for clinician review</p>
