@@ -72,8 +72,8 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                   Complete Your GLP Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for Semaglutide or Tirzepatide. {weightLossHowYouPay()} A licensed doctor
-                  usually reviews your intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
+                  Finish your secure intake for Semaglutide or Tirzepatide. A licensed doctor usually reviews your
+                  intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
                   {requireOnlinePayment ? WEIGHT_LOSS_INTAKE_HOLD_NOTE : weightLossPaymentPatientNote()}
                 </p>
               </div>
