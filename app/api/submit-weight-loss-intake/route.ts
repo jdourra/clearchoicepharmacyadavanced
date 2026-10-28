@@ -27,9 +27,11 @@ import { parseUsState, requiresSyncVisit } from "@/lib/us-states"
 import {
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
+  getWeightLossIntakeHoldQuote,
   WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED,
 } from "@/lib/weight-loss-catalog"
 import { snapshotBillingKitCountForNewIntake } from "@/lib/weight-loss-dose-review"
+import { sendWeightLossZellePaymentEmail } from "@/lib/weight-loss-zelle-payment-email"
 import {
   formatInjectionConsentsSummary,
   validateInjectionTelehealthConsents,
@@ -758,6 +760,22 @@ export async function POST(request: NextRequest) {
       subject: `[WEIGHT_LOSS ${submissionId}] Ready for the clinician network — ${data.patientInfo.firstName} ${data.patientInfo.lastName}`,
       body: `${clinicalSummary}\nClinician network: ${handoffDetail}\n`,
     })
+
+    if (!paymentReceived) {
+      const billingPlan = data.treatmentInfo.selectedBillingPlan === "quarterly" ? "quarterly" : "monthly"
+      const quote = getWeightLossIntakeHoldQuote(
+        data.treatmentInfo.selectedProgram,
+        billingPlan,
+        data.treatmentInfo.selectedDoseTier,
+        { kitsIncluded: snapshotBillingKitCountForNewIntake(billingPlan) }
+      )
+      await sendWeightLossZellePaymentEmail({
+        to: data.patientInfo.email,
+        patientName: `${data.patientInfo.firstName} ${data.patientInfo.lastName}`.trim(),
+        submissionId,
+        amount: quote?.totalBilled,
+      })
+    }
 
     return NextResponse.json(
       {
