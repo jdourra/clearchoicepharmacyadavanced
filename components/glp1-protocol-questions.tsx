@@ -331,6 +331,20 @@ export function Glp1ProtocolQuestions({ answers, sex, threeMonth, invalidFields,
         </div>
       )}
 
+      <Field id="clinicianNote" invalid={false}>
+        <Label htmlFor="clinician-note">Optional note for the clinician</Label>
+        <p className="text-sm text-muted-foreground">
+          A clinician reads this and still decides the dose. Leave it blank if you have nothing to add.
+        </p>
+        <Textarea
+          id="clinician-note"
+          value={answers.clinicianNote ?? ""}
+          maxLength={1000}
+          onChange={(event) => patch({ clinicianNote: event.target.value.slice(0, 1000) })}
+          placeholder="For example, the dose you were taking, side effects, or why you chose this kit."
+        />
+      </Field>
+
       <Field id="glpAck" invalid={invalid("glpAck")}>
         <Label className={cn(invalid("glpAck") && "text-destructive")}>GLP-1 medication acknowledgment</Label>
         <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">

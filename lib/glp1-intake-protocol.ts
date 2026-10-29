@@ -128,6 +128,7 @@ export type Glp1ProtocolAnswers = {
   glpAck: ConsentChoice
   compoundingAck: ConsentChoice
   preventiveAck: ConsentChoice
+  clinicianNote: string
 }
 
 export function emptyGlp1Protocol(): Glp1ProtocolAnswers {
@@ -162,6 +163,7 @@ export function emptyGlp1Protocol(): Glp1ProtocolAnswers {
     glpAck: "",
     compoundingAck: "",
     preventiveAck: "",
+    clinicianNote: "",
   }
 }
 
@@ -499,6 +501,11 @@ export function protocolQuestionPairs(
             : `${options.bmi.toFixed(1)} — 23 or higher, standard dosing protocol`,
     })
   }
+  const clinicianNote = answers.clinicianNote.trim().slice(0, 1000)
+  pairs.push({
+    question: "Optional note for the clinician",
+    answer: clinicianNote || "None",
+  })
   pairs.push(
     { question: "GLP-1 medication acknowledgment", answer: answers.glpAck === "agree" ? "I agree and consent to treatment" : "Not agreed" },
     { question: "Compounding informed consent", answer: answers.compoundingAck === "agree" ? "I acknowledge and consent to receiving compounded medication" : "Not agreed" },
@@ -563,5 +570,6 @@ export function parseGlp1Protocol(value: unknown): Glp1ProtocolAnswers {
     glpAck: consent("glpAck"),
     compoundingAck: consent("compoundingAck"),
     preventiveAck: consent("preventiveAck"),
+    clinicianNote: typeof raw.clinicianNote === "string" ? raw.clinicianNote.slice(0, 1000) : "",
   }
 }
