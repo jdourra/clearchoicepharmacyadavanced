@@ -103,7 +103,6 @@ export async function POST(request: Request, { params }: RouteParams) {
         doseLabel: dose?.label || String(intake.selected_dose_tier || ""),
         allergies: String(intake.allergies || ""),
         paymentOnFile: true,
-        paymentNote: "Paid by Zelle to Clear Choice Pharmacy. Staff confirmed the payment before this consult was sent.",
         questions: [
           { question: "Program", answer: program },
           { question: "Billing plan", answer: billingPlan },

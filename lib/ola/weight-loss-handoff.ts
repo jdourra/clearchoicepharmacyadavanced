@@ -28,7 +28,6 @@ export type WeightLossOlaHandoffInput = {
   idBackKey: string | null
   medicationPhotoKeys?: string[]
   existingPatientGuid?: string | null
-  paymentNote?: string
 }
 
 export type WeightLossOlaHandoffResult = {
@@ -147,10 +146,6 @@ export async function handoffWeightLossToOla(
       questions: [
         ...input.questions.map((item) => ({ question_text: item.question, answer: item.answer })),
         { question_text: "Selected dose", answer: input.doseLabel || "Not selected" },
-        {
-          question_text: "Payment collected by Clear Choice Pharmacy",
-          answer: input.paymentNote || (input.paymentOnFile ? "yes" : "not yet"),
-        },
       ],
       serviceKey: service.serviceKey,
       sessionType: "initial",
