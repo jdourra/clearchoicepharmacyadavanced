@@ -22,7 +22,7 @@ export type WeightLossOlaHandoffInput = {
   doseLabel: string
   allergies: string
   paymentOnFile: boolean
-  questions: { question: string; answer: string }[]
+  questions: { question: string; answer: string; options?: string[] }[]
   schedule: { scheduleStart: string; scheduleEnd: string; providerGuid: string } | null
   idFrontKey: string | null
   idBackKey: string | null
@@ -144,7 +144,11 @@ export async function handoffWeightLossToOla(
     orderGuid = await createOlaConsult({
       patientGuid,
       questions: [
-        ...input.questions.map((item) => ({ question_text: item.question, answer: item.answer })),
+        ...input.questions.map((item) => ({
+          question_text: item.question,
+          answer: item.answer,
+          ...(item.options && item.options.length > 0 ? { selection_option: item.options.join("; ") } : {}),
+        })),
         { question_text: "Selected dose", answer: input.doseLabel || "Not selected" },
       ],
       serviceKey: service.serviceKey,

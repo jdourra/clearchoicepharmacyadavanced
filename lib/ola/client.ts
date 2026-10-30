@@ -127,7 +127,7 @@ export async function createOlaPatient(input: OlaPatientInput): Promise<string> 
 
 export type OlaConsultInput = {
   patientGuid: string
-  questions: { question_text: string; answer: string }[]
+  questions: { question_text: string; answer: string; selection_option?: string }[]
   serviceKey: string
   sessionType: "initial" | "sync"
   scheduleType: "subscription" | "one-time"

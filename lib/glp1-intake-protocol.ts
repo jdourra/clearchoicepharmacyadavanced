@@ -28,7 +28,7 @@ export const GLP1_CONCERNS = [
   { id: "nausea", label: "I am concerned about nausea and other gastrointestinal side effects" },
   { id: "fatty-liver", label: "I have a history of fatty liver disease" },
   { id: "muscle", label: "I am concerned about muscle loss during weight loss" },
-  { id: "none", label: "None of the above" },
+  { id: "none", label: "None of these apply to me. A compounded prescription cannot be offered without one of the concerns above." },
 ] as const
 
 export const GLP1_ALCOHOL = [
@@ -317,18 +317,18 @@ export function validateGlp1Protocol(
 
   if (answers.concerns.length === 0) {
     fields.push("concerns")
-    return fail("Please select the concerns that apply, or None of the above.")
+    return fail('Please select each concern that applies. If none apply, select "None of these apply to me."')
   }
   if (answers.concerns.length === 1 && answers.concerns[0] === "none") {
     fields.push("concerns")
     return fail(
-      "Based on your answers, a compounded form of this medication cannot be justified at this time. Review the concern list if one of those applies to you.",
-      "Based on your answers, a compounded form of this medication cannot be justified at this time. Please review your answers about concerns with GLP-1 treatment."
+      'A compounded prescription cannot be offered unless at least one of the concerns above applies to you. If one does, uncheck "None of these apply to me" and select it.',
+      'A compounded prescription cannot be offered unless at least one of the concerns above applies to you. If one does, uncheck "None of these apply to me" and select it.'
     )
   }
   if (answers.concerns.includes("none") && answers.concerns.length > 1) {
     fields.push("concerns")
-    return fail('Choose either specific concerns or "None of the above," not both.')
+    return fail('Uncheck "None of these apply to me" if one of the concerns above applies to you.')
   }
 
   if (answers.priorGlp4Weeks !== "yes" && answers.priorGlp4Weeks !== "no") {
@@ -402,92 +402,112 @@ export function validateGlp1Protocol(
   return { ok: true, hardStop: "", message: "", fields: [] }
 }
 
+export type ProtocolQuestionPair = {
+  question: string
+  answer: string
+  options?: string[]
+}
+
+const YES_NO_OPTIONS = ["Yes", "No"]
+const READ_OR_STOP_OPTIONS = [
+  "I have read and understand this information",
+  "I do not wish to proceed at this time",
+]
+const DOSE_OPTIONS = GLP1_DOSE_PREFERENCES.map((option) => option.label)
+
+function choiceLabels(list: readonly { label: string }[]): string[] {
+  return list.map((option) => option.label)
+}
+
+function asked(question: string, answer: string, options?: readonly string[]): ProtocolQuestionPair {
+  return options && options.length > 0 ? { question, answer, options: [...options] } : { question, answer }
+}
+
 export function protocolQuestionPairs(
   answers: Glp1ProtocolAnswers,
   options: { sex: string; threeMonth: boolean; bmi: number | null }
-): { question: string; answer: string }[] {
+): ProtocolQuestionPair[] {
   const yesNo = (value: YesNo) => (value === "yes" ? "Yes" : value === "no" ? "No" : "Not answered")
-  const pairs: { question: string; answer: string }[] = [
-    { question: "Do you consent to telehealth visits?", answer: yesNo(answers.telehealthConsent) },
-    {
-      question: "Do you currently have, or have you ever been diagnosed with, any of the listed exclusion conditions?",
-      answer: answers.exclusions.map((id) => labelFor(GLP1_EXCLUSIONS, id)).join("; ") || "Not answered",
-    },
-    {
-      question: "Do you currently have an active substance use disorder, or are you in active treatment for one?",
-      answer: yesNo(answers.substanceUse),
-    },
-    {
-      question: "How often do you drink alcohol?",
-      answer: labelFor(GLP1_ALCOHOL, answers.alcohol),
-    },
-    { question: "Are you currently pregnant?", answer: yesNo(answers.pregnant) },
-    { question: "Are you currently breastfeeding or bottle-feeding with breast milk?", answer: yesNo(answers.breastfeeding) },
-    { question: "Are you planning to become pregnant within the next 2 months?", answer: yesNo(answers.pregnancyPlanned) },
-    { question: "Please list all medications you currently take, including supplements.", answer: answers.medications || "Not answered" },
-    { question: "Please list any allergies you have.", answer: answers.allergies || "Not answered" },
-    { question: "Do you currently take an oral contraceptive?", answer: yesNo(answers.oralContraceptive) },
+  const pairs: ProtocolQuestionPair[] = [
+    asked("Do you consent to telehealth visits?", yesNo(answers.telehealthConsent), YES_NO_OPTIONS),
+    asked(
+      "Do you currently have, or have you ever been diagnosed with, any of the listed exclusion conditions?",
+      answers.exclusions.map((id) => labelFor(GLP1_EXCLUSIONS, id)).join("; ") || "Not answered",
+      choiceLabels(GLP1_EXCLUSIONS)
+    ),
+    asked(
+      "Do you currently have an active substance use disorder, or are you in active treatment for one?",
+      yesNo(answers.substanceUse),
+      YES_NO_OPTIONS
+    ),
+    asked("How often do you drink alcohol?", labelFor(GLP1_ALCOHOL, answers.alcohol), choiceLabels(GLP1_ALCOHOL)),
+    asked("Are you currently pregnant?", yesNo(answers.pregnant), YES_NO_OPTIONS),
+    asked("Are you currently breastfeeding or bottle-feeding with breast milk?", yesNo(answers.breastfeeding), YES_NO_OPTIONS),
+    asked("Are you planning to become pregnant within the next 2 months?", yesNo(answers.pregnancyPlanned), YES_NO_OPTIONS),
+    asked("Please list all medications you currently take, including supplements.", answers.medications || "Not answered"),
+    asked("Please list any allergies you have.", answers.allergies || "Not answered"),
+    asked("Do you currently take an oral contraceptive?", yesNo(answers.oralContraceptive), YES_NO_OPTIONS),
   ]
   if (answers.oralContraceptive === "yes") {
-    pairs.push({ question: "Oral contraceptive acknowledgment", answer: answers.ocpAck === "ack" ? "Acknowledged" : "Not acknowledged" })
+    pairs.push(asked("Oral contraceptive acknowledgment", answers.ocpAck === "ack" ? "Acknowledged" : "Not acknowledged", READ_OR_STOP_OPTIONS))
   }
-  pairs.push({ question: "Do you currently take a thyroid hormone medication?", answer: yesNo(answers.thyroidMed) })
+  pairs.push(asked("Do you currently take a thyroid hormone medication?", yesNo(answers.thyroidMed), YES_NO_OPTIONS))
   if (answers.thyroidMed === "yes") {
-    pairs.push({ question: "Levothyroxine acknowledgment", answer: answers.thyroidAck === "ack" ? "Acknowledged" : "Not acknowledged" })
+    pairs.push(asked("Levothyroxine acknowledgment", answers.thyroidAck === "ack" ? "Acknowledged" : "Not acknowledged", READ_OR_STOP_OPTIONS))
   }
-  pairs.push({ question: "Do you currently take warfarin (Coumadin)?", answer: yesNo(answers.warfarin) })
+  pairs.push(asked("Do you currently take warfarin (Coumadin)?", yesNo(answers.warfarin), YES_NO_OPTIONS))
   if (answers.warfarin === "yes") {
-    pairs.push({ question: "Warfarin acknowledgment", answer: answers.warfarinAck === "ack" ? "Acknowledged" : "Not acknowledged" })
+    pairs.push(asked("Warfarin acknowledgment", answers.warfarinAck === "ack" ? "Acknowledged" : "Not acknowledged", READ_OR_STOP_OPTIONS))
   }
   if (options.sex === "female") {
-    pairs.push({ question: "What form of contraception are you currently using?", answer: answers.contraception || "Not answered" })
+    pairs.push(asked("What form of contraception are you currently using?", answers.contraception || "Not answered", GLP1_CONTRACEPTION))
     if (
       answers.contraception === "Not using any contraception" ||
       answers.contraception === "Barrier method (condoms, sponges, diaphragm)"
     ) {
-      pairs.push({
-        question: "Contraception and pregnancy-risk acknowledgment",
-        answer: answers.contraceptionAck ? "Acknowledged" : "Not acknowledged",
-      })
+      pairs.push(
+        asked(
+          "Contraception and pregnancy-risk acknowledgment",
+          answers.contraceptionAck ? "Acknowledged" : "Not acknowledged",
+          ["I have read and understand this information"]
+        )
+      )
     }
   }
-  pairs.push({
-    question: "Which compounded-medication concerns apply to you?",
-    answer: answers.concerns.map((id) => labelFor(GLP1_CONCERNS, id)).join("; ") || "Not answered",
-  })
-  pairs.push({
-    question: "Have you taken GLP-1 medications in the last 4 weeks?",
-    answer: yesNo(answers.priorGlp4Weeks),
-  })
+  pairs.push(
+    asked(
+      "Which compounded-medication concerns apply to you?",
+      answers.concerns.map((id) => labelFor(GLP1_CONCERNS, id)).join("; ") || "Not answered",
+      choiceLabels(GLP1_CONCERNS)
+    )
+  )
+  pairs.push(asked("Have you taken GLP-1 medications in the last 4 weeks?", yesNo(answers.priorGlp4Weeks), YES_NO_OPTIONS))
   if (answers.priorGlp4Weeks === "yes") {
     pairs.push(
-      { question: "Date of last GLP-1 dose", answer: answers.lastDoseDate || "Not answered" },
-      { question: "Have you been taking this medication as prescribed?", answer: yesNo(answers.takingAsPrescribed) }
+      asked("Date of last GLP-1 dose", answers.lastDoseDate || "Not answered"),
+      asked("Have you been taking this medication as prescribed?", yesNo(answers.takingAsPrescribed), YES_NO_OPTIONS)
     )
     if (answers.takingAsPrescribed === "no") {
-      pairs.push({ question: "How have you been taking your medication?", answer: answers.takingAsPrescribedDetail || "Not answered" })
+      pairs.push(asked("How have you been taking your medication?", answers.takingAsPrescribedDetail || "Not answered"))
     }
-    pairs.push({
-      question: "Medication label photos uploaded",
-      answer: String(answers.medicationPhotoKeys.length),
-    })
+    pairs.push(asked("Medication label photos uploaded", String(answers.medicationPhotoKeys.length)))
   }
   const doseLabel = (value: DosePreference) => labelFor(GLP1_DOSE_PREFERENCES, value)
   if (!options.threeMonth && answers.priorGlp4Weeks === "yes") {
-    pairs.push({ question: "Dose preference for this prescription", answer: doseLabel(answers.dosePreference) })
+    pairs.push(asked("Dose preference for this prescription", doseLabel(answers.dosePreference), DOSE_OPTIONS))
   }
   if (options.threeMonth) {
     if (answers.priorGlp4Weeks === "yes") {
-      pairs.push({ question: "Dose preference for month 1", answer: doseLabel(answers.month1Preference) })
+      pairs.push(asked("Dose preference for month 1", doseLabel(answers.month1Preference), DOSE_OPTIONS))
     } else {
-      pairs.push({ question: "Dose preference for month 1", answer: "Starting dose. No GLP-1 use in the last 4 weeks." })
+      pairs.push(asked("Dose preference for month 1", "Starting dose. No GLP-1 use in the last 4 weeks."))
     }
     pairs.push(
-      { question: "Dose preference for month 2", answer: doseLabel(answers.month2Preference) },
-      { question: "Dose preference for month 3", answer: doseLabel(answers.month3Preference) }
+      asked("Dose preference for month 2", doseLabel(answers.month2Preference), DOSE_OPTIONS),
+      asked("Dose preference for month 3", doseLabel(answers.month3Preference), DOSE_OPTIONS)
     )
   } else if (answers.priorGlp4Weeks === "no") {
-    pairs.push({ question: "Dose preference for this prescription", answer: "Starting dose. No GLP-1 use in the last 4 weeks." })
+    pairs.push(asked("Dose preference for this prescription", "Starting dose. No GLP-1 use in the last 4 weeks."))
   }
   if (options.bmi != null) {
     const band = bmiBand(options.bmi)
@@ -507,10 +527,22 @@ export function protocolQuestionPairs(
     answer: clinicianNote || "None",
   })
   pairs.push(
-    { question: "GLP-1 medication acknowledgment", answer: answers.glpAck === "agree" ? "I agree and consent to treatment" : "Not agreed" },
-    { question: "Compounding informed consent", answer: answers.compoundingAck === "agree" ? "I acknowledge and consent to receiving compounded medication" : "Not agreed" },
-    { question: "Preventive health screening acknowledgment", answer: answers.preventiveAck === "agree" ? "I acknowledge and agree" : "Not agreed" },
-    { question: "Preferred pharmacy", answer: "Pharmacy licensed to dispense in the patient's state" }
+    asked(
+      "GLP-1 medication acknowledgment",
+      answers.glpAck === "agree" ? "I agree and consent to treatment" : "Not agreed",
+      ["I agree and consent to treatment", "I do not agree"]
+    ),
+    asked(
+      "Compounding informed consent",
+      answers.compoundingAck === "agree" ? "I acknowledge and consent to receiving compounded medication" : "Not agreed",
+      ["I acknowledge and consent to receiving compounded medication", "I do not consent"]
+    ),
+    asked(
+      "Preventive health screening acknowledgment",
+      answers.preventiveAck === "agree" ? "I acknowledge and agree" : "Not agreed",
+      ["I acknowledge and agree", "I do not agree"]
+    ),
+    asked("Preferred pharmacy", "Pharmacy licensed to dispense in the patient's state")
   )
   return pairs
 }
