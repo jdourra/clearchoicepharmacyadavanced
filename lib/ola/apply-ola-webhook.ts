@@ -39,6 +39,7 @@ export async function applyOlaWebhook(event: OlaWebhookBody): Promise<boolean> {
   await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS ola_decision TEXT`, []).catch(() => [])
   await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS ola_decision_detail TEXT`, []).catch(() => [])
   await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS ola_decision_at TIMESTAMPTZ`, []).catch(() => [])
+  await sql(`ALTER TABLE weight_loss_intake ADD COLUMN IF NOT EXISTS ola_resend_case_id TEXT`, []).catch(() => [])
 
   const rows = await sql(
     `UPDATE weight_loss_intake
@@ -53,7 +54,7 @@ export async function applyOlaWebhook(event: OlaWebhookBody): Promise<boolean> {
            ELSE $5
          END,
          updated_at = NOW()
-     WHERE partner_case_id = $1
+     WHERE partner_case_id = $1 OR ola_resend_case_id = $1
      RETURNING id`,
     [event.caseId, event.eventType, mapped.decision, event.detail, mapped.status]
   )

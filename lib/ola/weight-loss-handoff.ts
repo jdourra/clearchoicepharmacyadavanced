@@ -144,11 +144,14 @@ export async function handoffWeightLossToOla(
     orderGuid = await createOlaConsult({
       patientGuid,
       questions: [
-        ...input.questions.map((item) => ({
-          question_text: item.question,
-          answer: item.answer,
-          ...(item.options && item.options.length > 0 ? { selection_option: item.options.join("; ") } : {}),
-        })),
+        ...input.questions.map((item) => {
+          const choices = item.options && item.options.length > 0 ? item.options.join("; ") : ""
+          return {
+            question_text: item.question,
+            answer: item.answer,
+            ...(choices ? { other_text: choices, selection_option: choices } : {}),
+          }
+        }),
         { question_text: "Selected dose", answer: input.doseLabel || "Not selected" },
       ],
       serviceKey: service.serviceKey,
