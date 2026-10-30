@@ -145,11 +145,11 @@ export async function handoffWeightLossToOla(
       patientGuid,
       questions: [
         ...input.questions.map((item) => {
-          const choices = item.options && item.options.length > 0 ? item.options.join("; ") : ""
+          const choices = item.options && item.options.length > 0 ? `Options: ${item.options.join(" | ")}` : ""
           return {
             question_text: item.question,
             answer: item.answer,
-            ...(choices ? { other_text: choices, selection_option: choices } : {}),
+            ...(choices ? { other_text: choices } : {}),
           }
         }),
         { question_text: "Selected dose", answer: input.doseLabel || "Not selected" },
