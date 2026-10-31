@@ -10,7 +10,6 @@ export const LEGAL_BUSINESS_NAME = "LNR Associates LLC"
 export const PHARMACY_DBA = "Clear Choice Pharmacy"
 /** Zelle identifier enrolled on the pharmacy business account. The transfer shows LEGAL_BUSINESS_NAME. */
 export const ZELLE_PAYMENT_EMAIL = "payment@clearchoicepharmacy.com"
-export const PHARMACIST_IN_CHARGE = "Joseph Dourra"
 export const MICHIGAN_PHARMACY_LICENSE = "5301013716"
 
 /**

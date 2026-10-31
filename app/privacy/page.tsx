@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <p>Last updated: October 2026</p>
       <p>
         LNR Associates LLC, doing business as Clear Choice Pharmacy, protects health information in accordance with
-        HIPAA and applicable state law. Michigan pharmacy license 5301013716. Pharmacist-in-charge: Joseph Dourra.
+        HIPAA and applicable state law. Michigan pharmacy license 5301013716.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Information we collect</h2>
       <p>

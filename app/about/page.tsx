@@ -9,7 +9,7 @@ import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
 export const metadata: Metadata = {
   title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
   description:
-    "LNR Associates LLC, doing business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy license 5301013716. Pharmacist-in-charge Joseph Dourra.",
+    "LNR Associates LLC, doing business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy license 5301013716.",
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
               LNR Associates LLC does business as Clear Choice Pharmacy, a compounding and retail pharmacy in Westland,
-              Michigan. Michigan pharmacy license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
+              Michigan. Michigan pharmacy license 5301013716. We dispense
               prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
               clinician licensed in the patient's state and filled by a pharmacy licensed to dispense there. Clear
               Choice does not dispense those medications under its Michigan license.

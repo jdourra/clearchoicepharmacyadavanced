@@ -57,7 +57,7 @@ export function buildClinicianDelayCourtesyBody(firstName: string): string {
 
 Thank you for waiting on your Clear Choice Pharmacy intake.
 
-We have had a high number of patients asking about GLP weight-loss treatment, so clinician review is taking longer than usual. Dr. Dourra is reviewing intakes in the order they were received. You do not need to submit the form again. We will email you as soon as your review is finished.
+We have had a high number of patients asking about GLP weight-loss treatment, so clinician review is taking longer than usual. A clinician is reviewing intakes in the order they were received. You do not need to submit the form again. We will email you as soon as your review is finished.
 
 If you have questions, or if you would rather cancel while you wait, call us at (248) 987-6182 or reply to this email.
 

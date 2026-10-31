@@ -17,7 +17,7 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
       <p>
-        LNR Associates LLC is a Michigan pharmacy, license 5301013716. Pharmacist-in-charge: Joseph Dourra. We dispense
+        LNR Associates LLC is a Michigan pharmacy, license 5301013716. We dispense
         our own prescriptions to Michigan patients from 8276 N Merriman Rd, Westland, MI 48185. Weight loss, hormone
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. A
         clinician licensed in the patient&apos;s state reviews those intakes. If treatment is approved, a pharmacy

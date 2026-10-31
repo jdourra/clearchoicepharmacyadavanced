@@ -9,7 +9,6 @@ import {
 import {
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
-  PHARMACIST_IN_CHARGE,
   PHARMACY_DBA,
   NATIONAL_PARTNER_CARE_NOTE,
 } from "@/lib/site-config"
@@ -46,7 +45,7 @@ export function SiteFooter() {
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed pt-1">
               {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}. Michigan pharmacy license{" "}
-              {MICHIGAN_PHARMACY_LICENSE}. Pharmacist-in-charge: {PHARMACIST_IN_CHARGE}.
+              {MICHIGAN_PHARMACY_LICENSE}.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {NATIONAL_PARTNER_CARE_NOTE}

@@ -30,7 +30,7 @@ export function getClinicalIntakeRecipientEmails(): string[] {
 }
 
 export const PATIENT_REVIEW_TIMELINE =
-  "Dr. Dourra usually takes 4–5 days to review your intake."
+  "A licensed clinician usually takes 4–5 days to review your intake."
 
 export const PATIENT_FULFILLMENT_TIMELINE =
   "After payment is received, processing and shipping take about 5 business days."
