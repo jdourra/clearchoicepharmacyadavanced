@@ -131,7 +131,7 @@ function q(monthly: number) {
   return Math.round(monthly * 0.9)
 }
 
-/** Semaglutide — weekly injection titration. Vial = 4 weeks (BoomRx vial totals + Wegovy-aligned steps). */
+/** Semaglutide weekly doses stocked by the partner pharmacy. Vial = 4 weeks. */
 const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
   {
     id: "sema-1mg",
@@ -152,15 +152,6 @@ const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
     quarterlyKitPrice: q(169),
   },
   {
-    id: "sema-2.5mg",
-    weeklyMg: 0.625,
-    vialMg: 2.5,
-    label: "0.625 mg weekly",
-    detail: "Early titration · 30-day kit (2.5 mg vial)",
-    monthlyKitPrice: 179,
-    quarterlyKitPrice: q(179),
-  },
-  {
     id: "sema-4mg",
     weeklyMg: 1,
     vialMg: 4,
@@ -168,24 +159,6 @@ const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
     detail: "Mid titration · 30-day kit (4 mg vial)",
     monthlyKitPrice: 189,
     quarterlyKitPrice: q(189),
-  },
-  {
-    id: "sema-5mg",
-    weeklyMg: 1.25,
-    vialMg: 5,
-    label: "1.25 mg weekly",
-    detail: "Mid titration · 30-day kit (5 mg vial)",
-    monthlyKitPrice: 199,
-    quarterlyKitPrice: q(199),
-  },
-  {
-    id: "sema-6mg",
-    weeklyMg: 1.5,
-    vialMg: 6,
-    label: "1.5 mg weekly",
-    detail: "Mid titration · 30-day kit (6 mg vial)",
-    monthlyKitPrice: 209,
-    quarterlyKitPrice: q(209),
   },
   {
     id: "sema-7mg",
@@ -197,33 +170,6 @@ const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
     quarterlyKitPrice: q(219),
   },
   {
-    id: "sema-7.5mg",
-    weeklyMg: 1.875,
-    vialMg: 7.5,
-    label: "1.875 mg weekly",
-    detail: "Higher titration · 30-day kit (7.5 mg vial)",
-    monthlyKitPrice: 229,
-    quarterlyKitPrice: q(229),
-  },
-  {
-    id: "sema-8mg",
-    weeklyMg: 2,
-    vialMg: 8,
-    label: "2 mg weekly",
-    detail: "Higher titration · 30-day kit (8 mg vial)",
-    monthlyKitPrice: 229,
-    quarterlyKitPrice: q(229),
-  },
-  {
-    id: "sema-10mg",
-    weeklyMg: 2.4,
-    vialMg: 9.6,
-    label: "2.4 mg weekly",
-    detail: "Maintenance · 30-day kit (9.6 mg vial)",
-    monthlyKitPrice: 229,
-    quarterlyKitPrice: q(229),
-  },
-  {
     id: "sema-10mg-vial",
     weeklyMg: 2.5,
     vialMg: 10,
@@ -231,24 +177,6 @@ const SEMAGLUTIDE_DOSES: WeightLossDoseOption[] = [
     detail: "Maintenance · 30-day kit (10 mg vial)",
     monthlyKitPrice: 249,
     quarterlyKitPrice: q(249),
-  },
-  {
-    id: "sema-15mg",
-    weeklyMg: 3.75,
-    vialMg: 15,
-    label: "3.75 mg weekly",
-    detail: "High dose · 30-day kit (15 mg vial)",
-    monthlyKitPrice: 279,
-    quarterlyKitPrice: q(279),
-  },
-  {
-    id: "sema-16mg",
-    weeklyMg: 4,
-    vialMg: 16,
-    label: "4 mg weekly",
-    detail: "High dose · 30-day kit (16 mg vial)",
-    monthlyKitPrice: 289,
-    quarterlyKitPrice: q(289),
   },
 ]
 
@@ -398,7 +326,7 @@ function resolveLegacyDoseId(
       )
     }
     return (
-      program.doses.find((d) => d.id === "sema-10mg" || d.id === "tirz-60mg") ??
+      program.doses.find((d) => d.id === "sema-10mg-vial" || d.id === "tirz-60mg") ??
       program.doses[program.doses.length - 1]
     )
   }
@@ -419,15 +347,23 @@ function resolveLegacyDoseId(
     "tirz-15mg": "tirz-60mg",
     "sema-0.25mg": "sema-1mg",
     "sema-0.5mg": "sema-2mg",
-    "sema-0.625mg": "sema-2.5mg",
-    "sema-1.25mg": "sema-5mg",
-    "sema-1.5mg": "sema-6mg",
+    "sema-0.625mg": "sema-2mg",
+    "sema-1.25mg": "sema-4mg",
+    "sema-1.5mg": "sema-7mg",
     "sema-1.7mg": "sema-7mg",
-    "sema-1.875mg": "sema-7.5mg",
-    "sema-2.4mg": "sema-10mg",
+    "sema-1.875mg": "sema-7mg",
+    "sema-2.4mg": "sema-10mg-vial",
     "sema-2.5wk": "sema-10mg-vial",
-    "sema-3.75mg": "sema-15mg",
-    "sema-4.0mg": "sema-16mg",
+    "sema-3.75mg": "sema-10mg-vial",
+    "sema-4.0mg": "sema-10mg-vial",
+    "sema-2.5mg": "sema-2mg",
+    "sema-5mg": "sema-4mg",
+    "sema-6mg": "sema-7mg",
+    "sema-7.5mg": "sema-7mg",
+    "sema-8mg": "sema-10mg-vial",
+    "sema-10mg": "sema-10mg-vial",
+    "sema-15mg": "sema-10mg-vial",
+    "sema-16mg": "sema-10mg-vial",
   }
   if (legacyMap[id]) {
     return program.doses.find((d) => d.id === legacyMap[id])
