@@ -753,6 +753,14 @@ export function AdminIntakeDetailView({
                     <p>
                       <strong>Email:</strong> {String(detail.email ?? "")}
                     </p>
+                    <p className="mt-1">
+                      <Link
+                        href={`/admin/patients?q=${encodeURIComponent(patientName || String(detail.email ?? ""))}`}
+                        className="text-primary underline"
+                      >
+                        Order history and profit
+                      </Link>
+                    </p>
                     {Boolean(detail.stripe_payment_intent_id) && (
                       <p className="mt-2 font-mono text-xs break-all">
                         Stripe: {String(detail.stripe_payment_intent_id)}

@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/medications", label: "Medications" },
   { href: "/admin/intakes", label: "Clinical Intakes" },
+  { href: "/admin/patients", label: "Patients" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/messages", label: "Messages" },
