@@ -28,8 +28,15 @@ const TIRZEPATIDE_VIAL_COST: Record<string, number> = {
   "15": 145,
 }
 
-/** One shipment per order, including a 3-month supply. */
-const SHIPPING_FEE = 30
+/** Cold shipment for refrigerated medication. One shipment per order, including a 3-month supply. */
+const REFRIGERATED_SHIPPING = 30
+
+/** Room-temperature ED shipment. One shipment per order. */
+const ED_SHIPPING = 6
+
+export function shippingFeeForOrder(kind: "refrigerated" | "ed"): number {
+  return kind === "ed" ? ED_SHIPPING : REFRIGERATED_SHIPPING
+}
 
 /**
  * Clinician-network visit fee under 500 visits a month.
@@ -111,6 +118,7 @@ export function weightLossOrderProfit(input: {
 
   const medicationCost = money(each * quote.kitsIncluded)
   const patientPaid = money(quote.totalBilled)
+  const shipping = shippingFeeForOrder("refrigerated")
   return {
     doseLabel: dose.label,
     patientPaid,
@@ -119,8 +127,8 @@ export function weightLossOrderProfit(input: {
     medicationCost,
     doctorFee,
     doctorFeeLabel,
-    shipping: SHIPPING_FEE,
-    profit: money(patientPaid - medicationCost - doctorFee - SHIPPING_FEE),
+    shipping,
+    profit: money(patientPaid - medicationCost - doctorFee - shipping),
     approximatedDose: !program.doses.some((item) => item.id === doseId),
     partnerPricing: input.partnerPricing !== false,
   }

@@ -106,7 +106,7 @@ export default function AdminPatientsPage() {
   return (
     <AdminShell
       title="Patients"
-      description="Search a name to see every order. Weight-loss profit is what the patient paid, minus the Rx Ave medication price, the doctor visit fee, and $30 shipping."
+      description="Search a name to see every order. Weight-loss profit is what the patient paid, minus the Rx Ave medication price, the doctor visit fee, and $30 refrigerated shipping. ED orders use $6 shipping."
     >
       <form onSubmit={submit} className="mb-6 flex max-w-xl gap-2">
         <Input
