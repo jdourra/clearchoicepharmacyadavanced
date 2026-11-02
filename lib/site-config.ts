@@ -29,7 +29,7 @@ export const LEGAL_BUSINESS_NAME = "Optimeds Pharmacy LLC"
 export const PHARMACY_OWNER = "Dr. Hadi Dourra"
 export const PHARMACY_DBA = "Clear Choice Pharmacy"
 /** Zelle identifier enrolled on the pharmacy business account. The transfer shows LEGAL_BUSINESS_NAME. */
-export const ZELLE_PAYMENT_EMAIL = "payment@clearchoicepharmacy.com"
+export const ZELLE_PAYMENT_EMAIL = "payment@optimedsrx.com"
 export const MICHIGAN_PHARMACY_LICENSE = "5301013716"
 
 /**
