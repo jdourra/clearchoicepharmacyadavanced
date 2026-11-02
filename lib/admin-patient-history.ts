@@ -281,7 +281,7 @@ export async function searchPatientHistory(query: string): Promise<{
         email: item.email,
         phone: item.phone,
         orders: [order],
-        collectedProfit: order.countedInTotal ? order.profit?.profitBeforeShipping ?? 0 : 0,
+        collectedProfit: order.countedInTotal ? order.profit?.profit ?? 0 : 0,
       })
       continue
     }
@@ -289,7 +289,7 @@ export async function searchPatientHistory(query: string): Promise<{
     if (!existing.phone && item.phone) existing.phone = item.phone
     if (existing.name === "Unknown patient" && name !== "Unknown patient") existing.name = name
     if (order.countedInTotal && order.profit) {
-      existing.collectedProfit = Math.round((existing.collectedProfit + order.profit.profitBeforeShipping) * 100) / 100
+      existing.collectedProfit = Math.round((existing.collectedProfit + order.profit.profit) * 100) / 100
     }
   }
 

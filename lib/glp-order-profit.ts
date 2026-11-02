@@ -28,11 +28,15 @@ const TIRZEPATIDE_VIAL_COST: Record<string, number> = {
   "15": 145,
 }
 
+/** One shipment per order, including a 3-month supply. */
+const SHIPPING_FEE = 30
+
 /**
  * Clinician-network visit fee under 500 visits a month.
  * One-month async $25, live video $45.
  * Three-month async $35, live video $60.
  */
+
 const DOCTOR_FEE = {
   monthlyAsync: 25,
   monthlySync: 45,
@@ -48,9 +52,8 @@ export type WeightLossProfit = {
   medicationCost: number
   doctorFee: number
   doctorFeeLabel: string
-  /** The Rx Ave sheet does not list a shipping price. */
-  shippingKnown: false
-  profitBeforeShipping: number
+  shipping: number
+  profit: number
   approximatedDose: boolean
   partnerPricing: boolean
 }
@@ -116,8 +119,8 @@ export function weightLossOrderProfit(input: {
     medicationCost,
     doctorFee,
     doctorFeeLabel,
-    shippingKnown: false,
-    profitBeforeShipping: money(patientPaid - medicationCost - doctorFee),
+    shipping: SHIPPING_FEE,
+    profit: money(patientPaid - medicationCost - doctorFee - SHIPPING_FEE),
     approximatedDose: !program.doses.some((item) => item.id === doseId),
     partnerPricing: input.partnerPricing !== false,
   }

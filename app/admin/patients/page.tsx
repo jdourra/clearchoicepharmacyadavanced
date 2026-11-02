@@ -50,7 +50,9 @@ function ProfitLines({ profit }: { profit: WeightLossProfit }) {
       {" · "}
       Doctor {dollars(profit.doctorFee)} ({profit.doctorFeeLabel})
       {" · "}
-      <span className="font-medium text-foreground">Profit {dollars(profit.profitBeforeShipping)}</span>
+      Shipping {dollars(profit.shipping)}
+      {" · "}
+      <span className="font-medium text-foreground">Profit {dollars(profit.profit)}</span>
       {profit.approximatedDose ? " · closest stocked vial" : ""}
       {profit.partnerPricing ? "" : " · filled before the Rx Ave list, so this cost is only a comparison"}
     </p>
@@ -104,7 +106,7 @@ export default function AdminPatientsPage() {
   return (
     <AdminShell
       title="Patients"
-      description="Search a name to see every order. Weight-loss profit is what the patient paid, minus the Rx Ave medication price and the doctor visit fee. Shipping is not on the Rx Ave sheet, so it is not subtracted."
+      description="Search a name to see every order. Weight-loss profit is what the patient paid, minus the Rx Ave medication price, the doctor visit fee, and $30 shipping."
     >
       <form onSubmit={submit} className="mb-6 flex max-w-xl gap-2">
         <Input
