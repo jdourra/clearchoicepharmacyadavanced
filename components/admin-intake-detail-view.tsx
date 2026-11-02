@@ -33,6 +33,7 @@ import {
 import { formatWeightLossSupplyFromKitCount } from "@/lib/weight-loss-catalog"
 import { WeightLossChargeHighlight } from "@/components/weight-loss-charge-highlight"
 import { formatPaymentStatus } from "@/lib/intake-payment-status"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 import { olaDecisionNotice } from "@/lib/ola/webhook-decision"
 import { staffAuthFetch } from "@/lib/staff-session"
 import {
@@ -773,7 +774,7 @@ export function AdminIntakeDetailView({
                     )}
                     {payAtPharmacy && !alreadySentToClinician && (
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Waiting for Zelle at payment@clearchoicepharmacy.com. The payment shows as LNR Associates LLC.
+                        Waiting for Zelle at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}.
                         Send the intake only after that deposit is in the bank.
                       </p>
                     )}

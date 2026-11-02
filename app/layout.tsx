@@ -10,6 +10,7 @@ import {
   SITE_URL,
   buildSiteNavigationJsonLd,
 } from "@/lib/clinical-seo"
+import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -117,9 +118,14 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Pharmacy",
     name: "Clear Choice Pharmacy",
-    legalName: "LNR Associates LLC",
+    legalName: LEGAL_BUSINESS_NAME,
+    founder: {
+      "@type": "Person",
+      name: PHARMACY_OWNER,
+      jobTitle: "Owner",
+    },
     alternateName: "Clear Choice Rx",
-    identifier: "5301013716",
+    identifier: MICHIGAN_PHARMACY_LICENSE,
     url: SITE_URL,
     logo: `${SITE_URL}/icon.svg`,
     image: `${SITE_URL}/og-image.jpg`,

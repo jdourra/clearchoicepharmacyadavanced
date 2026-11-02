@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
+import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Terms and Conditions | Clear Choice Pharmacy",
@@ -9,15 +10,15 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <LegalPageShell title="Terms and Conditions">
-      <p>Last updated: October 2026</p>
+      <p>Last updated: November 2026</p>
       <p>
         These Terms and Conditions govern your use of the Clear Choice Pharmacy website, intakes, and pharmacy orders.
-        Clear Choice Pharmacy is the name used by LNR Associates LLC. By submitting an intake or placing an order, you
-        agree to these terms.
+        Clear Choice Pharmacy is the name used by {LEGAL_BUSINESS_NAME}. The owner is {PHARMACY_OWNER}. By submitting an
+        intake or placing an order, you agree to these terms.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
       <p>
-        LNR Associates LLC is a Michigan pharmacy, license 5301013716. We dispense
+        {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}. We dispense
         our own prescriptions to Michigan patients from 8276 N Merriman Rd, Westland, MI 48185. Weight loss, hormone
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. A
         clinician licensed in the patient&apos;s state reviews those intakes. If treatment is approved, a pharmacy

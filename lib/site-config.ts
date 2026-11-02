@@ -25,7 +25,8 @@ export const CONTACT_EMAIL = "info@clearchoicepharmacy.com"
 export const INTAKE_EMAIL = "intake@clearchoicepharmacy.com"
 
 /** Legal identity shown for pharmacy certification. */
-export const LEGAL_BUSINESS_NAME = "LNR Associates LLC"
+export const LEGAL_BUSINESS_NAME = "Optimeds Pharmacy LLC"
+export const PHARMACY_OWNER = "Dr. Hadi Dourra"
 export const PHARMACY_DBA = "Clear Choice Pharmacy"
 /** Zelle identifier enrolled on the pharmacy business account. The transfer shows LEGAL_BUSINESS_NAME. */
 export const ZELLE_PAYMENT_EMAIL = "payment@clearchoicepharmacy.com"

@@ -5,11 +5,12 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
+import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
   description:
-    "LNR Associates LLC, doing business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy license 5301013716.",
+    `${LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy in Westland, Michigan. Owner ${PHARMACY_OWNER}. Michigan pharmacy license ${MICHIGAN_PHARMACY_LICENSE}.`,
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -29,9 +30,9 @@ export default function AboutPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">About us</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              LNR Associates LLC does business as Clear Choice Pharmacy, a compounding and retail pharmacy in Westland,
-              Michigan. Michigan pharmacy license 5301013716. We dispense
-              prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
+              {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy, a compounding and retail pharmacy in
+              Westland, Michigan. The owner is {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
+              We dispense prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
               clinician licensed in the patient's state and filled by a pharmacy licensed to dispense there. Clear
               Choice does not dispense those medications under its Michigan license.
             </p>

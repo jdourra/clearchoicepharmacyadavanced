@@ -4,6 +4,7 @@ import {
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
   PHARMACY_DBA,
+  PHARMACY_OWNER,
 } from "@/lib/site-config"
 
 export const metadata: Metadata = {
@@ -14,10 +15,10 @@ export const metadata: Metadata = {
 export default function RefundPolicyPage() {
   return (
     <LegalPageShell title="Refund Policy">
-      <p>Last updated: October 2026</p>
+      <p>Last updated: November 2026</p>
       <p>
-        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 8276 N Merriman Rd, Westland, MI 48185. Michigan
-        pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
+        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 8276 N Merriman Rd, Westland, MI 48185. Owner{" "}
+        {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
       <p>

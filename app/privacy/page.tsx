@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
+import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Clear Choice Pharmacy",
@@ -9,10 +10,11 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <LegalPageShell title="Privacy Policy">
-      <p>Last updated: October 2026</p>
+      <p>Last updated: November 2026</p>
       <p>
-        LNR Associates LLC, doing business as Clear Choice Pharmacy, protects health information in accordance with
-        HIPAA and applicable state law. Michigan pharmacy license 5301013716.
+        {LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy, protects health information in accordance with
+        HIPAA and applicable state law. The owner is {PHARMACY_OWNER}. Michigan pharmacy license{" "}
+        {MICHIGAN_PHARMACY_LICENSE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Information we collect</h2>
       <p>
