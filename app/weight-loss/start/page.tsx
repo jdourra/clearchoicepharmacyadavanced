@@ -16,8 +16,7 @@ import {
   weightLossPaymentPatientNote,
 } from "@/lib/weight-loss-catalog"
 import type { WeightLossDoseId } from "@/lib/weight-loss-catalog"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+import { SITE_URL } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",

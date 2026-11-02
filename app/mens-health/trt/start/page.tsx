@@ -4,9 +4,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
 import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
-import { HORMONE_THERAPY_CONTROLLED_NOTE, NATIONAL_PARTNER_CARE_NOTE } from "@/lib/site-config"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+import { HORMONE_THERAPY_CONTROLLED_NOTE, NATIONAL_PARTNER_CARE_NOTE, SITE_URL } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",

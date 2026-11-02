@@ -1,10 +1,12 @@
+import { SITE_URL } from "@/lib/site-config"
+
 export const INJECTION_CONSENT_URLS = {
   /** Set when Clear Choice publishes its own injection video page. */
   howToInject: "",
-  refundPolicy: "https://clearchoicepharmacy.com/refund-policy",
-  telehealthConsent: "https://clearchoicepharmacy.com/telehealth-consent",
-  terms: "https://clearchoicepharmacy.com/terms-and-conditions",
-  privacy: "https://clearchoicepharmacy.com/privacy",
+  refundPolicy: `${SITE_URL}/refund-policy`,
+  telehealthConsent: `${SITE_URL}/telehealth-consent`,
+  terms: `${SITE_URL}/terms-and-conditions`,
+  privacy: `${SITE_URL}/privacy`,
 } as const
 
 export type InjectionConsentVariant =

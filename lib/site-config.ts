@@ -1,6 +1,25 @@
 /** Canonical site URLs and contact info for Clear Choice Pharmacy */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+const PRODUCTION_HOSTS = new Set(["clearchoicepharmacy.com", "www.clearchoicepharmacy.com"])
+
+/**
+ * The live site redirects the bare domain to www. Canonicals and the sitemap
+ * must use that same host, or Google is sent to a URL that immediately redirects.
+ */
+export function canonicalSiteUrl(raw?: string | null): string {
+  const fallback = "https://www.clearchoicepharmacy.com"
+  const value = (raw || fallback).trim().replace(/\/$/, "")
+  try {
+    const url = new URL(value.includes("://") ? value : `https://${value}`)
+    if (PRODUCTION_HOSTS.has(url.hostname)) {
+      return fallback
+    }
+    return url.origin
+  } catch {
+    return fallback
+  }
+}
+
+export const SITE_URL = canonicalSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
 
 export const CONTACT_EMAIL = "info@clearchoicepharmacy.com"
 export const INTAKE_EMAIL = "intake@clearchoicepharmacy.com"

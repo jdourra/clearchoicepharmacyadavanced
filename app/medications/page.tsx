@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { MedicationQuoteBuilder } from "@/components/medication-quote-builder"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+import { SITE_URL } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Medication Prices | Low Cost Prescription Drug Lookup",

@@ -1,6 +1,7 @@
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
+import { SITE_URL } from "@/lib/site-config"
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+export { SITE_URL }
 
 export const HOME_TITLE =
   "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy"

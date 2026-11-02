@@ -1,13 +1,11 @@
 import type { Metadata } from "next"
 import { ClinicalIntakeForm } from "@/components/clinical-intake-form"
-import { NATIONAL_PARTNER_CARE_NOTE } from "@/lib/site-config"
+import { NATIONAL_PARTNER_CARE_NOTE, SITE_URL } from "@/lib/site-config"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
 import { getEdTrocheProduct, type EdBillingPlan } from "@/lib/ed-troche-catalog"
 import { parseEdAddOns } from "@/lib/ed-add-ons"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
 
 export const metadata: Metadata = {
   title: "Start Your Intake | ED Troches | Clear Choice Pharmacy",

@@ -2,8 +2,7 @@ import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calculator, TrendingDown, Shield, DollarSign } from "lucide-react"
 import type { Metadata } from "next"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+import { SITE_URL } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Prescription Prices | Low Cost Prescription Drugs Formula",

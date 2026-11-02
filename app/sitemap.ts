@@ -1,8 +1,15 @@
 import type { MetadataRoute } from "next"
 import { getLearnArticles } from "@/lib/learn-articles"
+import { SITE_URL } from "@/lib/site-config"
+
+function validDate(value: unknown): Date | undefined {
+  if (!value) return undefined
+  const date = value instanceof Date ? value : new Date(String(value))
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clearchoicepharmacy.com"
+  const baseUrl = SITE_URL
   const now = new Date()
 
   const learnPages: MetadataRoute.Sitemap = [
@@ -14,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...getLearnArticles().map((article) => ({
       url: `${baseUrl}/learn/${article.slug}`,
-      lastModified: new Date(article.updatedAt),
+      lastModified: validDate(article.updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
@@ -179,12 +186,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       "SELECT id, updated_at FROM medications WHERE is_active IS NOT FALSE ORDER BY name ASC LIMIT 2500",
       []
     )
-    medicationPages = medications.map((med: { id: string; updated_at?: string }) => ({
-      url: `${baseUrl}/medications/${med.id}`,
-      lastModified: med.updated_at ? new Date(med.updated_at) : new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }))
+    medicationPages = medications.flatMap((med: { id?: string; updated_at?: string }) => {
+      const id = String(med.id || "").trim()
+      if (!id) return []
+      return [
+        {
+          url: `${baseUrl}/medications/${encodeURIComponent(id)}`,
+          lastModified: validDate(med.updated_at) ?? new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        },
+      ]
+    })
   } catch (error) {
     console.error("[sitemap] Failed to load medications from database:", error)
   }
