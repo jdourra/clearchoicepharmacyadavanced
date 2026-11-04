@@ -127,9 +127,9 @@ export function getWeightLossProductPageTitle(program: WeightLossProgram): strin
   const fromPrice =
     program.doses[0]?.quarterlyKitPrice ?? program.doses[0]?.monthlyKitPrice ?? 0
   if (program.id === "semaglutide") {
-    return `Semaglutide from $${fromPrice}/mo | Michigan Weight Loss Kits | Clear Choice Pharmacy`
+    return `Semaglutide from $${fromPrice}/mo | Weight Loss Kits | Clear Choice Pharmacy`
   }
-  return `Tirzepatide from $${fromPrice}/mo | Michigan Weight Loss Kits | Clear Choice Pharmacy`
+  return `Tirzepatide from $${fromPrice}/mo | Weight Loss Kits | Clear Choice Pharmacy`
 }
 
 /** Floor “from” price for ads/SEO (90-day / multi-kit starter kit price). */

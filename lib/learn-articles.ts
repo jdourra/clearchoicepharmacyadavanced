@@ -10,9 +10,9 @@ const GLP_DISCLAIMER =
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
     slug: "semaglutide-weight-loss",
-    title: "How Semaglutide Supports Provider-Guided Weight Management in Michigan",
+    title: "How Semaglutide Supports Provider-Guided Weight Management",
     description:
-      "Educational guide to how Semaglutide works, how it relates to Ozempic and Wegovy, dosing basics, side effects, and what Michigan patients should ask before starting therapy.",
+      "Educational guide to how Semaglutide works, how it relates to Ozempic and Wegovy, dosing basics, side effects, and what to ask before starting therapy.",
     keywords: [
       "how semaglutide works",
       "semaglutide side effects",
@@ -94,14 +94,14 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start semaglutide?",
         answer:
-          "Clear Choice Pharmacy does not dispense these GLP-1 medications. A licensed partner pharmacy fills and ships an approved prescription where that pharmacy is licensed.",
+          "Yes. Patients in every U.S. state can start an intake. A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
       },
     ],
     disclaimer: GLP_DISCLAIMER,
   },
   {
     slug: "tirzepatide-weight-loss",
-    title: "Tirzepatide Explained: Dual GLP-1/GIP Therapy for Michigan Patients",
+    title: "Tirzepatide Explained: Dual GLP-1/GIP Therapy",
     description:
       "Educational overview of how Tirzepatide works, how it relates to Zepbound and Mounjaro, side effects, and what to expect from clinician-guided dual-pathway therapy.",
     keywords: [

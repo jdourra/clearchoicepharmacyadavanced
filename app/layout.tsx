@@ -49,7 +49,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss in every U.S. state",
       },
     ],
   },
@@ -89,9 +89,9 @@ export const metadata: Metadata = {
     "geo.position": "42.4806;-83.4755",
     ICBM: "42.4806, -83.4755",
     subject:
-      "Semaglutide and Tirzepatide medical weight loss in Michigan | Clear Choice Pharmacy Westland",
+      "Semaglutide and Tirzepatide weight loss in every U.S. state | Clear Choice Pharmacy",
     topic: "Medical Weight Loss",
-    coverage: "Michigan",
+    coverage: "United States",
     ...(process.env.GOOGLE_SITE_VERIFICATION
       ? { "google-site-verification": process.env.GOOGLE_SITE_VERIFICATION }
       : {}),

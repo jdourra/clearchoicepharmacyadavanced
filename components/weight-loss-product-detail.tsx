@@ -123,7 +123,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             />
           </div>
           <p className="text-center lg:text-left text-xs text-muted-foreground mt-3">
-            Compounded at Clear Choice Pharmacy · Westland, MI
+            Compounded by a pharmacy licensed in your state
           </p>
         </div>
 

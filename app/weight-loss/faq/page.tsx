@@ -13,12 +13,12 @@ import { SITE_URL, WEIGHT_LOSS_FAQS, buildBreadcrumbJsonLd, buildFaqJsonLd } fro
 import { WEIGHT_LOSS_DOCTOR_REVIEW, WEIGHT_LOSS_PARTNER_FULFILLMENT, weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
-  title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan" },
+  title: { absolute: "Medical Weight Loss FAQ | Clear Choice Pharmacy" },
   description:
     "Answers about provider-guided semaglutide and tirzepatide: who reviews the intake, who fills the prescription, eligibility, pricing, and refunds.",
   alternates: { canonical: `${SITE_URL}/weight-loss/faq` },
   openGraph: {
-    title: "Medical Weight Loss FAQ | Clear Choice Pharmacy Michigan",
+    title: "Medical Weight Loss FAQ | Clear Choice Pharmacy",
     description:
       "Common questions about GLP-1 weight management, compounded Semaglutide and Tirzepatide, eligibility, and pricing.",
     url: `${SITE_URL}/weight-loss/faq`,

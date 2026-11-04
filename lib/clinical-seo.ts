@@ -4,10 +4,10 @@ import { SITE_URL } from "@/lib/site-config"
 export { SITE_URL }
 
 export const HOME_TITLE =
-  "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy"
+  "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Provider-guided Semaglutide and Tirzepatide weight management in Michigan. Compounded kits after clinician review, fulfilled by Clear Choice Pharmacy in Westland. Transparent cash-pay pricing for qualifying patients."
+  "Semaglutide and tirzepatide weight loss for patients in every U.S. state. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state fills and ships an approved kit."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -83,15 +83,13 @@ export const AREA_SERVED = [
 
 /** Short keyword list — rely on titles, H1s, and content rather than keyword stuffing. */
 export const SITE_KEYWORDS = [
+  "Semaglutide weight loss",
+  "Tirzepatide weight loss",
+  "compounded Semaglutide",
+  "compounded Tirzepatide",
+  "GLP-1 weight loss",
   "Semaglutide weight loss Michigan",
   "Tirzepatide weight loss Michigan",
-  "Semaglutide Michigan",
-  "Tirzepatide Michigan",
-  "medical weight loss Michigan",
-  "compounded Semaglutide Novi",
-  "compounded Tirzepatide Novi",
-  "weight loss pharmacy Michigan",
-  "GLP-1 pharmacy Michigan",
   "Clear Choice Pharmacy Westland",
 ]
 

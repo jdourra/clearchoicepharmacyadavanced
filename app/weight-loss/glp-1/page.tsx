@@ -13,14 +13,14 @@ import { Button } from "@/components/ui/button"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: { absolute: "GLP-1 Weight Management in Michigan | Clear Choice Pharmacy" },
+  title: { absolute: "GLP-1 Weight Management | Clear Choice Pharmacy" },
   description:
     "Learn how GLP-1 medications support provider-guided weight management. A licensed partner pharmacy fills approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
   alternates: { canonical: `${SITE_URL}/weight-loss/glp-1` },
   openGraph: {
-    title: "GLP-1 Weight Management in Michigan | Clear Choice Pharmacy",
+    title: "GLP-1 Weight Management | Clear Choice Pharmacy",
     description:
-      "Educational overview of GLP-1 therapies for weight management, plus how Clear Choice Pharmacy supports Michigan patients.",
+      "Educational overview of GLP-1 therapies for weight management. Patients in every U.S. state can start an intake.",
     url: `${SITE_URL}/weight-loss/glp-1`,
     type: "website",
   },

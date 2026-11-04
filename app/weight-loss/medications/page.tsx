@@ -16,12 +16,12 @@ import { formatUsd, getWeightLossPriceRange } from "@/lib/pricing-clarity"
 import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 
 export const metadata: Metadata = {
-  title: { absolute: "Weight Loss Medications in Michigan | Clear Choice Pharmacy" },
+  title: { absolute: "Weight Loss Medications | Clear Choice Pharmacy" },
   description:
     "Compare provider-guided semaglutide and tirzepatide filled by a licensed partner pharmacy.",
   alternates: { canonical: `${SITE_URL}/weight-loss/medications` },
   openGraph: {
-    title: "Weight Loss Medications in Michigan | Clear Choice Pharmacy",
+    title: "Weight Loss Medications | Clear Choice Pharmacy",
     description:
       "Overview of semaglutide and tirzepatide filled by a licensed partner pharmacy.",
     url: `${SITE_URL}/weight-loss/medications`,

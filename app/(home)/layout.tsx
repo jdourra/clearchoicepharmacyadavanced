@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss pharmacy care in Michigan",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss in every U.S. state",
       },
     ],
   },
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
 
 const homeFaqJsonLd = buildFaqJsonLd([
   {
-    question: "Do you offer Semaglutide and Tirzepatide weight loss in Michigan?",
+    question: "Do you offer Semaglutide and Tirzepatide in every state?",
     answer:
-      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
+      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",

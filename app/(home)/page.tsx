@@ -36,7 +36,7 @@ export default function HomePage() {
               <span className="block text-sky-300">Semaglutide</span>
               <span className="block text-sky-300">&amp; Tirzepatide</span>
               <span className="block mt-1 text-white text-[0.72em] sm:text-[0.78em] font-bold leading-tight">
-                Weight Loss in Michigan
+                Weight Loss in Every State
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
@@ -258,12 +258,13 @@ export default function HomePage() {
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
                 <h3 className="font-semibold text-lg mb-2">
-                  Do you offer Semaglutide and Tirzepatide weight loss in Michigan?
+                  Do you offer Semaglutide and Tirzepatide in every state?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. {weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, a licensed
-                  partner pharmacy fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not
-                  compound or ship these vials. Individual results may vary.{" "}
+                  Yes. Patients in every U.S. state can start an intake. {weightLossHowYouPay()} A clinician licensed in
+                  your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved kit.
+                  Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.
+                  Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
                     Explore the medical weight loss program
                   </Link>

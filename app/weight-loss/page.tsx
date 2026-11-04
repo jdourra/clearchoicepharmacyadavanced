@@ -42,14 +42,14 @@ import { AllInInclusions, PricingCompareNote } from "@/components/pricing-clarit
 const PROGRAMS_URL = "/weight-loss#programs"
 
 export const metadata: Metadata = {
-  title: { absolute: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy" },
+  title: { absolute: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy" },
   description:
     `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} A doctor reviews your intake, and a partner pharmacy ships if treatment is approved.`,
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
-    title: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
+    title: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     description:
       `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} A partner pharmacy ships if a doctor approves.`,
     url: `${SITE_URL}/weight-loss`,
@@ -68,10 +68,10 @@ export default function WeightLossPage() {
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: "Semaglutide & Tirzepatide Weight Loss in Michigan | Clear Choice Pharmacy",
+    name: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Provider-guided Semaglutide and Tirzepatide weight management at Clear Choice Pharmacy in Westland, MI.",
+      "Provider-guided Semaglutide and Tirzepatide weight management for patients in every U.S. state. A pharmacy licensed in the patient's state fills an approved kit.",
     about: [
       { "@type": "MedicalTherapy", name: "Medical Weight Management" },
       { "@type": "MedicalTherapy", name: "GLP-1 Weight Management" },
@@ -220,7 +220,7 @@ export default function WeightLossPage() {
           {
             icon: "flask-conical",
             title: "Pharmacy Compounded",
-            description: "Patient-specific Semaglutide & Tirzepatide prepared in Westland",
+            description: "Patient-specific Semaglutide and Tirzepatide prepared by a pharmacy licensed in the patient's state",
           },
           {
             icon: "activity",
