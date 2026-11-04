@@ -85,7 +85,7 @@ export const metadata: Metadata = {
   classification: "Medical Weight Loss, Semaglutide, Tirzepatide, Compounding Pharmacy",
   other: {
     "geo.region": "US-MI",
-    "geo.placename": "Westland",
+    "geo.placename": "Novi",
     "geo.position": "42.4806;-83.4755",
     ICBM: "42.4806, -83.4755",
     subject:
@@ -134,16 +134,16 @@ export default function RootLayout({
     faxNumber: "+12489874963",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "8276 N Merriman Rd",
-      addressLocality: "Westland",
+      streetAddress: "40890 Grand River",
+      addressLocality: "Novi",
       addressRegion: "MI",
-      postalCode: "48185",
+      postalCode: "48375",
       addressCountry: "US",
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 42.3486,
-      longitude: -83.3507,
+      latitude: 42.4806,
+      longitude: -83.4755,
     },
     areaServed: [
       { "@type": "State", name: "Michigan" },
@@ -193,7 +193,7 @@ export default function RootLayout({
         {
           "@type": "OfferCatalog",
           name: "Compounding",
-          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Westland, MI",
+          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Novi, MI",
           url: `${SITE_URL}/compounding`,
         },
         {

@@ -17,7 +17,7 @@ export default function RefundPolicyPage() {
     <LegalPageShell title="Refund Policy">
       <p>Last updated: November 2026</p>
       <p>
-        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 8276 N Merriman Rd, Westland, MI 48185. Owner{" "}
+        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 40890 Grand River, Novi, MI 48375. Owner{" "}
         {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
@@ -34,7 +34,7 @@ export default function RefundPolicyPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Medications Clear Choice Pharmacy dispenses</h2>
       <p>
-        Prescriptions filled at our Westland pharmacy are for Michigan patients. ED medication and hormone therapy
+        Prescriptions filled at our Novi pharmacy are for Michigan patients. ED medication and hormone therapy
         approved through this website are filled by a pharmacy licensed in the patient&apos;s state. If a prescription is
         not approved, you are not charged for medication that was not
         dispensed. Once compounding or dispensing has started, that order is not refundable. A dispensed compounded

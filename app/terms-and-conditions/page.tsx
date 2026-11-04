@@ -19,7 +19,7 @@ export default function TermsPage() {
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
       <p>
         {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}. We dispense
-        our own prescriptions to Michigan patients from 8276 N Merriman Rd, Westland, MI 48185. Weight loss, hormone
+        our own prescriptions to Michigan patients from 40890 Grand River, Novi, MI 48375. Weight loss, hormone
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. A
         clinician licensed in the patient&apos;s state reviews those intakes. If treatment is approved, a pharmacy
         licensed to dispense in that state fills and ships the medication. Clear Choice Pharmacy does not dispense those
@@ -39,7 +39,7 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>
-        Clear Choice Pharmacy · 8276 N Merriman Rd, Westland, MI 48185 ·{" "}
+        Clear Choice Pharmacy · 40890 Grand River, Novi, MI 48375 ·{" "}
         <a href="tel:+12489876182" className="text-primary hover:underline">(248) 987-6182</a> ·{" "}
         <a href="mailto:info@clearchoicepharmacy.com" className="text-primary hover:underline">
           info@clearchoicepharmacy.com

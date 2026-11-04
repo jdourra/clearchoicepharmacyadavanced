@@ -853,7 +853,7 @@ function ProfileTab({
                 id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="8276 N Merriman Rd"
+                placeholder="40890 Grand River"
               />
             </div>
             <div className="space-y-2">
@@ -877,7 +877,7 @@ function ProfileTab({
             </div>
             <div className="space-y-2">
               <Label htmlFor="zip">ZIP code</Label>
-              <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="48185" />
+              <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="48375" />
             </div>
           </div>
 

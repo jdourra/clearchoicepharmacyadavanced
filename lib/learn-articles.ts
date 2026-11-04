@@ -35,7 +35,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      `At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
+      `At Clear Choice Pharmacy in Novi, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
     ],
     sections: [
       {
@@ -73,7 +73,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         ],
       },
       {
-        heading: "Cash-pay Semaglutide in Westland, MI",
+        heading: "Cash-pay Semaglutide in Novi, MI",
         paragraphs: [
           `Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay. ${weightLossHowYouPay()} Each 30-day kit includes four weekly injections. A licensed partner pharmacy compounds and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.`,
           "For current kit pricing and intake steps, visit the Semaglutide program page.",
@@ -639,7 +639,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "pharmacy without insurance",
       "prescription prices",
       "cheap generic drugs",
-      "Westland pharmacy",
+      "Novi pharmacy",
     ],
     category: "prescriptions",
     categoryLabel: "Prescriptions",
@@ -670,7 +670,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Michigan fill and ship only",
         paragraphs: [
-          "Clear Choice Pharmacy currently fills and ships prescriptions for Michigan patients only. Pickup is available in Westland, with delivery options for eligible Michigan addresses.",
+          "Clear Choice Pharmacy currently fills and ships prescriptions for Michigan patients only. Pickup is available in Novi, with delivery options for eligible Michigan addresses.",
         ],
       },
     ],

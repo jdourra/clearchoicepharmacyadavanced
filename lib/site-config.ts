@@ -31,6 +31,11 @@ export const PHARMACY_DBA = "Clear Choice Pharmacy"
 /** Zelle identifier enrolled on the pharmacy business account. The transfer shows LEGAL_BUSINESS_NAME. */
 export const ZELLE_PAYMENT_EMAIL = "payment@optimedsrx.com"
 export const MICHIGAN_PHARMACY_LICENSE = "5301013716"
+export const PHARMACY_STREET = "40890 Grand River"
+export const PHARMACY_CITY = "Novi"
+export const PHARMACY_STATE = "MI"
+export const PHARMACY_ZIP = "48375"
+export const PHARMACY_ADDRESS_LINE = `${PHARMACY_STREET}, ${PHARMACY_CITY}, ${PHARMACY_STATE} ${PHARMACY_ZIP}`
 
 /**
  * Weight loss, hormone therapy, and ED are reviewed and filled through licensed

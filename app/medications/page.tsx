@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site-config"
 export const metadata: Metadata = {
   title: "Medication Prices | Low Cost Prescription Drug Lookup",
   description:
-    "Search medications and see transparent cash-pay prices. Build your list and order online. Clear Choice Pharmacy, Westland, MI.",
+    "Search medications and see transparent cash-pay prices. Build your list and order online. Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/medications`,
   },

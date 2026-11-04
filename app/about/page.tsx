@@ -8,9 +8,9 @@ import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
 import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
 
 export const metadata: Metadata = {
-  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
+  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Novi, MI" },
   description:
-    `${LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy in Westland, Michigan. Owner ${PHARMACY_OWNER}. Michigan pharmacy license ${MICHIGAN_PHARMACY_LICENSE}.`,
+    `${LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy in Novi, Michigan. Owner ${PHARMACY_OWNER}. Michigan pharmacy license ${MICHIGAN_PHARMACY_LICENSE}.`,
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -31,7 +31,7 @@ export default function AboutPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
               {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy, a compounding and retail pharmacy in
-              Westland, Michigan. The owner is {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
+              Novi, Michigan. The owner is {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
               We dispense prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
               clinician licensed in the patient's state and filled by a pharmacy licensed to dispense there. Clear
               Choice does not dispense those medications under its Michigan license.
@@ -43,7 +43,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-              From 8276 N Merriman Rd we fill cash-pay and specialty prescriptions and compound other patient-specific
+              From 40890 Grand River we fill cash-pay and specialty prescriptions and compound other patient-specific
               medications for Michigan patients. Semaglutide and tirzepatide weight-loss vials are not compounded or
               shipped from this pharmacy. A licensed partner pharmacy fills those after a doctor approves the intake.
             </p>
@@ -86,7 +86,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Location &amp; contact</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-              8276 N Merriman Rd, Westland, MI 48185
+              40890 Grand River, Novi, MI 48375
               <br />
               Phone:{" "}
               <a href={PHARMACY_PHONE_TEL_HREF} className="text-primary hover:underline">

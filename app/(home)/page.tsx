@@ -30,7 +30,7 @@ export default function HomePage() {
           />
           <div className="relative container max-w-5xl mx-auto px-4 py-10 sm:py-14 md:py-20 min-h-[min(85vh,640px)] flex flex-col justify-center">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-sky-200 mb-3">
-              Clear Choice Pharmacy · Westland, MI
+              Clear Choice Pharmacy · Novi, MI
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance max-w-2xl mb-3 sm:mb-4">
               <span className="block text-sky-300">Semaglutide</span>
@@ -145,7 +145,7 @@ export default function HomePage() {
             <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center sm:text-left text-xs sm:text-sm text-slate-600">
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <MapPin className="h-4 w-4 text-primary shrink-0" />
-                <span>Westland pharmacy · Michigan license 5301013716</span>
+                <span>Novi pharmacy · Michigan license 5301013716</span>
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2">
                 <Stethoscope className="h-4 w-4 text-primary shrink-0" />
@@ -211,7 +211,7 @@ export default function HomePage() {
             <div className="rounded-lg border bg-muted/30 p-6 md:p-8">
               <h2 className="text-xl font-bold mb-3">Who can start an intake</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Clear Choice Pharmacy is located at 8276 N Merriman Rd in Westland and is licensed in Michigan.
+                Clear Choice Pharmacy is located at 40890 Grand River in Novi and is licensed in Michigan.
                 Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state. A
                 clinician licensed in your state reviews the intake, and a pharmacy licensed to dispense in your state
                 fills an approved prescription. Prescriptions this pharmacy dispenses itself remain for Michigan patients.
@@ -290,7 +290,7 @@ export default function HomePage() {
                   A licensed doctor reviews your intake and decides whether a prescription is appropriate. A licensed
                   partner pharmacy compounds and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy
                   collects payment and does not dispense the vial. Other prescriptions we fill are dispensed from
-                  Westland to Michigan patients.{" "}
+                  Novi to Michigan patients.{" "}
                   <Link href="/about" className="text-primary hover:underline">
                     About Clear Choice Pharmacy
                   </Link>
@@ -318,7 +318,7 @@ export default function HomePage() {
             <div className="prose prose-sm max-w-none text-muted-foreground">
               <h2 className="text-2xl font-bold text-foreground mb-4">About Clear Choice Pharmacy</h2>
               <p className="leading-relaxed mb-4">
-                Clear Choice Pharmacy is a Westland, Michigan compounding pharmacy focused on{" "}
+                Clear Choice Pharmacy is a Novi, Michigan compounding pharmacy focused on{" "}
                 <Link href="/weight-loss" className="text-primary hover:underline">
                   provider-guided Semaglutide and Tirzepatide weight management
                 </Link>

@@ -10,14 +10,14 @@ import { SITE_URL } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: "Pharmacy Services | Medical Weight Loss, Prescriptions & More",
   description:
-    "Medical weight loss and GLP-1 care, plus low cost prescriptions, compounding, men's health, and specialty pharmacy—Clear Choice Pharmacy, Westland, MI.",
+    "Medical weight loss and GLP-1 care, plus low cost prescriptions, compounding, men's health, and specialty pharmacy—Clear Choice Pharmacy, Novi, MI.",
   alternates: {
     canonical: `${SITE_URL}/services`,
   },
   openGraph: {
     title: "Pharmacy Services | Clear Choice Pharmacy",
     description:
-      "Medical weight management and GLP-1 care, plus prescriptions, compounding, ED medications, and specialty meds from Clear Choice Pharmacy in Westland, MI.",
+      "Medical weight management and GLP-1 care, plus prescriptions, compounding, ED medications, and specialty meds from Clear Choice Pharmacy in Novi, MI.",
     url: `${SITE_URL}/services`,
     type: "website",
   },

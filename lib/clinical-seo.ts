@@ -55,10 +55,10 @@ import { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
 
 export const PHARMACY_ADDRESS = {
   "@type": "PostalAddress" as const,
-  streetAddress: "8276 N Merriman Rd",
-  addressLocality: "Westland",
+  streetAddress: "40890 Grand River",
+  addressLocality: "Novi",
   addressRegion: "MI",
-  postalCode: "48185",
+  postalCode: "48375",
   addressCountry: "US",
 }
 
@@ -90,7 +90,7 @@ export const SITE_KEYWORDS = [
   "GLP-1 weight loss",
   "Semaglutide weight loss Michigan",
   "Tirzepatide weight loss Michigan",
-  "Clear Choice Pharmacy Westland",
+  "Clear Choice Pharmacy Novi",
 ]
 
 export type FaqItem = { question: string; answer: string }

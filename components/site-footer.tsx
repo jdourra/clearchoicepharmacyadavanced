@@ -23,16 +23,16 @@ export function SiteFooter() {
             <SiteLogo href="/" height={72} />
             <div className="space-y-2 text-sm text-muted-foreground">
               <a
-                href="https://maps.google.com/?q=8276+N+Merriman+Rd,+Westland,+MI+48185"
+                href="https://maps.google.com/?q=40890+Grand+River,+Novi,+MI+48375"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-start gap-2 hover:text-foreground transition-colors"
               >
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>
-                  8276 N Merriman Rd
+                  40890 Grand River
                   <br />
-                  Westland, MI 48185
+                  Novi, MI 48375
                 </span>
               </a>
               <a href={PHARMACY_PHONE_TEL_HREF} className="flex items-center gap-2 hover:text-foreground transition-colors">

@@ -38,7 +38,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Shipped discreetly from Clear Choice Pharmacy in Westland, MI.",
+    shipping: "Shipped discreetly from Clear Choice Pharmacy in Novi, MI.",
   },
   "tadalafil-daily": {
     homeKitTitle: "Tadalafil Extended-Duration Troche HomeKit",
@@ -59,7 +59,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Shipped discreetly from Clear Choice Pharmacy in Westland, MI.",
+    shipping: "Shipped discreetly from Clear Choice Pharmacy in Novi, MI.",
   },
   "combination-troche": {
     homeKitTitle: "Sildenafil + Tadalafil Combination Troche HomeKit",
@@ -80,7 +80,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Shipped discreetly from Clear Choice Pharmacy in Westland, MI.",
+    shipping: "Shipped discreetly from Clear Choice Pharmacy in Novi, MI.",
   },
 }
 

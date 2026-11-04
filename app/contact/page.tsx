@@ -12,9 +12,9 @@ import {
 } from "@/lib/phone"
 
 export const metadata: Metadata = {
-  title: { absolute: "Contact Clear Choice Pharmacy | Westland, Michigan" },
+  title: { absolute: "Contact Clear Choice Pharmacy | Novi, Michigan" },
   description:
-    "Contact Clear Choice Pharmacy in Westland, MI for medical weight loss questions, prescriptions, compounding, and pharmacy support. Call (248) 987-6182.",
+    "Contact Clear Choice Pharmacy in Novi, MI for medical weight loss questions, prescriptions, compounding, and pharmacy support. Call (248) 987-6182.",
   alternates: { canonical: `${SITE_URL}/contact` },
 }
 
@@ -34,7 +34,7 @@ export default function ContactPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Contact</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              Reach our Westland pharmacy team about medical weight management programs, prescriptions, compounding, or
+              Reach our Novi pharmacy team about medical weight management programs, prescriptions, compounding, or
               specialty care. Weight loss, hormone therapy, and ED intakes are open nationwide. Prescriptions we dispense ourselves are for Michigan patients.
             </p>
           </div>
@@ -44,16 +44,16 @@ export default function ContactPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold">Pharmacy details</h2>
             <a
-              href="https://maps.google.com/?q=8276+N+Merriman+Rd,+Westland,+MI+48185"
+              href="https://maps.google.com/?q=40890+Grand+River,+Novi,+MI+48375"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-start gap-3 text-sm text-muted-foreground hover:text-foreground"
             >
               <MapPin className="h-5 w-5 shrink-0 text-primary mt-0.5" />
               <span>
-                8276 N Merriman Rd
+                40890 Grand River
                 <br />
-                Westland, MI 48185
+                Novi, MI 48375
               </span>
             </a>
             <a href={PHARMACY_PHONE_TEL_HREF} className="flex items-center gap-3 text-sm hover:text-primary">
