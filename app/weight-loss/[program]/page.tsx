@@ -11,7 +11,7 @@ import {
   getWeightLossProductPageTitle,
   isWeightLossProductSlug,
 } from "@/lib/weight-loss-product-content"
-import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
+import { NATIONWIDE_AREA_SERVED, SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 
 type PageProps = {
   params: Promise<{ program: string }>
@@ -81,6 +81,7 @@ export default async function WeightLossProductPage({ params }: PageProps) {
       lowPrice: fromPrice,
       highPrice,
       priceCurrency: "USD",
+      areaServed: NATIONWIDE_AREA_SERVED,
       offerCount: program.doses.length * 2,
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/weight-loss/${slug}`,

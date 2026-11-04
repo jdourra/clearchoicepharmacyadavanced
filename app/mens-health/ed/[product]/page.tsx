@@ -10,7 +10,7 @@ import {
   getEdTrocheProduct,
   isEdProductId,
 } from "@/lib/ed-troche-catalog"
-import { SITE_URL } from "@/lib/clinical-seo"
+import { NATIONWIDE_AREA_SERVED, SITE_URL } from "@/lib/clinical-seo"
 
 type PageProps = {
   params: Promise<{ product: string }>
@@ -88,6 +88,7 @@ export default async function EdProductPage({ params }: PageProps) {
       lowPrice,
       highPrice,
       priceCurrency: "USD",
+      areaServed: NATIONWIDE_AREA_SERVED,
       offerCount: product.pricing.length,
       availability: "https://schema.org/InStock",
       url: `${SITE_URL}/mens-health/ed/${slug}`,

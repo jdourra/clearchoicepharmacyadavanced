@@ -7,6 +7,8 @@ import {
   HOME_DESCRIPTION,
   HOME_TITLE,
   SITE_KEYWORDS,
+  NATIONWIDE_AREA_SERVED,
+  NATIONWIDE_SERVICES,
   SITE_URL,
   buildSiteNavigationJsonLd,
 } from "@/lib/clinical-seo"
@@ -242,7 +244,7 @@ export default function RootLayout({
       "@type": "ContactPoint",
       telephone: "+12489876182",
       contactType: "customer service",
-      areaServed: "US-MI",
+      areaServed: NATIONWIDE_AREA_SERVED,
       availableLanguage: "English",
     },
     knowsAbout: [
@@ -268,6 +270,15 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": NATIONWIDE_SERVICES,
+            }),
+          }}
         />
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Information" />
       </head>

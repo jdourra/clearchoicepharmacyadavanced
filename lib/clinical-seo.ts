@@ -81,6 +81,12 @@ export const AREA_SERVED = [
   { "@type": "City" as const, name: "Commerce Township", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
 ]
 
+/** Weight loss, hormone therapy, and ED intakes. The Novi pharmacy listing stays on AREA_SERVED. */
+export const NATIONWIDE_AREA_SERVED = {
+  "@type": "Country" as const,
+  name: "United States",
+}
+
 /** Short keyword list — rely on titles, H1s, and content rather than keyword stuffing. */
 export const SITE_KEYWORDS = [
   "Semaglutide weight loss",
@@ -116,9 +122,49 @@ export function pharmacyProviderSchema() {
     name: "Clear Choice Pharmacy",
     telephone: PHARMACY_PHONE,
     address: PHARMACY_ADDRESS,
-    areaServed: AREA_SERVED,
   }
 }
+
+export function nationwideServiceSchema(input: {
+  name: string
+  serviceType: string
+  description: string
+  path: string
+}) {
+  return {
+    "@type": "Service" as const,
+    name: input.name,
+    serviceType: input.serviceType,
+    description: input.description,
+    url: `${SITE_URL}${input.path}`,
+    areaServed: NATIONWIDE_AREA_SERVED,
+    provider: pharmacyProviderSchema(),
+  }
+}
+
+export const NATIONWIDE_SERVICES = [
+  nationwideServiceSchema({
+    name: "Semaglutide and tirzepatide weight loss",
+    serviceType: "Medical weight loss",
+    path: "/weight-loss",
+    description:
+      "Patients in every U.S. state can start an intake. A clinician licensed in the patient's state reviews it. A pharmacy licensed to dispense in that state fills and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.",
+  }),
+  nationwideServiceSchema({
+    name: "Hormone therapy",
+    serviceType: "Hormone therapy",
+    path: "/mens-health/trt/testosterone-cypionate",
+    description:
+      "Patients in every U.S. state can start a hormone-therapy intake. A clinician licensed in the patient's state reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
+  }),
+  nationwideServiceSchema({
+    name: "ED medication",
+    serviceType: "Erectile dysfunction treatment",
+    path: "/mens-health",
+    description:
+      "Patients in every U.S. state can start an ED medication intake. A clinician licensed in the patient's state reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
+  }),
+]
 
 export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
