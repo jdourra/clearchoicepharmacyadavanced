@@ -42,7 +42,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What is Semaglutide?",
         paragraphs: [
           "Semaglutide is a once-weekly GLP-1 receptor agonist used in medical weight management. It mimics an incretin hormone involved in appetite regulation and glucose control. For many patients, that means feeling fuller sooner, reduced food noise, and support for sustained calorie control when combined with lifestyle changes.",
-          "Brand-name medications that contain Semaglutide include Ozempic and Wegovy. Clear Choice Pharmacy compounds Semaglutide pursuant to a patient-specific prescription after provider review. We do not dispense brand-name Ozempic or Wegovy through this program.",
+          "Brand-name medications that contain Semaglutide include Ozempic and Wegovy. A licensed partner pharmacy compounds semaglutide pursuant to a patient-specific prescription after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -84,7 +84,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide the same as Ozempic?",
         answer:
-          "Ozempic contains Semaglutide as its active ingredient. Our program compounds Semaglutide pursuant to a patient-specific prescription. We do not dispense brand-name Ozempic through this provider-guided weight management program.",
+          "Ozempic contains Semaglutide as its active ingredient. A licensed partner pharmacy compounds semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic.",
       },
       {
         question: "Do I need a prescription for Semaglutide?",
