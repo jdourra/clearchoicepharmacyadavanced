@@ -937,7 +937,7 @@ export function WeightLossIntakeForm({
       >
         <p className="text-sm text-muted-foreground">
           {requireCardPayment
-            ? "Thank you for completing your weight loss intake. A licensed doctor reviews it, and RxAve ships the medication if treatment is approved."
+            ? "Thank you for completing your weight loss intake. A licensed doctor reviews it, and RxAve routes the prescription to a licensed compounding pharmacy, which ships the medication if treatment is approved."
             : `Thank you for completing your weight loss intake. Pay $${holdQuote?.totalBilled ?? ""} by Zelle to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy.`}
         </p>
       </IntakeSuccessPanel>

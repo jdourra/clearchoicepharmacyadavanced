@@ -44,7 +44,9 @@ export default function ServicesPage() {
               <Link href="/weight-loss" className="text-primary hover:underline">
                 medical weight loss and GLP-1 care
               </Link>
-              , with pharmacy support for prescriptions, compounding, men&apos;s health, and specialty medications.
+              . Ola Health reviews those intakes, and RxAve routes an approved prescription to a licensed
+              compounding pharmacy. Non-compounded prescriptions that Clear Choice Pharmacy dispenses itself are for
+              Michigan patients.
             </p>
             <p className="text-sm text-muted-foreground">
               Prefer a quick start?{" "}

@@ -13,7 +13,7 @@ export type EdProductContent = {
 
 const SHARED_ED_KIT_INCLUDES = [
   "Physician-reviewed prescription",
-  "Fulfilled by RxAve after Ola Health reviews the intake",
+  "Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy",
   "Discreet pharmacy shipping",
   "Step-by-step use instructions",
 ]
@@ -25,7 +25,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     procedure:
       "Place one troche under your tongue 30–60 minutes before activity. Allow it to dissolve fully — do not chew or swallow whole for fastest absorption.",
     howItWorks:
-      "Sildenafil — the active ingredient in brand-name Viagra — is delivered sublingually so absorption begins in minutes rather than the 30–60 minutes typical of swallowed tablets. Food does not delay onset the way it can with oral pills. Ola Health reviews the intake. RxAve fulfills the compounded troches. This program does not dispense brand-name Viagra.",
+      "Sildenafil — the active ingredient in brand-name Viagra — is delivered sublingually so absorption begins in minutes rather than the 30–60 minutes typical of swallowed tablets. Food does not delay onset the way it can with oral pills. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses the compounded troches. This program does not dispense brand-name Viagra.",
     benefits: [
       "Rapid onset — often 15–30 minutes",
       "Lasts approximately 4–6 hours",
@@ -38,7 +38,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Fulfilled and shipped discreetly by RxAve. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   "tadalafil-daily": {
     homeKitTitle: "Tadalafil Extended-Duration Troche HomeKit",
@@ -46,7 +46,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     procedure:
       "Place one troche under your tongue as directed — daily for continuous support or as needed before activity. Allow full sublingual dissolution.",
     howItWorks:
-      "Tadalafil — the active ingredient in brand-name Cialis — offers an extended window of support up to 36 hours, reducing timing pressure. Sublingual compounding supports faster absorption than swallowed tablets. Ola Health reviews the intake. RxAve fulfills the compounded troches. This program does not dispense brand-name Cialis.",
+      "Tadalafil — the active ingredient in brand-name Cialis — offers an extended window of support up to 36 hours, reducing timing pressure. Sublingual compounding supports faster absorption than swallowed tablets. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses the compounded troches. This program does not dispense brand-name Cialis.",
     benefits: [
       "Up to 36-hour support window",
       "Ideal for spontaneity",
@@ -59,11 +59,11 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Fulfilled and shipped discreetly by RxAve. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   "combination-troche": {
     homeKitTitle: "Sildenafil + Tadalafil Combination Troche HomeKit",
-    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
+    tagline: "Reviewed by Ola Health · Routed by RxAve",
     procedure:
       "Place one dual-action troche under your tongue as directed by your provider. Dissolve fully under the tongue before activity.",
     howItWorks:
@@ -80,7 +80,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
     ],
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Fulfilled and shipped discreetly by RxAve. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
 }
 

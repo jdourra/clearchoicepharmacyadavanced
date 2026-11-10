@@ -33,7 +33,7 @@ export default function AboutPage() {
               {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy in Novi, Michigan. The owner is {PHARMACY_OWNER}.
               Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}. Clear Choice is licensed in Michigan only and does
               not compound or dispense compounded medications. Weight loss, hormone therapy, and ED medication are
-              reviewed by Ola Health. If treatment is approved, RxAve fulfills and ships the compounded prescription.
+              reviewed by Ola Health. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded prescription.
             </p>
           </div>
         </section>
@@ -44,7 +44,7 @@ export default function AboutPage() {
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
               From 40890 Grand River we fill non-compounded prescriptions for Michigan patients. Compounded medications,
               including semaglutide and tirzepatide, are not prepared or shipped from this pharmacy. Ola Health reviews
-              those intakes, and RxAve fulfills an approved prescription.
+              those intakes, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses the prescription.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Primary clinical focus on this site:{" "}
@@ -75,7 +75,7 @@ export default function AboutPage() {
             <h2 className="text-xl font-bold mb-3">Pharmacy vs prescribing clinician</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Ola Health reviews a weight-loss, hormone, or ED intake and decides whether a prescription is appropriate.
-              If it is approved, RxAve fulfills and ships the compounded medication. Clear Choice Pharmacy collects the
+              If it is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Clear Choice Pharmacy collects the
               intake and the payment and does not compound or dispense compounded medication. Non-compounded
               prescriptions we fill are dispensed to Michigan patients under Michigan pharmacy license 5301013716.
             </p>

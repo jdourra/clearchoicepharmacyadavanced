@@ -31,10 +31,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = getEdProductPageTitle(product)
   const description =
     slug === "tadalafil-daily"
-      ? `Tadalafil ED medication from $${startingPrice}/mo. Ola Health reviews the intake before RxAve fills an approved prescription.`
+      ? `Tadalafil ED medication from $${startingPrice}/mo. Ola Health reviews the intake before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.`
       : slug === "sildenafil-fast"
-        ? `Sildenafil ED medication from $${startingPrice}/mo. Ola Health reviews the intake before RxAve fills an approved prescription.`
-        : `Sildenafil and tadalafil combination from $${startingPrice}/mo. Ola Health reviews the intake before RxAve fills an approved prescription.`
+        ? `Sildenafil ED medication from $${startingPrice}/mo. Ola Health reviews the intake before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.`
+        : `Sildenafil and tadalafil combination from $${startingPrice}/mo. Ola Health reviews the intake before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.`
 
   return {
     title,

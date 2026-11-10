@@ -489,7 +489,7 @@ function OrdersTab({
                   {program.type === "weight_loss" &&
                     program.paymentStatus === "awaiting_pharmacy" && (
                       <p className="text-sm text-muted-foreground mt-4">
-                        {weightLossPaymentPatientNote()} If treatment is approved, RxAve ships your medication.
+                        {weightLossPaymentPatientNote()} If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which ships your medication.
                       </p>
                     )}
                   <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -714,7 +714,7 @@ function ProgramsTab({
               </div>
               {program.type === "weight_loss" && program.paymentStatus === "awaiting_pharmacy" && (
                 <p className="text-sm text-muted-foreground mt-4">
-                  {weightLossPaymentPatientNote()} If treatment is approved, RxAve ships your medication.
+                  {weightLossPaymentPatientNote()} If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which ships your medication.
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-4">

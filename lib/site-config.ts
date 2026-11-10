@@ -39,16 +39,16 @@ export const PHARMACY_ADDRESS_LINE = `${PHARMACY_STREET}, ${PHARMACY_CITY}, ${PH
 
 /** Telehealth group that reviews weight-loss, hormone, and ED intakes. */
 export const TELEHEALTH_PROVIDER = "Ola Health"
-/** Pharmacy fulfillment for 503A compounded medications. */
+/** Routes an approved compounded prescription to a licensed compounding pharmacy. */
 export const FULFILLMENT_PHARMACY = "RxAve"
 
 /**
- * Weight loss, hormone therapy, and ED are reviewed by Ola Health and fulfilled
- * by RxAve. Clear Choice is licensed only in Michigan and does not compound or
- * dispense compounded medication.
+ * Weight loss, hormone therapy, and ED are reviewed by Ola Health. RxAve routes
+ * an approved prescription to a licensed compounding pharmacy. Clear Choice is
+ * licensed only in Michigan and does not compound or dispense compounded medication.
  */
 export const NATIONAL_PARTNER_CARE_NOTE =
-  "Patients in every U.S. state and the District of Columbia can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve fulfills and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. A few states require a live video visit."
+  "Patients in every U.S. state and the District of Columbia can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. A few states require a live video visit."
 
 export const HORMONE_THERAPY_CONTROLLED_NOTE =
   "Testosterone is a Schedule III controlled medication. It is prescribed only when a clinician licensed in your state decides it is medically appropriate. It is not offered for athletic performance or bodybuilding."
@@ -66,3 +66,4 @@ export const GOOGLE_REVIEW_URL =
 export function isGoogleReviewUrlConfigured(): boolean {
   return Boolean(GOOGLE_REVIEW_URL)
 }
+

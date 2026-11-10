@@ -123,7 +123,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             />
           </div>
           <p className="text-center lg:text-left text-xs text-muted-foreground mt-3">
-            Fulfilled by RxAve after Ola Health reviews the intake
+            Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy.
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               <span className="text-muted-foreground ml-1">/mo on 90-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Monthly starter kits from ${startingPrice}/mo · you pay here · RxAve ships if approved
+              Monthly starter kits from ${startingPrice}/mo · you pay here · a licensed compounding pharmacy ships if approved
             </p>
             <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
@@ -254,7 +254,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                       : `First shipment — ${holdQuote.kitsIncluded} × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each, ${holdQuote.kitsIncluded * 30} days): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
-                    Price is for the full kit, not per week. Doctor review and RxAve shipping are included.
+                    Price is for the full kit, not per week. Doctor review and shipping by the compounding pharmacy are included.
                   </p>
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">

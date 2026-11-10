@@ -182,7 +182,7 @@ export default function RootLayout({
           "@type": "OfferCatalog",
           name: "Semaglutide & Tirzepatide Weight Loss",
           description:
-            "Provider-guided weight management. RxAve fills and ships approved semaglutide and tirzepatide.",
+            "Provider-guided weight management. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide and tirzepatide.",
           url: `${SITE_URL}/weight-loss`,
         },
         {

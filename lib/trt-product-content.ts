@@ -14,7 +14,7 @@ export type TrtProductContent = {
 
 const SHARED_TRT_KIT_INCLUDES = [
   "Physician-reviewed prescription and protocol",
-  "Fulfilled by RxAve after Ola Health reviews the intake",
+  "Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy",
   "Step-by-step instructions",
   "Discreet shipping (cold chain when required)",
 ]
@@ -22,7 +22,7 @@ const SHARED_TRT_KIT_INCLUDES = [
 export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
   "testosterone-cypionate": {
     homeKitTitle: "Testosterone Cypionate TRT HomeKit",
-    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
+    tagline: "Reviewed by Ola Health · Routed by RxAve",
     procedure:
       "Intramuscular self-injection, typically once per week in the thigh or deltoid. Your kit includes syringes, alcohol pads, and injection guidance.",
     howItWorks:
@@ -37,11 +37,11 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Your provider may recommend periodic lab work to monitor testosterone, hematocrit, and related markers during therapy.",
     physicianConsent:
       "Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. Additional labs or follow-up may be required.",
-    shipping: "Fulfilled and shipped by RxAve. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
+    shipping: "Routed by RxAve and shipped by a licensed compounding pharmacy. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
   },
   "testosterone-cream": {
     homeKitTitle: "Testosterone Cream TRT HomeKit",
-    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
+    tagline: "Reviewed by Ola Health · Routed by RxAve",
     procedure:
       "Apply compounded testosterone cream daily to clean, dry skin as directed — typically shoulders, upper arms, or abdomen. Wash hands after application.",
     howItWorks:
@@ -61,11 +61,11 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Topical protocols still require physician oversight and periodic labs to confirm therapeutic levels and safety.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Fulfilled and shipped discreetly by RxAve. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   enclomiphene: {
     homeKitTitle: "Enclomiphene Oral TRT HomeKit",
-    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
+    tagline: "Reviewed by Ola Health · Routed by RxAve",
     procedure:
       "Take oral enclomiphene daily as prescribed, with or without food per your provider's directions.",
     howItWorks:
@@ -84,7 +84,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Lab monitoring helps your provider titrate your oral protocol and confirm response over time.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
-    shipping: "Fulfilled and shipped discreetly by RxAve. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
 }
 

@@ -29,7 +29,7 @@ export default function TermsPage() {
         medications. Non-compounded prescriptions we dispense ourselves are for Michigan patients. Weight loss, hormone
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Ola
         Health reviews those intakes through a clinician licensed in the patient&apos;s state. If treatment is approved,
-        RxAve fulfills and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
+        RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
         prescribed only when clinically appropriate. A few states require a live video visit. We do not replace your
         primary care physician.
       </p>

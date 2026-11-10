@@ -182,7 +182,7 @@ export function AdminIntakePharmacyFulfillmentPanel({
         <CardTitle className="text-lg">{isWeightLoss ? "Clinician network" : "Pharmacy fulfillment"}</CardTitle>
         <p className="text-sm text-muted-foreground">
           {isWeightLoss
-            ? "The patient pays on this website. A licensed doctor reviews the intake, and RxAve fills and ships the vial. Do not mark this medication as shipped from Clear Choice."
+            ? "The patient pays on this website. A licensed doctor reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the vial. Do not mark this medication as shipped from Clear Choice."
             : "Collect payment, update status, and notify the patient after clinician approval."}
         </p>
       </CardHeader>

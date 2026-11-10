@@ -35,22 +35,22 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Do you offer Semaglutide and Tirzepatide in every state?",
     answer:
-      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} Ola Health reviews it. RxAve fills and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
+      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
     answer:
-      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. Ola Health reviews the intake. If treatment is approved, RxAve fulfills compounded semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or dispense compounded medication and does not dispense brand-name Ozempic or Wegovy.",
+      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. Ola Health reviews the intake. If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or dispense compounded medication and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Who evaluates and who fills the medication?",
     answer:
-      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. RxAve fulfills and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
+      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
   },
   {
     question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      `After a doctor approves treatment, RxAve prepares a patient-specific kit and ships it. ${weightLossHowYouPay()}`,
+      `After a doctor approves treatment, RxAve routes the approved prescription to a licensed compounding pharmacy, which prepares and ships the kit. ${weightLossHowYouPay()}`,
   },
 ])
 

@@ -34,7 +34,7 @@ const EXTRA_FAQS = [
   {
     question: "What does Clear Choice Pharmacy do versus the prescribing clinician?",
     answer:
-      `${weightLossHowYouPay()} A licensed doctor reviews your intake. If treatment is approved, RxAve fills the prescription and ships it. Clear Choice does not compound these vials.`,
+      `${weightLossHowYouPay()} A licensed doctor reviews your intake. If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses and ships it. Clear Choice does not compound these vials.`,
   },
   {
     question: "Do you guarantee weight loss results?",
@@ -44,7 +44,7 @@ const EXTRA_FAQS = [
   {
     question: "Can patients outside Michigan enroll?",
     answer:
-      "Yes. Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. Ola Health reviews the intake. RxAve ships an approved prescription. Prescriptions Clear Choice Pharmacy dispenses itself stay limited to Michigan.",
+      "Yes. Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. Ola Health reviews the intake. a licensed compounding pharmacy ships the medication after RxAve routes the prescription an approved prescription. Prescriptions Clear Choice Pharmacy dispenses itself stay limited to Michigan.",
   },
   {
     question: "Where can I read more educational content?",

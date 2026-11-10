@@ -30,7 +30,7 @@ export type WeightLossProductContent = {
 
 const SHARED_KIT_INCLUDES = [
   "Physician-reviewed prescription and titration plan",
-  "Compounded medication prepared by RxAve",
+  "Compounded medication prepared by a licensed compounding pharmacy",
   "Syringes and alcohol pads",
   "Step-by-step injection instructions",
   "Secure shipping to your door",
@@ -41,7 +41,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Semaglutide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $134/mo per 30-day kit",
     purpose:
-      "Semaglutide is a once-weekly GLP-1 therapy used for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Ola Health reviews the intake. RxAve fulfills compounded semaglutide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
+      "Semaglutide is a once-weekly GLP-1 therapy used for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded semaglutide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -69,7 +69,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       { phase: "Maintenance phase", detail: "Ongoing dose tailored to your goals with continued provider oversight." },
     ],
     shipping:
-      "Shipped by RxAve, not from Clear Choice Pharmacy. Refrigerate upon receipt. Your kit includes supplies and instructions for at-home use.",
+      "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Your kit includes supplies and instructions for at-home use.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
     scienceSummary:
@@ -83,7 +83,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Tirzepatide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $149/mo per 30-day kit",
     purpose:
-      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Ola Health reviews the intake. RxAve fulfills compounded tirzepatide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
+      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded tirzepatide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -111,7 +111,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       { phase: "Maintenance phase", detail: "Personalized ongoing dose with pharmacy fulfillment." },
     ],
     shipping:
-      "Shipped by RxAve, not from Clear Choice Pharmacy. Refrigerate upon receipt. Supplies and instructions included.",
+      "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Supplies and instructions included.",
     physicianConsent:
       "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
     scienceSummary:

@@ -15,7 +15,7 @@ import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: { absolute: "GLP-1 Weight Management | Clear Choice Pharmacy" },
   description:
-    "Learn how GLP-1 medications support provider-guided weight management. RxAve fills approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
+    "Learn how GLP-1 medications support provider-guided weight management. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
   alternates: { canonical: `${SITE_URL}/weight-loss/glp-1` },
   openGraph: {
     title: "GLP-1 Weight Management | Clear Choice Pharmacy",
@@ -39,7 +39,7 @@ export default function Glp1Page() {
         badge="GLP-1 education"
         headline="GLP-1 Weight Management in Michigan"
         subheadline="How glucagon-like peptide-1 therapies fit into provider-guided care."
-        description="GLP-1 receptor agonists are prescription medications used under clinician supervision for weight management and related metabolic care. RxAve fills approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials."
+        description="GLP-1 receptor agonists are prescription medications used under clinician supervision for weight management and related metabolic care. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses approved semaglutide and tirzepatide. Clear Choice Pharmacy does not compound or ship these vials."
         highlight="Educational overview · Not medical advice · Partner pharmacy fulfillment"
         primaryCta={{ label: "View medical weight loss program", href: "/weight-loss" }}
         secondaryCta={{ label: "Compare medications", href: "/weight-loss/medications" }}
@@ -59,7 +59,7 @@ export default function Glp1Page() {
           </p>
           <p>
             Brand-name products patients often research include Ozempic and Wegovy (Semaglutide) and Mounjaro and Zepbound
-            (Tirzepatide). RxAve fulfills semaglutide and tirzepatide pursuant to a
+            (Tirzepatide). RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide pursuant to a
             patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Compounded
             medications are not the same as FDA-approved brand products.
           </p>
@@ -76,8 +76,8 @@ export default function Glp1Page() {
           items={[
             "Semaglutide: GLP-1 receptor agonist used in provider-guided weight management kits filled by RxAve.",
             "Tirzepatide: Dual GLP-1/GIP pathway option when a doctor determines it is appropriate.",
-            "Evaluation first: Intake, photo ID, and doctor review happen before RxAve prepares medication.",
-            "Pharmacy role: RxAve fulfills and ships approved kits. Clear Choice does not.",
+            "Evaluation first: Intake, photo ID, and doctor review happen before a licensed compounding pharmacy prepares the medication. RxAve routes the prescription.",
+            "Pharmacy role: RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved kits. Clear Choice does not.",
           ]}
         />
         <div className="mt-8 flex flex-wrap gap-3">

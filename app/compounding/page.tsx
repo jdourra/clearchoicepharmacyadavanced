@@ -8,7 +8,7 @@ import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 export const metadata: Metadata = {
   title: { absolute: "Compounded Medications | Clear Choice Pharmacy" },
   description:
-    "Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Ola Health reviews those intakes. RxAve fulfills approved 503A prescriptions.",
+    "Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Ola Health reviews those intakes. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses 503A prescriptions.",
   alternates: { canonical: `${SITE_URL}/compounding` },
 }
 
@@ -29,7 +29,7 @@ export default function CompoundingPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Compounded medications</h1>
             <p className="text-muted-foreground leading-relaxed">
               Clear Choice Pharmacy is licensed in Michigan only. It does not compound or dispense compounded
-              medications. Ola Health reviews the intake. If treatment is approved, RxAve fulfills and ships the 503A
+              medications. Ola Health reviews the intake. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the 503A
               prescription, including semaglutide, tirzepatide, ED troches, and hormone therapy.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function CompoundingPage() {
               <Link href="/weight-loss" className="text-primary hover:underline">
                 medical weight loss program
               </Link>
-              , Ola Health reviews the intake. If a prescription is approved, RxAve fulfills and ships the semaglutide or
+              , Ola Health reviews the intake. If a prescription is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the semaglutide or
               tirzepatide. Clear Choice Pharmacy does not compound or dispense those vials. Learn
               more about{" "}
               <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
@@ -70,8 +70,7 @@ export default function CompoundingPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Other compounded services</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              ED troches are handled the same way as weight loss: Ola Health reviews the intake and RxAve fulfills an
-              approved prescription. See{" "}
+              ED troches are handled the same way as weight loss: Ola Health reviews the intake and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses the prescription. See{" "}
               <Link href="/mens-health" className="text-primary hover:underline">
                 sildenafil and tadalafil
               </Link>

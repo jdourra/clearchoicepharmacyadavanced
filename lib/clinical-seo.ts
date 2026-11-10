@@ -7,7 +7,7 @@ export const HOME_TITLE =
   "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Semaglutide and tirzepatide weight loss for patients in every U.S. state. Ola Health reviews the intake. RxAve fills and ships an approved kit."
+  "Semaglutide and tirzepatide weight loss for patients in every U.S. state. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -170,17 +170,17 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      "Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. If approved, RxAve fills the prescription. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.",
+      "Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. If approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses it. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.",
   },
   {
     question: "Is Tadalafil the same as Cialis?",
     answer:
-      "Tadalafil is the active ingredient in brand-name Cialis. RxAve fulfills compounded tadalafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Cialis.",
+      "Tadalafil is the active ingredient in brand-name Cialis. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded tadalafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Cialis.",
   },
   {
     question: "Is Sildenafil the same as Viagra?",
     answer:
-      "Sildenafil is the active ingredient in brand-name Viagra. RxAve fulfills compounded sildenafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Viagra.",
+      "Sildenafil is the active ingredient in brand-name Viagra. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded sildenafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Viagra.",
   },
   {
     question: "Why choose sublingual troches over regular ED pills?",
@@ -195,12 +195,12 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you serve patients outside Michigan?",
     answer:
-      "Yes for weight loss, hormone therapy, and ED medication. Ola Health reviews the intake, and RxAve fills an approved prescription. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. A few states require a live video visit.",
+      "Yes for weight loss, hormone therapy, and ED medication. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. A few states require a live video visit.",
   },
   {
     question: "Is the consultation private?",
     answer:
-      "Yes. The online consultation is confidential. Approved ED medication is filled by RxAve and shipped discreetly.",
+      "Yes. The online consultation is confidential. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication discreetly.",
   },
 ]
 
@@ -208,17 +208,17 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, RxAve fills and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
+      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
     answer:
-      "Ozempic and Wegovy are brand-name medications that contain semaglutide. Compounded semaglutide in this program is prepared by RxAve pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Ozempic or Wegovy.",
+      "Ozempic and Wegovy are brand-name medications that contain semaglutide. Compounded semaglutide in this program is prepared by a licensed compounding pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Is compounded Tirzepatide the same as Zepbound or Mounjaro?",
     answer:
-      "Zepbound and Mounjaro are brand-name medications that contain tirzepatide. Compounded tirzepatide in this program is prepared by RxAve pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Zepbound or Mounjaro.",
+      "Zepbound and Mounjaro are brand-name medications that contain tirzepatide. Compounded tirzepatide in this program is prepared by a licensed compounding pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Zepbound or Mounjaro.",
   },
   {
     question: "What is the difference between Semaglutide and Tirzepatide?",
@@ -233,12 +233,12 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "How much does provider-guided weight management cost?",
     answer:
-      "Compounded semaglutide kits are priced by weekly injection dose from $134–$289 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, doctor review, supplies, and shipping by RxAve. Clear Choice Pharmacy does not compound or ship these vials. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply.",
+      "Compounded semaglutide kits are priced by weekly injection dose from $134–$289 depending on strength and billing plan. Tirzepatide kits range from $149–$319 by weekly dose. Every 30-day kit includes 4 weekly injections, doctor review, supplies, and shipping by the compounding pharmacy. Clear Choice Pharmacy does not compound or ship these vials. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply.",
   },
   {
     question: "Who is eligible for provider-guided weight management?",
     answer:
-      "Eligibility is determined by a licensed doctor after your online health review. Approval is not guaranteed. If treatment is approved, RxAve fills and ships the medication.",
+      "Eligibility is determined by a licensed doctor after your online health review. Approval is not guaranteed. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.",
   },
 ]
 

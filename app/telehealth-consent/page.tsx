@@ -25,8 +25,8 @@ export default function TelehealthConsentPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Pharmacy fulfillment</h2>
       <p>
-        If a clinician approves a compounded medication, the prescription is sent to {FULFILLMENT_PHARMACY} to fulfill
-        and ship. Clear Choice Pharmacy does not compound or dispense those medications. Non-compounded prescriptions
+        If a clinician approves a compounded medication, {FULFILLMENT_PHARMACY} routes the prescription to a licensed
+        compounding pharmacy, which dispenses and ships it. Clear Choice Pharmacy does not compound or dispense those medications. Non-compounded prescriptions
         that Clear Choice Pharmacy dispenses itself are limited to Michigan patients.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Risks and alternatives</h2>

@@ -47,7 +47,7 @@ export default function WeightLossMedicationsPage() {
         badge="Medication options"
         headline="Weight Loss Medications in Michigan"
         subheadline="Semaglutide and tirzepatide, after a doctor reviews your intake."
-        description="RxAve fills semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
+        description="RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
         highlight="Not a drug catalog search · Clinical evaluation required"
         primaryCta={{ label: "View Semaglutide kits", href: "/weight-loss/semaglutide" }}
         secondaryCta={{ label: "View Tirzepatide kits", href: "/weight-loss/tirzepatide" }}
@@ -57,7 +57,7 @@ export default function WeightLossMedicationsPage() {
         <SectionIntro
           eyebrow="Compare"
           title="Primary GLP-1 options"
-          description="Both kits include doctor review. RxAve fulfills and ships the medication. Clear Choice Pharmacy does not compound or ship these vials."
+          description="Both kits include doctor review. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication. Clear Choice Pharmacy does not compound or ship these vials."
         />
         <div className="mt-8 grid md:grid-cols-2 gap-4">
           <Card className="p-6 flex flex-col">

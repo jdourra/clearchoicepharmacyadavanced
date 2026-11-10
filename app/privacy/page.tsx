@@ -38,8 +38,8 @@ export default function PrivacyPage() {
         We use this information to operate the website, process payment, and coordinate care. Intake information for
         weight loss, hormone therapy, and ED medication is shared with {TELEHEALTH_PROVIDER} so a clinician licensed in
         your state can review it. If that clinician approves a compounded prescription, the prescription and the
-        information needed to dispense it are shared with {FULFILLMENT_PHARMACY}, which fulfills and ships the
-        medication. Clear Choice Pharmacy does not compound or dispense those medications. We may also share information
+        information needed to dispense it are shared with {FULFILLMENT_PHARMACY}. RxAve routes that prescription to a
+        licensed compounding pharmacy, which dispenses and ships the medication. Clear Choice Pharmacy does not compound or dispense those medications. We may also share information
         when the law requires it. We do not sell your personal health information.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Your rights</h2>
