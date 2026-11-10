@@ -3,7 +3,6 @@ import { LegalPageShell } from "@/components/legal-page-shell"
 import {
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
-  PHARMACY_OWNER,
   TELEHEALTH_PROVIDER,
   ZELLE_PAYMENT_EMAIL,
 } from "@/lib/site-config"
@@ -19,7 +18,7 @@ export default function TermsPage() {
       <p>Last updated: November 2026</p>
       <p>
         These Terms and Conditions govern your use of the Clear Choice Pharmacy website, intakes, and pharmacy orders.
-        Clear Choice Pharmacy is the name used by {LEGAL_BUSINESS_NAME}. The owner is {PHARMACY_OWNER}. By submitting an
+        Clear Choice Pharmacy is the name used by {LEGAL_BUSINESS_NAME}. By submitting an
         intake or placing an order, you agree to these terms.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>

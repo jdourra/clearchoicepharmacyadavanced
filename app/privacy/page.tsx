@@ -6,7 +6,6 @@ import {
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
   PHARMACY_ADDRESS_LINE,
-  PHARMACY_OWNER,
   TELEHEALTH_PROVIDER,
   ZELLE_PAYMENT_EMAIL,
 } from "@/lib/site-config"
@@ -22,7 +21,7 @@ export default function PrivacyPage() {
       <p>Last updated: November 2026</p>
       <p>
         {LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy, protects health information in accordance with
-        HIPAA and applicable state law. The owner is {PHARMACY_OWNER}. Michigan pharmacy license{" "}
+        HIPAA and applicable state law. Michigan pharmacy license{" "}
         {MICHIGAN_PHARMACY_LICENSE}. The pharmacy is at {PHARMACY_ADDRESS_LINE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Information we collect</h2>

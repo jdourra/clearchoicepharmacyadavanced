@@ -12,7 +12,7 @@ import {
   SITE_URL,
   buildSiteNavigationJsonLd,
 } from "@/lib/clinical-seo"
-import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
+import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE } from "@/lib/site-config"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -121,11 +121,6 @@ export default function RootLayout({
     "@type": "Pharmacy",
     name: "Clear Choice Pharmacy",
     legalName: LEGAL_BUSINESS_NAME,
-    founder: {
-      "@type": "Person",
-      name: PHARMACY_OWNER,
-      jobTitle: "Owner",
-    },
     alternateName: "Clear Choice Rx",
     identifier: MICHIGAN_PHARMACY_LICENSE,
     url: SITE_URL,

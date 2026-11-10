@@ -5,7 +5,6 @@ import {
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
   PHARMACY_DBA,
-  PHARMACY_OWNER,
   TELEHEALTH_PROVIDER,
   ZELLE_PAYMENT_EMAIL,
 } from "@/lib/site-config"
@@ -20,8 +19,8 @@ export default function RefundPolicyPage() {
     <LegalPageShell title="Refund Policy">
       <p>Last updated: November 2026</p>
       <p>
-        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 40890 Grand River, Novi, MI 48375. Owner{" "}
-        {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
+        {LEGAL_BUSINESS_NAME}, doing business as {PHARMACY_DBA}, 40890 Grand River, Novi, MI 48375. Michigan
+        pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
       <p>
