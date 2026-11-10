@@ -41,7 +41,7 @@ export default function HomePage() {
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
               Provider-guided medical weight management with compounded semaglutide and tirzepatide after a licensed
-              doctor reviews your intake. A partner pharmacy fills and ships approved medication. Individual results may
+              doctor reviews your intake. RxAve fills and ships approved medication. Individual results may
               vary.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
@@ -75,7 +75,7 @@ export default function HomePage() {
                 Semaglutide &amp; Tirzepatide kits from $134/mo
               </h2>
               <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Cash-pay pricing is shown before you pay. A doctor reviews the intake. A licensed partner pharmacy
+                Cash-pay pricing is shown before you pay. A doctor reviews the intake. RxAve
                 compounds and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials.
               </p>
             </div>
@@ -94,7 +94,7 @@ export default function HomePage() {
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
                     Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 90-day
-                    starter billing after a doctor approves treatment. A partner pharmacy fills and ships the kit.
+                    starter billing after a doctor approves treatment. RxAve fills and ships the kit.
                   </p>
                   <Button asChild size="sm" className="w-fit">
                     <Link href="/weight-loss/semaglutide">
@@ -168,8 +168,8 @@ export default function HomePage() {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 Patients across the United States can start provider-guided Semaglutide and
-                Tirzepatide weight management. {weightLossHowYouPay()} A clinician licensed in your state reviews the intake before
-                any prescription is written. If treatment is approved, a partner pharmacy fills and ships the
+                Tirzepatide weight management. {weightLossHowYouPay()} Ola Health reviews the intake before
+                any prescription is written. If treatment is approved, RxAve fills and ships the
                 medication.
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function HomePage() {
                 <h3 className="font-semibold mb-2">How the program works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
                   Choose a kit, complete a secure intake, and upload your photo ID. {weightLossHowYouPay()} A licensed
-                  doctor reviews your intake, usually within 24 hours. If approved, a partner pharmacy ships your
+                  doctor reviews your intake, usually within 24 hours. If approved, RxAve ships your
                   medication.
                 </p>
                 <Link href="/weight-loss#how-it-works" className="text-sm text-primary hover:underline">
@@ -213,7 +213,7 @@ export default function HomePage() {
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                 Clear Choice Pharmacy is located at 40890 Grand River in Novi and is licensed in Michigan.
                 Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state. A
-                clinician licensed in your state reviews the intake, and a pharmacy licensed to dispense in your state
+                clinician licensed in your state reviews the intake, and RxAve
                 fills an approved prescription. Prescriptions this pharmacy dispenses itself remain for Michigan patients.
               </p>
               <Link href="/contact" className="text-sm text-primary hover:underline">
@@ -262,7 +262,7 @@ export default function HomePage() {
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes. Patients in every U.S. state can start an intake. {weightLossHowYouPay()} A clinician licensed in
-                  your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved kit.
+                  your state reviews it. RxAve fills and ships an approved kit.
                   Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.
                   Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
@@ -275,7 +275,7 @@ export default function HomePage() {
                 <h3 className="font-semibold text-lg mb-2">Is compounded Semaglutide the same as Ozempic?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   No. Ozempic and Wegovy are FDA-approved brand products that contain semaglutide. Compounded semaglutide
-                  in this program is prepared by a licensed partner pharmacy pursuant to a patient-specific prescription.
+                  in this program is prepared by RxAve pursuant to a patient-specific prescription.
                   Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy, and we do not compound these
                   vials.{" "}
                   <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
@@ -287,10 +287,10 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Who evaluates and who fills the medication?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  A licensed doctor reviews your intake and decides whether a prescription is appropriate. A licensed
-                  partner pharmacy compounds and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy
-                  collects payment and does not dispense the vial. Other prescriptions we fill are dispensed from
-                  Novi to Michigan patients.{" "}
+                  Ola Health reviews your intake and decides whether a prescription is appropriate. RxAve fulfills and
+                  ships approved semaglutide or tirzepatide. Clear Choice Pharmacy collects payment and does not
+                  compound or dispense compounded medication. Other non-compounded prescriptions we fill are dispensed
+                  from Novi to Michigan patients.{" "}
                   <Link href="/about" className="text-primary hover:underline">
                     About Clear Choice Pharmacy
                   </Link>
@@ -300,7 +300,7 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">How do Semaglutide and Tirzepatide kits work?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and
+                  After a doctor approves treatment, RxAve prepares a patient-specific kit and
                   ships it. {weightLossHowYouPay()} Review dosing and starter options on each
                   program page.{" "}
                   <Link href="/weight-loss/medications" className="text-primary hover:underline">
@@ -322,7 +322,7 @@ export default function HomePage() {
                 <Link href="/weight-loss" className="text-primary hover:underline">
                   provider-guided Semaglutide and Tirzepatide weight management
                 </Link>
-                . Approved kits are prepared and shipped by a licensed partner pharmacy, not by Clear Choice. Individual
+                . Approved kits are prepared and shipped by RxAve, not by Clear Choice. Individual
                 results may vary. This content is informational and does not replace medical advice from your provider.
               </p>
               <p className="leading-relaxed">

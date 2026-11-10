@@ -243,7 +243,7 @@ export function RejuvenationVialIntakeForm({ vialId }: RejuvenationVialIntakeFor
         ]}
       >
         <p className="text-sm text-muted-foreground">
-          If approved, your kit will be compounded at Clear Choice Pharmacy and shipped to your address.
+          If approved, your kit will be fulfilled by RxAve after Ola Health reviews the intake and shipped to your address.
         </p>
       </IntakeSuccessPanel>
     )

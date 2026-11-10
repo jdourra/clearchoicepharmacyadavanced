@@ -9,14 +9,14 @@ import { HORMONE_THERAPY_CONTROLLED_NOTE, NATIONAL_PARTNER_CARE_NOTE, SITE_URL }
 export const metadata: Metadata = {
   title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",
   description:
-    "Start a secure intake for hormone therapy. A clinician licensed in your state reviews it. A pharmacy licensed in your state fills an approved prescription.",
+    "Start a secure intake for hormone therapy. Ola Health reviews it. RxAve fills an approved prescription.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/trt/start`,
   },
   openGraph: {
     title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",
     description:
-      "Secure hormone-therapy intake. A clinician licensed in your state reviews it before a pharmacy licensed in your state fills an approved prescription.",
+      "Secure hormone-therapy intake. Ola Health reviews it before RxAve fills an approved prescription.",
     url: `${SITE_URL}/mens-health/trt/start`,
     type: "website",
   },
@@ -47,7 +47,7 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                   Finish your secure intake for physician-reviewed hormone therapy. A clinician licensed in your state
-                  reviews it. If approved, a pharmacy licensed to dispense in your state fills and ships it.
+                  reviews it. If approved, RxAve fills and ships it.
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">{HORMONE_THERAPY_CONTROLLED_NOTE}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{NATIONAL_PARTNER_CARE_NOTE}</p>
@@ -63,7 +63,7 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                     {[
                       { icon: Shield, title: "HIPAA Compliant", description: "Protected by federal healthcare privacy laws" },
                       { icon: Lock, title: "256-bit Encryption", description: "Bank-level security for medical data" },
-                      { icon: Clock, title: "Review time", description: "A clinician licensed in your state reviews your intake." },
+                      { icon: Clock, title: "Review time", description: "Ola Health reviews your intake." },
                     ].map((feature) => (
                       <div key={feature.title} className="flex items-start gap-3">
                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">

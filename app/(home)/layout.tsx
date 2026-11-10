@@ -35,22 +35,22 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Do you offer Semaglutide and Tirzepatide in every state?",
     answer:
-      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
+      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} Ola Health reviews it. RxAve fills and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
     answer:
-      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. We compound Semaglutide pursuant to a patient-specific prescription when a clinician determines it is appropriate. We do not dispense brand-name Ozempic or Wegovy through this program.",
+      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. Ola Health reviews the intake. If treatment is approved, RxAve fulfills compounded semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or dispense compounded medication and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Who evaluates and who fills the medication?",
     answer:
-      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. A licensed partner pharmacy compounds and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
+      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. RxAve fulfills and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
   },
   {
     question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      `After a doctor approves treatment, a licensed partner pharmacy prepares a patient-specific kit and ships it. ${weightLossHowYouPay()}`,
+      `After a doctor approves treatment, RxAve prepares a patient-specific kit and ships it. ${weightLossHowYouPay()}`,
   },
 ])
 

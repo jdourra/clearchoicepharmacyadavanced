@@ -37,13 +37,18 @@ export const PHARMACY_STATE = "MI"
 export const PHARMACY_ZIP = "48375"
 export const PHARMACY_ADDRESS_LINE = `${PHARMACY_STREET}, ${PHARMACY_CITY}, ${PHARMACY_STATE} ${PHARMACY_ZIP}`
 
+/** Telehealth group that reviews weight-loss, hormone, and ED intakes. */
+export const TELEHEALTH_PROVIDER = "Ola Health"
+/** Pharmacy fulfillment for 503A compounded medications. */
+export const FULFILLMENT_PHARMACY = "RxAve"
+
 /**
- * Weight loss, hormone therapy, and ED are reviewed and filled through licensed
- * partners in the patient's state. Clear Choice's own Michigan license does not
- * cover dispensing those medications nationwide.
+ * Weight loss, hormone therapy, and ED are reviewed by Ola Health and fulfilled
+ * by RxAve. Clear Choice is licensed only in Michigan and does not compound or
+ * dispense compounded medication.
  */
 export const NATIONAL_PARTNER_CARE_NOTE =
-  "Patients in every U.S. state and the District of Columbia can start an intake for weight loss, hormone therapy, and ED medication. A clinician licensed in your state reviews it. If treatment is approved, a pharmacy licensed to dispense in your state fills and ships it. Clear Choice Pharmacy is licensed in Michigan and dispenses its own prescriptions only to Michigan patients. A few states require a live video visit."
+  "Patients in every U.S. state and the District of Columbia can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve fulfills and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. A few states require a live video visit."
 
 export const HORMONE_THERAPY_CONTROLLED_NOTE =
   "Testosterone is a Schedule III controlled medication. It is prescribed only when a clinician licensed in your state decides it is medically appropriate. It is not offered for athletic performance or bodybuilding."

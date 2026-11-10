@@ -10,7 +10,7 @@ import { parseEdAddOns } from "@/lib/ed-add-ons"
 export const metadata: Metadata = {
   title: "Start Your Intake | ED Troches | Clear Choice Pharmacy",
   description:
-    "Start a secure intake for ED medication. A clinician licensed in your state reviews it. A pharmacy licensed in your state fills an approved prescription.",
+    "Start a secure intake for ED medication. Ola Health reviews it. RxAve fills an approved prescription.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/start`,
   },
@@ -36,7 +36,7 @@ const trustFeatures = [
   {
     icon: Clock,
     title: "Review time",
-    description: "A clinician licensed in your state reviews your intake.",
+    description: "Ola Health reviews your intake.",
   },
 ]
 
@@ -44,8 +44,8 @@ const processSteps = [
   "Review your selected troche formulation",
   "Complete the secure medical questionnaire",
   "Upload ID and authorize payment hold",
-  "A clinician licensed in your state reviews your intake.",
-  "If approved, a pharmacy licensed in your state fills and ships the medication.",
+  "Ola Health reviews your intake.",
+  "If approved, RxAve fills and ships the medication.",
 ]
 
 type PageProps = {
@@ -75,8 +75,8 @@ export default async function MensHealthStartPage({ searchParams }: PageProps) {
                   Complete Your ED Troche Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for ED medication. A clinician licensed in your state reviews it. If
-                  approved, a pharmacy licensed to dispense in your state fills and ships it.
+                  Finish your secure intake for ED medication. Ola Health reviews it. If
+                  approved, RxAve fills and ships it.
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">{NATIONAL_PARTNER_CARE_NOTE}</p>
                 {linkedOrderId ? (

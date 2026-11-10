@@ -30,11 +30,10 @@ export default function AboutPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">About us</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy, a compounding and retail pharmacy in
-              Novi, Michigan. The owner is {PHARMACY_OWNER}. Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}.
-              We dispense prescriptions to Michigan patients. Weight loss, hormone therapy, and ED medication are reviewed by a
-              clinician licensed in the patient's state and filled by a pharmacy licensed to dispense there. Clear
-              Choice does not dispense those medications under its Michigan license.
+              {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy in Novi, Michigan. The owner is {PHARMACY_OWNER}.
+              Michigan pharmacy license {MICHIGAN_PHARMACY_LICENSE}. Clear Choice is licensed in Michigan only and does
+              not compound or dispense compounded medications. Weight loss, hormone therapy, and ED medication are
+              reviewed by Ola Health. If treatment is approved, RxAve fulfills and ships the compounded prescription.
             </p>
           </div>
         </section>
@@ -43,9 +42,9 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-              From 40890 Grand River we fill cash-pay and specialty prescriptions and compound other patient-specific
-              medications for Michigan patients. Semaglutide and tirzepatide weight-loss vials are not compounded or
-              shipped from this pharmacy. A licensed partner pharmacy fills those after a doctor approves the intake.
+              From 40890 Grand River we fill non-compounded prescriptions for Michigan patients. Compounded medications,
+              including semaglutide and tirzepatide, are not prepared or shipped from this pharmacy. Ola Health reviews
+              those intakes, and RxAve fulfills an approved prescription.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Primary clinical focus on this site:{" "}
@@ -75,11 +74,10 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Pharmacy vs prescribing clinician</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              A licensed doctor reviews a weight-loss intake and decides whether a prescription is appropriate. If it
-              is approved, a licensed partner pharmacy compounds and ships the semaglutide or tirzepatide. Clear Choice
-              Pharmacy collects the intake and the payment for that program and does not dispense the vial. Other
-              prescriptions we fill are dispensed by Clear Choice Pharmacy to Michigan patients under Michigan pharmacy
-              license 5301013716.
+              Ola Health reviews a weight-loss, hormone, or ED intake and decides whether a prescription is appropriate.
+              If it is approved, RxAve fulfills and ships the compounded medication. Clear Choice Pharmacy collects the
+              intake and the payment and does not compound or dispense compounded medication. Non-compounded
+              prescriptions we fill are dispensed to Michigan patients under Michigan pharmacy license 5301013716.
             </p>
           </div>
 

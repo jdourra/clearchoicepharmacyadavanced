@@ -182,7 +182,7 @@ export default function RootLayout({
           "@type": "OfferCatalog",
           name: "Semaglutide & Tirzepatide Weight Loss",
           description:
-            "Provider-guided weight management. A licensed partner pharmacy fills and ships approved semaglutide and tirzepatide.",
+            "Provider-guided weight management. RxAve fills and ships approved semaglutide and tirzepatide.",
           url: `${SITE_URL}/weight-loss`,
         },
         {
@@ -195,13 +195,13 @@ export default function RootLayout({
         {
           "@type": "OfferCatalog",
           name: "Compounding",
-          description: "Patient-specific compounded medications prepared at Clear Choice Pharmacy in Novi, MI",
+          description: "Patient-specific compounded medications are reviewed by Ola Health and fulfilled by RxAve. Clear Choice Pharmacy does not compound or dispense them.",
           url: `${SITE_URL}/compounding`,
         },
         {
           "@type": "OfferCatalog",
           name: "ED Medications",
-          description: "Sildenafil and tadalafil after a clinician licensed in the patient's state reviews the intake",
+          description: "Sildenafil and tadalafil after Ola Health reviews the intake",
           url: `${SITE_URL}/mens-health`,
         },
         {

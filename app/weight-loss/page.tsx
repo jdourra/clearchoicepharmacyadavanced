@@ -44,14 +44,14 @@ const PROGRAMS_URL = "/weight-loss#programs"
 export const metadata: Metadata = {
   title: { absolute: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy" },
   description:
-    `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} A doctor reviews your intake, and a partner pharmacy ships if treatment is approved.`,
+    `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} A doctor reviews your intake, and RxAve ships if treatment is approved.`,
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
   openGraph: {
     title: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     description:
-      `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} A partner pharmacy ships if a doctor approves.`,
+      `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} RxAve ships if a doctor approves.`,
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -71,7 +71,7 @@ export default function WeightLossPage() {
     name: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Provider-guided Semaglutide and Tirzepatide weight management for patients in every U.S. state. A pharmacy licensed in the patient's state fills an approved kit.",
+      "Provider-guided Semaglutide and Tirzepatide weight management for patients in every U.S. state. RxAve fills an approved kit.",
     about: [
       { "@type": "MedicalTherapy", name: "Medical Weight Management" },
       { "@type": "MedicalTherapy", name: "GLP-1 Weight Management" },
@@ -101,7 +101,7 @@ export default function WeightLossPage() {
         }
         subheadline="Provider-guided Semaglutide and Tirzepatide kits from $134/mo."
         description={
-          `${weightLossHowYouPay()} A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, a partner pharmacy fills and ships your medication. Individual results may vary.`
+          `${weightLossHowYouPay()} A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, RxAve fills and ships your medication. Individual results may vary.`
         }
         highlight={`${weightLossHowYouPay()} Doctor review within 24 hours. Partner pharmacy ships.`}
         heroImage={{
@@ -147,7 +147,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Medication options"
           title="Semaglutide, Tirzepatide & MIC + B12"
-          description="All-in kit pricing includes doctor review and shipping from a partner pharmacy. No separate membership fee. Individual results may vary."
+          description="All-in kit pricing includes doctor review and shipping from RxAve. No separate membership fee. Individual results may vary."
         />
         <AllInInclusions items={ALL_IN_INCLUSIONS.weightLoss} className="mt-6" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -197,7 +197,7 @@ export default function WeightLossPage() {
         <PricingCompareNote
           className="mt-8"
           title="Transparent Semaglutide & Tirzepatide pricing"
-          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front and include doctor review. A partner pharmacy ships approved medication. There is no separate membership fee."
+          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front and include doctor review. RxAve ships approved medication. There is no separate membership fee."
         />
         <p className="text-xs text-muted-foreground mt-4">
           Prescription required after provider review. Kit price reflects prescribed dose strength (4 weekly injections).
@@ -220,7 +220,7 @@ export default function WeightLossPage() {
           {
             icon: "flask-conical",
             title: "Pharmacy Compounded",
-            description: "Patient-specific Semaglutide and Tirzepatide prepared by a pharmacy licensed in the patient's state",
+            description: "Patient-specific Semaglutide and Tirzepatide prepared by RxAve",
           },
           {
             icon: "activity",
@@ -281,7 +281,7 @@ export default function WeightLossPage() {
       <ProcessSteps
         id="how-it-works"
         title="How our medical weight loss program works"
-        subtitle="Four clear steps from kit selection to a partner pharmacy"
+        subtitle="Four clear steps from kit selection to RxAve"
         steps={[
           {
             step: 1,
@@ -312,7 +312,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Trust & roles"
           title="Pharmacy vs prescribing clinician"
-          description={`${weightLossHowYouPay()} A licensed doctor decides whether a prescription is appropriate. A partner pharmacy fills and ships approved medication.`}
+          description={`${weightLossHowYouPay()} A licensed doctor decides whether a prescription is appropriate. RxAve fills and ships approved medication.`}
         />
         <FeatureGrid
           items={[
@@ -324,7 +324,7 @@ export default function WeightLossPage() {
             {
               icon: "flask-conical",
               title: "Partner pharmacy",
-              description: "Approved prescriptions are filled and shipped by a partner pharmacy. Clear Choice does not compound these vials.",
+              description: "Approved prescriptions are filled and shipped by RxAve. Clear Choice does not compound these vials.",
             },
             {
               icon: "shield",
@@ -339,7 +339,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Local care"
           title="Available in every U.S. state"
-          description="Weight-loss intake is open nationwide. A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved prescription. A few states require a live video visit."
+          description="Weight-loss intake is open nationwide. Ola Health reviews it. RxAve fills and ships an approved prescription. A few states require a live video visit."
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           ED medication and hormone therapy use the same state-licensed review and dispensing. Prescriptions that Clear

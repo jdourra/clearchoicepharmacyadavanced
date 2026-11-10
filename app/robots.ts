@@ -20,6 +20,8 @@ export default function robots(): MetadataRoute.Robots {
           "/checkout/",
           "/confirmation/",
           "/weight-loss/start",
+          "/iv-rejuvenation",
+          "/learn/myers-cocktail-mobile-iv",
         ],
       },
       {
@@ -36,6 +38,8 @@ export default function robots(): MetadataRoute.Robots {
           "/checkout/",
           "/confirmation/",
           "/weight-loss/start",
+          "/iv-rejuvenation",
+          "/learn/myers-cocktail-mobile-iv",
         ],
       },
       {
@@ -73,6 +77,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "Googlebot",
         allow: "/",
+        disallow: ["/iv-rejuvenation", "/learn/myers-cocktail-mobile-iv"],
       },
       {
         userAgent: "Bingbot",

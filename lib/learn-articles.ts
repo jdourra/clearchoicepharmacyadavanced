@@ -5,7 +5,7 @@ const MI_DISCLAIMER =
   "This article is for educational purposes only and is not medical advice. Compounded medications require a valid prescription after clinician review. Clear Choice Pharmacy currently serves Michigan patients only. Individual results vary. Discuss your health history with a licensed provider before starting any therapy."
 
 const GLP_DISCLAIMER =
-  "This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. A licensed partner pharmacy compounds and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary."
+  "This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. RxAve fulfills and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary."
 
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
@@ -35,14 +35,14 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      `At Clear Choice Pharmacy in Novi, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, a partner pharmacy compounds and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
+      `At Clear Choice Pharmacy in Novi, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, RxAve fulfills and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
     ],
     sections: [
       {
         heading: "What is Semaglutide?",
         paragraphs: [
           "Semaglutide is a once-weekly GLP-1 receptor agonist used in medical weight management. It mimics an incretin hormone involved in appetite regulation and glucose control. For many patients, that means feeling fuller sooner, reduced food noise, and support for sustained calorie control when combined with lifestyle changes.",
-          "Brand-name medications that contain Semaglutide include Ozempic and Wegovy. A licensed partner pharmacy compounds semaglutide pursuant to a patient-specific prescription after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
+          "Brand-name medications that contain Semaglutide include Ozempic and Wegovy. RxAve fulfills semaglutide pursuant to a patient-specific prescription after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -62,7 +62,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "Who may be a candidate?",
         paragraphs: [
           "Eligibility depends on clinical review—not an online quiz alone. Providers commonly consider BMI, weight-related conditions, contraindications, and medication history. Patients with a personal or family history of medullary thyroid carcinoma or Multiple Endocrine Neoplasia syndrome type 2, or those who are pregnant or planning pregnancy, are generally not candidates for GLP-1 therapy.",
-          "Patients in the United States can complete a secure intake. A clinician licensed in your state reviews it before a pharmacy licensed in your state fills an approved prescription.",
+          "Patients in the United States can complete a secure intake. Ola Health reviews it before RxAve fills an approved prescription.",
         ],
       },
       {
@@ -75,7 +75,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Cash-pay Semaglutide in Novi, MI",
         paragraphs: [
-          `Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay. ${weightLossHowYouPay()} Each 30-day kit includes four weekly injections. A licensed partner pharmacy compounds and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.`,
+          `Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay. ${weightLossHowYouPay()} Each 30-day kit includes four weekly injections. RxAve fulfills and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.`,
           "For current kit pricing and intake steps, visit the Semaglutide program page.",
         ],
       },
@@ -84,7 +84,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide the same as Ozempic?",
         answer:
-          "Ozempic contains Semaglutide as its active ingredient. A licensed partner pharmacy compounds semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic.",
+          "Ozempic contains Semaglutide as its active ingredient. RxAve fulfills semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic.",
       },
       {
         question: "Do I need a prescription for Semaglutide?",
@@ -94,7 +94,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start semaglutide?",
         answer:
-          "Yes. Patients in every U.S. state can start an intake. A clinician licensed in your state reviews it. A pharmacy licensed to dispense in your state fills and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
+          "Yes. Patients in every U.S. state can start an intake. Ola Health reviews it. RxAve fills and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
       },
     ],
     disclaimer: GLP_DISCLAIMER,
@@ -126,14 +126,14 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This article covers Tirzepatide education—mechanism, brand-name context (Zepbound, Mounjaro), side effects, and clinical candidacy questions. Kit pricing and checkout are on the Tirzepatide program page; program overview lives on the medical weight loss hub.",
-      "A licensed doctor reviews the intake. If treatment is approved, a licensed partner pharmacy compounds and ships tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
+      "A licensed doctor reviews the intake. If treatment is approved, RxAve fulfills and ships tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
     ],
     sections: [
       {
         heading: "What is Tirzepatide?",
         paragraphs: [
           "Tirzepatide activates both GLP-1 and GIP receptors—two incretin pathways involved in appetite regulation and metabolic signaling. That dual action is why many patients and clinicians consider it when more advanced metabolic support may be appropriate.",
-          "Brand-name medications that contain tirzepatide include Zepbound and Mounjaro. In this program a licensed partner pharmacy compounds tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound or Mounjaro.",
+          "Brand-name medications that contain tirzepatide include Zepbound and Mounjaro. In this program RxAve fulfills tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound or Mounjaro.",
         ],
       },
       {
@@ -174,7 +174,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Tirzepatide the same as Zepbound?",
         answer:
-          "Zepbound contains tirzepatide as its active ingredient. In this program a licensed partner pharmacy compounds tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound.",
+          "Zepbound contains tirzepatide as its active ingredient. In this program RxAve fulfills tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound.",
       },
       {
         question: "How is Tirzepatide different from Semaglutide?",
@@ -184,7 +184,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start tirzepatide?",
         answer:
-          `You complete a secure online intake. ${weightLossHowYouPay()} After a doctor approves treatment, a licensed partner pharmacy compounds and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.`,
+          `You complete a secure online intake. ${weightLossHowYouPay()} After a doctor approves treatment, RxAve fulfills and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.`,
       },
     ],
     disclaimer: GLP_DISCLAIMER,
@@ -226,7 +226,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Brand names patients often compare",
         paragraphs: [
-          "People searching semaglutide often compare Ozempic and Wegovy. People searching tirzepatide often compare Zepbound and Mounjaro. A licensed partner pharmacy compounds semaglutide and tirzepatide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense those brand-name products.",
+          "People searching semaglutide often compare Ozempic and Wegovy. People searching tirzepatide often compare Zepbound and Mounjaro. RxAve fulfills semaglutide and tirzepatide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense those brand-name products.",
         ],
       },
       {
@@ -300,7 +300,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What compounded Semaglutide is",
         paragraphs: [
           "Compounded Semaglutide is prepared by a compounding pharmacy pursuant to a patient-specific prescription after a licensed clinician determines it is appropriate. Compounded medications are not FDA-approved brand products, even when they use the same active ingredient class patients associate with Ozempic or Wegovy.",
-          "A licensed partner pharmacy compounds semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
+          "RxAve fulfills semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -326,7 +326,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Does Clear Choice Pharmacy sell Ozempic?",
         answer:
-          "No. A licensed partner pharmacy compounds semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
+          "No. RxAve fulfills semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
       },
       {
         question: "Why do patients look at compounded Semaglutide?",
@@ -537,7 +537,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Starting hormone therapy",
         paragraphs: [
-          "Start an intake from the men's health page. A clinician licensed in your state reviews it, and a pharmacy licensed to dispense in your state fills an approved prescription. Testosterone is not dispensed by Clear Choice Pharmacy outside its Michigan license.",
+          "Start an intake from the men's health page. Ola Health reviews it, and RxAve fills an approved prescription. Testosterone is not dispensed by Clear Choice Pharmacy outside its Michigan license.",
         ],
       },
     ],
@@ -554,7 +554,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       },
     ],
     disclaimer:
-      "This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after a clinician licensed in your state reviews your intake. It is not offered for athletic performance or bodybuilding. A pharmacy licensed to dispense in your state fills an approved prescription. Individual results vary.",
+      "This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. It is not offered for athletic performance or bodybuilding. RxAve fills an approved prescription. Individual results vary.",
   },
   {
     slug: "myers-cocktail-mobile-iv",

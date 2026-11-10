@@ -60,19 +60,19 @@ export const ALL_IN_INCLUSIONS = {
     "Compounded medication",
     "4 weekly injections per kit",
     "Syringes & supplies",
-    "Shipped by a pharmacy licensed in your state",
+    "Shipped by RxAve",
   ],
   ed: [
     "Physician review",
     "Compounded sublingual troches",
     "Discreet packaging",
-    "Shipped by a pharmacy licensed in your state",
+    "Shipped by RxAve",
   ],
   trt: [
     "Physician review",
     "Medication & supplies",
     "Transparent cash-pay billing",
-    "Shipped by a pharmacy licensed in your state",
+    "Shipped by RxAve",
   ],
   iv: [
     "Pharmacy-formulated drip",

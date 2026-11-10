@@ -24,7 +24,9 @@ export default function PrivacyPage() {
       <h2 className="text-xl font-semibold text-foreground pt-4">How we use information</h2>
       <p>
         Information is used for telehealth evaluation, prescription fulfillment, payment processing, and required
-        regulatory compliance. We do not sell your personal health information.
+        regulatory compliance. Intake information for weight loss, hormone therapy, and ED medication is shared with
+        Ola Health for clinician review and with RxAve to fulfill an approved compounded prescription. We do not sell
+        your personal health information.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Security</h2>
       <p>

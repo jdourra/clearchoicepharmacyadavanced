@@ -97,7 +97,7 @@ export const WEIGHT_LOSS_DOCTOR_REVIEW =
   "A licensed doctor usually reviews your intake within 24 hours. Approval depends on that review."
 
 export const WEIGHT_LOSS_PARTNER_FULFILLMENT =
-  "If treatment is approved, a partner pharmacy fills your prescription and ships it."
+  "If treatment is approved, RxAve fills your prescription and ships it."
 
 export function weightLossPaymentPatientNote(): string {
   return WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
@@ -542,7 +542,7 @@ export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   route: "Intramuscular self-injection",
   frequency: "Once per week",
   description:
-    "Physician-reviewed lipotropic injection kit for metabolic support and energy — compounded at Clear Choice Pharmacy.",
+    "Physician-reviewed lipotropic injection kit for metabolic support and energy — fulfilled by RxAve after Ola Health reviews the intake.",
   image: {
     src: "/images/mic-b12-vial.png",
     alt: "MIC + B12 lipotropic injection vial for metabolic support",

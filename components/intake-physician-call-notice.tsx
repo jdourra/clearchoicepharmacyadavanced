@@ -9,7 +9,7 @@ export function IntakePhysicianCallNotice({ national = false }: { national?: boo
         <span>
           {national ? (
             <>
-              A clinician licensed in your state reviews this intake. Clear Choice Pharmacy may contact you from{" "}
+              Ola Health reviews this intake. Clear Choice Pharmacy may contact you from{" "}
               <a href={`tel:${PHARMACY_PHONE_E164}`} className="font-semibold underline">
                 {PHARMACY_PHONE_DISPLAY}
               </a>{" "}

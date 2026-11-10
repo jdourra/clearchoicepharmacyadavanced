@@ -13,7 +13,7 @@ export type IvProductContent = {
 
 const SHARED_SESSION_INCLUDES = [
   "Physician-reviewed treatment order",
-  "Pharmacy-compounded IV bag from Clear Choice Pharmacy",
+  "IV bag fulfilled by RxAve after Ola Health reviews the intake",
   "Licensed RN dispatched to your home, office, or hotel",
   "Professional IV administration and monitoring",
 ]
@@ -26,7 +26,7 @@ const SHARED_PHYSICIAN =
 
 export const IV_PRODUCT_CONTENT: Record<string, IvProductContent> = {
   myers: {
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose:
       "The Myers' Cocktail is the classic wellness IV — vitamins, minerals, and hydration for energy, immunity, and recovery support.",
     procedure: "IV catheter placement and slow infusion by a licensed RN at your chosen location.",
@@ -37,7 +37,7 @@ export const IV_PRODUCT_CONTENT: Record<string, IvProductContent> = {
     dispatchNote: SHARED_DISPATCH,
   },
   "symptom-relief": {
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Hydration plus provider-selected Rx support for nausea or discomfort during acute symptom flares.",
     procedure: "IV fluids with B-complex plus your provider-selected anti-nausea or pain add-in.",
     duration: "Typically 45–60 minutes",
@@ -47,7 +47,7 @@ export const IV_PRODUCT_CONTENT: Record<string, IvProductContent> = {
     dispatchNote: SHARED_DISPATCH,
   },
   "immunity-glow": {
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "High-dose immune nutrients plus glutathione for defense, recovery, and skin radiance support.",
     procedure: "IV infusion with optional glutathione push per your approved protocol.",
     duration: "Typically 60 minutes",
@@ -57,7 +57,7 @@ export const IV_PRODUCT_CONTENT: Record<string, IvProductContent> = {
     dispatchNote: SHARED_DISPATCH,
   },
   nad: {
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Premium NAD+ IV therapy for cellular health support, focus, and healthy aging support.",
     procedure: "Slow, RN-monitored NAD+ infusion — not a quick push drip.",
     duration: "Approximately 2 hours · RN monitored",
@@ -67,7 +67,7 @@ export const IV_PRODUCT_CONTENT: Record<string, IvProductContent> = {
     dispatchNote: SHARED_DISPATCH,
   },
   hydration: {
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Straightforward fluid restoration for dehydration, athletic recovery, or general wellness.",
     procedure: "IV fluids (normal saline or lactated Ringer's) administered by a licensed RN.",
     duration: "Typically 30–45 minutes",
@@ -85,8 +85,8 @@ export function getIvProductPageTitle(pkg: IvPackage): string {
 export function getIvProductContent(packageId: string): IvProductContent {
   return (
     IV_PRODUCT_CONTENT[packageId] ?? {
-      tagline: "Direct from Clear Choice Pharmacy",
-      purpose: "Physician-reviewed mobile IV therapy compounded at Clear Choice Pharmacy.",
+      tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
+      purpose: "Physician-reviewed mobile IV therapy fulfilled by RxAve after Ola Health reviews the intake.",
       procedure: "Licensed RN IV administration at your location.",
       duration: "Varies by drip",
       benefits: ["Pharmacy-formulated", "Provider reviewed", "Mobile RN delivery"],

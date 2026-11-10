@@ -13,7 +13,7 @@ export type VialProductContent = {
 
 const SHARED_VIAL_KIT_INCLUDES = [
   "Physician-reviewed prescription",
-  "Compounded at Clear Choice Pharmacy",
+  "Fulfilled by RxAve after Ola Health reviews the intake",
   "Syringes and alcohol pads",
   "Step-by-step injection instructions",
   "Secure shipping to your door",
@@ -22,12 +22,12 @@ const SHARED_VIAL_KIT_INCLUDES = [
 const SHARED_PHYSICIAN =
   "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed."
 
-const SHARED_SHIPPING = "Shipped from Clear Choice Pharmacy in Novi, MI."
+const SHARED_SHIPPING = "Fulfilled and shipped by RxAve. Clear Choice Pharmacy does not dispense compounded medication."
 
 export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   b12: {
     homeKitTitle: "B12 Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Methylcobalamin B12 supports energy, metabolism, mood, and sleep.",
     procedure: "Intramuscular self-injection as directed — typically twice per week.",
     benefits: ["Energy and metabolism support", "Mood and sleep support", "10 doses per 30-day kit"],
@@ -37,7 +37,7 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   },
   glutathione: {
     homeKitTitle: "Glutathione Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Master antioxidant support for restorative wellness, skin radiance, and immune health.",
     procedure: "Subcutaneous or intramuscular self-injection per your provider's directions.",
     benefits: ["Restorative wellness support", "Skin radiance support", "Immune wellness"],
@@ -47,7 +47,7 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   },
   "vitamin-c": {
     homeKitTitle: "Vitamin C Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "High-potency vitamin C for immune defense and collagen support — bypasses GI limits.",
     procedure: "Intramuscular self-injection as directed by your provider.",
     benefits: ["Immune defense support", "Collagen and recovery support", "High-potency delivery"],
@@ -57,17 +57,17 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   },
   nad: {
     homeKitTitle: "NAD+ Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Cellular health support for focus, stamina, recovery, and healthy aging support.",
     procedure: "Subcutaneous self-injection per your provider's titration protocol.",
     benefits: ["Cellular health support", "Focus and stamina support", "Healthy aging support"],
     kitIncludes: ["30-day NAD+ injection supply", ...SHARED_VIAL_KIT_INCLUDES],
     physicianConsent: SHARED_PHYSICIAN,
-    shipping: "Shipped cold from Clear Choice Pharmacy in Novi, MI. Refrigerate upon arrival.",
+    shipping: "Fulfilled and shipped cold by RxAve. Refrigerate upon arrival. Clear Choice Pharmacy does not dispense compounded medication.",
   },
   biotin: {
     homeKitTitle: "Biotin Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Biotin (B7) supports hair, skin, and nail health.",
     procedure: "Weekly intramuscular self-injection as directed.",
     benefits: ["Hair, skin, and nail support", "Weekly home injection protocol", "Pharmacy-compounded"],
@@ -77,7 +77,7 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   },
   nac: {
     homeKitTitle: "NAC Injection HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "N-Acetylcysteine supports detox pathways, respiratory wellness, and inflammation balance.",
     procedure: "Intramuscular self-injection per your provider's protocol.",
     benefits: ["Detox pathway support", "Respiratory wellness support", "Recovery support"],
@@ -87,7 +87,7 @@ export const VIAL_PRODUCT_CONTENT: Record<string, VialProductContent> = {
   },
   "mic-skinny": {
     homeKitTitle: "MIC + B12 Metabolic Support HomeKit",
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: "Lipotropic MIC blend plus B12 for metabolic support and energy — a provider-guided wellness option.",
     procedure: "Weekly intramuscular self-injection at home.",
     benefits: ["Metabolic and lipotropic support", "B12 energy support", "4 weekly injections per kit"],
@@ -107,7 +107,7 @@ export function getVialProductContent(vialId: string, vial: RejuvenationVial): V
   if (content) return content
   return {
     homeKitTitle: vial.title,
-    tagline: "Direct from Clear Choice Pharmacy",
+    tagline: "Reviewed by Ola Health · Fulfilled by RxAve",
     purpose: vial.description,
     procedure: `${vial.route} · ${vial.frequency}`,
     benefits: ["Physician-reviewed", "Pharmacy-compounded", "Shipped to your door"],

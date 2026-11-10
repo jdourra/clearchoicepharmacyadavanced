@@ -123,7 +123,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             />
           </div>
           <p className="text-center lg:text-left text-xs text-muted-foreground mt-3">
-            Compounded by a pharmacy licensed in your state
+            Fulfilled by RxAve after Ola Health reviews the intake
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               <span className="text-muted-foreground ml-1">/mo on 90-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Monthly starter kits from ${startingPrice}/mo · you pay here · a partner pharmacy ships if approved
+              Monthly starter kits from ${startingPrice}/mo · you pay here · RxAve ships if approved
             </p>
             <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>

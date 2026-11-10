@@ -150,7 +150,7 @@ export function IvRejuvenationPage() {
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm text-sky-100">
                 <Zap className="h-4 w-4 text-sky-300 shrink-0" />
-                Provider-reviewed IV therapy · Compounded at Clear Choice Pharmacy · Mobile RN administration
+                Provider-reviewed IV therapy · Fulfilled by RxAve after Ola Health reviews the intake · Mobile RN administration
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ export function IvRejuvenationPage() {
                 Injectable Homekits — Shipped to Your Door
               </h2>
               <p className="text-slate-600 leading-relaxed">
-                Physician-reviewed 30-day injection kits compounded at Clear Choice Pharmacy. Includes syringes,
+                Physician-reviewed 30-day injection kits fulfilled by RxAve after Ola Health reviews the intake. Includes syringes,
                 alcohol pads, telehealth consultation, and home delivery — no mobile dispatch fee.
               </p>
             </div>
@@ -372,7 +372,7 @@ export function IvRejuvenationPage() {
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">How Rejuvenation Vials Work</h2>
-              <p className="text-slate-600">From online intake to home delivery — compounded at Clear Choice Pharmacy</p>
+              <p className="text-slate-600">From online intake to home delivery — fulfilled by RxAve after Ola Health reviews the intake</p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {VIAL_STEPS.map((item) => (

@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = getWeightLossProductPageTitle(program)
   const description =
     slug === "semaglutide"
-      ? `Compounded semaglutide from $${fromPrice}/mo on 90-day starter kits. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state ships an approved kit.`
-      : `Compounded tirzepatide from $${fromPrice}/mo on 90-day starter kits. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state ships an approved kit.`
+      ? `Compounded semaglutide from $${fromPrice}/mo on 90-day starter kits. Ola Health reviews the intake. RxAve ships an approved kit.`
+      : `Compounded tirzepatide from $${fromPrice}/mo on 90-day starter kits. Ola Health reviews the intake. RxAve ships an approved kit.`
 
   return {
     title: { absolute: title },

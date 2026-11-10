@@ -27,15 +27,15 @@ export default function RefundPolicyPage() {
         <a href="tel:+12489876182" className="text-primary hover:underline">
           (248) 987-6182
         </a>{" "}
-        to pay. If a doctor does not approve treatment, the medication payment is refunded. If treatment is approved, a
-        licensed partner pharmacy compounds and ships the medication. Clear Choice Pharmacy does not compound or ship
-        these vials. Once that pharmacy has started preparing the prescription, the medication charge is not refundable.
+        to pay. If a doctor does not approve treatment, the medication payment is refunded. If treatment is approved,
+        RxAve fulfills and ships the medication. Clear Choice Pharmacy does not compound or dispense compounded
+        medication. Once RxAve has started preparing the prescription, the medication charge is not refundable.
         A dispensed compounded prescription cannot be returned.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Medications Clear Choice Pharmacy dispenses</h2>
       <p>
-        Prescriptions filled at our Novi pharmacy are for Michigan patients. ED medication and hormone therapy
-        approved through this website are filled by a pharmacy licensed in the patient&apos;s state. If a prescription is
+        Non-compounded prescriptions filled at our Novi pharmacy are for Michigan patients. ED medication and hormone
+        therapy approved through this website are fulfilled by RxAve after Ola Health reviews the intake. If a prescription is
         not approved, you are not charged for medication that was not
         dispensed. Once compounding or dispensing has started, that order is not refundable. A dispensed compounded
         prescription cannot be returned.

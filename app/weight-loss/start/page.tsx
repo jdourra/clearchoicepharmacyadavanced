@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
     description:
-      `Secure medical intake for Semaglutide and Tirzepatide. ${weightLossHowYouPay()} A partner pharmacy ships approved medication.`,
+      `Secure medical intake for Semaglutide and Tirzepatide. ${weightLossHowYouPay()} RxAve ships approved medication.`,
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
@@ -72,7 +72,7 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                   Finish your secure intake for Semaglutide or Tirzepatide. A licensed doctor usually reviews your
-                  intake within 24 hours, and a partner pharmacy ships approved medication.{" "}
+                  intake within 24 hours, and RxAve ships approved medication.{" "}
                   {requireOnlinePayment ? WEIGHT_LOSS_INTAKE_HOLD_NOTE : weightLossPaymentPatientNote()}
                 </p>
               </div>

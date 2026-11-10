@@ -18,12 +18,12 @@ import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
 export const metadata: Metadata = {
   title: { absolute: "Weight Loss Medications | Clear Choice Pharmacy" },
   description:
-    "Compare provider-guided semaglutide and tirzepatide filled by a licensed partner pharmacy.",
+    "Compare provider-guided semaglutide and tirzepatide filled by RxAve.",
   alternates: { canonical: `${SITE_URL}/weight-loss/medications` },
   openGraph: {
     title: "Weight Loss Medications | Clear Choice Pharmacy",
     description:
-      "Overview of semaglutide and tirzepatide filled by a licensed partner pharmacy.",
+      "Overview of semaglutide and tirzepatide filled by RxAve.",
     url: `${SITE_URL}/weight-loss/medications`,
     type: "website",
   },
@@ -47,7 +47,7 @@ export default function WeightLossMedicationsPage() {
         badge="Medication options"
         headline="Weight Loss Medications in Michigan"
         subheadline="Semaglutide and tirzepatide, after a doctor reviews your intake."
-        description="A licensed partner pharmacy fills semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
+        description="RxAve fills semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
         highlight="Not a drug catalog search · Clinical evaluation required"
         primaryCta={{ label: "View Semaglutide kits", href: "/weight-loss/semaglutide" }}
         secondaryCta={{ label: "View Tirzepatide kits", href: "/weight-loss/tirzepatide" }}
@@ -57,7 +57,7 @@ export default function WeightLossMedicationsPage() {
         <SectionIntro
           eyebrow="Compare"
           title="Primary GLP-1 options"
-          description="Both kits include doctor review. A licensed partner pharmacy compounds and ships the medication. Clear Choice Pharmacy does not compound or ship these vials."
+          description="Both kits include doctor review. RxAve fulfills and ships the medication. Clear Choice Pharmacy does not compound or ship these vials."
         />
         <div className="mt-8 grid md:grid-cols-2 gap-4">
           <Card className="p-6 flex flex-col">

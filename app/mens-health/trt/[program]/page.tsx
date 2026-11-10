@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const program = getTrtProgram(slug)!
   const startingPrice = getTrtStartingMonthlyPrice(program)
   const title = getTrtProductPageTitle(program)
-  const description = `${program.name} for hormone therapy from $${startingPrice}/mo. A clinician licensed in your state reviews the intake. A pharmacy licensed in your state fills an approved prescription. Testosterone is a Schedule III medication and is not offered for athletic performance.`
+  const description = `${program.name} for hormone therapy from $${startingPrice}/mo. Ola Health reviews the intake. RxAve fills an approved prescription. Testosterone is a Schedule III medication and is not offered for athletic performance.`
 
   return {
     title,

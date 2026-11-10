@@ -73,7 +73,7 @@ ${data.injectionConsents ? formatInjectionConsentsSummary(data.injectionConsents
 CLINICIAN ACTION:
 1. Review screening and approve/deny via telehealth
 2. Issue patient-specific eRx routed to Clear Choice Pharmacy (Novi, MI)
-3. Pharmacy compounds homekit → ship to patient address
+3. RxAve fulfills the compounded homekit and ships it to the patient. Clear Choice does not compound it.
 ═══════════════════════════════════════════════════════════════════════════════
 `
 }
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message:
-        "Your intake has been securely submitted. A licensed telehealth provider will review your request. If approved, your home injection kit will be compounded and shipped from Clear Choice Pharmacy.",
+        "Your intake has been securely submitted. Ola Health will review your request. If approved, RxAve will fulfill and ship your home injection kit. Clear Choice Pharmacy does not compound or dispense compounded medication.",
       submissionId,
       status: STANDARD_INTAKE_STATUS.pending,
       estimatedReviewTime: PRIMARY_PHYSICIAN.reviewSla,

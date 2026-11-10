@@ -84,7 +84,7 @@ export function LearnArticleView({ article }: { article: LearnArticle }) {
             <div className="rounded-xl border bg-muted/30 p-5 mb-10">
               <p className="font-semibold mb-2">Ready to take the next step?</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Patients in the U.S. can review pricing and start an intake. A clinician licensed in your state reviews weight loss, hormone therapy, and ED medication.
+                Patients in the U.S. can review pricing and start an intake. Ola Health reviews weight loss, hormone therapy, and ED medication.
               </p>
               <Button asChild>
                 <Link href={article.serviceHref}>
