@@ -30,6 +30,7 @@ import {
   physicianReviewPendingLabel,
 } from "@/lib/clinical-provider"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
+import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import {
   ED_FORMULATIONS,
   calculateEdOrderPricing,
@@ -771,7 +772,7 @@ export function ClinicalIntakeForm({
     return (
       <div className="space-y-6">
         <p className="text-sm text-muted-foreground">
-          Select one compounded troche formulation. Pricing includes physician review, medication, and shipping.
+          Select a formulation. {PHYSICIAN_DECIDES_DOSE} Pricing includes physician review, medication, and shipping.
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -1696,13 +1697,13 @@ export function ClinicalIntakeForm({
         </div>
         
         <CardTitle>
-          {step === 1 && "Choose your troche formulation"}
+          {step === 1 && "Available formulations"}
           {step === 2 && "Your information & health profile"}
           {step === 3 && "Identity & payment"}
           {step === 4 && "Confirmation"}
         </CardTitle>
         <CardDescription>
-          {step === 1 && "Select a formulation, then continue to checkout"}
+          {step === 1 && PHYSICIAN_DECIDES_DOSE}
           {step === 2 && "Complete required fields so your provider can review safely"}
           {step === 3 && "Verify your identity and authorize payment hold"}
           {step === 4 && "Review your submission status"}

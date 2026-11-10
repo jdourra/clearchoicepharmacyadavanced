@@ -18,6 +18,7 @@ import {
   type TrtBillingPlan,
   type TrtProgram,
 } from "@/lib/trt-catalog"
+import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
 type TrtProductDetailProps = {
@@ -78,6 +79,8 @@ export function TrtProductDetail({ program, content }: TrtProductDetailProps) {
             <Badge variant="outline">Prescription required</Badge>
             <Badge variant="outline">Physician supervised</Badge>
           </div>
+
+          <p className="text-sm text-muted-foreground">{PHYSICIAN_DECIDES_DOSE}</p>
 
           <Card>
             <CardContent className="pt-6 space-y-5">

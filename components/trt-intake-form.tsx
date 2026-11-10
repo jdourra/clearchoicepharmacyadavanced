@@ -19,6 +19,7 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
+import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { UsStateField } from "@/components/us-state-field"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
@@ -355,8 +356,10 @@ export function TrtIntakeForm({
       {step === 1 && (
         <Card>
           <CardHeader>
-            <CardTitle>Choose your TRT program</CardTitle>
-            <CardDescription>Transparent pricing includes physician review, medication, supplies, and shipping.</CardDescription>
+            <CardTitle>Available programs</CardTitle>
+            <CardDescription>
+              {PHYSICIAN_DECIDES_DOSE} Pricing includes physician review, medication, supplies, and shipping.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex gap-2">

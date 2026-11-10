@@ -168,14 +168,14 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   </Badge>
                 </div>
                 <Label htmlFor="dose-select" className="sr-only">
-                  Select your weekly injection amount
+                  Available weekly dose
                 </Label>
                 <Select value={doseId} onValueChange={setDoseId}>
                   <SelectTrigger
                     id="dose-select"
                     className="w-full h-12 text-base font-medium border-primary/40 bg-background shadow-sm"
                   >
-                    <SelectValue placeholder="Select weekly injection amount" />
+                    <SelectValue placeholder="Select a weekly dose" />
                   </SelectTrigger>
                   <SelectContent>
                     {program.doses.map((dose) => (

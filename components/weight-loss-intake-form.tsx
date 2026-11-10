@@ -1057,7 +1057,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select weekly injection amount" />
+                      <SelectValue placeholder="Select a weekly dose" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (
@@ -1163,7 +1163,10 @@ export function WeightLossIntakeForm({
                 />
                 <div className="space-y-2 rounded-xl border-2 border-primary bg-primary/5 p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <Label className="text-base font-bold text-foreground">Confirm your dose</Label>
+                    <div>
+                      <Label className="text-base font-bold text-foreground">Available weekly doses</Label>
+                      <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_DOSE_SELECT_HINT}</p>
+                    </div>
                     <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
                       Required
                     </span>
@@ -1173,7 +1176,7 @@ export function WeightLossIntakeForm({
                     onValueChange={(v) => updateFormData("selectedDoseTier", v)}
                   >
                     <SelectTrigger className="w-full h-12 text-base font-medium border-primary/40 bg-background">
-                      <SelectValue placeholder="Select weekly injection amount" />
+                      <SelectValue placeholder="Select a weekly dose" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedProgram.doses.map((dose) => (

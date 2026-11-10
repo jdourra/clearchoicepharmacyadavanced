@@ -41,6 +41,9 @@ export const PHARMACY_ADDRESS_LINE = `${PHARMACY_STREET}, ${PHARMACY_CITY}, ${PH
 export const TELEHEALTH_PROVIDER = "Ola Health"
 /** Routes an approved compounded prescription to a licensed compounding pharmacy. */
 export const FULFILLMENT_PHARMACY = "RxAve"
+/** Shown wherever a patient can select a dose, strength, or program. */
+export const PHYSICIAN_DECIDES_DOSE =
+  "A licensed physician will decide the appropriate dose for you."
 
 /**
  * Weight loss, hormone therapy, and ED are reviewed by Ola Health. RxAve routes

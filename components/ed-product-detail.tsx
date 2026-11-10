@@ -24,6 +24,7 @@ import {
   type EdTrocheProduct,
 } from "@/lib/ed-troche-catalog"
 import { formatUsd, getBestEdPlan, getEdDosesPerSupply, getEdPricePerDose } from "@/lib/pricing-clarity"
+import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
 type EdProductDetailProps = {
@@ -96,6 +97,8 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
             <Badge variant="outline">Prescription required</Badge>
             <Badge variant="outline">Discreet shipping</Badge>
           </div>
+
+          <p className="text-sm text-muted-foreground">{PHYSICIAN_DECIDES_DOSE}</p>
 
           <Card>
             <CardContent className="pt-6 space-y-5">

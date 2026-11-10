@@ -1,5 +1,5 @@
 import type { RejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
-import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
+import { LEGAL_BUSINESS_NAME, PHYSICIAN_DECIDES_DOSE, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 
 export type WeightLossBillingPlan = "monthly" | "quarterly"
 
@@ -9,7 +9,7 @@ export type WeightLossDoseId = string
 export const WEIGHT_LOSS_KIT_SUPPLY = "30-day kit · 4 weekly injections"
 
 export const WEIGHT_LOSS_KIT_INJECTIONS_NOTE =
-  "Every kit includes 4 once-weekly injections at your selected weekly amount. The price shown is always for the full 30-day kit — not a weekly price and not per injection."
+  "Every kit includes 4 once-weekly injections at the weekly amount a licensed physician prescribes. The price shown is always for the full 30-day kit — not a weekly price and not per injection."
 
 /** Charged only when the provider requires a live visit (waived on multi-kit / quarterly billing). */
 export const WEIGHT_LOSS_LIVE_VISIT_ADDON = 25
@@ -65,7 +65,7 @@ export type WeightLossProgram = {
 }
 
 export const WEIGHT_LOSS_DOSE_PRICING_NOTE =
-  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount you select. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply."
+  "Each 30-day home kit includes 4 once-weekly injections at the weekly amount a licensed physician prescribes. The listed price is always for the full 30-day kit — not per week or per injection. Intake physician review, compounding, syringes, supplies, and shipping are included. If a live visit is required, a $25 add-on applies on monthly billing and is waived with the 90-day (3-kit) supply."
 
 export const WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE =
   "Live visit add-on $25 if your provider requires a live telehealth visit. Waived with 90-day (3-kit) supply."
@@ -105,10 +105,10 @@ export function weightLossPaymentPatientNote(): string {
     : WEIGHT_LOSS_PHARMACY_COLLECTION_NOTE
 }
 
-export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Choose your weekly injection amount"
+export const WEIGHT_LOSS_DOSE_SELECT_TITLE = "1. Available weekly doses"
 
 export const WEIGHT_LOSS_DOSE_SELECT_HINT =
-  "Already on GLP-1? Pick the closest weekly amount. New patients usually start at the lowest option."
+  `Select what you take now, or the lowest amount if you are new. ${PHYSICIAN_DECIDES_DOSE}`
 
 export const WEIGHT_LOSS_PRICE_PERIOD_BADGE = "Price is per 30-day kit"
 
