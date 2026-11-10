@@ -221,7 +221,7 @@ export function InjectionTelehealthConsents({
             combined with glycine and vitamin B12, and is formulated specifically for individual patients who may not
             tolerate standard formulations or who require a customized therapeutic approach. It is prepared in accordance
             with Section 503A of the Federal Food, Drug, and Cosmetic Act and is dispensed solely pursuant to a valid
-            patient-specific prescription from a licensed healthcare provider. Our compounded formulation is not
+            patient-specific prescription from a licensed healthcare provider. This compounded formulation is not
             affiliated with, endorsed by, or intended to replace the FDA-approved product manufactured by Eli Lilly.
             The addition of glycine and vitamin B12 is intended to support patients experiencing issues such as fatigue,
             muscle loss, or neuropathy—common concerns during weight loss or diabetes treatment—and may offer metabolic,

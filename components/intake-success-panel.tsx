@@ -65,7 +65,7 @@ export function IntakeSuccessPanel({
               <p className="text-xs text-muted-foreground">Status</p>
               <p className="font-medium text-amber-600">{physicianReviewPendingLabel()}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Reviewing clinician: licensed Michigan clinician
+                A clinician licensed in your state reviews this intake.
               </p>
             </div>
           </div>

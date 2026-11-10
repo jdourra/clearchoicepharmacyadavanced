@@ -1388,7 +1388,7 @@ export function WeightLossIntakeForm({
                   <p className="text-sm text-muted-foreground">
                     {formData.selectedBillingPlan === "monthly"
                       ? `First 30-day kit (4 weekly injections) · ${selectedTierMeta?.label ?? "selected"}`
-                      : `First shipment — 2 kits, 4 injections each (60 days) · ${selectedTierMeta?.label ?? "selected"}`}
+                      : `First shipment — ${holdQuote.kitsIncluded} kits, 4 injections each (${holdQuote.kitsIncluded * 30} days) · ${selectedTierMeta?.label ?? "selected"}`}
                   </p>
                   <p className="text-xs text-muted-foreground">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
                   <p className="text-xs text-muted-foreground">{weightLossPaymentPatientNote()}</p>

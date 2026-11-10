@@ -1,6 +1,12 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
-import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE, PHARMACY_OWNER } from "@/lib/site-config"
+import {
+  LEGAL_BUSINESS_NAME,
+  MICHIGAN_PHARMACY_LICENSE,
+  PHARMACY_OWNER,
+  TELEHEALTH_PROVIDER,
+  ZELLE_PAYMENT_EMAIL,
+} from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Terms and Conditions | Clear Choice Pharmacy",
@@ -34,8 +40,10 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Payment</h2>
       <p>
-        Cash-pay pricing is displayed before checkout. Card authorization holds may be placed at intake and captured only
-        upon provider approval. See our Refund Policy for cancellation terms.
+        Prices are shown before you submit. For semaglutide and tirzepatide, you pay by Zelle at {ZELLE_PAYMENT_EMAIL}{" "}
+        after you submit. The payment shows as {LEGAL_BUSINESS_NAME}. Put your name in the memo. The intake is sent to{" "}
+        {TELEHEALTH_PROVIDER} after the payment arrives. If treatment is not approved, that payment is refunded. See the
+        Refund Policy for when an approved prescription can no longer be refunded.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>

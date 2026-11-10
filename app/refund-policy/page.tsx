@@ -1,10 +1,13 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
 import {
+  FULFILLMENT_PHARMACY,
   LEGAL_BUSINESS_NAME,
   MICHIGAN_PHARMACY_LICENSE,
   PHARMACY_DBA,
   PHARMACY_OWNER,
+  TELEHEALTH_PROVIDER,
+  ZELLE_PAYMENT_EMAIL,
 } from "@/lib/site-config"
 
 export const metadata: Metadata = {
@@ -22,23 +25,20 @@ export default function RefundPolicyPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
       <p>
-        You pay Clear Choice Pharmacy on this website before the intake is sent to a doctor. If the card form is not on
-        the page, call{" "}
-        <a href="tel:+12489876182" className="text-primary hover:underline">
-          (248) 987-6182
-        </a>{" "}
-        to pay. If a doctor does not approve treatment, the medication payment is refunded. If treatment is approved,
-        RxAve fulfills and ships the medication. Clear Choice Pharmacy does not compound or dispense compounded
-        medication. Once RxAve has started preparing the prescription, the medication charge is not refundable.
-        A dispensed compounded prescription cannot be returned.
+        After you submit, pay by Zelle at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
+        name in the memo. The intake is sent to {TELEHEALTH_PROVIDER} after the payment arrives. If treatment is not
+        approved, the medication payment is refunded. If treatment is approved, {FULFILLMENT_PHARMACY} fulfills and
+        ships the medication. Clear Choice Pharmacy does not compound or dispense compounded medication. Once{" "}
+        {FULFILLMENT_PHARMACY} has started preparing the prescription, the medication charge is not refundable. A
+        dispensed compounded prescription cannot be returned.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Medications Clear Choice Pharmacy dispenses</h2>
       <p>
         Non-compounded prescriptions filled at our Novi pharmacy are for Michigan patients. ED medication and hormone
-        therapy approved through this website are fulfilled by RxAve after Ola Health reviews the intake. If a prescription is
-        not approved, you are not charged for medication that was not
-        dispensed. Once compounding or dispensing has started, that order is not refundable. A dispensed compounded
-        prescription cannot be returned.
+        therapy approved through this website are fulfilled by {FULFILLMENT_PHARMACY} after {TELEHEALTH_PROVIDER} reviews
+        the intake. The intake page states when that payment is collected. If treatment is not approved, you are not
+        charged for medication that was not dispensed. Once {FULFILLMENT_PHARMACY} has started preparing an approved
+        prescription, that order is not refundable. A dispensed compounded prescription cannot be returned.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Shipping problems</h2>
       <p>

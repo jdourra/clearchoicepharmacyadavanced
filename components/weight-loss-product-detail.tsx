@@ -234,7 +234,9 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                               {formatKitPriceCaption(selectedDose?.label ?? "selected")}
                             </p>
                             {option.plan === "quarterly" && (
-                              <p className="text-xs text-muted-foreground">${quote.totalBilled} for 2 kits</p>
+                              <p className="text-xs text-muted-foreground">
+                                ${quote.totalBilled} for {quote.kitsIncluded} kits ({quote.kitsIncluded * 30} days)
+                              </p>
                             )}
                           </div>
                         )}
@@ -249,10 +251,10 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
                   <p className="font-medium">
                     {billingPlan === "monthly"
                       ? `First 30-day kit (${selectedDose?.label ?? "selected"}, 4 injections): $${holdQuote.totalBilled}/mo`
-                      : `First shipment — 2 × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each): $${holdQuote.totalBilled}`}
+                      : `First shipment — ${holdQuote.kitsIncluded} × 30-day kits (${selectedDose?.label ?? "selected"}, 4 injections each, ${holdQuote.kitsIncluded * 30} days): $${holdQuote.totalBilled}`}
                   </p>
                   <p className="text-muted-foreground">
-                    Price is for the full kit, not per week. Doctor review and partner-pharmacy shipping are included.
+                    Price is for the full kit, not per week. Doctor review and RxAve shipping are included.
                   </p>
                   {holdQuote.liveVisitAddon > 0 ? (
                     <p className="text-muted-foreground">

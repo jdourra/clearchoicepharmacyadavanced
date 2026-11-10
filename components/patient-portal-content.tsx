@@ -718,7 +718,7 @@ function ProgramsTab({
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-4">
-                A licensed provider or our pharmacy team will update you by email when your status changes. Clinical intakes are reviewed by a licensed Michigan clinician.
+                A licensed provider or our pharmacy team will update you by email when your status changes. Weight loss, hormone therapy, and ED intakes are reviewed by Ola Health through a clinician licensed in your state.
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 {program.canReorder ? (
