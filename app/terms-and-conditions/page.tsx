@@ -21,7 +21,9 @@ export default function TermsPage() {
         Clear Choice Pharmacy is the name used by {LEGAL_BUSINESS_NAME}. By submitting an
         intake or placing an order, you agree to these terms.
       </p>
-      <h2 className="text-xl font-semibold text-foreground pt-4">Services</h2>
+      <h2 id="where-services-are-available" className="scroll-mt-24 text-xl font-semibold text-foreground pt-4">
+        Where services are available
+      </h2>
       <p>
         {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}, at 40890 Grand River,
         Novi, MI 48375. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded
