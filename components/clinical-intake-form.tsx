@@ -30,6 +30,7 @@ import {
   physicianReviewPendingLabel,
 } from "@/lib/clinical-provider"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import {
   ED_FORMULATIONS,
@@ -774,6 +775,7 @@ export function ClinicalIntakeForm({
         <p className="text-sm text-muted-foreground">
           Select a formulation. {PHYSICIAN_DECIDES_DOSE} Pricing includes physician review, medication, and shipping.
         </p>
+        <CompoundedMedicationNotice />
 
         <div className="flex flex-wrap gap-2">
           {billingPlans.map((bp) => (

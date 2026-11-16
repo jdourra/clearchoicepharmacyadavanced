@@ -41,7 +41,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Semaglutide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $134/mo per 30-day kit",
     purpose:
-      "Semaglutide is a once-weekly GLP-1 therapy used for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Ozempic and Wegovy. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded semaglutide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
+      "Compounded semaglutide is a once-weekly injectable prepared by a licensed compounding pharmacy after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -83,7 +83,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Tirzepatide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $149/mo per 30-day kit",
     purpose:
-      "Tirzepatide is a once-weekly dual GLP-1/GIP therapy for provider-guided weight management. It is the same active ingredient class patients often associate with brand-name Zepbound and Mounjaro. Ola Health reviews the intake. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded tirzepatide after approval. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
+      "Compounded tirzepatide is a once-weekly injectable prepared by a licensed compounding pharmacy after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:

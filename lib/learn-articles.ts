@@ -42,7 +42,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What is Semaglutide?",
         paragraphs: [
           "Semaglutide is a once-weekly GLP-1 receptor agonist used in medical weight management. It mimics an incretin hormone involved in appetite regulation and glucose control. For many patients, that means feeling fuller sooner, reduced food noise, and support for sustained calorie control when combined with lifestyle changes.",
-          "Brand-name medications that contain Semaglutide include Ozempic and Wegovy. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide pursuant to a patient-specific prescription after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
+          "This program uses compounded semaglutide. It is not FDA-approved and is not a commercially manufactured product. A licensed physician decides whether it is appropriate. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -84,7 +84,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Semaglutide the same as Ozempic?",
         answer:
-          "Ozempic contains Semaglutide as its active ingredient. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic.",
+          "No. This program uses compounded semaglutide. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic.",
       },
       {
         question: "Do I need a prescription for Semaglutide?",
@@ -133,7 +133,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What is Tirzepatide?",
         paragraphs: [
           "Tirzepatide activates both GLP-1 and GIP receptors—two incretin pathways involved in appetite regulation and metabolic signaling. That dual action is why many patients and clinicians consider it when more advanced metabolic support may be appropriate.",
-          "Brand-name medications that contain tirzepatide include Zepbound and Mounjaro. In this program RxAve routes the prescription to a licensed compounding pharmacy, which dispenses tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound or Mounjaro.",
+          "This program uses compounded tirzepatide. It is not FDA-approved and is not a commercially manufactured product. A licensed physician decides whether it is appropriate. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound or Mounjaro.",
         ],
       },
       {
@@ -166,7 +166,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Cash-pay Tirzepatide near Metro Detroit",
         paragraphs: [
-          "If insurance delays or denials have blocked brand-name access, cash-pay compounded Tirzepatide after physician review can be a transparent path for eligible Michigan residents. Review current dose-tier pricing on the Tirzepatide program page, then complete intake for clinical approval. Compare options on the medications overview or medical weight loss hub.",
+          "Compounded tirzepatide is not FDA-approved and is not a commercially manufactured product. A licensed physician decides whether it is appropriate. Review current pricing on the Tirzepatide program page, then complete an intake for clinical review.",
         ],
       },
     ],
@@ -174,7 +174,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Is Tirzepatide the same as Zepbound?",
         answer:
-          "Zepbound contains tirzepatide as its active ingredient. In this program RxAve routes the prescription to a licensed compounding pharmacy, which dispenses tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound.",
+          "No. This program uses compounded tirzepatide. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Zepbound.",
       },
       {
         question: "How is Tirzepatide different from Semaglutide?",
@@ -226,7 +226,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Brand names patients often compare",
         paragraphs: [
-          "People searching semaglutide often compare Ozempic and Wegovy. People searching tirzepatide often compare Zepbound and Mounjaro. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense those brand-name products.",
+          "This program uses compounded semaglutide and compounded tirzepatide. Neither compounded medication is FDA-approved, and neither is a commercially manufactured product. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic, Wegovy, Zepbound, or Mounjaro.",
         ],
       },
       {
@@ -287,7 +287,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       "semaglutide-vs-tirzepatide",
     ],
     intro: [
-      "Searches for Ozempic and Wegovy dominate Google—but many patients ultimately evaluate compounded Semaglutide when brand access, shortages, or cash-pay cost become barriers. This educational page clarifies differences; commercial kit details are on the Semaglutide program page, and compounding context is covered on our compounding page and medical weight loss hub.",
+      "This page explains that compounded semaglutide is not an FDA-approved, commercially manufactured product. Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy. Kit details are on the Semaglutide program page.",
     ],
     sections: [
       {
@@ -299,7 +299,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "What compounded Semaglutide is",
         paragraphs: [
-          "Compounded Semaglutide is prepared by a compounding pharmacy pursuant to a patient-specific prescription after a licensed clinician determines it is appropriate. Compounded medications are not FDA-approved brand products, even when they use the same active ingredient class patients associate with Ozempic or Wegovy.",
+          "Compounded semaglutide is prepared by a compounding pharmacy after a licensed clinician determines it is appropriate. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy.",
           "RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },

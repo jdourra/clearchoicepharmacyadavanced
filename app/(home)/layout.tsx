@@ -40,7 +40,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
     answer:
-      "No. Ozempic and Wegovy are FDA-approved brand products that contain Semaglutide. Ola Health reviews the intake. If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded semaglutide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or dispense compounded medication and does not dispense brand-name Ozempic or Wegovy.",
+      "No. This program uses compounded semaglutide. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Who evaluates and who fills the medication?",

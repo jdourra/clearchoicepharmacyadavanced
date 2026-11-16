@@ -43,6 +43,9 @@ export const FULFILLMENT_PHARMACY = "RxAve"
 /** Shown wherever a patient can select a dose, strength, or program. */
 export const PHYSICIAN_DECIDES_DOSE =
   "A licensed physician will decide the appropriate dose for you."
+/** Shown next to each compounded product name and price. */
+export const COMPOUNDED_MEDICATION_DISCLOSURE =
+  "This medication is compounded. It is not FDA-approved and is not a commercially manufactured product. A licensed physician will decide whether it is appropriate for you."
 
 /**
  * Weight loss, hormone therapy, and ED are reviewed by Ola Health. RxAve routes

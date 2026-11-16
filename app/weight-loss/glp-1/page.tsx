@@ -58,10 +58,10 @@ export default function Glp1Page() {
             and these medications are not appropriate for everyone.
           </p>
           <p>
-            Brand-name products patients often research include Ozempic and Wegovy (Semaglutide) and Mounjaro and Zepbound
-            (Tirzepatide). RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide pursuant to a
-            patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Compounded
-            medications are not the same as FDA-approved brand products.
+            These programs use compounded semaglutide and compounded tirzepatide. The compounded medication is not
+            FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not dispense
+            brand-name Ozempic, Wegovy, Mounjaro, or Zepbound. RxAve routes an approved prescription to a licensed
+            compounding pharmacy.
           </p>
         </div>
       </ContentSection>

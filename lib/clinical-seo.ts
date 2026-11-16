@@ -175,12 +175,12 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Is Tadalafil the same as Cialis?",
     answer:
-      "Tadalafil is the active ingredient in brand-name Cialis. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded tadalafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Cialis.",
+      "No. This program uses compounded tadalafil troches. The compounded medication is not FDA-approved and is not a commercially manufactured product. This program does not dispense brand-name Cialis.",
   },
   {
     question: "Is Sildenafil the same as Viagra?",
     answer:
-      "Sildenafil is the active ingredient in brand-name Viagra. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses compounded sildenafil troches after Ola Health approves a patient-specific prescription. This program does not dispense brand-name Viagra.",
+      "No. This program uses compounded sildenafil troches. The compounded medication is not FDA-approved and is not a commercially manufactured product. This program does not dispense brand-name Viagra.",
   },
   {
     question: "Why choose sublingual troches over regular ED pills?",
@@ -213,12 +213,12 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
     answer:
-      "Ozempic and Wegovy are brand-name medications that contain semaglutide. Compounded semaglutide in this program is prepared by a licensed compounding pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Ozempic or Wegovy.",
+      "No. This program uses compounded semaglutide. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Ozempic or Wegovy.",
   },
   {
     question: "Is compounded Tirzepatide the same as Zepbound or Mounjaro?",
     answer:
-      "Zepbound and Mounjaro are brand-name medications that contain tirzepatide. Compounded tirzepatide in this program is prepared by a licensed compounding pharmacy pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Zepbound or Mounjaro.",
+      "No. This program uses compounded tirzepatide. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound these vials and does not dispense brand-name Zepbound or Mounjaro.",
   },
   {
     question: "What is the difference between Semaglutide and Tirzepatide?",

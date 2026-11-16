@@ -43,6 +43,7 @@ import {
 } from "@/lib/weight-loss-catalog"
 import type { WeightLossProductContent } from "@/lib/weight-loss-product-content"
 import { getWeightLossFromPrice } from "@/lib/weight-loss-product-content"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { buildWeightLossIntakeUrl } from "@/lib/intake-prefill"
 import { cn } from "@/lib/utils"
 import {
@@ -143,6 +144,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             </p>
             <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
+            <CompoundedMedicationNotice className="mt-4" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

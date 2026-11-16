@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 export default function HomePage() {
   return (
@@ -92,7 +93,7 @@ export default function HomePage() {
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Semaglutide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
-                    Once-weekly therapy for provider-guided weight management. Compounded kits from $134/mo on 90-day
+                    Once-weekly compounded semaglutide for provider-guided weight management. Kits from $134/mo on 90-day
                     starter billing after a doctor approves treatment. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the kit.
                   </p>
                   <Button asChild size="sm" className="w-fit">
@@ -116,7 +117,7 @@ export default function HomePage() {
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight">Tirzepatide</h3>
                   <p className="text-sm text-muted-foreground mt-3 mb-4 flex-1">
-                    Dual-pathway support for patients whose clinician recommends Tirzepatide. Kits from $149/mo on
+                    Compounded tirzepatide for patients whose clinician determines it is appropriate. Kits from $149/mo on
                     90-day starter billing after provider approval.
                   </p>
                   <Button asChild size="sm" className="w-fit">
@@ -128,9 +129,9 @@ export default function HomePage() {
                 </div>
               </Card>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Compounded medications are prepared pursuant to a patient-specific prescription. They are not the same as
-              FDA-approved brand-name Ozempic, Wegovy, Zepbound, or Mounjaro.{" "}
+            <CompoundedMedicationNotice />
+            <p className="text-sm text-muted-foreground mt-3">
+              Clear Choice Pharmacy does not dispense brand-name Ozempic, Wegovy, Zepbound, or Mounjaro.{" "}
               <Link href="/weight-loss/medications" className="text-primary hover:underline">
                 Compare weight loss medications
               </Link>
@@ -272,10 +273,9 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Is compounded Semaglutide the same as Ozempic?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  No. Ozempic and Wegovy are FDA-approved brand products that contain semaglutide. Compounded semaglutide
-                  in this program is prepared by a licensed compounding pharmacy pursuant to a patient-specific prescription.
-                  Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy, and we do not compound these
-                  vials.{" "}
+                  No. This program uses compounded semaglutide. It is not FDA-approved and is not a commercially
+                  manufactured product. Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy, and does
+                  not compound these vials.{" "}
                   <Link href="/weight-loss/semaglutide" className="text-primary hover:underline">
                     Learn about Semaglutide kits
                   </Link>

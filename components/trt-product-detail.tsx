@@ -18,6 +18,7 @@ import {
   type TrtBillingPlan,
   type TrtProgram,
 } from "@/lib/trt-catalog"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
@@ -72,6 +73,7 @@ export function TrtProductDetail({ program, content }: TrtProductDetailProps) {
               <span className="text-muted-foreground ml-1">/mo all-in</span>
             </p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>
+            <CompoundedMedicationNotice className="mt-4" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

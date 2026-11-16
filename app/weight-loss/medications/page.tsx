@@ -9,6 +9,7 @@ import {
   PremiumHero,
   SectionIntro,
 } from "@/components/clinical-landing-shell"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
@@ -64,9 +65,10 @@ export default function WeightLossMedicationsPage() {
             <h3 className="text-xl font-bold mb-1">Semaglutide</h3>
             <p className="text-sm text-primary font-medium mb-3">GLP-1 receptor agonist</p>
             <p className="text-sm text-muted-foreground mb-4 flex-1">
-              Once-weekly injectable therapy for provider-guided weight management. Patients often compare the active
-              ingredient class to brand-name Ozempic and Wegovy. Compounded Semaglutide is not those brand products.
+              Once-weekly compounded injectable for provider-guided weight management. Clear Choice Pharmacy does not
+              dispense brand-name Ozempic or Wegovy.
             </p>
+            <CompoundedMedicationNotice className="mb-4" />
             {semaRange && (
               <p className="text-lg font-semibold mb-4">
                 from {formatUsd(semaRange.fromQuarterly)}
@@ -81,10 +83,10 @@ export default function WeightLossMedicationsPage() {
             <h3 className="text-xl font-bold mb-1">Tirzepatide</h3>
             <p className="text-sm text-primary font-medium mb-3">Dual GLP-1 / GIP pathway</p>
             <p className="text-sm text-muted-foreground mb-4 flex-1">
-              Once-weekly injectable therapy when a clinician recommends dual-pathway support. Patients often compare
-              the active ingredient class to brand-name Mounjaro and Zepbound. Compounded Tirzepatide is not those brand
-              products.
+              Once-weekly compounded injectable when a clinician determines a dual-pathway medication is appropriate.
+              Clear Choice Pharmacy does not dispense brand-name Mounjaro or Zepbound.
             </p>
+            <CompoundedMedicationNotice className="mb-4" />
             {tirzRange && (
               <p className="text-lg font-semibold mb-4">
                 from {formatUsd(tirzRange.fromQuarterly)}

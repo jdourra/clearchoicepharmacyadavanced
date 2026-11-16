@@ -47,6 +47,7 @@ import {
   getInjectionConsentInvalidFields,
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { WeightLossDoseTierPricing } from "@/components/weight-loss-dose-tier-pricing"
 import {
   WEIGHT_LOSS_PROGRAMS,
@@ -1008,6 +1009,7 @@ export function WeightLossIntakeForm({
                     <p className="font-semibold">{program.name}</p>
                     <p className="text-sm text-primary">{program.subtitle}</p>
                     <p className="text-sm text-muted-foreground mt-1">{program.description}</p>
+                    <CompoundedMedicationNotice className="mt-3" />
                     <ul className="mt-2 text-sm text-muted-foreground list-disc list-inside">
                       {program.features.map((f) => (
                         <li key={f}>{f}</li>

@@ -263,7 +263,7 @@ export const WEIGHT_LOSS_PROGRAMS: WeightLossProgram[] = [
     name: "Tirzepatide Program",
     subtitle: "Dual GLP-1/GIP Therapy",
     description:
-      "Advanced dual-pathway therapy for patients who may benefit from combined GLP-1 and GIP receptor activation.",
+      "Compounded tirzepatide for patients whose clinician determines a dual GLP-1 and GIP medication is appropriate.",
     features: ["Weekly dosing protocol", "Dual-action support", "Provider-guided titration", "Pharmacy fulfillment"],
     image: {
       src: "/images/tirzepatide-vial.png",

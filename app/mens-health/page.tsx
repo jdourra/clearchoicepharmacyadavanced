@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   SITE_URL,
@@ -138,6 +139,7 @@ export default function MensHealthPage() {
                     About {formatUsd(best.pricePerDose, 2)}/dose on {formatEdBillingLabel(best.plan).toLowerCase()} ·{" "}
                     {doses} troches / 30 days
                   </p>
+                  <CompoundedMedicationNotice />
                   {monthlyPlan ? (
                     <p className="text-xs text-muted-foreground">
                       Monthly plan {formatUsd(monthlyPlan.pricePerMonth)}/mo ({formatUsd(monthlyDosePrice, 2)}/dose)
@@ -242,6 +244,7 @@ export default function MensHealthPage() {
           title="Testosterone therapy after a state-licensed review"
           description={HORMONE_THERAPY_CONTROLLED_NOTE}
         />
+        <CompoundedMedicationNotice className="mt-6" />
         <div className="mt-6">
           <Button asChild>
             <Link href="/mens-health/trt/start">Start your intake</Link>

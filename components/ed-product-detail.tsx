@@ -24,6 +24,7 @@ import {
   type EdTrocheProduct,
 } from "@/lib/ed-troche-catalog"
 import { formatUsd, getBestEdPlan, getEdDosesPerSupply, getEdPricePerDose } from "@/lib/pricing-clarity"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
@@ -90,6 +91,7 @@ export function EdProductDetail({ product, content }: EdProductDetailProps) {
               </span>
             </p>
             <p className="text-sm font-medium text-foreground mt-1">{product.supplyLabel}</p>
+            <CompoundedMedicationNotice className="mt-4" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

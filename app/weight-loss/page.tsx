@@ -16,6 +16,7 @@ import {
 } from "@/components/clinical-landing-shell"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   WEIGHT_LOSS_DOCTOR_REVIEW,
@@ -177,6 +178,7 @@ export default function WeightLossPage() {
                     <p className="text-sm text-muted-foreground">
                       Monthly from {formatUsd(range.fromMonthly)} · up to {formatUsd(range.toMonthly)} by weekly dose
                     </p>
+                    <CompoundedMedicationNotice />
                     {savePct > 0 && (
                       <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
                         Save ~{savePct}% vs monthly on 90-day starter kits
