@@ -33,7 +33,7 @@ import {
   paymentCapturedOnClient,
 } from "@/lib/intake-payment"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
-import { parseUsState, requiresSyncVisit, US_STATES } from "@/lib/us-states"
+import { parseUsState, requiresSyncVisit, TELEHEALTH_STATES } from "@/lib/us-states"
 import { Glp1ProtocolQuestions } from "@/components/glp1-protocol-questions"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
@@ -1259,7 +1259,7 @@ export function WeightLossIntakeForm({
                     <SelectValue placeholder="Select your state" />
                   </SelectTrigger>
                   <SelectContent>
-                    {US_STATES.map((state) => (
+                    {TELEHEALTH_STATES.map((state) => (
                       <SelectItem key={state.code} value={state.name}>
                         {state.name}
                       </SelectItem>
@@ -1441,7 +1441,7 @@ export function WeightLossIntakeForm({
                       <SelectValue placeholder="Select shipping state" />
                     </SelectTrigger>
                     <SelectContent>
-                      {US_STATES.map((state) => (
+                      {TELEHEALTH_STATES.map((state) => (
                         <SelectItem key={state.code} value={state.name}>
                           {state.name}
                         </SelectItem>

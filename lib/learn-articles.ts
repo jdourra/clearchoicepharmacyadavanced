@@ -94,7 +94,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start semaglutide?",
         answer:
-          "Yes. Patients in every U.S. state can start an intake. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
+          "Yes, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
       },
     ],
     disclaimer: GLP_DISCLAIMER,

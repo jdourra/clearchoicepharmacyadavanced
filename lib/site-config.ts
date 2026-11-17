@@ -52,8 +52,11 @@ export const COMPOUNDED_MEDICATION_DISCLOSURE =
  * an approved prescription to a licensed compounding pharmacy. Clear Choice is
  * licensed only in Michigan and does not compound or dispense compounded medication.
  */
+export const INTAKE_SERVICE_AREA =
+  "every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey"
+
 export const NATIONAL_PARTNER_CARE_NOTE =
-  "Patients in every U.S. state and the District of Columbia can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. A few states require a live video visit."
+  `Patients in ${INTAKE_SERVICE_AREA} can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.`
 
 export const HORMONE_THERAPY_CONTROLLED_NOTE =
   "Testosterone is a Schedule III controlled medication. It is prescribed only when a clinician licensed in your state decides it is medically appropriate. It is not offered for athletic performance or bodybuilding."

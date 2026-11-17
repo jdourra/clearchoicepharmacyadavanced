@@ -59,6 +59,17 @@ export const US_STATES: UsState[] = [
   { code: "WY", name: "Wyoming" },
 ]
 
+/**
+ * Not offered until the state telemedicine registration is on file.
+ * Alaska, Mississippi, and New Jersey.
+ */
+export const INTAKE_UNAVAILABLE_STATE_CODES = new Set(["AK", "MS", "NJ"])
+
+/** States a patient can select for a weight-loss, hormone, or ED intake. */
+export const TELEHEALTH_STATES = US_STATES.filter(
+  (state) => !INTAKE_UNAVAILABLE_STATE_CODES.has(state.code)
+)
+
 /** GLP-1 states that require a live video visit before the consult is created. */
 export const SYNC_VISIT_STATE_CODES = new Set([
   "AR",
@@ -89,13 +100,17 @@ export function requiresSyncVisit(value: unknown): boolean {
   return state != null && SYNC_VISIT_STATE_CODES.has(state.code)
 }
 
-/** Any U.S. state or the District of Columbia. Does not allow territories. */
+/** Any offered U.S. state or the District of Columbia. Does not allow territories or paused states. */
 export function requireUsState(value: unknown, fieldLabel = "State"): string | null {
   if (value == null || String(value).trim() === "") {
     return `${fieldLabel} is required.`
   }
-  if (!parseUsState(value)) {
+  const state = parseUsState(value)
+  if (!state) {
     return `${fieldLabel} must be a U.S. state or the District of Columbia.`
+  }
+  if (INTAKE_UNAVAILABLE_STATE_CODES.has(state.code)) {
+    return `${state.name} is not currently available for weight loss, hormone therapy, or ED intakes.`
   }
   return null
 }

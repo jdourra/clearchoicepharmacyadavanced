@@ -72,7 +72,7 @@ export default function WeightLossPage() {
     name: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Provider-guided Semaglutide and Tirzepatide weight management for patients in every U.S. state. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses kit.",
+      "Provider-guided Semaglutide and Tirzepatide weight management. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses the kit.",
     about: [
       { "@type": "MedicalTherapy", name: "Medical Weight Management" },
       { "@type": "MedicalTherapy", name: "GLP-1 Weight Management" },
@@ -340,8 +340,8 @@ export default function WeightLossPage() {
       <ContentSection id="michigan">
         <SectionIntro
           eyebrow="Local care"
-          title="Available in every U.S. state"
-          description="Weight-loss intake is open nationwide. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. A few states require a live video visit."
+          title="Where intakes are available"
+          description="Weight-loss intake is open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit."
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           ED medication and hormone therapy use the same state-licensed review and dispensing. Prescriptions that Clear

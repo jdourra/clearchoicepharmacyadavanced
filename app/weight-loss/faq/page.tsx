@@ -44,7 +44,7 @@ const EXTRA_FAQS = [
   {
     question: "Can patients outside Michigan enroll?",
     answer:
-      "Yes. Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Arkansas, Washington D.C., Kansas, Mississippi, New Jersey, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. Ola Health reviews the intake. a licensed compounding pharmacy ships the medication after RxAve routes the prescription an approved prescription. Prescriptions Clear Choice Pharmacy dispenses itself stay limited to Michigan.",
+      "Yes, except in Alaska, Mississippi, and New Jersey. Weight loss, hormone therapy, and ED medication intakes are open in every other U.S. state and the District of Columbia. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. Ola Health reviews the intake. A licensed compounding pharmacy ships the medication after RxAve routes an approved prescription. Prescriptions Clear Choice Pharmacy dispenses itself stay limited to Michigan.",
   },
   {
     question: "Where can I read more educational content?",

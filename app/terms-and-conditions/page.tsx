@@ -28,10 +28,12 @@ export default function TermsPage() {
         {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}, at 40890 Grand River,
         Novi, MI 48375. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded
         medications. Non-compounded prescriptions we dispense ourselves are for Michigan patients. Weight loss, hormone
-        therapy, and ED medication intakes are open to patients in every U.S. state and the District of Columbia. Ola
+        therapy, and ED medication intakes are open to patients in every U.S. state and the District of
+        Columbia except Alaska, Mississippi, and New Jersey. Ola
         Health reviews those intakes through a clinician licensed in the patient&apos;s state. If treatment is approved,
         RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
-        prescribed only when clinically appropriate. A few states require a live video visit. We do not replace your
+        prescribed only when clinically appropriate. Arkansas, the District of Columbia, Kansas, New Mexico,
+        Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. We do not replace your
         primary care physician.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Eligibility</h2>

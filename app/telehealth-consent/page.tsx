@@ -13,7 +13,9 @@ export default function TelehealthConsentPage() {
       <p>Last updated: November 2026</p>
       <p>
         By consenting to telehealth, you agree to a remote clinical evaluation. Weight loss, hormone therapy, and ED
-        intakes are reviewed by {TELEHEALTH_PROVIDER} through a clinician licensed in your state. A few states require a
+        intakes are reviewed by {TELEHEALTH_PROVIDER} through a clinician licensed in your state. Intakes are not
+        available in Alaska, Mississippi, or New Jersey. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode
+        Island, West Virginia, and Virginia require a
         live video visit. Clear Choice Pharmacy does not perform that clinical evaluation.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Nature of telehealth</h2>

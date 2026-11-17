@@ -51,7 +51,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss in every U.S. state",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss",
       },
     ],
   },
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     "geo.position": "42.4806;-83.4755",
     ICBM: "42.4806, -83.4755",
     subject:
-      "Semaglutide and Tirzepatide weight loss in every U.S. state | Clear Choice Pharmacy",
+      "Semaglutide and Tirzepatide weight loss | Clear Choice Pharmacy",
     topic: "Medical Weight Loss",
     coverage: "United States",
     ...(process.env.GOOGLE_SITE_VERIFICATION

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GLP-1 Weight Management | Clear Choice Pharmacy",
     description:
-      "Educational overview of GLP-1 therapies for weight management. Patients in every U.S. state can start an intake.",
+      "Educational overview of GLP-1 therapies for weight management. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey.",
     url: `${SITE_URL}/weight-loss/glp-1`,
     type: "website",
   },

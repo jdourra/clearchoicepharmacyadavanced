@@ -212,7 +212,7 @@ export default function HomePage() {
               <h2 className="text-xl font-bold mb-3">Who can start an intake</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                 Clear Choice Pharmacy is located at 40890 Grand River in Novi and is licensed in Michigan.
-                Weight loss, hormone therapy, and ED medication intakes are open to patients in every U.S. state. A
+                Weight loss, hormone therapy, and ED medication intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. A
                 clinician licensed in your state reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions this pharmacy dispenses itself remain for Michigan patients.
               </p>
               <Link href="/contact" className="text-sm text-primary hover:underline">
@@ -257,12 +257,12 @@ export default function HomePage() {
             <div className="grid gap-6 max-w-3xl mx-auto">
               <div>
                 <h3 className="font-semibold text-lg mb-2">
-                  Do you offer Semaglutide and Tirzepatide in every state?
+                  Where can patients start a Semaglutide or Tirzepatide intake?
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Yes. Patients in every U.S. state can start an intake. {weightLossHowYouPay()} A clinician licensed in
+                  Yes, except in Alaska, Mississippi, and New Jersey. {weightLossHowYouPay()} A clinician licensed in
                   your state reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit.
-                  Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.
+                  Clear Choice Pharmacy does not compound or ship these vials. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.
                   Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
                     Explore the medical weight loss program

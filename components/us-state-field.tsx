@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { US_STATES } from "@/lib/us-states"
+import { TELEHEALTH_STATES } from "@/lib/us-states"
 import { cn } from "@/lib/utils"
 
 type UsStateFieldProps = {
@@ -39,7 +39,7 @@ export function UsStateField({
           <SelectValue placeholder="Select your state" />
         </SelectTrigger>
         <SelectContent>
-          {US_STATES.map((state) => (
+          {TELEHEALTH_STATES.map((state) => (
             <SelectItem key={state.code} value={format === "code" ? state.code : state.name}>
               {state.name}
             </SelectItem>

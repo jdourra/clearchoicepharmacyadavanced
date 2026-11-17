@@ -7,7 +7,7 @@ export const HOME_TITLE =
   "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Semaglutide and tirzepatide weight loss for patients in every U.S. state. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit."
+  "Semaglutide and tirzepatide weight loss. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -148,21 +148,21 @@ export const NATIONWIDE_SERVICES = [
     serviceType: "Medical weight loss",
     path: "/weight-loss",
     description:
-      "Patients in every U.S. state can start an intake. Ola Health reviews it. A pharmacy licensed to dispense in that state fills and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.",
+      "Patients can start an intake in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. A pharmacy licensed to dispense in that state fills and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.",
   }),
   nationwideServiceSchema({
     name: "Hormone therapy",
     serviceType: "Hormone therapy",
     path: "/mens-health/trt/testosterone-cypionate",
     description:
-      "Patients in every U.S. state can start a hormone-therapy intake. Ola Health reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
+      "Patients can start a hormone-therapy intake in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
   }),
   nationwideServiceSchema({
     name: "ED medication",
     serviceType: "Erectile dysfunction treatment",
     path: "/mens-health",
     description:
-      "Patients in every U.S. state can start an ED medication intake. Ola Health reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
+      "Patients can start an ED medication intake in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. A pharmacy licensed to dispense in that state fills an approved prescription.",
   }),
 ]
 
@@ -195,7 +195,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you serve patients outside Michigan?",
     answer:
-      "Yes for weight loss, hormone therapy, and ED medication. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. A few states require a live video visit.",
+      "Yes for weight loss, hormone therapy, and ED medication, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.",
   },
   {
     question: "Is the consultation private?",

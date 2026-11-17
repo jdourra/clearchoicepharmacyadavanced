@@ -35,7 +35,7 @@ export default function ContactPage() {
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
               Reach our Novi pharmacy team about medical weight management programs, prescriptions, compounding, or
-              specialty care. Weight loss, hormone therapy, and ED intakes are open nationwide. Prescriptions we dispense ourselves are for Michigan patients.
+              specialty care. Weight loss, hormone therapy, and ED intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Prescriptions we dispense ourselves are for Michigan patients.
             </p>
           </div>
         </section>

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss in every U.S. state",
+        alt: "Clear Choice Pharmacy — Semaglutide and Tirzepatide weight loss",
       },
     ],
   },
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
 
 const homeFaqJsonLd = buildFaqJsonLd([
   {
-    question: "Do you offer Semaglutide and Tirzepatide in every state?",
+    question: "Where can patients start a Semaglutide or Tirzepatide intake?",
     answer:
-      `Yes. Patients in every U.S. state can start an intake. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. A few states require a live video visit.`,
+      `Yes, except in Alaska, Mississippi, and New Jersey. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",

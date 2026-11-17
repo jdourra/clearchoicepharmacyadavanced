@@ -23,7 +23,7 @@ import {
   type Glp1ProtocolAnswers,
 } from "@/lib/glp1-intake-protocol"
 import { PHARMACY_PHONE_DISPLAY, toUsE164 } from "@/lib/phone"
-import { parseUsState, requiresSyncVisit } from "@/lib/us-states"
+import { parseUsState, requireUsState, requiresSyncVisit } from "@/lib/us-states"
 import {
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
@@ -371,6 +371,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
     }
 
+    const homeStateError = requireUsState(data.patientInfo.state, "Home state")
+    const shippingStateError = requireUsState(data.identity.shippingState, "Shipping state")
+    if (homeStateError || shippingStateError) {
+      return NextResponse.json({ error: homeStateError || shippingStateError }, { status: 400 })
+    }
     const homeState = parseUsState(data.patientInfo.state)
     const shippingState = parseUsState(data.identity.shippingState)
     if (!homeState || !shippingState) {
