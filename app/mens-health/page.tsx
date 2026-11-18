@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     "ED troches",
     "men's health",
     "tadalafil Michigan",
-    "sildenafil Novi",
+    "sildenafil Westland",
   ],
   alternates: {
     canonical: `${SITE_URL}/mens-health`,

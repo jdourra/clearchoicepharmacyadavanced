@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Start Specialty Transfer | Clear Choice Pharmacy",
     description:
-      "Request specialty pharmacy care with prior authorization and copay support at Clear Choice Pharmacy in Novi, MI.",
+      "Request specialty pharmacy care with prior authorization and copay support at Clear Choice Pharmacy in Westland, MI.",
     url: `${SITE_URL}/specialty-pharmacy/start`,
     type: "website",
   },

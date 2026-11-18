@@ -55,10 +55,10 @@ import { PHARMACY_PHONE_E164 as PHARMACY_PHONE } from "@/lib/phone"
 
 export const PHARMACY_ADDRESS = {
   "@type": "PostalAddress" as const,
-  streetAddress: "40890 Grand River",
-  addressLocality: "Novi",
+  streetAddress: "8276 Merriman Rd",
+  addressLocality: "Westland",
   addressRegion: "MI",
-  postalCode: "48375",
+  postalCode: "48185",
   addressCountry: "US",
 }
 
@@ -67,7 +67,6 @@ export const AREA_SERVED = [
   { "@type": "State" as const, name: "Michigan" },
   { "@type": "AdministrativeArea" as const, name: "Metro Detroit" },
   { "@type": "City" as const, name: "Westland", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
-  { "@type": "City" as const, name: "Novi", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Northville", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Farmington Hills", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
   { "@type": "City" as const, name: "Wixom", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
@@ -81,7 +80,7 @@ export const AREA_SERVED = [
   { "@type": "City" as const, name: "Commerce Township", containedInPlace: { "@type": "State" as const, name: "Michigan" } },
 ]
 
-/** Weight loss, hormone therapy, and ED intakes. The Novi pharmacy listing stays on AREA_SERVED. */
+/** Weight loss, hormone therapy, and ED intakes. The Westland pharmacy listing stays on AREA_SERVED. */
 export const NATIONWIDE_AREA_SERVED = {
   "@type": "Country" as const,
   name: "United States",
@@ -96,7 +95,7 @@ export const SITE_KEYWORDS = [
   "GLP-1 weight loss",
   "Semaglutide weight loss Michigan",
   "Tirzepatide weight loss Michigan",
-  "Clear Choice Pharmacy Novi",
+  "Clear Choice Pharmacy Westland",
 ]
 
 export type FaqItem = { question: string; answer: string }
@@ -271,7 +270,7 @@ export const IV_REJUVENATION_FAQS: FaqItem[] = [
   {
     question: "What areas do you serve for mobile IV therapy?",
     answer:
-      "We dispatch licensed RNs across Metro Detroit, including Novi, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities.",
+      "We dispatch licensed RNs across Metro Detroit, including Westland, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities.",
   },
   {
     question: "Is there a travel fee for mobile IV?",

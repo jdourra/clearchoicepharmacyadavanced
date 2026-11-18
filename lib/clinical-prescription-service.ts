@@ -207,7 +207,7 @@ export async function createPrescriptionOnApprove(params: {
       getPrescriberLicense(),
       getPrescriberNpi(),
       "Clear Choice Pharmacy",
-      "Novi, MI",
+      "Westland, MI",
       status,
       dropboxId,
       storedUnsigned.storageKey,

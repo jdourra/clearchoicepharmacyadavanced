@@ -256,7 +256,7 @@ export function IvBookingForm({ packageId, boosterIds }: IvBookingFormProps) {
         returnLabel="Back to IV Menu"
         steps={[
           `A licensed clinician will review your screening (${PRIMARY_PHYSICIAN.reviewSla})`,
-          "Prescription received at Clear Choice Pharmacy in Novi, MI",
+          "Prescription received at Clear Choice Pharmacy in Westland, MI",
           "IV prepared and RN dispatch scheduled",
         ]}
       >

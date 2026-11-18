@@ -4,7 +4,7 @@ import { buildFaqJsonLd, PRESCRIPTIONS_FAQS, SITE_URL } from "@/lib/clinical-seo
 export const metadata: Metadata = {
   title: "Low Cost Prescription Drugs | Sildenafil, Tadalafil & Cash-Pay Pricing",
   description:
-    "Low cost prescription drugs with transparent cash-pay pricing. Generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets plus everyday meds around $5. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Novi, MI.",
+    "Low cost prescription drugs with transparent cash-pay pricing. Generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets plus everyday meds around $5. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Westland, MI.",
   keywords: [
     "low cost prescription drugs",
     "low cost prescriptions",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "discount prescription drugs",
     "generic drugs",
     "prescription prices",
-    "Novi pharmacy",
+    "Westland pharmacy",
     "Michigan pharmacy",
     "transparent pharmacy pricing",
     "low cost tadalafil",

@@ -8,9 +8,9 @@ import { PHARMACY_PHONE_DISPLAY, PHARMACY_PHONE_TEL_HREF } from "@/lib/phone"
 import { LEGAL_BUSINESS_NAME, MICHIGAN_PHARMACY_LICENSE } from "@/lib/site-config"
 
 export const metadata: Metadata = {
-  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Novi, MI" },
+  title: { absolute: "About Clear Choice Pharmacy | Medical Weight Loss & Compounding in Westland, MI" },
   description:
-    `${LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy in Novi, Michigan. Michigan pharmacy license ${MICHIGAN_PHARMACY_LICENSE}.`,
+    `${LEGAL_BUSINESS_NAME}, doing business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy license ${MICHIGAN_PHARMACY_LICENSE}.`,
   alternates: { canonical: `${SITE_URL}/about` },
 }
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">About us</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy in Novi, Michigan. Michigan pharmacy
+              {LEGAL_BUSINESS_NAME} does business as Clear Choice Pharmacy in Westland, Michigan. Michigan pharmacy
               license {MICHIGAN_PHARMACY_LICENSE}. Clear Choice is licensed in Michigan only and does
               not compound or dispense compounded medications. Weight loss, hormone therapy, and ED medication are
               reviewed by Ola Health. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded prescription.
@@ -42,7 +42,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">What we do</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-              From 40890 Grand River we fill non-compounded prescriptions for Michigan patients. Compounded medications,
+              From 8276 Merriman Rd we fill non-compounded prescriptions for Michigan patients. Compounded medications,
               including semaglutide and tirzepatide, are not prepared or shipped from this pharmacy. Ola Health reviews
               those intakes, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses the prescription.
             </p>
@@ -84,7 +84,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold mb-3">Location &amp; contact</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-              40890 Grand River, Novi, MI 48375
+              8276 Merriman Rd, Westland, MI 48185
               <br />
               Phone:{" "}
               <a href={PHARMACY_PHONE_TEL_HREF} className="text-primary hover:underline">

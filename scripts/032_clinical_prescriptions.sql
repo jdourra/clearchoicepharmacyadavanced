@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS clinical_prescriptions (
   prescriber_license TEXT,
   prescriber_npi TEXT,
   pharmacy_name TEXT NOT NULL DEFAULT 'Clear Choice Pharmacy',
-  pharmacy_address TEXT NOT NULL DEFAULT 'Novi, MI',
+  pharmacy_address TEXT NOT NULL DEFAULT 'Westland, MI',
   status TEXT NOT NULL DEFAULT 'awaiting_signature',
   dropbox_signature_request_id TEXT,
   unsigned_pdf_key TEXT,

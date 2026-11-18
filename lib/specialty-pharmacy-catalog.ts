@@ -34,7 +34,7 @@ export const SPECIALTY_PRIOR_AUTH_STATUSES = [
 ] as const
 
 export const SPECIALTY_FULFILLMENT_OPTIONS = [
-  { value: "pickup", label: "Pickup at Novi pharmacy" },
+  { value: "pickup", label: "Pickup at Westland pharmacy" },
   { value: "delivery", label: "Home delivery" },
 ] as const
 

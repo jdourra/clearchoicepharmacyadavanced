@@ -193,7 +193,7 @@ export async function buildPrescriptionPdf(params: {
   y -= 8
 
   draw("DISPENSE TO", { size: 12, bold: true })
-  draw("Clear Choice Pharmacy — Novi, MI")
+  draw("Clear Choice Pharmacy — Westland, MI")
   draw(`Phone: ${PRIMARY_PHYSICIAN.pharmacyPhone}`)
   y -= 16
 
@@ -239,7 +239,7 @@ export function mapPrescriptionRow(row: Record<string, unknown>): ClinicalPrescr
     prescriberLicense: String(row.prescriber_license ?? ""),
     prescriberNpi: String(row.prescriber_npi ?? ""),
     pharmacyName: String(row.pharmacy_name ?? "Clear Choice Pharmacy"),
-    pharmacyAddress: String(row.pharmacy_address ?? "Novi, MI"),
+    pharmacyAddress: String(row.pharmacy_address ?? "Westland, MI"),
     status: String(row.status ?? ""),
     dropboxSignatureRequestId: row.dropbox_signature_request_id
       ? String(row.dropbox_signature_request_id)

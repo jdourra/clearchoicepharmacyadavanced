@@ -25,8 +25,8 @@ export default function TermsPage() {
         Where services are available
       </h2>
       <p>
-        {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}, at 40890 Grand River,
-        Novi, MI 48375. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded
+        {LEGAL_BUSINESS_NAME} is a Michigan pharmacy, license {MICHIGAN_PHARMACY_LICENSE}, at 8276 Merriman Rd,
+        Westland, MI 48185. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded
         medications. Non-compounded prescriptions we dispense ourselves are for Michigan patients. Weight loss, hormone
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of
         Columbia except Alaska, Mississippi, and New Jersey. Ola
@@ -50,7 +50,7 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>
-        Clear Choice Pharmacy · 40890 Grand River, Novi, MI 48375 ·{" "}
+        Clear Choice Pharmacy · 8276 Merriman Rd, Westland, MI 48185 ·{" "}
         <a href="tel:+12489876182" className="text-primary hover:underline">(248) 987-6182</a> ·{" "}
         <a href="mailto:info@clearchoicepharmacy.com" className="text-primary hover:underline">
           info@clearchoicepharmacy.com
