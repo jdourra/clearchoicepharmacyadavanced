@@ -31,14 +31,11 @@ export default function PrescriptionsPage() {
                 Cash-pay prescriptions · Westland, MI
               </p>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance mb-4">
-                Low Cost Prescription Drugs with Cash-Pay Pricing
+                Low Cost Prescription Drugs in Westland
               </h1>
               <p className="text-lg text-muted-foreground text-balance max-w-2xl mx-auto">
-                Look up medication prices instantly—no insurance required. Most common meds around $5 for 30 days.
-                Also cash-pay generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets.
-              </p>
-              <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
-                Michigan patients only — we fill and ship prescriptions within Michigan from our Westland pharmacy.
+                Most medications are about $5 for 30 days, including generic sildenafil and tadalafil. Order online or
+                visit our pharmacy in Westland.
               </p>
             </div>
 

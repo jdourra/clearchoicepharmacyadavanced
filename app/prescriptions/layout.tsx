@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { buildFaqJsonLd, PRESCRIPTIONS_FAQS, SITE_URL } from "@/lib/clinical-seo"
 
 export const metadata: Metadata = {
-  title: "Low Cost Prescription Drugs | Sildenafil, Tadalafil & Cash-Pay Pricing",
+  title: "Low Cost Prescriptions in Westland, MI",
   description:
-    "Low cost prescription drugs with transparent cash-pay pricing. Generic Sildenafil (Viagra) and Tadalafil (Cialis) tablets plus everyday meds around $5. Formula: Drug Cost + 15% + $5. Clear Choice Pharmacy, Westland, MI.",
+    "Most medications are about $5 for 30 days, including generic sildenafil and tadalafil. Order online or visit Clear Choice Pharmacy in Westland, Michigan.",
   keywords: [
     "low cost prescription drugs",
     "low cost prescriptions",
@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/prescriptions`,
   },
   openGraph: {
-    title: "Low Cost Prescription Drugs | Cash-Pay Pricing | Clear Choice Pharmacy",
+    title: "Low Cost Prescriptions in Westland, MI | Clear Choice Pharmacy",
     description:
-      "Most common meds around $5. Cash-pay generic Sildenafil and Tadalafil tablets. Formula: Drug Cost + 15% + $5.",
+      "Most medications are about $5 for 30 days, including generic sildenafil and tadalafil. Order online or visit Clear Choice Pharmacy in Westland, Michigan.",
     url: `${SITE_URL}/prescriptions`,
     type: "website",
   },
