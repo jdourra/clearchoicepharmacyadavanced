@@ -20,8 +20,8 @@ import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
-import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
-import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { LEGAL_BUSINESS_NAME, PHYSICIAN_DECIDES_DOSE, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
+import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { UsStateField } from "@/components/us-state-field"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
@@ -304,12 +304,13 @@ export function TrtIntakeForm({
               idBackKey: formData.idBackKey,
               idFrontUploading: formData.idFrontUploading,
               idBackUploading: formData.idBackUploading,
-              stripePaymentIntentId: formData.stripePaymentIntentId,
-              paymentAuthorized: formData.paymentAuthorized,
+              stripePaymentIntentId: null,
+              paymentAuthorized: false,
             }),
           },
           consents: {
-            authorizeHold: formData.authorizeHold,
+            authorizeHold: false,
+            acknowledgePayAtPharmacy: formData.authorizeHold,
             injection: formData.injectionConsents,
           },
         }),
@@ -662,7 +663,7 @@ export function TrtIntakeForm({
         <Card>
           <CardHeader>
             <CardTitle>Identity &amp; Payment</CardTitle>
-            <CardDescription>Verify your identity, authorize payment, and complete consent.</CardDescription>
+            <CardDescription>Verify your identity, confirm Zelle or Venmo payment, and complete consent.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
@@ -720,6 +721,7 @@ export function TrtIntakeForm({
               }}
               onChange={updateFormData}
               totalBilled={currentPricing?.totalBilled ?? 0}
+              showPayment={false}
             />
 
             <InjectionTelehealthConsents
@@ -736,7 +738,7 @@ export function TrtIntakeForm({
                   checked={formData.authorizeHold}
                   onCheckedChange={(c) => updateFormData("authorizeHold", c === true)}
                 />
-                I authorize a payment hold of <strong>${currentPricing?.totalBilled ?? 0}</strong> to be charged only upon prescription approval *
+                I will pay <strong>${currentPricing?.totalBilled ?? 0}</strong> by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL} after I submit. The payment will show as {LEGAL_BUSINESS_NAME}. Put my name in the memo. If treatment is not approved, I will be refunded. *
               </label>
             </div>
           </CardContent>
@@ -749,18 +751,18 @@ export function TrtIntakeForm({
                   setError("Please complete your address.")
                   return
                 }
-                const paymentFields = getIntakePaymentInvalidFields({
+                const paymentFields = getIntakeIdentityInvalidFields({
                   idFrontFile: formData.idFrontFile,
                   idBackFile: formData.idBackFile,
                   idFrontKey: formData.idFrontKey,
                   idBackKey: formData.idBackKey,
                   idFrontUploading: formData.idFrontUploading,
                   idBackUploading: formData.idBackUploading,
-                  stripePaymentIntentId: formData.stripePaymentIntentId,
-                  paymentAuthorized: formData.paymentAuthorized,
+                  stripePaymentIntentId: null,
+                  paymentAuthorized: false,
                 })
                 if (paymentFields.length > 0) {
-                  setError("Please upload your ID and complete payment information.")
+                  setError("Please upload the front and back of your photo ID.")
                   return
                 }
                 const consentFields = getInjectionConsentInvalidFields(formData.injectionConsents, {
@@ -772,7 +774,7 @@ export function TrtIntakeForm({
                   return
                 }
                 if (!formData.authorizeHold) {
-                  setError("Please authorize the payment hold to continue.")
+                  setError("Please confirm you will pay by Zelle or Venmo after you submit.")
                   return
                 }
                 handleSubmit()

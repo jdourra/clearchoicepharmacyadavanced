@@ -23,7 +23,7 @@ export function olaDecisionNotice(decision: string | null | undefined): { title:
     case "denied":
       return {
         title: "Clinician denied this visit",
-        body: "Refund the Zelle payment. The clinician did not approve treatment.",
+        body: "Refund the Zelle or Venmo payment. The clinician did not approve treatment.",
       }
     case "completed":
       return {
@@ -38,7 +38,7 @@ export function olaDecisionNotice(decision: string | null | undefined): { title:
     case "no_show":
       return {
         title: "Patient did not attend",
-        body: "Do not refund yet. Confirm this no-show before returning the Zelle payment.",
+        body: "Do not refund yet. Confirm this no-show before returning the Zelle or Venmo payment.",
       }
     case "other":
       return {

@@ -2,12 +2,11 @@ import { NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { savePrescriptionTelemedicineIntake } from "@/lib/order-prescription-admin"
 import {
-  requireIntakePaymentSubmission,
+  requireIntakeIdentitySubmission,
   type IntakeConsents,
   type IntakePaymentMetadata,
 } from "@/lib/intake-payment"
-import { verifyPaymentHoldReady } from "@/lib/stripe-server"
-import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { sendWeightLossZellePaymentEmail } from "@/lib/weight-loss-zelle-payment-email"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import type { RequestedMedicationLine } from "@/lib/prescription-telemedicine-clinical-intake"
@@ -119,34 +118,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: miError }, { status: 403 })
     }
 
-    const paymentError = requireIntakePaymentSubmission(consents, identity)
+    if (identity) {
+      identity.stripePaymentIntentId = null
+      identity.paymentOnFile = false
+    }
+    if (consents && !consents.acknowledgePayAtPharmacy && consents.authorizeHold) {
+      consents.acknowledgePayAtPharmacy = true
+    }
+    const paymentError = requireIntakeIdentitySubmission(consents, identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
-    }
-
-    const stripeCheck = await verifyPaymentHoldReady(identity?.stripePaymentIntentId || "")
-    if (!stripeCheck.ok) {
-      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     const submissionId = `CCR-RXTM-${Date.now().toString(36).toUpperCase()}`
     const clinical = (payload as Record<string, unknown>).clinical as Record<string, unknown> | undefined
     const visitReason = resolveVisitReason(intakeType, clinical)
 
-    const partnerResult = await submitClinicalIntakeToPartner({
-      serviceType: "mens_health",
-      submissionId,
-      patient: {
-        firstName: String(patientInfo.firstName),
-        lastName: String(patientInfo.lastName),
-        email: String(patientInfo.email),
-        phone: patientInfo.phone != null ? String(patientInfo.phone) : undefined,
-      },
-      clinicalSummary: `Low-cost Rx telemedicine intake ${submissionId}\nMedications: ${requestedMedications.map((m) => m.name).join(", ")}\nReason: ${visitReason || "—"}`,
-    })
-
-    if (!partnerResult.success) {
-      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
+    const partnerResult = {
+      partnerName: "Clinician network",
+      partnerStatus: "waiting_for_payment",
     }
 
     const rows = await sql(
@@ -185,17 +175,29 @@ export async function POST(request: Request) {
         checkout.notes || "",
         JSON.stringify(payload),
         STANDARD_INTAKE_STATUS.pending,
-        identity?.stripePaymentIntentId || null,
+        null,
         identity?.idFrontKey || null,
         identity?.idBackKey || null,
-        partnerResult.mode === "api" ? "partner" : "manual",
-        partnerResult.mode === "api" ? "submitted" : "manual_queue",
+        partnerResult.partnerName,
+        partnerResult.partnerStatus,
       ]
     )
 
     if (rows.length === 0) {
       return NextResponse.json({ error: "Failed to save intake" }, { status: 500 })
     }
+
+    await sql(
+      `UPDATE prescription_telemedicine_intake SET payment_status = 'awaiting_pharmacy' WHERE id = $1`,
+      [submissionId]
+    ).catch(() => [])
+
+    await sendWeightLossZellePaymentEmail({
+      to: String(patientInfo.email),
+      patientName: `${String(patientInfo.firstName)} ${String(patientInfo.lastName)}`.trim(),
+      submissionId,
+      amount: Number(checkout.total) > 0 ? Number(checkout.total) : undefined,
+    })
 
     return NextResponse.json({
       success: true,

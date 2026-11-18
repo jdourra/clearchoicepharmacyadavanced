@@ -28,9 +28,9 @@ export default function PrivacyPage() {
       <p>
         We collect information you submit on an intake: your name, contact details, date of birth, address, medical
         history, medications, identity documents, and the treatment you are asking about. We also keep records of
-        orders, shipping, and payment. Semaglutide and tirzepatide payments are made by Zelle to {ZELLE_PAYMENT_EMAIL}.
-        The transfer shows as {LEGAL_BUSINESS_NAME}. We do not store full card numbers. If a card payment is used, the
-        card data is processed by Stripe.
+        orders, shipping, and payment. Weight loss, hormone therapy, ED medication, and pharmacy orders are paid by
+        Zelle or Venmo to {ZELLE_PAYMENT_EMAIL}. The transfer shows as {LEGAL_BUSINESS_NAME}. The memo is your name.
+        This website is not accepting card payments right now, and we do not store card numbers.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">How we use and share information</h2>
       <p>

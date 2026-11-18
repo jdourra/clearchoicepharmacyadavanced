@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Upload, Check, Stethoscope, ArrowRightLeft, CreditCard, Phone } from "lucide-react"
+import { ArrowLeft, Upload, Check, Stethoscope, ArrowRightLeft } from "lucide-react"
 import Link from "next/link"
 import { PATIENT_REVIEW_TIMELINE } from "@/lib/clinical-provider"
 import { authFetch } from "@/lib/session"
@@ -30,6 +30,7 @@ import {
 } from "@/lib/michigan-eligibility"
 import { formatPhoneInput } from "@/lib/phone"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 
 const PRESCRIPTION_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "application/pdf"])
 
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
   const [transferRxNumbers, setTransferRxNumbers] = useState("")
   const [transferPharmacyName, setTransferPharmacyName] = useState("")
   const [transferPharmacyPhone, setTransferPharmacyPhone] = useState("")
-  const [paymentPreference, setPaymentPreference] = useState<"pay_now" | "pay_by_phone">("pay_by_phone")
+  const paymentPreference = "pay_by_phone" as const
   const router = useRouter()
   const [formData, setFormData] = useState({
     firstName: "",
@@ -210,18 +211,6 @@ export default function CheckoutPage() {
       if (prescriptionMethod === "telemedicine") {
         const route = resolveTelemedicineIntakeRoute(cartItems)
         router.push(buildTelemedicineIntakeUrl(route, { orderId: data.order.id }))
-        return
-      }
-
-      // Upload / transfer / e-prescribe: pay now goes to Stripe pay page; otherwise confirmation.
-      if (paymentPreference === "pay_now" && data.order.id) {
-        if (user) {
-          router.push(`/account/orders/${data.order.id}/pay`)
-          return
-        }
-        router.push(
-          `/auth/login?redirect=${encodeURIComponent(`/account/orders/${data.order.id}/pay`)}`
-        )
         return
       }
 
@@ -754,69 +743,21 @@ export default function CheckoutPage() {
                       </p>
                     </div>
 
-                    {prescriptionMethod !== "telemedicine" ? (
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">How would you like to pay?</h4>
-                        <RadioGroup
-                          value={paymentPreference}
-                          onValueChange={(v) => setPaymentPreference(v as "pay_now" | "pay_by_phone")}
-                          className="grid gap-3 sm:grid-cols-2"
-                        >
-                          <label
-                            className={`flex cursor-pointer flex-col gap-2 rounded-lg border p-4 transition-colors ${
-                              paymentPreference === "pay_now" ? "border-primary bg-primary/5" : ""
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="pay_now" id="checkout-pay-now" />
-                              <span className="font-medium flex items-center gap-2">
-                                <CreditCard className="h-4 w-4" />
-                                Pay now
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground pl-6">
-                              Pay ${total.toFixed(2)} securely by card online after you place this order.
-                            </p>
-                          </label>
-
-                          <label
-                            className={`flex cursor-pointer flex-col gap-2 rounded-lg border p-4 transition-colors ${
-                              paymentPreference === "pay_by_phone" ? "border-primary bg-primary/5" : ""
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="pay_by_phone" id="checkout-pay-phone" />
-                              <span className="font-medium flex items-center gap-2">
-                                <Phone className="h-4 w-4" />
-                                Wait for pharmacy to call
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground pl-6">
-                              We&apos;ll call you to collect payment, or you can pay at pickup / delivery.
-                            </p>
-                          </label>
-                        </RadioGroup>
-                      </div>
-                    ) : (
-                      <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
-                        <p className="font-semibold">Payment</p>
-                        <p>
-                          Telemedicine requires card authorization during the clinical intake. Payment is captured
-                          only after the doctor approves.
-                        </p>
-                      </div>
-                    )}
+                    <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
+                      <p className="font-semibold">Payment</p>
+                      <p>
+                        After you place this order, pay ${total.toFixed(2)} by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL}.
+                        The payment shows as {LEGAL_BUSINESS_NAME}. Put your name in the memo. Card payments are not
+                        accepted on this website right now.
+                      </p>
+                    </div>
 
                     <div className="flex gap-3">
                       <Button onClick={() => setStep(3)} variant="outline" className="flex-1">
                         Back
                       </Button>
                       <Button onClick={handleSubmit} className="flex-1" disabled={loading}>
-                        {loading
-                          ? "Placing Order..."
-                          : prescriptionMethod !== "telemedicine" && paymentPreference === "pay_now"
-                            ? "Place order & pay"
-                            : "Place Order"}
+                        {loading ? "Placing Order..." : "Place Order"}
                       </Button>
                     </div>
                   </CardContent>

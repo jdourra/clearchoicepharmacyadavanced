@@ -19,9 +19,10 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { IntakeSuccessPanel } from "@/components/intake-success-panel"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
-import { emptyIntakePaymentValues, validateIntakePayment } from "@/lib/intake-payment"
+import { emptyIntakePaymentValues, validateIntakeIdentityOnly } from "@/lib/intake-payment"
 import { MichiganOnlyNotice } from "@/components/michigan-only-notice"
 import { MICHIGAN_STATE_NAME } from "@/lib/michigan-eligibility"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { authFetch } from "@/lib/session"
@@ -179,8 +180,8 @@ export function EdTabletTelemedicineIntakeForm({
     idBackKey: formData.idBackKey,
     idFrontUploading: formData.idFrontUploading,
     idBackUploading: formData.idBackUploading,
-    stripePaymentIntentId: formData.stripePaymentIntentId,
-    paymentAuthorized: formData.paymentAuthorized,
+    stripePaymentIntentId: null,
+    paymentAuthorized: false,
   }
 
   const onIdentityChange = useCallback(
@@ -251,7 +252,7 @@ export function EdTabletTelemedicineIntakeForm({
     if (!formData.agreeToTelehealth) fields.push("agreeToTelehealth")
     if (!formData.agreeToPrivacy) fields.push("agreeToPrivacy")
     if (clinicalIntakeMode) {
-      const paymentCheck = validateIntakePayment(identityValues)
+      const paymentCheck = validateIntakeIdentityOnly(identityValues)
       if (!paymentCheck.valid) fields.push(...paymentCheck.fields)
       if (!formData.authorizeHold) fields.push("authorizeHold")
     }
@@ -259,7 +260,7 @@ export function EdTabletTelemedicineIntakeForm({
       setInvalidFields(new Set(fields))
       scrollToFirstField(fields)
       return clinicalIntakeMode
-        ? "Please upload your ID, authorize payment, and accept all required consents."
+        ? "Please upload your ID, confirm Zelle or Venmo payment, and accept all required consents."
         : "Please upload your ID and accept all required consents."
     }
     return ""
@@ -327,14 +328,15 @@ export function EdTabletTelemedicineIntakeForm({
           idBackKey: formData.idBackKey,
           idFrontUploaded: Boolean(formData.idFrontKey),
           idBackUploaded: Boolean(formData.idBackKey),
-          paymentOnFile: formData.paymentAuthorized,
-          stripePaymentIntentId: formData.stripePaymentIntentId,
+          paymentOnFile: false,
+          stripePaymentIntentId: null,
         },
         consents: {
           agreeToTerms: formData.agreeToTerms,
           agreeToTelehealth: formData.agreeToTelehealth,
           agreeToPrivacy: formData.agreeToPrivacy,
-          authorizeHold: formData.authorizeHold,
+          authorizeHold: false,
+          acknowledgePayAtPharmacy: clinicalIntakeMode ? formData.authorizeHold : true,
         },
       }
 
@@ -627,7 +629,7 @@ export function EdTabletTelemedicineIntakeForm({
               intakePrefix={`rx-ed-${orderId || "checkout"}`}
               invalidFields={invalidFields}
               idPrefix="rx-ed"
-              showPayment={clinicalIntakeMode}
+              showPayment={false}
             />
             <div className="space-y-3">
               {clinicalIntakeMode ? (
@@ -644,8 +646,7 @@ export function EdTabletTelemedicineIntakeForm({
                     onCheckedChange={(checked) => updateFormData("authorizeHold", checked === true)}
                   />
                   <Label htmlFor="authorizeHold" className="font-normal cursor-pointer leading-snug">
-                    I authorize Clear Choice Pharmacy to place a hold on my card for ${totalBilled.toFixed(2)}.
-                    If approved, payment will be captured; if denied, the hold will be released.
+                    I will pay ${totalBilled.toFixed(2)} by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL} after I submit. The payment will show as {LEGAL_BUSINESS_NAME}. Put my name in the memo. If treatment is not approved, I will be refunded.
                   </Label>
                 </div>
               ) : null}

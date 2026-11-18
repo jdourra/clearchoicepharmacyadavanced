@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { ED_PRODUCT_LABELS, calculateEdOrderPricing, type EdBillingPlan } from "@/lib/ed-troche-catalog"
 import { formatEdAddOnsWithPricing, parseEdAddOns, type EdFormulationAddOn } from "@/lib/ed-add-ons"
-import { requireIntakePaymentSubmission, type IntakePaymentMetadata } from "@/lib/intake-payment"
-import { verifyPaymentHoldReady } from "@/lib/stripe-server"
-import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { requireIntakeIdentitySubmission, type IntakePaymentMetadata } from "@/lib/intake-payment"
+import { sendWeightLossZellePaymentEmail } from "@/lib/weight-loss-zelle-payment-email"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireUsState } from "@/lib/us-states"
@@ -81,6 +80,7 @@ type ClinicalIntakePayload = {
     agreeToTelehealth: boolean
     agreeToPrivacy: boolean
     authorizeHold: boolean
+    acknowledgePayAtPharmacy?: boolean
   }
 }
 
@@ -263,7 +263,9 @@ export async function POST(request: NextRequest) {
         agreeToTerms: rawData.consents?.agreeToTerms || false,
         agreeToTelehealth: rawData.consents?.agreeToTelehealth || false,
         agreeToPrivacy: rawData.consents?.agreeToPrivacy || false,
-        authorizeHold: rawData.consents?.authorizeHold || false,
+        authorizeHold: false,
+        acknowledgePayAtPharmacy:
+          rawData.consents?.acknowledgePayAtPharmacy || rawData.consents?.authorizeHold || false,
       },
     }
 
@@ -283,14 +285,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
     }
 
-    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity as IntakePaymentMetadata)
+    data.identity.stripePaymentIntentId = null
+    data.identity.paymentOnFile = false
+    const paymentError = requireIntakeIdentitySubmission(data.consents, data.identity as IntakePaymentMetadata)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
-    }
-
-    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
-    if (!stripeCheck.ok) {
-      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     const hasHardStop =
@@ -327,24 +326,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const clinicalSummary = formatClinicalSummary(data)
     const submissionId = `CCR-${Date.now().toString(36).toUpperCase()}`
-
-    const partnerResult = await submitClinicalIntakeToPartner({
-      serviceType: "mens_health",
-      submissionId,
-      patient: {
-        firstName: data.patientInfo.firstName,
-        lastName: data.patientInfo.lastName,
-        email: data.patientInfo.email,
-        phone: data.patientInfo.phone,
-      },
-      clinicalSummary,
-    })
-
-    if (!partnerResult.success) {
-      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
-    }
 
     try {
       await sql(
@@ -400,11 +382,11 @@ export async function POST(request: NextRequest) {
           data.identity.shippingState,
           data.identity.shippingZip,
           STANDARD_INTAKE_STATUS.pending,
-          data.identity.stripePaymentIntentId,
+          null,
           data.identity.idFrontKey,
           data.identity.idBackKey,
-          partnerResult.partnerName,
-          partnerResult.partnerStatus || "queued_for_manual_review",
+          "Clinician network",
+          "waiting_for_payment",
         ]
       )
     } catch (dbError) {
@@ -429,13 +411,20 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       },
-      stripePaymentIntentId: data.identity.stripePaymentIntentId,
+      stripePaymentIntentId: null,
+      paymentStatus: "awaiting_pharmacy",
+    })
+
+    await sendWeightLossZellePaymentEmail({
+      to: data.patientInfo.email,
+      patientName: `${data.patientInfo.firstName} ${data.patientInfo.lastName}`.trim(),
+      submissionId,
     })
 
     return NextResponse.json(
       {
         success: true,
-        message: `Intake protocol securely transmitted. A licensed clinician is reviewing your medical history.`,
+        message: `Your intake is saved. Pay by Zelle or Venmo, and a licensed clinician reviews it after the payment arrives.`,
         submissionId,
         estimatedReviewTime: PRIMARY_PHYSICIAN.reviewSla,
       },

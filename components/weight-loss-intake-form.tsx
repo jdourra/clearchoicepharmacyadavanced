@@ -928,8 +928,8 @@ export function WeightLossIntakeForm({
                 WEIGHT_LOSS_PARTNER_FULFILLMENT,
               ]
             : [
-                `Pay $${holdQuote?.totalBilled ?? ""} by Zelle to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}. Put your name in the memo.`,
-                "Your intake is sent after the payment arrives. If the name on the Zelle screen is different, call (248) 987-6182 and do not send the payment.",
+                `Pay $${holdQuote?.totalBilled ?? ""} by Zelle or Venmo to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}. Put your name in the memo.`,
+                "Your intake is sent after the payment arrives. If the name on the Zelle or Venmo screen is different, call (248) 987-6182 and do not send the payment.",
                 "A receipt comes from info@clearchoicepharmacy.com. If treatment is not approved, you are refunded.",
                 WEIGHT_LOSS_DOCTOR_REVIEW,
                 WEIGHT_LOSS_PARTNER_FULFILLMENT,
@@ -939,7 +939,7 @@ export function WeightLossIntakeForm({
         <p className="text-sm text-muted-foreground">
           {requireCardPayment
             ? "Thank you for completing your weight loss intake. A licensed doctor reviews it, and RxAve routes the prescription to a licensed compounding pharmacy, which ships the medication if treatment is approved."
-            : `Thank you for completing your weight loss intake. Pay $${holdQuote?.totalBilled ?? ""} by Zelle to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy.`}
+            : `Thank you for completing your weight loss intake. Pay $${holdQuote?.totalBilled ?? ""} by Zelle or Venmo to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy.`}
         </p>
       </IntakeSuccessPanel>
     )
@@ -1154,12 +1154,12 @@ export function WeightLossIntakeForm({
                   priceLine={
                     requireCardPayment
                       ? `Kit: $${holdQuote.totalBilled} · card hold, charged only if approved`
-                      : `Kit: $${holdQuote.totalBilled} · pay by Zelle after you submit`
+                      : `Kit: $${holdQuote.totalBilled} · pay by Zelle or Venmo after you submit`
                   }
                   paymentNote={
                     requireCardPayment
                       ? "Prescription required after clinician review. Payment is authorized as a hold and captured only if approved."
-                      : `Prescription required after clinician review. Pay $${holdQuote.totalBilled} by Zelle at ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}.`
+                      : `Prescription required after clinician review. Pay $${holdQuote.totalBilled} by Zelle or Venmo at ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}.`
                   }
                   changeHref="/weight-loss#programs"
                 />
@@ -1369,7 +1369,7 @@ export function WeightLossIntakeForm({
             <CardDescription>
               {requireCardPayment
                 ? "Verify your photo ID and pay on this website. A licensed doctor reviews your intake, usually within 24 hours."
-                : "Verify your photo ID, then pay by Zelle after you submit. A licensed doctor reviews your intake after payment arrives, usually within 24 hours."}
+                : "Verify your photo ID, then pay by Zelle or Venmo after you submit. A licensed doctor reviews your intake after payment arrives, usually within 24 hours."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -1385,7 +1385,7 @@ export function WeightLossIntakeForm({
                   <p className="text-sm text-muted-foreground">
                     {requireCardPayment
                       ? "You pay this amount on this website. If a doctor does not approve treatment, you are refunded."
-                      : `Pay this amount by Zelle to ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}. If a doctor does not approve treatment, you are refunded.`}
+                      : `Pay this amount by Zelle or Venmo to ${ZELLE_PAYMENT_EMAIL} after you submit. The payment shows as ${LEGAL_BUSINESS_NAME}. If a doctor does not approve treatment, you are refunded.`}
                     {holdQuote.liveVisitAddon > 0
                       ? ` A $${holdQuote.liveVisitAddon} live-visit add-on may be added on monthly billing if your clinician requires a live visit.`
                       : " The live-visit add-on is waived on a 90-day supply."}
@@ -1515,7 +1515,7 @@ export function WeightLossIntakeForm({
                     </>
                   ) : (
                     <>
-                      I will pay <strong>${holdQuote?.totalBilled ?? 0}</strong> by Zelle to {ZELLE_PAYMENT_EMAIL} after
+                      I will pay <strong>${holdQuote?.totalBilled ?? 0}</strong> by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL} after
                       I submit, for my {selectedTierMeta?.label ?? "selected"} kit(s). The payment will show as{" "}
                       {LEGAL_BUSINESS_NAME}, the legal name of Clear Choice Pharmacy. If treatment is not approved, I
                       will be refunded. *

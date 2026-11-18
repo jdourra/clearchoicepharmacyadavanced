@@ -11,23 +11,23 @@ export function weightLossZellePaymentEmail(params: {
   const name = params.patientName.trim() || "there"
   const amountLine =
     typeof params.amount === "number" && params.amount > 0
-      ? `Pay $${params.amount} by Zelle.`
-      : "Pay the amount confirmed on your intake by Zelle."
+      ? `Pay $${params.amount} by Zelle or Venmo.`
+      : "Pay the amount confirmed on your intake by Zelle or Venmo."
 
   return {
-    subject: "Pay by Zelle to finish your weight-loss intake | Clear Choice Pharmacy",
+    subject: "Pay by Zelle or Venmo to finish your intake | Clear Choice Pharmacy",
     text: `Hi ${name},
 
-Your weight-loss intake is saved. Reference: ${params.submissionId}.
+Your intake is saved. Reference: ${params.submissionId}.
 
 ${amountLine}
-Send it to: ${ZELLE_PAYMENT_EMAIL}
+Send it by Zelle or Venmo to: ${ZELLE_PAYMENT_EMAIL}
 The payment shows as: ${LEGAL_BUSINESS_NAME}
 Memo: ${params.patientName.trim() || "your name"}
 
 Your intake is sent for review after the payment arrives. If treatment is not approved, the pharmacy refunds you.
 
-If the name on the Zelle screen is different, call ${PHARMACY_PHONE_DISPLAY} and do not send the payment.
+If the name on the Zelle or Venmo screen is different, call ${PHARMACY_PHONE_DISPLAY} and do not send the payment.
 
 Questions? Call ${PHARMACY_PHONE_DISPLAY} or reply to this email.
 

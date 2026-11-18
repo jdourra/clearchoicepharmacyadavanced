@@ -71,9 +71,10 @@ export async function linkIntakePatientAndPayment(params: {
   intakeId: string
   identity: IntakePatientIdentity
   stripePaymentIntentId?: string | null
+  paymentStatus?: IntakePaymentStatus
 }): Promise<{ patientId: string }> {
   const { patientId } = await ensurePatientFromIntake(params.identity)
-  const paymentStatus = paymentStatusFromHold(params.stripePaymentIntentId)
+  const paymentStatus = params.paymentStatus ?? paymentStatusFromHold(params.stripePaymentIntentId)
   await sql(
     `UPDATE ${params.table}
      SET patient_id = COALESCE(patient_id, $1),

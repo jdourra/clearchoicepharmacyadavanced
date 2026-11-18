@@ -124,7 +124,7 @@ export function requireIntakeIdentitySubmission(
     return "Photo ID uploads are required before submission."
   }
   if (!consents?.acknowledgePayAtPharmacy) {
-    return "Please acknowledge that payment is collected at the pharmacy after clinician approval."
+    return "Please confirm you will pay by Zelle or Venmo after you submit."
   }
   return null
 }
@@ -140,7 +140,7 @@ ID Back Stored:         ${payment?.idBackKey ? "✓ Yes" : "✗ No"}
 Stripe Payment Intent:  ${payment?.stripePaymentIntentId || "—"}
 Payment Authorized:     ${
     payAtPharmacy
-      ? "Pay at pharmacy after approval (no online hold)"
+      ? "Pay by Zelle or Venmo after submit (no card charge)"
       : payment?.paymentOnFile
         ? "✓ Hold placed"
         : "✗ Not Authorized"
@@ -148,7 +148,7 @@ Payment Authorized:     ${
 Payment Consent:        ${
     payAtPharmacy
       ? consents?.acknowledgePayAtPharmacy
-        ? "✓ Pay at pharmacy acknowledged"
+        ? "✓ Zelle or Venmo acknowledged"
         : "✗ Not acknowledged"
       : consents?.authorizeHold
         ? "✓ Authorized"

@@ -291,14 +291,19 @@ export function AdminIntakeDetailView({
   const hasBackId = Boolean(detail.id_back_key)
   const hasStripeHold = Boolean(detail.stripe_payment_intent_id)
   const paymentStatus = String(detail.payment_status ?? (hasStripeHold ? "authorized" : "none"))
+  const transferService = ["weight_loss", "mens_health", "trt", "prescription_telemedicine"].includes(
+    String(serviceType)
+  )
+  const alreadyPaid = ["captured", "paid_in_person", "paid_zelle", "paid"].includes(paymentStatus)
   const payAtPharmacy =
-    isWeightLoss &&
+    transferService &&
     (!hasStripeHold || paymentStatus === "awaiting_pharmacy" || paymentStatus === "failed")
   const clinicianDecision = isWeightLoss ? olaDecisionNotice(String(detail.ola_decision ?? "")) : null
   const alreadySentToClinician = isWeightLoss && Boolean(String(detail.partner_case_id ?? "").trim())
   const canConfirmZelle =
-    isWeightLoss &&
+    transferService &&
     !hasStripeHold &&
+    !alreadyPaid &&
     !alreadySentToClinician &&
     !zelleReceipt &&
     !["provider_denied", "cancelled"].includes(String(detail.status ?? ""))
@@ -316,7 +321,10 @@ export function AdminIntakeDetailView({
     setError("")
     setReviewMessage("")
     try {
-      const res = await staffAuthFetch(`/api/admin/intakes/weight_loss/${id}/zelle-received`, {
+      const confirmPath = isWeightLoss
+        ? `/api/admin/intakes/weight_loss/${id}/zelle-received`
+        : `/api/admin/intakes/${serviceType}/${id}/transfer-received`
+      const res = await staffAuthFetch(confirmPath, {
         method: "POST",
       })
       const result = await res.json()
@@ -774,8 +782,8 @@ export function AdminIntakeDetailView({
                     )}
                     {payAtPharmacy && !alreadySentToClinician && (
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Waiting for Zelle at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}.
-                        Send the intake only after that deposit is in the bank.
+                        Waiting for Zelle or Venmo at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}.
+                        Send the intake only after that deposit arrives.
                       </p>
                     )}
                     {clinicianDecision ? (
@@ -808,10 +816,10 @@ export function AdminIntakeDetailView({
                       <div className="mt-3 space-y-2">
                         <Button type="button" disabled={confirmingZelle} onClick={confirmZelleAndSend}>
                           {confirmingZelle ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                          Zelle payment received
+                          Zelle or Venmo payment received
                         </Button>
                         <p className="text-xs text-muted-foreground">
-                          Confirms the Zelle deposit and sends this intake for review. This does not charge a card.
+                          Confirms the Zelle or Venmo deposit and sends this intake for review. This does not charge a card.
                         </p>
                       </div>
                     ) : null}
@@ -945,7 +953,7 @@ export function AdminIntakeDetailView({
                     <div className="rounded-lg border p-3 space-y-2">
                       {payAtPharmacy ? (
                         <p className="text-xs text-muted-foreground">
-                          No card payment on this intake. Use Zelle payment received above after the deposit arrives. That sends the intake for review.
+                          No card payment on this intake. Use Zelle or Venmo payment received above after the deposit arrives. That sends the intake for review.
                         </p>
                       ) : canChargeLiveVisit ? (
                         <div className="flex items-start gap-2">
@@ -1291,7 +1299,7 @@ export function AdminIntakeDetailView({
                   )}
                   {payAtPharmacy && (
                     <p className="text-xs text-muted-foreground">
-                      This intake has no card payment. Use Zelle payment received after the deposit arrives. That sends the intake for review.
+                      This intake has no card payment. Use Zelle or Venmo payment received after the deposit arrives. That sends the intake for review.
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

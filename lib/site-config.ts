@@ -29,6 +29,10 @@ export const LEGAL_BUSINESS_NAME = "Optimeds Pharmacy LLC"
 export const PHARMACY_DBA = "Clear Choice Pharmacy"
 /** Zelle identifier enrolled on the pharmacy business account. The transfer shows LEGAL_BUSINESS_NAME. */
 export const ZELLE_PAYMENT_EMAIL = "payment@optimedsrx.com"
+/** Venmo uses the same business email until card payments are turned on. */
+export const CASH_PAY_TRANSFER_EMAIL = ZELLE_PAYMENT_EMAIL
+export const CASH_PAY_INSTRUCTION =
+  `After you submit, pay by Zelle or Venmo at ${CASH_PAY_TRANSFER_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}. Put your name in the memo. The intake is sent for review after the payment arrives. If treatment is not approved, the pharmacy refunds you. If the name on the Zelle or Venmo screen is different, call (248) 987-6182 and do not send the payment.`
 export const MICHIGAN_PHARMACY_LICENSE = "5301013716"
 export const PHARMACY_STREET = "8276 Merriman Rd"
 export const PHARMACY_CITY = "Westland"

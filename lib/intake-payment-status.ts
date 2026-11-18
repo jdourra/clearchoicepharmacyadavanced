@@ -44,7 +44,7 @@ export function formatPaymentStatus(status: string | null | undefined): string {
     case "paid_in_person":
       return "Paid at pharmacy"
     case "paid_zelle":
-      return "Paid by Zelle"
+      return "Paid by Zelle or Venmo"
     case "none":
       return "No payment"
     default:

@@ -43,10 +43,11 @@ export default function TermsPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Payment</h2>
       <p>
-        Prices are shown before you submit. For semaglutide and tirzepatide, you pay by Zelle at {ZELLE_PAYMENT_EMAIL}{" "}
-        after you submit. The payment shows as {LEGAL_BUSINESS_NAME}. Put your name in the memo. The intake is sent to{" "}
-        {TELEHEALTH_PROVIDER} after the payment arrives. If treatment is not approved, that payment is refunded. See the
-        Refund Policy for when an approved prescription can no longer be refunded.
+        Prices are shown before you submit. For weight loss, hormone therapy, ED medication, and prescriptions Clear
+        Choice Pharmacy dispenses, you pay by Zelle or Venmo at {ZELLE_PAYMENT_EMAIL} after you submit. The payment
+        shows as {LEGAL_BUSINESS_NAME}. Put your name in the memo. The intake is sent for review after the payment
+        arrives. If treatment is not approved, that payment is refunded. See the Refund Policy for when an approved
+        prescription can no longer be refunded. Card payments are not accepted on this website right now.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Contact</h2>
       <p>

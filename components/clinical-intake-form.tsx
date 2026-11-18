@@ -31,7 +31,7 @@ import {
 } from "@/lib/clinical-provider"
 import { IntakePhysicianCallNotice } from "@/components/intake-physician-call-notice"
 import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
-import { PHYSICIAN_DECIDES_DOSE } from "@/lib/site-config"
+import { LEGAL_BUSINESS_NAME, PHYSICIAN_DECIDES_DOSE, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 import {
   ED_FORMULATIONS,
   calculateEdOrderPricing,
@@ -43,7 +43,7 @@ import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payme
 import { UsStateField } from "@/components/us-state-field"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
-import { emptyIntakePaymentValues, getIntakePaymentInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
+import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import type { EdFormulationAddOn } from "@/lib/ed-add-ons"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { applyResidentialProfile, usePatientProfilePrefill } from "@/lib/patient-profile-prefill"
@@ -291,20 +291,16 @@ function getEdStepValidation(formData: FormData, currentStep: number): StepValid
           return { valid: false, message: "Please complete shipping address information.", fields }
         }
       }
-      if (!formData.idFrontKey) add("idFrontFile")
-      if (!formData.idBackKey) add("idBackFile")
-      for (const field of getIntakePaymentInvalidFields(formData)) {
-        if (field === "idFrontFile" || field === "idBackFile" || field === "stripePayment") add(field)
-      }
+      for (const field of getIntakeIdentityInvalidFields(formData)) add(field)
       if (fields.length > 0) {
-        return { valid: false, message: "Please upload your ID and authorize payment.", fields }
+        return { valid: false, message: "Please upload the front and back of your photo ID.", fields }
       }
       if (!formData.agreeToTerms) add("agreeToTerms")
       if (!formData.agreeToTelehealth) add("agreeToTelehealth")
       if (!formData.agreeToPrivacy) add("agreeToPrivacy")
       if (!formData.authorizeHold) add("authorizeHold")
       if (fields.length > 0) {
-        return { valid: false, message: "Please agree to all terms and authorize the payment hold.", fields }
+        return { valid: false, message: "Please agree to all terms and confirm you will pay by Zelle or Venmo.", fields }
       }
       return { valid: true, message: "", fields: [] }
     }
@@ -507,15 +503,16 @@ export function ClinicalIntakeForm({
             idBackKey: formData.idBackKey,
             idFrontUploading: formData.idFrontUploading,
             idBackUploading: formData.idBackUploading,
-            stripePaymentIntentId: formData.stripePaymentIntentId,
-            paymentAuthorized: formData.paymentAuthorized,
+            stripePaymentIntentId: null,
+            paymentAuthorized: false,
           }),
         },
         consents: {
           agreeToTerms: formData.agreeToTerms,
           agreeToTelehealth: formData.agreeToTelehealth,
           agreeToPrivacy: formData.agreeToPrivacy,
-          authorizeHold: formData.authorizeHold,
+          authorizeHold: false,
+          acknowledgePayAtPharmacy: formData.authorizeHold,
         },
         // NOTE: ID images would be uploaded to secure storage with BAA
         // NOTE: Payment info would be tokenized via Stripe/similar before transmission
@@ -1615,6 +1612,7 @@ export function ClinicalIntakeForm({
           }}
           onChange={updateFormData}
           totalBilled={totalBilled}
+          showPayment={false}
         />
         
         {/* Consents */}
@@ -1662,7 +1660,7 @@ export function ClinicalIntakeForm({
                 onCheckedChange={(checked) => updateFormData("authorizeHold", checked as boolean)}
               />
               <Label htmlFor="authorizeHold" className="font-normal text-sm cursor-pointer">
-                I authorize a payment hold of <strong>${totalBilled}</strong> to be charged only upon prescription approval *
+                I will pay <strong>${totalBilled}</strong> by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL} after I submit. The payment will show as {LEGAL_BUSINESS_NAME}. Put my name in the memo. If treatment is not approved, I will be refunded. *
               </Label>
             </div>
           </div>
@@ -1707,7 +1705,7 @@ export function ClinicalIntakeForm({
         <CardDescription>
           {step === 1 && PHYSICIAN_DECIDES_DOSE}
           {step === 2 && "Complete required fields so your provider can review safely"}
-          {step === 3 && "Verify your identity and authorize payment hold"}
+          {step === 3 && "Verify your identity, then pay by Zelle or Venmo after you submit"}
           {step === 4 && "Review your submission status"}
         </CardDescription>
       </CardHeader>

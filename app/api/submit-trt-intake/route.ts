@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { getTrtProgram } from "@/lib/trt-catalog"
-import { formatPaymentSummary, requireIntakePaymentSubmission, type IntakeConsents, type IntakePaymentMetadata } from "@/lib/intake-payment"
-import { verifyPaymentHoldReady } from "@/lib/stripe-server"
-import { submitClinicalIntakeToPartner } from "@/lib/telehealth/submit-clinical-intake"
+import { formatPaymentSummary, requireIntakeIdentitySubmission, type IntakeConsents, type IntakePaymentMetadata } from "@/lib/intake-payment"
+import { sendWeightLossZellePaymentEmail } from "@/lib/weight-loss-zelle-payment-email"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import {
   formatInjectionConsentsSummary,
@@ -149,14 +148,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please select a TRT program" }, { status: 400 })
     }
 
-    const paymentError = requireIntakePaymentSubmission(data.consents, data.identity)
+    data.identity.stripePaymentIntentId = null
+    data.identity.paymentOnFile = false
+    if (data.consents && !data.consents.acknowledgePayAtPharmacy && data.consents.authorizeHold) {
+      data.consents.acknowledgePayAtPharmacy = true
+    }
+    const paymentError = requireIntakeIdentitySubmission(data.consents, data.identity)
     if (paymentError) {
       return NextResponse.json({ error: paymentError }, { status: 400 })
-    }
-
-    const stripeCheck = await verifyPaymentHoldReady(data.identity.stripePaymentIntentId || "")
-    if (!stripeCheck.ok) {
-      return NextResponse.json({ error: stripeCheck.error || "Payment not authorized" }, { status: 400 })
     }
 
     if (!data.consents?.injection) {
@@ -177,23 +176,6 @@ export async function POST(request: NextRequest) {
     }
 
     const submissionId = `CCR-TRT-${Date.now().toString(36).toUpperCase()}`
-    const clinicalSummary = formatClinicalSummary(data, submissionId)
-
-    const partnerResult = await submitClinicalIntakeToPartner({
-      serviceType: "trt",
-      submissionId,
-      patient: {
-        firstName: data.patientInfo.firstName,
-        lastName: data.patientInfo.lastName,
-        email: data.patientInfo.email,
-        phone: data.patientInfo.phone,
-      },
-      clinicalSummary,
-    })
-
-    if (!partnerResult.success) {
-      return NextResponse.json({ error: partnerResult.error || "Failed to queue intake" }, { status: 502 })
-    }
 
     try {
       await sql(
@@ -257,11 +239,11 @@ export async function POST(request: NextRequest) {
           data.identity.shippingState,
           data.identity.shippingZip,
           STANDARD_INTAKE_STATUS.pending,
-          data.identity.stripePaymentIntentId,
+          null,
           data.identity.idFrontKey,
           data.identity.idBackKey,
-          partnerResult.partnerName,
-          partnerResult.partnerStatus || "queued_for_manual_review",
+          "Clinician network",
+          "waiting_for_payment",
         ]
       )
     } catch (dbError) {
@@ -283,7 +265,14 @@ export async function POST(request: NextRequest) {
         state: data.patientInfo.state,
         zip: data.patientInfo.zipCode,
       },
-      stripePaymentIntentId: data.identity.stripePaymentIntentId,
+      stripePaymentIntentId: null,
+      paymentStatus: "awaiting_pharmacy",
+    })
+
+    await sendWeightLossZellePaymentEmail({
+      to: data.patientInfo.email,
+      patientName: `${data.patientInfo.firstName} ${data.patientInfo.lastName}`.trim(),
+      submissionId,
     })
 
     return NextResponse.json({ success: true, submissionId })

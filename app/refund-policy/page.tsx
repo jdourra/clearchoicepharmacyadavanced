@@ -24,7 +24,7 @@ export default function RefundPolicyPage() {
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Semaglutide and tirzepatide</h2>
       <p>
-        After you submit, pay by Zelle at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
+        After you submit, pay by Zelle or Venmo at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
         name in the memo. The intake is sent to {TELEHEALTH_PROVIDER} after the payment arrives. If treatment is not
         approved, the medication payment is refunded. If treatment is approved, {FULFILLMENT_PHARMACY} routes the
         prescription to a licensed compounding pharmacy, which dispenses and ships the medication. Clear Choice Pharmacy
@@ -35,9 +35,10 @@ export default function RefundPolicyPage() {
       <h2 className="text-xl font-semibold text-foreground pt-4">Medications Clear Choice Pharmacy dispenses</h2>
       <p>
         Non-compounded prescriptions filled at our Westland pharmacy are for Michigan patients. ED medication and hormone
-        therapy approved through this website are routed by {FULFILLMENT_PHARMACY} to a licensed compounding pharmacy
-        after {TELEHEALTH_PROVIDER} reviews the intake. The intake page states when that payment is collected. If
-        treatment is not approved, you are not charged for medication that was not dispensed. Once that pharmacy has
+        therapy use the same Zelle or Venmo payment as weight loss. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
+        name in the memo. {TELEHEALTH_PROVIDER} reviews the intake after the payment arrives. If treatment is approved,{" "}
+        {FULFILLMENT_PHARMACY} routes the prescription to a licensed compounding pharmacy. If treatment is not approved,
+        the payment is refunded. Once that pharmacy has
         started preparing an approved prescription, that order is not refundable. A dispensed compounded prescription cannot be returned.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Shipping problems</h2>
