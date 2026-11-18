@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { calculatePrice } from "@/lib/supplier-api"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledMedication } from "@/lib/controlled-substances"
 
 const UNIT_BASED_FORMS = [
   "INHALER",
@@ -46,6 +47,10 @@ export async function POST(request: Request) {
 
     if (!medication) {
       return NextResponse.json({ error: "Medication not found" }, { status: 404 })
+    }
+
+    if (isControlledMedication(medication)) {
+      return NextResponse.json({ error: CONTROLLED_SUBSTANCE_MESSAGE }, { status: 403 })
     }
 
     const form = String(medication.dosage_form || medication.form || "").toUpperCase()

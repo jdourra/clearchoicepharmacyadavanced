@@ -37,6 +37,7 @@ import {
   type QuoteLine,
 } from "@/lib/medication-quote"
 import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledMedication } from "@/lib/controlled-substances"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -51,6 +52,7 @@ type MedicationRecord = {
   package_quantity?: number | null
   days_supply?: number | null
   ndc?: string | null
+  controlledSubstance?: boolean
 }
 
 function newLineId() {
@@ -110,7 +112,7 @@ export function MedicationQuoteBuilder() {
   }, [pendingMed, medication?.id])
 
   useEffect(() => {
-    if (!selectedMed?.id || quantity < 1) {
+    if (!selectedMed?.id || quantity < 1 || isControlledMedication(selectedMed)) {
       setPriceData(null)
       return
     }
@@ -140,6 +142,10 @@ export function MedicationQuoteBuilder() {
 
   const handleSelectMedication = useCallback(
     (med: MedicationSearchResult) => {
+      if (isControlledMedication(med)) {
+        toast.error(CONTROLLED_SUBSTANCE_MESSAGE)
+        return
+      }
       const trocheUrl = resolveEdTrocheProductUrl(med.name)
       if (trocheUrl) {
         router.push(trocheUrl)
@@ -166,6 +172,10 @@ export function MedicationQuoteBuilder() {
   }
 
   const addLine = async () => {
+    if (selectedMed && isControlledMedication(selectedMed)) {
+      toast.error(CONTROLLED_SUBSTANCE_MESSAGE)
+      return
+    }
     if (!selectedMed || !priceData?.price) {
       toast.error("Select strength and quantity to add this medication.")
       return
@@ -276,6 +286,10 @@ export function MedicationQuoteBuilder() {
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading medication details...
                 </div>
+              ) : medication.controlledSubstance || isControlledMedication(medication) ? (
+                <p className="rounded-md border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-950">
+                  {CONTROLLED_SUBSTANCE_MESSAGE}
+                </p>
               ) : (
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">

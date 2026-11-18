@@ -1,5 +1,10 @@
 import { neon } from "@neondatabase/serverless"
 import { NextRequest, NextResponse } from "next/server"
+import {
+  CONTROLLED_SUBSTANCE_MESSAGE,
+  isControlledMedication,
+  isControlledSubstanceQuery,
+} from "@/lib/controlled-substances"
 
 export const dynamic = "force-dynamic"
 
@@ -20,6 +25,15 @@ export async function GET(request: NextRequest) {
 
     let medications: any[]
     let total: number
+
+    if (query && isControlledSubstanceQuery(query)) {
+      return NextResponse.json({
+        medications: [],
+        controlledSubstance: true,
+        message: CONTROLLED_SUBSTANCE_MESSAGE,
+        pagination: { page, limit, total: 0, totalPages: 0 },
+      })
+    }
 
     if (query) {
       const normalized = query.toLowerCase()
@@ -73,9 +87,19 @@ export async function GET(request: NextRequest) {
       total = countResult[0]?.total || 0
     }
 
+    const allowed = medications.filter((med) => !isControlledMedication(med))
+    const onlyControlled = Boolean(query) && medications.length > 0 && allowed.length === 0
+
     return NextResponse.json({
-      medications,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      medications: allowed,
+      controlledSubstance: onlyControlled,
+      ...(onlyControlled ? { message: CONTROLLED_SUBSTANCE_MESSAGE } : {}),
+      pagination: {
+        page,
+        limit,
+        total: onlyControlled ? 0 : total,
+        totalPages: onlyControlled ? 0 : Math.ceil(total / limit),
+      },
     })
   } catch (error: any) {
     console.error("[drugs] Error:", error.message)

@@ -1,3 +1,5 @@
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledSubstanceQuery } from "@/lib/controlled-substances"
+
 export interface PharmacyMedication {
   id: string
   name: string
@@ -100,16 +102,35 @@ export function dedupeMedicationNames(medications: PharmacyMedication[]): Medica
 }
 
 export async function fetchMedicationSuggestions(query: string): Promise<MedicationSearchResult[]> {
+  const lookup = await lookupMedicationSuggestions(query)
+  return lookup.suggestions
+}
+
+export async function lookupMedicationSuggestions(query: string): Promise<{
+  suggestions: MedicationSearchResult[]
+  controlledSubstance: boolean
+  message: string
+}> {
   const trimmed = query.trim()
-  if (trimmed.length < MIN_SEARCH_LENGTH) return []
+  if (trimmed.length < MIN_SEARCH_LENGTH) {
+    return { suggestions: [], controlledSubstance: false, message: "" }
+  }
+
+  if (isControlledSubstanceQuery(trimmed)) {
+    return { suggestions: [], controlledSubstance: true, message: CONTROLLED_SUBSTANCE_MESSAGE }
+  }
 
   const response = await fetch(
     `/api/drugs?q=${encodeURIComponent(trimmed)}&limit=40&prefix=1`
   )
-  if (!response.ok) return []
+  if (!response.ok) return { suggestions: [], controlledSubstance: false, message: "" }
 
   const data = await response.json()
-  return dedupeMedicationNames(data.medications || []).slice(0, 10)
+  return {
+    suggestions: dedupeMedicationNames(data.medications || []).slice(0, 10),
+    controlledSubstance: Boolean(data.controlledSubstance),
+    message: typeof data.message === "string" ? data.message : CONTROLLED_SUBSTANCE_MESSAGE,
+  }
 }
 
 export async function findTopMedicationMatch(query: string): Promise<MedicationSearchResult | null> {

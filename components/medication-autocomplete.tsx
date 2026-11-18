@@ -10,11 +10,12 @@ import { Card } from "@/components/ui/card"
 import { Search, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
-  fetchMedicationSuggestions,
   findTopMedicationMatch,
+  lookupMedicationSuggestions,
   MIN_SEARCH_LENGTH,
   type MedicationSearchResult,
 } from "@/lib/pharmacy-medication"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledSubstanceQuery } from "@/lib/controlled-substances"
 import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
 
 export function MedicationAutocomplete({
@@ -32,6 +33,7 @@ export function MedicationAutocomplete({
 }) {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<MedicationSearchResult[]>([])
+  const [controlledNotice, setControlledNotice] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const router = useRouter()
@@ -51,6 +53,7 @@ export function MedicationAutocomplete({
     const loadSuggestions = async () => {
       if (query.trim().length < MIN_SEARCH_LENGTH) {
         setSuggestions([])
+        setControlledNotice("")
         setShowSuggestions(false)
         return
       }
@@ -59,10 +62,12 @@ export function MedicationAutocomplete({
       setShowSuggestions(true)
 
       try {
-        const results = await fetchMedicationSuggestions(query)
-        setSuggestions(results)
+        const lookup = await lookupMedicationSuggestions(query)
+        setSuggestions(lookup.suggestions)
+        setControlledNotice(lookup.controlledSubstance ? lookup.message || CONTROLLED_SUBSTANCE_MESSAGE : "")
       } catch {
         setSuggestions([])
+        setControlledNotice("")
       } finally {
         setIsLoading(false)
       }
@@ -73,6 +78,12 @@ export function MedicationAutocomplete({
   }, [query])
 
   const handleMedicationPick = (med: MedicationSearchResult) => {
+    if (isControlledSubstanceQuery(med.name)) {
+      setSuggestions([])
+      setControlledNotice(CONTROLLED_SUBSTANCE_MESSAGE)
+      setShowSuggestions(true)
+      return
+    }
     setQuery("")
     setSuggestions([])
     setShowSuggestions(false)
@@ -93,6 +104,10 @@ export function MedicationAutocomplete({
 
     const trimmed = query.trim()
     if (trimmed.length < MIN_SEARCH_LENGTH) return
+    if (isControlledSubstanceQuery(trimmed) || controlledNotice) {
+      setShowSuggestions(true)
+      return
+    }
 
     setShowSuggestions(false)
 
@@ -145,7 +160,7 @@ export function MedicationAutocomplete({
         </Button>
       </form>
 
-      {showSuggestions && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length > 0 && (
+      {showSuggestions && !controlledNotice && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length > 0 && (
         <Card className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-xl border-2">
           <div className="divide-y">
             {suggestions.map((med, index) => (
@@ -175,7 +190,13 @@ export function MedicationAutocomplete({
         </Card>
       )}
 
-      {showSuggestions && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length === 0 && !isLoading && (
+      {showSuggestions && controlledNotice && (
+        <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg border-amber-300 bg-amber-50">
+          <p className="text-sm font-medium text-amber-950">{controlledNotice}</p>
+        </Card>
+      )}
+
+      {showSuggestions && !controlledNotice && query.trim().length >= MIN_SEARCH_LENGTH && suggestions.length === 0 && !isLoading && (
         <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg">
           <p className="text-sm text-muted-foreground">No medications found starting with "{query}"</p>
           <p className="text-xs text-muted-foreground mt-1">Press Search to browse the catalog</p>

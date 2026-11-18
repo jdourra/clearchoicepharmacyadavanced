@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless"
 import { NextRequest, NextResponse } from "next/server"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledMedication } from "@/lib/controlled-substances"
 
 const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {
@@ -25,6 +26,15 @@ export async function GET(
 
     if (result.length === 0) {
       return NextResponse.json({ error: "Medication not found" }, { status: 404 })
+    }
+
+    if (isControlledMedication(result[0])) {
+      return NextResponse.json({
+        id: result[0].id,
+        name: result[0].name,
+        controlledSubstance: true,
+        message: CONTROLLED_SUBSTANCE_MESSAGE,
+      })
     }
 
     return NextResponse.json(result[0])

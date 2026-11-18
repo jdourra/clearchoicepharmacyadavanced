@@ -4,6 +4,7 @@ import { createTelemedicineIntakeForOrder } from "@/lib/order-prescription-admin
 import { resolveTelemedicineIntakeRouteFromOrderItems } from "@/lib/prescription-telemedicine"
 import { getUserIdFromRequest } from "@/lib/server-session"
 import { requireMichiganState } from "@/lib/michigan-eligibility"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledSubstanceQuery } from "@/lib/controlled-substances"
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +30,9 @@ export async function POST(request: Request) {
       quantity: item.quantity || 1,
       price: item.unit_price || item.price || 0,
     }))
+    if (orderItems.some((item: { drug_name: string }) => isControlledSubstanceQuery(item.drug_name))) {
+      return NextResponse.json({ error: CONTROLLED_SUBSTANCE_MESSAGE }, { status: 403 })
+    }
     const method = prescription_method ? String(prescription_method) : null
     const order = await orders.createOrder(
       userId,

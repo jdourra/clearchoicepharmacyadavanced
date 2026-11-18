@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast"
 import { authFetch } from "@/lib/session"
 import { buildCartItem } from "@/lib/cart"
 import { resolveEdTrocheProductUrl } from "@/lib/prescription-telemedicine"
+import { CONTROLLED_SUBSTANCE_MESSAGE, isControlledMedication } from "@/lib/controlled-substances"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -109,7 +110,7 @@ export default function MedicationDetailPage() {
   }, [medication?.id])
 
   useEffect(() => {
-    if (!medication?.id || !selectedStrength || quantity < 1) {
+    if (!medication?.id || !selectedStrength || quantity < 1 || medication.controlledSubstance || isControlledMedication(medication)) {
       setPriceData(null)
       return
     }
@@ -133,6 +134,25 @@ export default function MedicationDetailPage() {
           <div className="container max-w-7xl mx-auto px-4 text-center py-16">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
             <p className="text-muted-foreground">Loading medication details...</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (medication && (medication.controlledSubstance || isControlledMedication(medication))) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <SiteHeader />
+        <main className="flex-1 py-8">
+          <div className="container max-w-3xl mx-auto px-4 py-16">
+            <Card className="border-amber-300 bg-amber-50 p-6">
+              <h1 className="text-2xl font-bold mb-3">{medication.name}</h1>
+              <p className="text-amber-950">{medication.message || CONTROLLED_SUBSTANCE_MESSAGE}</p>
+            </Card>
+            <Button asChild className="mt-6" variant="outline">
+              <Link href="/medications">Back to medication search</Link>
+            </Button>
           </div>
         </main>
       </div>
