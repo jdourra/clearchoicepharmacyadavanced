@@ -10,6 +10,7 @@ import {
   type InjectionTelehealthConsentValues,
 } from "@/lib/injection-telehealth-consents"
 import { requireUsState } from "@/lib/us-states"
+import { confirmSyncVisit, parseSyncVisit, type SyncVisitSelection } from "@/lib/sync-visit"
 import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 type TrtIntakePayload = {
@@ -24,6 +25,7 @@ type TrtIntakePayload = {
     city: string
     zipCode: string
   }
+  visit?: SyncVisitSelection | null
   vitals: {
     systolicBP: string
     diastolicBP: string
@@ -144,6 +146,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: stateError }, { status: 400 })
     }
 
+    const visit = parseSyncVisit(data.visit)
+    const visitCheck = await confirmSyncVisit(data.patientInfo.state, visit)
+    if (!visitCheck.ok) {
+      return NextResponse.json({ error: visitCheck.error }, { status: visitCheck.status })
+    }
+
     if (!data.treatmentInfo?.selectedProgram) {
       return NextResponse.json({ error: "Please select a TRT program" }, { status: 400 })
     }
@@ -246,6 +254,13 @@ export async function POST(request: NextRequest) {
           "waiting_for_payment",
         ]
       )
+      if (visit) {
+        await sql(`ALTER TABLE trt_intake ADD COLUMN IF NOT EXISTS visit_schedule JSONB`, [])
+        await sql(`UPDATE trt_intake SET visit_schedule = $2::jsonb WHERE id = $1`, [
+          submissionId,
+          JSON.stringify(visit),
+        ])
+      }
     } catch (dbError) {
       console.error("[trt-intake] Database error:", dbError)
       return NextResponse.json({ error: "Failed to save your submission. Please try again." }, { status: 500 })

@@ -24,6 +24,7 @@ import {
   WEIGHT_LOSS_PROGRAMS,
   weightLossHowYouPay,
 } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 import { buildWeightLossProductUrl } from "@/lib/intake-prefill"
 import {
   SITE_URL,
@@ -341,7 +342,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Local care"
           title="Where intakes are available"
-          description="Weight-loss intake is open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit."
+          description={`Weight-loss intake is open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. ${LIVE_VIDEO_VISIT_NOTE}`}
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           ED medication and hormone therapy use the same state-licensed review and dispensing. Prescriptions that Clear

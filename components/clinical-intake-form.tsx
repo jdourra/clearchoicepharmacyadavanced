@@ -41,6 +41,8 @@ import {
 import { checkBloodPressureHardStop, checkEdContraindicationHardStop } from "@/lib/ed-clinical-intake"
 import { IntakeIdentityPaymentSection } from "@/components/intake-identity-payment"
 import { UsStateField } from "@/components/us-state-field"
+import { selectedSyncVisit, SyncVisitField, syncVisitSelectionError, useSyncVisitSlots } from "@/components/sync-visit-field"
+import { requiresSyncVisit } from "@/lib/us-states"
 import { IntakeOrderSummary } from "@/components/intake-order-summary"
 import { IntakeValidationAlert } from "@/components/intake-validation-alert"
 import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
@@ -68,6 +70,7 @@ type FormData = {
   phone: string
   dateOfBirth: string
   state: string
+  visitSlotKey: string
   address: string
   city: string
   zipCode: string
@@ -137,6 +140,7 @@ const initialFormData: FormData = {
   phone: "",
   dateOfBirth: "",
   state: "",
+  visitSlotKey: "",
   address: "",
   city: "",
   zipCode: "",
@@ -337,6 +341,7 @@ export function ClinicalIntakeForm({
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set())
   const [hardStop, setHardStop] = useState<{ active: boolean; reason: string }>({ active: false, reason: "" })
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
+  const visitTimes = useSyncVisitSlots(formData.state)
   const [statusLogs, setStatusLogs] = useState<string[]>([])
   const { profile } = usePatientProfilePrefill()
   
@@ -409,6 +414,21 @@ export function ClinicalIntakeForm({
     if (currentStep === 2 && !validateBloodPressure()) {
       return false
     }
+    if (currentStep === 2) {
+      const visitError = syncVisitSelectionError(
+        visitTimes.required,
+        visitTimes.status,
+        visitTimes.message,
+        formData.visitSlotKey
+      )
+      if (visitError) {
+        setError(visitError)
+        setValidationFields(["visitSlot"])
+        setFieldErrors(new Set(["visitSlot"]))
+        scrollToFirstField(["visitSlot"])
+        return false
+      }
+    }
     setError("")
     setValidationFields([])
     setFieldErrors(new Set())
@@ -470,6 +490,7 @@ export function ClinicalIntakeForm({
           city: formData.city,
           zipCode: formData.zipCode,
         },
+        visit: selectedSyncVisit(formData.visitSlotKey),
         vitals: {
           bloodPressure: `${formData.systolicBP}/${formData.diastolicBP}`,
           heartRate: formData.heartRate,
@@ -949,10 +970,24 @@ export function ClinicalIntakeForm({
               id="state"
               value={formData.state}
               invalid={isInvalid("state")}
-              onChange={(value) => updateFormData("state", value)}
+              onChange={(value) => {
+                updateFormData("state", value)
+                updateFormData("visitSlotKey", "")
+              }}
             />
           </div>
         </div>
+
+        <SyncVisitField
+          id="ed-visit"
+          required={visitTimes.required}
+          slots={visitTimes.slots}
+          status={visitTimes.status}
+          message={visitTimes.message}
+          value={formData.visitSlotKey}
+          invalid={fieldErrors.has("visitSlot")}
+          onChange={(value) => updateFormData("visitSlotKey", value)}
+        />
         
         <div className="space-y-2">
           <Label htmlFor="address">Street Address</Label>
@@ -1638,7 +1673,9 @@ export function ClinicalIntakeForm({
                 onCheckedChange={(checked) => updateFormData("agreeToTelehealth", checked as boolean)}
               />
               <Label htmlFor="agreeToTelehealth" className="font-normal text-sm cursor-pointer">
-                I consent to asynchronous telemedicine services and understand a physician will review my information remotely *
+                {requiresSyncVisit(formData.state)
+                  ? "I consent to a live video visit and understand a physician will review my information during that visit *"
+                  : "I consent to asynchronous telemedicine services and understand a physician will review my information remotely *"}
               </Label>
             </div>
             

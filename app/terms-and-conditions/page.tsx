@@ -6,6 +6,7 @@ import {
   TELEHEALTH_PROVIDER,
   ZELLE_PAYMENT_EMAIL,
 } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export const metadata: Metadata = {
   title: "Terms and Conditions | Clear Choice Pharmacy",
@@ -32,8 +33,7 @@ export default function TermsPage() {
         Columbia except Alaska, Mississippi, and New Jersey. Ola
         Health reviews those intakes through a clinician licensed in the patient&apos;s state. If treatment is approved,
         RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
-        prescribed only when clinically appropriate. Arkansas, the District of Columbia, Kansas, New Mexico,
-        Rhode Island, West Virginia, and Virginia require a live video visit for weight loss. We do not replace your
+        prescribed only when clinically appropriate. {LIVE_VIDEO_VISIT_NOTE} We do not replace your
         primary care physician.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Eligibility</h2>

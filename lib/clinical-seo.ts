@@ -1,5 +1,6 @@
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
 import { SITE_URL } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export { SITE_URL }
 
@@ -193,7 +194,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you serve patients outside Michigan?",
     answer:
-      "Yes for weight loss, hormone therapy, and ED medication, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.",
+      `Yes for weight loss, hormone therapy, and ED medication, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`,
   },
   {
     question: "Is the consultation private?",

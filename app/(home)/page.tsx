@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { SiteHeader } from "@/components/site-header"
 import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -262,7 +263,7 @@ export default function HomePage() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Yes, except in Alaska, Mississippi, and New Jersey. {weightLossHowYouPay()} A clinician licensed in
                   your state reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit.
-                  Clear Choice Pharmacy does not compound or ship these vials. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.
+                  Clear Choice Pharmacy does not compound or ship these vials. {LIVE_VIDEO_VISIT_NOTE}
                   Individual results may vary.{" "}
                   <Link href="/weight-loss" className="text-primary hover:underline">
                     Explore the medical weight loss program

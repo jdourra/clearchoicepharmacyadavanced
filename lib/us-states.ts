@@ -70,17 +70,26 @@ export const TELEHEALTH_STATES = US_STATES.filter(
   (state) => !INTAKE_UNAVAILABLE_STATE_CODES.has(state.code)
 )
 
-/** GLP-1 states that require a live video visit before the consult is created. */
+/**
+ * States that require a live video visit before a weight-loss, hormone, or ED consult.
+ * Mississippi and New Jersey stay in this set for existing records. New intakes in those
+ * states are already rejected by INTAKE_UNAVAILABLE_STATE_CODES.
+ */
 export const SYNC_VISIT_STATE_CODES = new Set([
   "AR",
   "DC",
+  "GA",
+  "ID",
   "KS",
   "MS",
   "NJ",
   "NM",
   "RI",
-  "WV",
+  "SD",
+  "VT",
   "VA",
+  "WV",
+  "WI",
 ])
 
 const BY_CODE = new Map(US_STATES.map((state) => [state.code, state]))
@@ -99,6 +108,23 @@ export function requiresSyncVisit(value: unknown): boolean {
   const state = parseUsState(value)
   return state != null && SYNC_VISIT_STATE_CODES.has(state.code)
 }
+
+function stateListLabel(state: UsState): string {
+  return state.code === "DC" ? "the District of Columbia" : state.name
+}
+
+/** Offered states where a live video visit is required. Paused states are omitted. */
+export function offeredSyncVisitStateNames(): string[] {
+  return US_STATES.filter(
+    (state) => SYNC_VISIT_STATE_CODES.has(state.code) && !INTAKE_UNAVAILABLE_STATE_CODES.has(state.code)
+  ).map(stateListLabel)
+}
+
+export const LIVE_VIDEO_VISIT_NOTE = (() => {
+  const names = offeredSyncVisitStateNames()
+  const list = names.length > 1 ? `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}` : names.join("")
+  return `${list} require a live video visit for weight loss, hormone therapy, and ED medication.`
+})()
 
 /** Any offered U.S. state or the District of Columbia. Does not allow territories or paused states. */
 export function requireUsState(value: unknown, fieldLabel = "State"): string | null {

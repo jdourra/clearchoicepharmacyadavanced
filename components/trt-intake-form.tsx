@@ -23,6 +23,7 @@ import { CompoundedMedicationNotice } from "@/components/compounded-medication-n
 import { LEGAL_BUSINESS_NAME, PHYSICIAN_DECIDES_DOSE, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCapturedOnClient } from "@/lib/intake-payment"
 import { UsStateField } from "@/components/us-state-field"
+import { selectedSyncVisit, SyncVisitField, syncVisitSelectionError, useSyncVisitSlots } from "@/components/sync-visit-field"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
@@ -41,6 +42,7 @@ type FormData = {
   phone: string
   dateOfBirth: string
   state: string
+  visitSlotKey: string
   address: string
   city: string
   zipCode: string
@@ -93,6 +95,7 @@ const initialFormData: FormData = {
   phone: "",
   dateOfBirth: "",
   state: "",
+  visitSlotKey: "",
   address: "",
   city: "",
   zipCode: "",
@@ -200,6 +203,7 @@ export function TrtIntakeForm({
   const [success, setSuccess] = useState(false)
   const [submissionId, setSubmissionId] = useState("")
   const { profile } = usePatientProfilePrefill()
+  const visitTimes = useSyncVisitSlots(formData.state)
 
   useEffect(() => {
     if (!profile) return
@@ -260,6 +264,7 @@ export function TrtIntakeForm({
             city: formData.city,
             zipCode: formData.zipCode,
           },
+          visit: selectedSyncVisit(formData.visitSlotKey),
           vitals: {
             systolicBP: formData.systolicBP,
             diastolicBP: formData.diastolicBP,
@@ -466,10 +471,24 @@ export function TrtIntakeForm({
                   id="trt-state"
                   value={formData.state}
                   invalid={isInvalid("state")}
-                  onChange={(value) => updateFormData("state", value)}
+                  onChange={(value) => {
+                    updateFormData("state", value)
+                    updateFormData("visitSlotKey", "")
+                  }}
                 />
               </div>
             </div>
+
+            <SyncVisitField
+              id="trt-visit"
+              required={visitTimes.required}
+              slots={visitTimes.slots}
+              status={visitTimes.status}
+              message={visitTimes.message}
+              value={formData.visitSlotKey}
+              invalid={fieldErrors.has("visitSlot")}
+              onChange={(value) => updateFormData("visitSlotKey", value)}
+            />
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2">
@@ -544,9 +563,20 @@ export function TrtIntakeForm({
                 if (!formData.phone) fields.push("phone")
                 if (!formData.dateOfBirth) fields.push("dateOfBirth")
                 if (!formData.state) fields.push("state")
+                const visitError = syncVisitSelectionError(
+                  visitTimes.required,
+                  visitTimes.status,
+                  visitTimes.message,
+                  formData.visitSlotKey
+                )
+                if (visitError) fields.push("visitSlot")
                 if (formData.symptoms.length === 0) fields.push("symptoms")
                 if (fields.length > 0) {
-                  setError("Please complete all required fields.")
+                  setError(
+                    fields.length === 1 && fields[0] === "visitSlot" && visitError
+                      ? visitError
+                      : "Please complete all required fields."
+                  )
                   setValidationFields(fields)
                   setFieldErrors(new Set(fields))
                   scrollToFirstField(fields)

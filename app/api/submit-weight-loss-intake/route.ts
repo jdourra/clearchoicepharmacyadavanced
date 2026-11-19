@@ -12,8 +12,7 @@ import { verifyPaymentHoldReady } from "@/lib/stripe-server"
 import { notifyClinicianQueue } from "@/lib/telehealth/manual-queue"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
-import { listOlaScheduleSlots, OlaApiError } from "@/lib/ola/client"
-import { isOlaConfigured } from "@/lib/ola/config"
+import { confirmSyncVisit } from "@/lib/sync-visit"
 import { handoffWeightLossToOla } from "@/lib/ola/weight-loss-handoff"
 import {
   bmiBand,
@@ -22,8 +21,8 @@ import {
   validateGlp1Protocol,
   type Glp1ProtocolAnswers,
 } from "@/lib/glp1-intake-protocol"
-import { PHARMACY_PHONE_DISPLAY, toUsE164 } from "@/lib/phone"
-import { parseUsState, requireUsState, requiresSyncVisit } from "@/lib/us-states"
+import { toUsE164 } from "@/lib/phone"
+import { parseUsState, requireUsState } from "@/lib/us-states"
 import {
   formatWeightLossSupplyFromKitCount,
   getWeightLossDose,
@@ -394,37 +393,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Enter a valid date of birth." }, { status: 400 })
     }
 
-    if (requiresSyncVisit(homeState.code)) {
-      if (!data.visit) {
-        return NextResponse.json(
-          { error: `${homeState.name} requires a live video visit. Choose an appointment time.` },
-          { status: 400 }
-        )
-      }
-      if (!isOlaConfigured()) {
-        return NextResponse.json(
-          { error: `Live video visits are not available yet. Call ${PHARMACY_PHONE_DISPLAY}.` },
-          { status: 400 }
-        )
-      }
-      try {
-        const slots = await listOlaScheduleSlots(homeState.code)
-        const matched = slots.some(
-          (slot) =>
-            slot.scheduleStart === data.visit?.scheduleStart &&
-            slot.scheduleEnd === data.visit?.scheduleEnd &&
-            slot.providerGuid === data.visit?.providerGuid
-        )
-        if (!matched) {
-          return NextResponse.json(
-            { error: "That video visit time is no longer available. Choose another time." },
-            { status: 400 }
-          )
-        }
-      } catch (error) {
-        const message = error instanceof OlaApiError ? error.message : "Video visit times could not be confirmed."
-        return NextResponse.json({ error: `${message} Call ${PHARMACY_PHONE_DISPLAY}.` }, { status: 502 })
-      }
+    const visitCheck = await confirmSyncVisit(homeState.code, data.visit ?? null)
+    if (!visitCheck.ok) {
+      return NextResponse.json({ error: visitCheck.error }, { status: visitCheck.status })
     }
 
     if (!data.treatmentInfo.selectedProgram) {

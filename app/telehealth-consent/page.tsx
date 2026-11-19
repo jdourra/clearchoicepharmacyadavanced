@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal-page-shell"
 import { FULFILLMENT_PHARMACY, TELEHEALTH_PROVIDER } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export const metadata: Metadata = {
   title: "Telehealth Consent | Clear Choice Pharmacy",
@@ -14,9 +15,8 @@ export default function TelehealthConsentPage() {
       <p>
         By consenting to telehealth, you agree to a remote clinical evaluation. Weight loss, hormone therapy, and ED
         intakes are reviewed by {TELEHEALTH_PROVIDER} through a clinician licensed in your state. Intakes are not
-        available in Alaska, Mississippi, or New Jersey. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode
-        Island, West Virginia, and Virginia require a
-        live video visit. Clear Choice Pharmacy does not perform that clinical evaluation.
+        available in Alaska, Mississippi, or New Jersey. {LIVE_VIDEO_VISIT_NOTE} Clear Choice Pharmacy does not perform
+        that clinical evaluation.
       </p>
       <h2 className="text-xl font-semibold text-foreground pt-4">Nature of telehealth</h2>
       <p>

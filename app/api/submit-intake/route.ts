@@ -7,6 +7,7 @@ import { sendWeightLossZellePaymentEmail } from "@/lib/weight-loss-zelle-payment
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { PRIMARY_PHYSICIAN } from "@/lib/clinical-provider"
 import { requireUsState } from "@/lib/us-states"
+import { confirmSyncVisit, parseSyncVisit } from "@/lib/sync-visit"
 import { linkIntakePatientAndPayment } from "@/lib/ensure-patient-from-intake"
 
 /**
@@ -280,6 +281,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: stateError }, { status: 400 })
     }
 
+    const visit = parseSyncVisit(rawData.visit)
+    const visitCheck = await confirmSyncVisit(data.patientInfo.state, visit)
+    if (!visitCheck.ok) {
+      return NextResponse.json({ error: visitCheck.error }, { status: visitCheck.status })
+    }
+
     const emailRegex = /^\S+@\S+\.\S+$/
     if (!emailRegex.test(data.patientInfo.email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
@@ -389,6 +396,13 @@ export async function POST(request: NextRequest) {
           "waiting_for_payment",
         ]
       )
+      if (visit) {
+        await sql(`ALTER TABLE patient_intake ADD COLUMN IF NOT EXISTS visit_schedule JSONB`, [])
+        await sql(`UPDATE patient_intake SET visit_schedule = $2::jsonb WHERE id = $1`, [
+          submissionId,
+          JSON.stringify(visit),
+        ])
+      }
     } catch (dbError) {
       console.error("Failed to persist intake to database:", dbError)
       return NextResponse.json(

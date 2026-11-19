@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { buildFaqJsonLd, HOME_DESCRIPTION, HOME_TITLE, SITE_KEYWORDS, SITE_URL } from "@/lib/clinical-seo"
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -35,7 +36,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Where can patients start a Semaglutide or Tirzepatide intake?",
     answer:
-      `Yes, except in Alaska, Mississippi, and New Jersey. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. Arkansas, the District of Columbia, Kansas, New Mexico, Rhode Island, West Virginia, and Virginia require a live video visit for weight loss.`,
+      `Yes, except in Alaska, Mississippi, and New Jersey. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. ${LIVE_VIDEO_VISIT_NOTE}`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
