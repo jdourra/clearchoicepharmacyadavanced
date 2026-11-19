@@ -1,4 +1,5 @@
 import type { TrtProgram } from "@/lib/trt-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export type TrtProductContent = {
   homeKitTitle: string
@@ -36,7 +37,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
     monitoringNote:
       "Your provider may recommend periodic lab work to monitor testosterone, hematocrit, and related markers during therapy.",
     physicianConsent:
-      "Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. Additional labs or follow-up may be required.",
+      `Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} Additional labs or follow-up may be required.`,
     shipping: "Routed by RxAve and shipped by a licensed compounding pharmacy. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
   },
   "testosterone-cream": {
@@ -60,7 +61,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
     monitoringNote:
       "Topical protocols still require physician oversight and periodic labs to confirm therapeutic levels and safety.",
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   enclomiphene: {
@@ -83,7 +84,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
     monitoringNote:
       "Lab monitoring helps your provider titrate your oral protocol and confirm response over time.",
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
 }

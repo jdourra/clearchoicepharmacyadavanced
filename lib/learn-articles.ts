@@ -1,11 +1,12 @@
 import type { LearnArticle } from "@/lib/learn-types"
 import { weightLossHowYouPay } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 const MI_DISCLAIMER =
   "This article is for educational purposes only and is not medical advice. Compounded medications require a valid prescription after clinician review. Clear Choice Pharmacy currently serves Michigan patients only. Individual results vary. Discuss your health history with a licensed provider before starting any therapy."
 
 const GLP_DISCLAIMER =
-  "This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary."
+  `This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary.`
 
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
@@ -554,7 +555,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       },
     ],
     disclaimer:
-      "This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Individual results vary.",
+      `This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Individual results vary.`,
   },
   {
     slug: "myers-cocktail-mobile-iv",

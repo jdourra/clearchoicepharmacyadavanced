@@ -169,7 +169,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      "Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. If approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses it. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.",
+      `Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses it. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.`,
   },
   {
     question: "Is Tadalafil the same as Cialis?",

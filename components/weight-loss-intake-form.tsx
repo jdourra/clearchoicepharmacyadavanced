@@ -1368,8 +1368,8 @@ export function WeightLossIntakeForm({
             <CardTitle>Identity &amp; Consent</CardTitle>
             <CardDescription>
               {requireCardPayment
-                ? "Verify your photo ID and pay on this website. A licensed doctor reviews your intake, usually within 24 hours."
-                : "Verify your photo ID, then pay by Zelle or Venmo after you submit. A licensed doctor reviews your intake after payment arrives, usually within 24 hours."}
+                ? `Verify your photo ID and pay on this website. ${WEIGHT_LOSS_DOCTOR_REVIEW}`
+                : `Verify your photo ID, then pay by Zelle or Venmo after you submit. ${WEIGHT_LOSS_DOCTOR_REVIEW}`}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

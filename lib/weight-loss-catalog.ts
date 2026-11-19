@@ -1,5 +1,6 @@
 import type { RejuvenationVial } from "@/lib/rejuvenation-vial-catalog"
 import { CASH_PAY_INSTRUCTION, LEGAL_BUSINESS_NAME, PHYSICIAN_DECIDES_DOSE, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export type WeightLossBillingPlan = "monthly" | "quarterly"
 
@@ -93,7 +94,7 @@ export function weightLossHowYouPay(): string {
 
 /** Shown on weight-loss pages. Do not name the outside clinician network. */
 export const WEIGHT_LOSS_DOCTOR_REVIEW =
-  "A licensed doctor usually reviews your intake within 24 hours. Approval depends on that review."
+  `A licensed doctor reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} Approval depends on that review and is not guaranteed.`
 
 export const WEIGHT_LOSS_PARTNER_FULFILLMENT =
   "If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses your prescription and ships it."

@@ -35,7 +35,7 @@ const EXTRA_FAQS = [
   {
     question: "What does Clear Choice Pharmacy do versus the prescribing clinician?",
     answer:
-      `${weightLossHowYouPay()} A licensed doctor reviews your intake. If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses and ships it. Clear Choice does not compound these vials.`,
+      `${weightLossHowYouPay()} ${WEIGHT_LOSS_DOCTOR_REVIEW} ${WEIGHT_LOSS_PARTNER_FULFILLMENT} Clear Choice does not compound these vials.`,
   },
   {
     question: "Do you guarantee weight loss results?",

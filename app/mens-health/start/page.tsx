@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { ClinicalIntakeForm } from "@/components/clinical-intake-form"
 import { NATIONAL_PARTNER_CARE_NOTE, SITE_URL } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
@@ -36,7 +37,7 @@ const trustFeatures = [
   {
     icon: Clock,
     title: "Review time",
-    description: "Ola Health reviews your intake.",
+    description: `Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE}`,
   },
 ]
 
@@ -44,7 +45,7 @@ const processSteps = [
   "Review your selected troche formulation",
   "Complete the secure medical questionnaire",
   "Upload ID and authorize payment hold",
-  "Ola Health reviews your intake.",
+  `Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE}`,
   "If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.",
 ]
 

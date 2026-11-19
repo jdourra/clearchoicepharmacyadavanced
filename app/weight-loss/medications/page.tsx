@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card"
 import { SITE_URL, buildBreadcrumbJsonLd } from "@/lib/clinical-seo"
 import { formatUsd, getWeightLossPriceRange } from "@/lib/pricing-clarity"
 import { WEIGHT_LOSS_PROGRAMS } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export const metadata: Metadata = {
   title: { absolute: "Weight Loss Medications | Clear Choice Pharmacy" },
@@ -47,8 +48,8 @@ export default function WeightLossMedicationsPage() {
       <PremiumHero
         badge="Medication options"
         headline="Weight Loss Medications in Michigan"
-        subheadline="Semaglutide and tirzepatide, after a doctor reviews your intake."
-        description="RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials."
+        subheadline="Semaglutide and tirzepatide. A live video visit is required in some states before a prescription."
+        description={`${LIVE_VIDEO_VISIT_NOTE} RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide and tirzepatide after a doctor approves treatment. Clear Choice Pharmacy does not compound or ship these vials.`}
         highlight="Not a drug catalog search · Clinical evaluation required"
         primaryCta={{ label: "View Semaglutide kits", href: "/weight-loss/semaglutide" }}
         secondaryCta={{ label: "View Tirzepatide kits", href: "/weight-loss/tirzepatide" }}

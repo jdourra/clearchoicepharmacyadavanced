@@ -1,4 +1,5 @@
 import type { WeightLossProgram } from "@/lib/weight-loss-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export type WeightLossProductSlug = "semaglutide" | "tirzepatide"
 
@@ -71,7 +72,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     shipping:
       "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Your kit includes supplies and instructions for at-home use.",
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     scienceSummary:
       "Semaglutide is a GLP-1 receptor agonist that mimics an incretin hormone involved in appetite regulation and glucose homeostasis. It enhances glucose-dependent insulin secretion, suppresses glucagon, slows gastric emptying, and reduces food intake — supporting medical weight management under physician supervision.",
     kitIncludes: [
@@ -113,7 +114,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     shipping:
       "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Supplies and instructions included.",
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     scienceSummary:
       "Tirzepatide activates both GLP-1 and GIP receptors, offering dual incretin pathway support. Under physician supervision, it is used for medical weight management in qualifying patients.",
     kitIncludes: [

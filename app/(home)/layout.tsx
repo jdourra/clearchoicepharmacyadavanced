@@ -46,7 +46,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Who evaluates and who fills the medication?",
     answer:
-      "A licensed doctor reviews your intake and decides whether a prescription is appropriate. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.",
+      `A licensed doctor reviews your intake and decides whether a prescription is appropriate. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.`,
   },
   {
     question: "How do Semaglutide and Tirzepatide kits work?",

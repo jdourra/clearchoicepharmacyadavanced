@@ -1,4 +1,5 @@
 import type { EdTrocheProduct } from "@/lib/ed-troche-catalog"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export type EdProductContent = {
   homeKitTitle: string
@@ -37,7 +38,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
       ...SHARED_ED_KIT_INCLUDES,
     ],
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   "tadalafil-daily": {
@@ -58,7 +59,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
       ...SHARED_ED_KIT_INCLUDES,
     ],
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
   "combination-troche": {
@@ -79,7 +80,7 @@ export const ED_PRODUCT_CONTENT: Record<string, EdProductContent> = {
       ...SHARED_ED_KIT_INCLUDES,
     ],
     physicianConsent:
-      "A licensed physician reviews your intake before prescribing. You may be contacted within 24–48 hours if additional clinical information is needed.",
+      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
   },
 }

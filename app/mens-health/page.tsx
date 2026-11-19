@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CompoundedMedicationNotice } from "@/components/compounded-medication-notice"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 import { ServiceBuyButton } from "@/components/service-buy-button"
 import {
   SITE_URL,
@@ -86,7 +87,7 @@ export default function MensHealthPage() {
         badge="Men's Health · ED"
         headline="Tadalafil & Sildenafil"
         subheadline="Sildenafil from $39/mo and Tadalafil from $49/mo on quarterly billing—transparent cash-pay pricing."
-        description="Sildenafil and tadalafil after Ola Health reviews your intake. If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication."
+        description={`Sildenafil and tadalafil after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.`}
         highlight="Start your intake · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
           label: "Start your intake",
@@ -203,7 +204,7 @@ export default function MensHealthPage() {
           {
             step: 2,
             title: "Clinician review",
-            description: "Ola Health reviews your intake and decides whether a prescription is appropriate.",
+            description: `Ola Health reviews your intake and decides whether a prescription is appropriate. ${LIVE_VIDEO_VISIT_NOTE}`,
           },
           {
             step: 3,

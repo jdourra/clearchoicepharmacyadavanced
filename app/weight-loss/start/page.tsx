@@ -21,7 +21,7 @@ import { SITE_URL } from "@/lib/site-config"
 export const metadata: Metadata = {
   title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
   description:
-    `Complete a secure medical intake for Semaglutide or Tirzepatide. ${weightLossHowYouPay()} A licensed doctor usually reviews your intake within 24 hours.`,
+    `Complete a secure medical intake for Semaglutide or Tirzepatide. ${weightLossHowYouPay()} ${WEIGHT_LOSS_DOCTOR_REVIEW}`,
   robots: { index: false, follow: false },
   alternates: {
     canonical: `${SITE_URL}/weight-loss/start`,
@@ -71,8 +71,8 @@ export default async function WeightLossStartPage({ searchParams }: PageProps) {
                   Complete Your GLP Order
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Finish your secure intake for Semaglutide or Tirzepatide. A licensed doctor usually reviews your
-                  intake within 24 hours, and a licensed compounding pharmacy ships the medication after RxAve routes the prescription approved medication.{" "}
+                  Finish your secure intake for Semaglutide or Tirzepatide. {WEIGHT_LOSS_DOCTOR_REVIEW}{" "}
+                  {WEIGHT_LOSS_PARTNER_FULFILLMENT}{" "}
                   {requireOnlinePayment ? WEIGHT_LOSS_INTAKE_HOLD_NOTE : weightLossPaymentPatientNote()}
                 </p>
               </div>

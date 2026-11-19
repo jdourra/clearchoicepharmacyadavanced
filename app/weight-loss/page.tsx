@@ -46,7 +46,7 @@ const PROGRAMS_URL = "/weight-loss#programs"
 export const metadata: Metadata = {
   title: { absolute: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy" },
   description:
-    `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} A doctor reviews your intake, and a licensed compounding pharmacy ships the medication after RxAve routes the prescription if treatment is approved.`,
+    `Provider-guided Semaglutide and Tirzepatide weight management. ${weightLossHowYouPay()} ${WEIGHT_LOSS_DOCTOR_REVIEW} ${WEIGHT_LOSS_PARTNER_FULFILLMENT}`,
   alternates: {
     canonical: `${SITE_URL}/weight-loss`,
   },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 const glpBenefits = [
   "Custom titration: Semaglutide and Tirzepatide doses chosen to match the doctor's plan.",
   `Transparent pricing: ${weightLossHowYouPay()} Doctor review and partner-pharmacy shipping are included.`,
-  "Licensed doctor review: Complete a secure online intake. A doctor usually reviews it within 24 hours.",
+  `Licensed doctor review: Complete a secure online intake. ${LIVE_VIDEO_VISIT_NOTE}`,
   "Structured Support: Provider-guided weight management designed to support healthy habits alongside medication when appropriate.",
 ]
 
@@ -103,9 +103,9 @@ export default function WeightLossPage() {
         }
         subheadline="Provider-guided Semaglutide and Tirzepatide kits from $134/mo."
         description={
-          `${weightLossHowYouPay()} A licensed doctor reviews your intake, usually within 24 hours. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships your medication. Individual results may vary.`
+          `${weightLossHowYouPay()} ${WEIGHT_LOSS_DOCTOR_REVIEW} ${WEIGHT_LOSS_PARTNER_FULFILLMENT} Individual results may vary.`
         }
-        highlight={`${weightLossHowYouPay()} Doctor review within 24 hours. Partner pharmacy ships.`}
+        highlight={`${weightLossHowYouPay()} A live video visit is required in some states. Partner pharmacy ships.`}
         heroImage={{
           src: "/images/home-hero-clinical.png",
           alt: "Licensed clinician supporting medical weight management at Clear Choice Pharmacy",
@@ -126,9 +126,8 @@ export default function WeightLossPage() {
         />
         <div className="mt-6 prose prose-sm max-w-3xl text-muted-foreground">
           <p>
-            At Clear Choice Pharmacy, the pathway starts with an online intake. {weightLossHowYouPay()} A licensed
-            doctor reviews your information and decides whether a prescription is appropriate. If approved, a partner
-            pharmacy fills and ships Semaglutide or Tirzepatide. Learn more about{" "}
+            At Clear Choice Pharmacy, the pathway starts with an online intake. {weightLossHowYouPay()}{" "}
+            {WEIGHT_LOSS_DOCTOR_REVIEW} {WEIGHT_LOSS_PARTNER_FULFILLMENT} Learn more about{" "}
             <Link href="/weight-loss/glp-1" className="text-primary hover:underline">
               GLP-1 weight management
             </Link>

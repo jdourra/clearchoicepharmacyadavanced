@@ -41,7 +41,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
     features: ["Works in 15–30 minutes", "Lasts 4–6 hours", "Unaffected by food", "Take as needed"],
     image: {
       src: "/images/sildenafil-troches.png",
-      alt: "Clear Choice Pharmacy Sildenafil troches blister pack",
+      alt: "Sildenafil troches blister pack dispensed by a partner pharmacy",
     },
     pricing: [
       { plan: "monthly", pricePerMonth: 69, totalBilled: 69 },
@@ -61,7 +61,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
     features: ["Up to 36-hour window", "Great for spontaneity", "Can take daily", "Unaffected by food"],
     image: {
       src: "/images/tadalafil-troches.png",
-      alt: "Clear Choice Pharmacy Tadalafil troches blister pack",
+      alt: "Tadalafil troches blister pack dispensed by a partner pharmacy",
     },
     pricing: [
       { plan: "monthly", pricePerMonth: 79, totalBilled: 79 },
@@ -81,7 +81,7 @@ export const ED_FORMULATIONS: EdTrocheProduct[] = [
     features: ["Fast onset + long duration", "Dual PDE5 action", "Physician-customized", "Pharmacy compounded"],
     image: {
       src: "/images/combination-troches.png",
-      alt: "Clear Choice Pharmacy combination Sildenafil and Tadalafil troches blister pack",
+      alt: "Sildenafil and Tadalafil combination troches blister pack dispensed by a partner pharmacy",
     },
     pricing: [
       { plan: "monthly", pricePerMonth: 89, totalBilled: 89 },

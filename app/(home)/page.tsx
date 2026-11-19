@@ -42,8 +42,8 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-200 text-balance max-w-xl mb-6 sm:mb-8 leading-relaxed">
-              Provider-guided medical weight management with compounded semaglutide and tirzepatide after a licensed
-              doctor reviews your intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved medication. Individual results may
+              Provider-guided medical weight management with compounded semaglutide and tirzepatide. {LIVE_VIDEO_VISIT_NOTE}{" "}
+              RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved medication. Individual results may
               vary.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
@@ -170,7 +170,7 @@ export default function HomePage() {
               <p className="text-muted-foreground leading-relaxed">
                 Patients across the United States can start provider-guided Semaglutide and
                 Tirzepatide weight management. {weightLossHowYouPay()} Ola Health reviews the intake before
-                any prescription is written. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the
+                any prescription is written. {LIVE_VIDEO_VISIT_NOTE} If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the
                 medication.
               </p>
             </div>
@@ -179,8 +179,8 @@ export default function HomePage() {
               <Card className="p-5">
                 <h3 className="font-semibold mb-2">How the program works</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Choose a kit, complete a secure intake, and upload your photo ID. {weightLossHowYouPay()} A licensed
-                  doctor reviews your intake, usually within 24 hours. If approved, RxAve routes the prescription to a licensed compounding pharmacy, which ships your
+                  Choose a kit, complete a secure intake, and upload your photo ID. {weightLossHowYouPay()} {LIVE_VIDEO_VISIT_NOTE}{" "}
+                  If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which ships your
                   medication.
                 </p>
                 <Link href="/weight-loss#how-it-works" className="text-sm text-primary hover:underline">
@@ -286,7 +286,7 @@ export default function HomePage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Who evaluates and who fills the medication?</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Ola Health reviews your intake and decides whether a prescription is appropriate. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy collects payment and does not
+                  Ola Health reviews your intake and decides whether a prescription is appropriate. {LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy collects payment and does not
                   compound or dispense compounded medication. Other non-compounded prescriptions we fill are dispensed
                   from Westland to Michigan patients.{" "}
                   <Link href="/about" className="text-primary hover:underline">

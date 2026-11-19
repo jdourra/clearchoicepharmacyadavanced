@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Shield, Lock, Clock, Phone, Mail } from "lucide-react"
 import { TRT_PROGRAMS, type TrtBillingPlan } from "@/lib/trt-catalog"
 import { HORMONE_THERAPY_CONTROLLED_NOTE, NATIONAL_PARTNER_CARE_NOTE, SITE_URL } from "@/lib/site-config"
+import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 
 export const metadata: Metadata = {
   title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",
@@ -63,7 +64,7 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                     {[
                       { icon: Shield, title: "HIPAA Compliant", description: "Protected by federal healthcare privacy laws" },
                       { icon: Lock, title: "256-bit Encryption", description: "Bank-level security for medical data" },
-                      { icon: Clock, title: "Review time", description: "Ola Health reviews your intake." },
+                      { icon: Clock, title: "Review time", description: `Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE}` },
                     ].map((feature) => (
                       <div key={feature.title} className="flex items-start gap-3">
                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
