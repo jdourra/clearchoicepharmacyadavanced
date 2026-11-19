@@ -63,10 +63,6 @@ export default function AboutPage() {
               <Link href="/mens-health" className="text-primary hover:underline">
                 men&apos;s health
               </Link>
-              , and{" "}
-              <Link href="/specialty-pharmacy" className="text-primary hover:underline">
-                specialty pharmacy
-              </Link>
               .
             </p>
           </div>

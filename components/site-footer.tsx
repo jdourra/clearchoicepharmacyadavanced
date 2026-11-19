@@ -97,9 +97,6 @@ export function SiteFooter() {
               <Link href="/compounding" className="text-muted-foreground hover:text-foreground transition-colors">
                 Compounding
               </Link>
-              <Link href="/specialty-pharmacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                Specialty pharmacy
-              </Link>
               <Link href="/mens-health" className="text-muted-foreground hover:text-foreground transition-colors">
                 Men&apos;s health
               </Link>

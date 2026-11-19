@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { Heart, Pill, Scale, Stethoscope } from "lucide-react"
+import { Heart, Pill, Scale } from "lucide-react"
 
 export type ServicePathType = "cash-pay" | "consultation" | "insurance"
 
@@ -55,20 +55,6 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     image: {
       src: "/images/mens-health-card.png",
       alt: "Athlete running outdoors as part of an active men's health lifestyle",
-    },
-  },
-  {
-    href: "/specialty-pharmacy",
-    title: "Specialty Pharmacy",
-    description:
-      "High-cost specialty medications with prior authorization and copay assistance. Insurance accepted.",
-    pathType: "insurance",
-    pathLabel: "Insurance accepted",
-    cta: "Transfer specialty care",
-    icon: Stethoscope,
-    image: {
-      src: "/images/specialty-medicine-card.png",
-      alt: "Pharmacist in gloves dispensing specialty medication capsules",
     },
   },
 ]

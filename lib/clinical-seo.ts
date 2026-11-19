@@ -19,7 +19,6 @@ export const SITE_NAV_LINKS = [
   { name: "Weight Loss FAQ", path: "/weight-loss/faq" },
   { name: "Low Cost Prescription Drugs", path: "/prescriptions" },
   { name: "Compounding", path: "/compounding" },
-  { name: "Specialty Pharmacy", path: "/specialty-pharmacy" },
   { name: "Tadalafil & Sildenafil", path: "/mens-health" },
   { name: "About", path: "/about" },
   { name: "Contact", path: "/contact" },
@@ -293,7 +292,7 @@ export const PRESCRIPTIONS_FAQS: FaqItem[] = [
   {
     question: "Do I need insurance?",
     answer:
-      "No. Our low-cost prescription program is cash-pay with upfront pricing—no insurance required. Specialty pharmacy services can also work with major insurance plans for high-cost medications.",
+      "No. Our low-cost prescription program is cash-pay with upfront pricing—no insurance required.",
   },
   {
     question: "Can I order prescriptions if I live outside Michigan?",

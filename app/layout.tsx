@@ -198,13 +198,6 @@ export default function RootLayout({
           description: "Sildenafil and tadalafil after Ola Health reviews the intake",
           url: `${SITE_URL}/mens-health`,
         },
-        {
-          "@type": "OfferCatalog",
-          name: "Specialty Pharmacy",
-          description:
-            "Specialty medications with all major insurances accepted, in-house prior authorizations, and copay assistance",
-          url: `${SITE_URL}/specialty-pharmacy`,
-        },
       ],
     },
   }

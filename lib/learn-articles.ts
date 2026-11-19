@@ -678,7 +678,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Do I need insurance for low cost prescription drugs?",
         answer:
-          "No. The cash-pay program does not require insurance. Specialty pharmacy services can separately work with major insurers for high-cost medications.",
+          "No. The cash-pay program does not require insurance.",
       },
       {
         question: "How do I check a medication price?",

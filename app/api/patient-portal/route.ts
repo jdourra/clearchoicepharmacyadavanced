@@ -197,7 +197,7 @@ export async function GET(request: Request) {
         title: "Specialty Medicine Program",
         subtitle: row.selected_medication ? String(row.selected_medication) : undefined,
         submittedAt: String(row.created_at),
-        href: "/specialty-pharmacy",
+        href: "/account",
       })),
     ].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
 

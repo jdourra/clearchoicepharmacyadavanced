@@ -282,7 +282,7 @@ export function PatientPortalContent() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      Start or track GLP-1, men&apos;s health, IV, or specialty care.
+                      Start or track GLP-1 or men&apos;s health.
                     </p>
                     <Button asChild variant="outline" className="w-full bg-transparent">
                       <Link href="/services">

@@ -81,7 +81,6 @@ export function SiteHeader() {
     { href: "/services", label: "All services" },
     { href: "/prescriptions", label: "Low cost prescription drugs" },
     { href: "/compounding", label: "Compounding" },
-    { href: "/specialty-pharmacy", label: "Specialty pharmacy" },
     { href: "/mens-health", label: "Men's health (ED)" },
     { href: "/about", label: "About us" },
     { href: "/contact", label: "Contact" },

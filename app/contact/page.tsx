@@ -34,8 +34,7 @@ export default function ContactPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Contact</p>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Clear Choice Pharmacy</h1>
             <p className="text-muted-foreground leading-relaxed">
-              Reach our Westland pharmacy team about medical weight management programs, prescriptions, compounding, or
-              specialty care. Weight loss, hormone therapy, and ED intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Prescriptions we dispense ourselves are for Michigan patients.
+              Reach our Westland pharmacy team about medical weight management programs, prescriptions, or compounding. Weight loss, hormone therapy, and ED intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Prescriptions we dispense ourselves are for Michigan patients.
             </p>
           </div>
         </section>
