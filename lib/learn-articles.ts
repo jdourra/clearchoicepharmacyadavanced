@@ -73,9 +73,9 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         ],
       },
       {
-        heading: "Cash-pay Semaglutide in Westland, MI",
+        heading: "How semaglutide kits are priced",
         paragraphs: [
-          `Insurance coverage for GLP-1 weight management can be limited, delayed, or denied. Clear Choice Pharmacy shows cash-pay semaglutide kit prices before you pay. ${weightLossHowYouPay()} Each 30-day kit includes four weekly injections. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials.`,
+          `The semaglutide program shows the kit price before you pay. ${weightLossHowYouPay()} A lower price is not a reason a compounded medication is offered. A licensed physician decides whether it is appropriate. Each 30-day kit includes four weekly injections. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.`,
           "For current kit pricing and intake steps, visit the Semaglutide program page.",
         ],
       },
@@ -329,9 +329,9 @@ export const LEARN_ARTICLES: LearnArticle[] = [
           "No. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
       },
       {
-        question: "Why do patients look at compounded Semaglutide?",
+        question: "Is compounded semaglutide offered because it costs less than Ozempic or Wegovy?",
         answer:
-          "Common reasons include coverage denials, high cash brand cost, access delays, or clinician-directed compounding after individualized review. Suitability always depends on clinical judgment.",
+          "No. A lower price, an insurance coverage denial, or a delay getting a brand-name product is not a reason this compounded medication is offered. Compounded semaglutide is not FDA-approved and is not a commercially manufactured product. A licensed physician decides whether it is appropriate for you. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
       },
     ],
     disclaimer: GLP_DISCLAIMER,
