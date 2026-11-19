@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { LEGAL_BUSINESS_NAME, ZELLE_PAYMENT_EMAIL } from "@/lib/site-config"
 import {
   INJECTION_CONSENT_URLS,
   requiresSelfInjectionConsent,
@@ -287,8 +288,9 @@ export function InjectionTelehealthConsents({
           >
             {INJECTION_CONSENT_URLS.refundPolicy}
           </a>
-          . I authorize Clear Choice Pharmacy to charge my credit card for agreed upon purchases. I understand that my
-          information will be saved to file for future transactions on my account.
+          . I will pay by Zelle or Venmo to {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}. I will
+          put my name in the memo. If treatment is not approved, the payment is refunded. Clear Choice Pharmacy is not
+          charging a credit card for this purchase.
         </p>
       </ConsentRow>
 
