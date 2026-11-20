@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File is required" }, { status: 400 })
     }
 
-    if (side !== "front" && side !== "back") {
-      return NextResponse.json({ error: "side must be front or back" }, { status: 400 })
+    if (side !== "front" && side !== "back" && side !== "labs") {
+      return NextResponse.json({ error: "side must be front, back, or labs" }, { status: 400 })
     }
 
     const contentType = resolveUploadMimeType(file, ALLOWED_TYPES)

@@ -532,7 +532,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Monitoring and safety",
         paragraphs: [
-          "TRT requires ongoing oversight. Monitoring may include labs, symptom tracking, hematocrit, and other markers your clinician considers necessary. Testosterone is a controlled substance and cannot be treated like an over-the-counter wellness product.",
+          "Submit laboratory results from the last 12 months with the intake. Testosterone therapy is for patients with low testosterone, and only after a licensed physician reviews those results and approves treatment. The intake cannot be submitted without the lab report. Follow-up labs may be required during therapy. Testosterone is a controlled substance and cannot be treated like an over-the-counter wellness product.",
         ],
       },
       {
@@ -551,11 +551,11 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Do I need labs for TRT?",
         answer:
-          "Yes—clinical evaluation and appropriate laboratories are part of responsible testosterone care. Your provider determines what is needed before and during therapy.",
+          "Yes. Submit laboratory results from the last 12 months with the intake. Testosterone therapy is for patients with low testosterone, and only after a licensed physician reviews those results and approves treatment. The intake cannot be submitted without the lab report.",
       },
     ],
     disclaimer:
-      `This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Individual results vary.`,
+      `This article is for educational purposes only and is not medical advice. Testosterone therapy is for patients with low testosterone. It is a Schedule III controlled medication and requires a prescription after Ola Health reviews your submitted laboratory results. ${LIVE_VIDEO_VISIT_NOTE} The intake cannot be submitted without those results. It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Individual results vary.`,
   },
   {
     slug: "low-cost-prescription-drugs-cash-pay",

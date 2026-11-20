@@ -35,9 +35,9 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       ...SHARED_TRT_KIT_INCLUDES,
     ],
     monitoringNote:
-      "Your provider may recommend periodic lab work to monitor testosterone, hematocrit, and related markers during therapy.",
+      "Submit laboratory results from the last 12 months before the intake can be reviewed. Testosterone therapy is for patients with low testosterone. A licensed physician reviews those results and decides whether treatment is appropriate. Follow-up labs, including hematocrit, may be required during therapy.",
     physicianConsent:
-      `Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} Additional labs or follow-up may be required.`,
+      `Testosterone is a controlled substance and is prescribed for low testosterone only after a licensed physician reviews your submitted laboratory results. ${LIVE_VIDEO_VISIT_NOTE} The intake cannot be submitted without those results.`,
     shipping: "Routed by RxAve and shipped by a compounding pharmacy licensed to dispense in the patient's state. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
   },
   "testosterone-cream": {
@@ -59,9 +59,9 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       ...SHARED_TRT_KIT_INCLUDES,
     ],
     monitoringNote:
-      "Topical protocols still require physician oversight and periodic labs to confirm therapeutic levels and safety.",
+      "Submit laboratory results from the last 12 months before the intake can be reviewed. Testosterone therapy is for patients with low testosterone. A licensed physician reviews those results and decides whether treatment is appropriate.",
     physicianConsent:
-      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
+      `A licensed physician reviews your submitted laboratory results before prescribing. ${LIVE_VIDEO_VISIT_NOTE} The intake cannot be submitted without those results.`,
     shipping: "Routed by RxAve and shipped discreetly by a compounding pharmacy licensed to dispense in the patient's state. Clear Choice Pharmacy does not dispense this medication.",
   },
   enclomiphene: {
@@ -82,9 +82,9 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       ...SHARED_TRT_KIT_INCLUDES,
     ],
     monitoringNote:
-      "Lab monitoring helps your provider titrate your oral protocol and confirm response over time.",
+      "Submit laboratory results from the last 12 months before the intake can be reviewed. This therapy is considered for patients with low testosterone. A licensed physician reviews those results and decides whether treatment is appropriate.",
     physicianConsent:
-      `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
+      `A licensed physician reviews your submitted laboratory results before prescribing. ${LIVE_VIDEO_VISIT_NOTE} The intake cannot be submitted without those results.`,
     shipping: "Routed by RxAve and shipped discreetly by a compounding pharmacy licensed to dispense in the patient's state. Clear Choice Pharmacy does not dispense this medication.",
   },
 }

@@ -25,6 +25,7 @@ import { emptyIntakePaymentValues, getIntakeIdentityInvalidFields, paymentCaptur
 import { UsStateField } from "@/components/us-state-field"
 import { selectedSyncVisit, SyncVisitField, syncVisitSelectionError, useSyncVisitSlots } from "@/components/sync-visit-field"
 import { scrollToFirstField } from "@/lib/intake-field-labels"
+import { isAllowedIdUploadFile, prepareIdUploadFile } from "@/lib/prepare-id-upload"
 import { InjectionTelehealthConsents } from "@/components/injection-telehealth-consents"
 import {
   emptyInjectionTelehealthConsents,
@@ -53,6 +54,8 @@ type FormData = {
   treatmentGoals: string[]
   priorTrtExperience: string
   hasRecentLabs: string
+  labReportKey: string | null
+  labReportUploading: boolean
   prostateCancer: boolean
   breastCancer: boolean
   polycythemia: boolean
@@ -106,6 +109,8 @@ const initialFormData: FormData = {
   treatmentGoals: [],
   priorTrtExperience: "",
   hasRecentLabs: "",
+  labReportKey: null,
+  labReportUploading: false,
   prostateCancer: false,
   breastCancer: false,
   polycythemia: false,
@@ -230,6 +235,42 @@ export function TrtIntakeForm({
     })
   }, [])
 
+  const uploadLabReport = useCallback(
+    async (file: File | null) => {
+      if (!file) return
+      if (!isAllowedIdUploadFile(file)) {
+        setError("Upload the lab report as a JPEG, PNG, HEIC, or PDF.")
+        setValidationFields(["hasRecentLabs"])
+        setFieldErrors(new Set(["hasRecentLabs"]))
+        return
+      }
+      updateFormData("labReportUploading", true)
+      updateFormData("labReportKey", null)
+      try {
+        const prepared = await prepareIdUploadFile(file)
+        const body = new FormData()
+        body.append("file", prepared)
+        body.append("side", "labs")
+        body.append("intakePrefix", `trt-labs-${formData.email || "draft"}`)
+        const response = await fetch("/api/intake/upload-id", { method: "POST", body })
+        const result = await response.json().catch(() => ({} as { error?: string; storageKey?: string }))
+        if (!response.ok || !result.storageKey) {
+          throw new Error(result.error || "Lab report upload failed.")
+        }
+        updateFormData("labReportKey", result.storageKey)
+        updateFormData("hasRecentLabs", "submitted")
+      } catch (err) {
+        updateFormData("labReportKey", null)
+        setError(err instanceof Error ? err.message : "Lab report upload failed.")
+        setValidationFields(["hasRecentLabs"])
+        setFieldErrors(new Set(["hasRecentLabs"]))
+      } finally {
+        updateFormData("labReportUploading", false)
+      }
+    },
+    [formData.email, updateFormData]
+  )
+
   const isInvalid = useCallback((field: string) => fieldErrors.has(field), [fieldErrors])
 
   const updateInjectionConsent = useCallback(
@@ -294,7 +335,8 @@ export function TrtIntakeForm({
             symptoms: formData.symptoms,
             treatmentGoals: formData.treatmentGoals,
             priorTrtExperience: formData.priorTrtExperience,
-            hasRecentLabs: formData.hasRecentLabs,
+            hasRecentLabs: formData.labReportKey ? "submitted" : "",
+            labReportKey: formData.labReportKey,
             additionalConcerns: formData.additionalConcerns,
           },
           identity: {
@@ -544,12 +586,31 @@ export function TrtIntakeForm({
               </RadioGroup>
             </div>
 
-            <div className="space-y-2">
-              <Label>Do you have recent lab work (within 12 months)?</Label>
-              <RadioGroup value={formData.hasRecentLabs} onValueChange={(v) => updateFormData("hasRecentLabs", v)}>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="yes" id="labs-yes" /><Label htmlFor="labs-yes" className="font-normal">Yes</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="no" id="labs-no" /><Label htmlFor="labs-no" className="font-normal">No — I need guidance on labs</Label></div>
-              </RadioGroup>
+            <div className="space-y-2" data-field="hasRecentLabs">
+              <Label className={cn(isInvalid("hasRecentLabs") && "text-destructive")}>
+                Laboratory results from the last 12 months
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Testosterone therapy is for patients with low testosterone. Upload your lab report. A licensed physician
+                reviews those results and decides whether treatment is appropriate. This intake cannot continue without
+                the report.
+              </p>
+              <Input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.pdf"
+                disabled={formData.labReportUploading}
+                onChange={(event) => {
+                  const file = event.target.files?.[0] ?? null
+                  void uploadLabReport(file)
+                  event.target.value = ""
+                }}
+              />
+              {formData.labReportUploading && (
+                <p className="text-sm text-muted-foreground">Uploading lab report...</p>
+              )}
+              {formData.labReportKey && (
+                <p className="text-sm text-emerald-700">Lab report received.</p>
+              )}
             </div>
           </CardContent>
           <CardFooter className="justify-between">
@@ -571,9 +632,12 @@ export function TrtIntakeForm({
                 )
                 if (visitError) fields.push("visitSlot")
                 if (formData.symptoms.length === 0) fields.push("symptoms")
+                if (formData.labReportUploading || !formData.labReportKey) fields.push("hasRecentLabs")
                 if (fields.length > 0) {
                   setError(
-                    fields.length === 1 && fields[0] === "visitSlot" && visitError
+                    fields.length === 1 && fields[0] === "hasRecentLabs"
+                      ? "Upload laboratory results from the last 12 months before continuing."
+                      : fields.length === 1 && fields[0] === "visitSlot" && visitError
                       ? visitError
                       : "Please complete all required fields."
                   )
@@ -793,6 +857,11 @@ export function TrtIntakeForm({
                 })
                 if (paymentFields.length > 0) {
                   setError("Please upload the front and back of your photo ID.")
+                  return
+                }
+                if (formData.labReportUploading || !formData.labReportKey) {
+                  setError("Upload laboratory results from the last 12 months before submitting.")
+                  setValidationFields(["hasRecentLabs"])
                   return
                 }
                 const consentFields = getInjectionConsentInvalidFields(formData.injectionConsents, {

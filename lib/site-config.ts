@@ -65,7 +65,7 @@ export const NATIONAL_PARTNER_CARE_NOTE =
   `Patients in ${INTAKE_SERVICE_AREA} can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`
 
 export const HORMONE_THERAPY_CONTROLLED_NOTE =
-  "Testosterone is a Schedule III controlled medication. It is prescribed only when a clinician licensed in your state decides it is medically appropriate. It is not offered for athletic performance or bodybuilding."
+  "Testosterone therapy is for patients with low testosterone. It is a Schedule III controlled medication and is not offered for athletic performance or bodybuilding. Submit laboratory results from the last 12 months with the intake. A licensed physician reviews those results and decides whether treatment is appropriate. The intake cannot be submitted without the lab report."
 
 /**
  * Direct Google Business Profile review link.

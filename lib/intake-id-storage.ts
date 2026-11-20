@@ -36,7 +36,7 @@ export async function storeIdDocument(params: {
   file: Buffer
   contentType: string
   originalName: string
-  side: "front" | "back"
+  side: "front" | "back" | "labs"
   intakePrefix: string
 }): Promise<{ storageKey: string; mode: "s3" | "dev" }> {
   if (params.file.length > MAX_ID_BYTES) {

@@ -56,6 +56,7 @@ type TrtIntakePayload = {
     treatmentGoals: string[]
     priorTrtExperience: string
     hasRecentLabs: string
+    labReportKey?: string | null
     additionalConcerns: string
   }
   identity: IntakePaymentMetadata & {
@@ -90,7 +91,8 @@ VITALS: BP ${data.vitals.systolicBP}/${data.vitals.diastolicBP}, HR ${data.vital
 SYMPTOMS: ${data.treatmentInfo.symptoms.join(", ") || "None"}
 GOALS: ${data.treatmentInfo.treatmentGoals.join(", ") || "None"}
 Prior TRT: ${data.treatmentInfo.priorTrtExperience}
-Recent labs: ${data.treatmentInfo.hasRecentLabs}
+Recent labs: ${data.treatmentInfo.labReportKey ? "submitted" : "missing"}
+Lab report file: ${data.treatmentInfo.labReportKey || "none"}
 
 CONTRAINDICATIONS:
 Prostate cancer: ${data.contraindications.prostateCancer}
@@ -154,6 +156,14 @@ export async function POST(request: NextRequest) {
 
     if (!data.treatmentInfo?.selectedProgram) {
       return NextResponse.json({ error: "Please select a TRT program" }, { status: 400 })
+    }
+
+    const labReportKey = data.treatmentInfo.labReportKey?.trim()
+    if (!labReportKey) {
+      return NextResponse.json(
+        { error: "Upload laboratory results from the last 12 months before submitting." },
+        { status: 400 }
+      )
     }
 
     data.identity.stripePaymentIntentId = null
@@ -224,7 +234,7 @@ export async function POST(request: NextRequest) {
           JSON.stringify(data.treatmentInfo.symptoms || []),
           JSON.stringify(data.treatmentInfo.treatmentGoals || []),
           data.treatmentInfo.priorTrtExperience,
-          data.treatmentInfo.hasRecentLabs,
+          "submitted",
           data.contraindications.prostateCancer,
           data.contraindications.breastCancer,
           data.contraindications.polycythemia,
@@ -254,6 +264,8 @@ export async function POST(request: NextRequest) {
           "waiting_for_payment",
         ]
       )
+      await sql(`ALTER TABLE trt_intake ADD COLUMN IF NOT EXISTS lab_report_key TEXT`, [])
+      await sql(`UPDATE trt_intake SET lab_report_key = $2 WHERE id = $1`, [submissionId, labReportKey])
       if (visit) {
         await sql(`ALTER TABLE trt_intake ADD COLUMN IF NOT EXISTS visit_schedule JSONB`, [])
         await sql(`UPDATE trt_intake SET visit_schedule = $2::jsonb WHERE id = $1`, [
