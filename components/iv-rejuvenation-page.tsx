@@ -17,17 +17,10 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
 import { IV_PACKAGES, IV_TRAVEL_FEE } from "@/lib/iv-catalog"
 import { MIC_B12_WEIGHT_LOSS } from "@/lib/weight-loss-catalog"
 import { REJUVENATION_VIALS, VIAL_CATEGORY_LABELS } from "@/lib/rejuvenation-vial-catalog"
-import { IV_REJUVENATION_FAQS } from "@/lib/clinical-seo"
 import { buildIvPackageProductUrl, buildVialProductUrl } from "@/lib/intake-prefill"
 
 const TRUST_ITEMS = [
@@ -385,35 +378,6 @@ export function IvRejuvenationPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="py-16 bg-slate-50 border-t">
-          <div className="container max-w-3xl mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-              <p className="text-slate-600">Everything you need to know before your mobile IV appointment</p>
-              <p className="text-sm text-slate-500 mt-3">
-                Prefer a deeper guide?{" "}
-                <Link href="/learn/myers-cocktail-mobile-iv" className="text-sky-700 hover:underline font-medium">
-                  Read our Myers Cocktail &amp; mobile IV article
-                </Link>
-                .
-              </p>
-            </div>
-            <Accordion type="single" collapsible className="rounded-xl border bg-white px-6">
-              {IV_REJUVENATION_FAQS.map((faq) => (
-                <AccordionItem key={faq.question} value={faq.question}>
-                  <AccordionTrigger className="text-base font-semibold text-slate-900 hover:no-underline">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-slate-600 leading-relaxed">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
           </div>
         </section>
 

@@ -1,7 +1,5 @@
 import type { EdTrocheProduct, EdBillingPlan } from "@/lib/ed-troche-catalog"
 import type { WeightLossProgram } from "@/lib/weight-loss-catalog"
-import { IV_TRAVEL_FEE } from "@/lib/iv-catalog"
-
 /** Troche count per 30-day supply — used for transparent $/dose display. */
 export const ED_DOSES_PER_SUPPLY: Record<string, number> = {
   "sildenafil-fast": 10,
@@ -50,35 +48,25 @@ export function getWeightLossPriceRange(program: WeightLossProgram): {
   }
 }
 
-export function getIvVisitTotal(dripPrice: number): number {
-  return dripPrice + IV_TRAVEL_FEE
-}
-
 export const ALL_IN_INCLUSIONS = {
   weightLoss: [
     "Physician review",
     "Compounded medication",
     "4 weekly injections per kit",
     "Syringes & supplies",
-    "Shipped by RxAve",
+    "Shipped by a compounding pharmacy licensed in your state",
   ],
   ed: [
     "Physician review",
     "Compounded sublingual troches",
     "Discreet packaging",
-    "Shipped by RxAve",
+    "Shipped by a compounding pharmacy licensed in your state",
   ],
   trt: [
     "Physician review",
     "Medication & supplies",
     "Transparent cash-pay billing",
-    "Shipped by RxAve",
-  ],
-  iv: [
-    "Pharmacy-formulated drip",
-    "Licensed RN administration",
-    "Clinical intake review",
-    `$${IV_TRAVEL_FEE} flat Metro Detroit dispatch`,
+    "Shipped by a compounding pharmacy licensed in your state",
   ],
 } as const
 

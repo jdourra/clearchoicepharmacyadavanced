@@ -124,7 +124,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
             />
           </div>
           <p className="text-center lg:text-left text-xs text-muted-foreground mt-3">
-            Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy.
+            Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state.
           </p>
         </div>
 
@@ -140,7 +140,7 @@ export function WeightLossProductDetail({ program, content }: WeightLossProductD
               <span className="text-muted-foreground ml-1">/mo on 90-day starter kits</span>
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Monthly starter kits from ${startingPrice}/mo · you pay here · a licensed compounding pharmacy ships if approved
+              Monthly starter kits from ${startingPrice}/mo · you pay here · a compounding pharmacy licensed to dispense in the patient's state ships if approved
             </p>
             <p className="text-sm text-muted-foreground mt-1">{WEIGHT_LOSS_LIVE_VISIT_FEE_NOTE}</p>
             <p className="text-sm font-medium text-foreground mt-1">{program.supplyLabel}</p>

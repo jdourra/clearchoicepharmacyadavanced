@@ -6,7 +6,7 @@ const MI_DISCLAIMER =
   "This article is for educational purposes only and is not medical advice. Compounded medications require a valid prescription after clinician review. Clear Choice Pharmacy currently serves Michigan patients only. Individual results vary. Discuss your health history with a licensed provider before starting any therapy."
 
 const GLP_DISCLAIMER =
-  `This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary.`
+  `This article is for educational purposes only and is not medical advice. Compounded semaglutide and tirzepatide require a valid prescription after a licensed doctor reviews the intake. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships approved GLP-1 medication. Clear Choice Pharmacy does not compound or ship these vials. Individual results vary.`
 
 export const LEARN_ARTICLES: LearnArticle[] = [
   {
@@ -36,7 +36,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This guide explains Semaglutide in educational terms: how the therapy works, how brand-name products like Ozempic and Wegovy relate, common side effects, and what clinical review usually covers. Commercial kit pricing and checkout live on our Semaglutide program page.",
-      `At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
+      `At Clear Choice Pharmacy in Westland, Michigan, patients complete an intake. ${weightLossHowYouPay()} After a licensed doctor approves therapy, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the semaglutide. Clear Choice does not compound or ship these vials.`,
     ],
     sections: [
       {
@@ -63,7 +63,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "Who may be a candidate?",
         paragraphs: [
           "Eligibility depends on clinical review—not an online quiz alone. Providers commonly consider BMI, weight-related conditions, contraindications, and medication history. Patients with a personal or family history of medullary thyroid carcinoma or Multiple Endocrine Neoplasia syndrome type 2, or those who are pregnant or planning pregnancy, are generally not candidates for GLP-1 therapy.",
-          "Patients in the United States can complete a secure intake. Ola Health reviews it before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+          "Patients in the United States can complete a secure intake. Ola Health reviews it before RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
         ],
       },
       {
@@ -76,7 +76,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "How semaglutide kits are priced",
         paragraphs: [
-          `The semaglutide program shows the kit price before you pay. ${weightLossHowYouPay()} A lower price is not a reason a compounded medication is offered. A licensed physician decides whether it is appropriate. Each 30-day kit includes four weekly injections. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.`,
+          `The semaglutide program shows the kit price before you pay. ${weightLossHowYouPay()} A lower price is not a reason a compounded medication is offered. A licensed physician decides whether it is appropriate. Each 30-day kit includes four weekly injections. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.`,
           "For current kit pricing and intake steps, visit the Semaglutide program page.",
         ],
       },
@@ -95,7 +95,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start semaglutide?",
         answer:
-          "Yes, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
+          "Yes, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships an approved prescription. Clear Choice Pharmacy does not dispense these GLP-1 medications.",
       },
     ],
     disclaimer: GLP_DISCLAIMER,
@@ -127,7 +127,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     ],
     intro: [
       "This article covers Tirzepatide education—mechanism, brand-name context (Zepbound, Mounjaro), side effects, and clinical candidacy questions. Kit pricing and checkout are on the Tirzepatide program page; program overview lives on the medical weight loss hub.",
-      "A licensed doctor reviews the intake. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
+      "A licensed doctor reviews the intake. If treatment is approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships tirzepatide. Clear Choice Pharmacy does not compound or ship these vials.",
     ],
     sections: [
       {
@@ -185,7 +185,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Can patients outside Michigan start tirzepatide?",
         answer:
-          `You complete a secure online intake. ${weightLossHowYouPay()} After a doctor approves treatment, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.`,
+          `You complete a secure online intake. ${weightLossHowYouPay()} After a doctor approves treatment, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the kit. Clear Choice Pharmacy does not compound or ship these vials.`,
       },
     ],
     disclaimer: GLP_DISCLAIMER,
@@ -301,7 +301,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
         heading: "What compounded Semaglutide is",
         paragraphs: [
           "Compounded semaglutide is prepared by a compounding pharmacy after a licensed clinician determines it is appropriate. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not dispense brand-name Ozempic or Wegovy.",
-          "RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
+          "RxAve routes the prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses semaglutide after a doctor approves the intake. Clear Choice Pharmacy does not compound or ship these vials and does not dispense brand-name Ozempic or Wegovy.",
         ],
       },
       {
@@ -327,7 +327,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         question: "Does Clear Choice Pharmacy sell Ozempic?",
         answer:
-          "No. RxAve routes the prescription to a licensed compounding pharmacy, which dispenses semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
+          "No. RxAve routes the prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses semaglutide or tirzepatide pursuant to a patient-specific prescription. Clear Choice Pharmacy does not compound or ship these vials. Brand-name Ozempic and Wegovy are not dispensed through this program.",
       },
       {
         question: "Is compounded semaglutide offered because it costs less than Ozempic or Wegovy?",
@@ -538,7 +538,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       {
         heading: "Starting hormone therapy",
         paragraphs: [
-          "Start an intake from the men's health page. Ola Health reviews it, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Testosterone is not dispensed by Clear Choice Pharmacy outside its Michigan license.",
+          "Start an intake from the men's health page. Ola Health reviews it, and RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Testosterone is not dispensed by Clear Choice Pharmacy outside its Michigan license.",
         ],
       },
     ],
@@ -555,79 +555,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       },
     ],
     disclaimer:
-      `This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Individual results vary.`,
-  },
-  {
-    slug: "myers-cocktail-mobile-iv",
-    title: "Myers Cocktail and Mobile IV Therapy in Metro Detroit",
-    description:
-      "Learn what a Myers Cocktail IV includes, how mobile IV therapy works, NAD+ and hydration options, travel fees, and booking through Clear Choice Pharmacy.",
-    keywords: [
-      "Myers Cocktail",
-      "mobile IV therapy",
-      "IV hydration",
-      "NAD IV",
-      "IV therapy near me",
-      "Metro Detroit IV",
-    ],
-    category: "iv-therapy",
-    categoryLabel: "IV Therapy",
-    publishedAt: "2026-07-14",
-    updatedAt: "2026-07-14",
-    readingMinutes: 6,
-    primaryKeyword: "Myers Cocktail IV",
-    serviceHref: "/iv-rejuvenation",
-    serviceCta: "Book mobile IV therapy",
-    relatedSlugs: ["semaglutide-weight-loss", "testosterone-replacement-therapy-trt"],
-    intro: [
-      "Mobile IV therapy—Myers Cocktail, NAD+, hydration, immunity, and hangover drips—has become a common “near me” search across Metro Detroit. Patients want pharmacy-grade formulations, licensed nurses, and clear pricing before booking.",
-    ],
-    sections: [
-      {
-        heading: "What is a Myers Cocktail?",
-        paragraphs: [
-          "A Myers Cocktail is a classic IV blend used for hydration and vitamin/mineral support. Exact compositions can vary by pharmacy protocol, but patients typically seek it for recovery, energy support, or wellness revitalization under clinical screening.",
-        ],
-      },
-      {
-        heading: "Mobile IV vs at-home vials",
-        paragraphs: [
-          "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel in Metro Detroit. Rejuvenation vials are separate physician-reviewed injectable homekits for eligible Michigan patients after telehealth approval.",
-          "A flat $50 mobile travel and dispatch fee applies at checkout for nurse-administered drips, shown before you finish intake.",
-        ],
-      },
-      {
-        heading: "Popular drip categories",
-        paragraphs: [
-          "Beyond Myers Cocktail, patients often request NAD+ IV, hydration drips, immune support, and hangover recovery formulas. Each request is reviewed before treatment.",
-        ],
-        bullets: [
-          "Myers Cocktail IV",
-          "NAD+ IV therapy",
-          "Hydration and wellness drips",
-          "Immunity and recovery blends",
-        ],
-      },
-      {
-        heading: "How booking works",
-        paragraphs: [
-          "Choose your drip on the IV rejuvenation page, complete intake, and schedule nurse administration after clinical review. Clear Choice Pharmacy prepares IV bags pursuant to a patient-specific prescription pathway for this service model.",
-        ],
-      },
-    ],
-    faqs: [
-      {
-        question: "Where do you offer mobile IV therapy?",
-        answer:
-          "Licensed RNs are dispatched across Metro Detroit communities including Westland, Northville, Farmington Hills, Livonia, Canton, Plymouth, and nearby areas.",
-      },
-      {
-        question: "Is there a travel fee?",
-        answer:
-          "Yes. A flat $50 mobile travel and dispatch fee is shown at checkout in addition to drip pricing.",
-      },
-    ],
-    disclaimer: MI_DISCLAIMER,
+      `This article is for educational purposes only and is not medical advice. Testosterone is a Schedule III controlled medication and requires a prescription after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} It is not offered for athletic performance or bodybuilding. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Individual results vary.`,
   },
   {
     slug: "low-cost-prescription-drugs-cash-pay",
@@ -650,7 +578,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     primaryKeyword: "low cost prescription drugs",
     serviceHref: "/prescriptions",
     serviceCta: "Look up prescription prices",
-    relatedSlugs: ["semaglutide-weight-loss", "myers-cocktail-mobile-iv"],
+    relatedSlugs: ["semaglutide-weight-loss"],
     intro: [
       "High deductibles and confusing copays push more patients to cash-pay pharmacies. Clear Choice Pharmacy publishes a simple formula so Michigan patients can compare prescription prices before ordering.",
     ],
@@ -691,18 +619,12 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   },
 ]
 
-const HIDDEN_LEARN_SLUGS = new Set(["myers-cocktail-mobile-iv"])
-
-function isPublicLearnArticle(article: LearnArticle): boolean {
-  return !HIDDEN_LEARN_SLUGS.has(article.slug)
-}
-
 export function getLearnArticles(): LearnArticle[] {
-  return LEARN_ARTICLES.filter(isPublicLearnArticle).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+  return [...LEARN_ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
 }
 
 export function getLearnArticle(slug: string): LearnArticle | undefined {
-  return LEARN_ARTICLES.filter(isPublicLearnArticle).find((article) => article.slug === slug)
+  return LEARN_ARTICLES.find((article) => article.slug === slug)
 }
 
 export function getLearnArticleSlugs(): string[] {

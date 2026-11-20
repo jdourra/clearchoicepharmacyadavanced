@@ -36,7 +36,7 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Where can patients start a Semaglutide or Tirzepatide intake?",
     answer:
-      `Yes, except in Alaska, Mississippi, and New Jersey. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. ${LIVE_VIDEO_VISIT_NOTE}`,
+      `Yes, except in Alaska, Mississippi, and New Jersey. ${weightLossHowYouPay()} Ola Health reviews it. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships an approved kit. Clear Choice Pharmacy does not compound or ship these vials. ${LIVE_VIDEO_VISIT_NOTE}`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic?",
@@ -46,12 +46,12 @@ const homeFaqJsonLd = buildFaqJsonLd([
   {
     question: "Who evaluates and who fills the medication?",
     answer:
-      `A licensed doctor reviews your intake and decides whether a prescription is appropriate. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.`,
+      `A licensed doctor reviews your intake and decides whether a prescription is appropriate. ${LIVE_VIDEO_VISIT_NOTE} RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships approved semaglutide or tirzepatide. Clear Choice Pharmacy does not dispense the vial.`,
   },
   {
     question: "How do Semaglutide and Tirzepatide kits work?",
     answer:
-      `After a doctor approves treatment, RxAve routes the approved prescription to a licensed compounding pharmacy, which prepares and ships the kit. ${weightLossHowYouPay()}`,
+      `After a doctor approves treatment, RxAve routes the approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which prepares and ships the kit. ${weightLossHowYouPay()}`,
   },
 ])
 

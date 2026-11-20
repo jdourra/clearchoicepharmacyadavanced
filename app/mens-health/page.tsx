@@ -41,7 +41,7 @@ const ED_LANDING_URL = "/mens-health#ed-troches"
 export const metadata: Metadata = {
   title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Men's Health",
   description:
-    "Sildenafil ED troches from $39/mo and Tadalafil from $49/mo on quarterly billing. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+    "Sildenafil ED troches from $39/mo and Tadalafil from $49/mo on quarterly billing. Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
   keywords: [
     "tadalafil",
     "sildenafil",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     description:
-      "ED medications from $39/mo. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+      "ED medications from $39/mo. Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
     url: `${SITE_URL}/mens-health`,
     type: "website",
   },
@@ -73,7 +73,7 @@ export default function MensHealthPage() {
     name: "Sildenafil from $39/mo and Tadalafil from $49/mo | Clear Choice Pharmacy",
     url: `${SITE_URL}/mens-health`,
     description:
-      "Sildenafil and tadalafil after Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+      "Sildenafil and tadalafil after Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
     about: [
       { "@type": "MedicalTherapy", name: "Tadalafil ED Treatment" },
       { "@type": "MedicalTherapy", name: "Sildenafil ED Treatment" },
@@ -87,7 +87,7 @@ export default function MensHealthPage() {
         badge="Men's Health · ED"
         headline="Tadalafil & Sildenafil"
         subheadline="Sildenafil from $39/mo and Tadalafil from $49/mo on quarterly billing—transparent cash-pay pricing."
-        description={`Sildenafil and tadalafil after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.`}
+        description={`Sildenafil and tadalafil after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the medication.`}
         highlight="Start your intake · Provider review · Pharmacy-compounded · Discreet delivery"
         primaryCta={{
           label: "Start your intake",
@@ -209,7 +209,7 @@ export default function MensHealthPage() {
           {
             step: 3,
             title: "Pharmacy fulfillment",
-            description: "If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.",
+            description: "If approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the medication.",
           },
         ]}
       />
@@ -261,7 +261,7 @@ export default function MensHealthPage() {
       <PremiumCta
         icon="heart"
         title="Ready to Get Started?"
-        description="Start your intake for ED medication. Ola Health reviews it before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it."
+        description="Start your intake for ED medication. Ola Health reviews it before RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it."
         primaryCta={{
           label: "Start your intake",
           href: ED_LANDING_URL,

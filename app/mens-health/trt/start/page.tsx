@@ -10,14 +10,14 @@ import { LIVE_VIDEO_VISIT_NOTE } from "@/lib/us-states"
 export const metadata: Metadata = {
   title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",
   description:
-    "Start a secure intake for hormone therapy. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+    "Start a secure intake for hormone therapy. Ola Health reviews it. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
   alternates: {
     canonical: `${SITE_URL}/mens-health/trt/start`,
   },
   openGraph: {
     title: "Start Your Intake | Hormone Therapy | Clear Choice Pharmacy",
     description:
-      "Secure hormone-therapy intake. Ola Health reviews it before RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it.",
+      "Secure hormone-therapy intake. Ola Health reviews it before RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it.",
     url: `${SITE_URL}/mens-health/trt/start`,
     type: "website",
   },
@@ -48,7 +48,7 @@ export default async function TrtStartPage({ searchParams }: PageProps) {
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                   Finish your secure intake for physician-reviewed hormone therapy. A clinician licensed in your state
-                  reviews it. If approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships it.
+                  reviews it. If approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships it.
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">{HORMONE_THERAPY_CONTROLLED_NOTE}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{NATIONAL_PARTNER_CARE_NOTE}</p>

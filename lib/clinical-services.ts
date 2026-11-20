@@ -19,7 +19,7 @@ export const CLINICAL_SERVICES: ClinicalService[] = [
     href: "/weight-loss",
     title: "Medical Weight Loss & GLP-1",
     description:
-      "Provider-guided Semaglutide and Tirzepatide kits from $134/mo. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy.",
+      "Provider-guided Semaglutide and Tirzepatide kits from $134/mo. Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state.",
     pathType: "consultation",
     pathLabel: "Provider review required",
     cta: "Explore weight loss",

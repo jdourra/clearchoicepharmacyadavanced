@@ -32,7 +32,7 @@ export default function TermsPage() {
         therapy, and ED medication intakes are open to patients in every U.S. state and the District of
         Columbia except Alaska, Mississippi, and New Jersey. Ola
         Health reviews those intakes through a clinician licensed in the patient&apos;s state. If treatment is approved,
-        RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
+        RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the compounded medication. Testosterone is a Schedule III controlled medication and is
         prescribed only when clinically appropriate. {LIVE_VIDEO_VISIT_NOTE} We do not replace your
         primary care physician.
       </p>

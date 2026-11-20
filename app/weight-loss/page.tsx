@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     description:
-      `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} a licensed compounding pharmacy ships the medication after RxAve routes the prescription if a doctor approves.`,
+      `Provider-guided Semaglutide and Tirzepatide kits. ${weightLossHowYouPay()} a compounding pharmacy licensed to dispense in the patient's state ships the medication after RxAve routes the prescription if a doctor approves.`,
     url: `${SITE_URL}/weight-loss`,
     type: "website",
   },
@@ -73,7 +73,7 @@ export default function WeightLossPage() {
     name: "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy",
     url: `${SITE_URL}/weight-loss`,
     description:
-      "Provider-guided Semaglutide and Tirzepatide weight management. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses the kit.",
+      "Provider-guided Semaglutide and Tirzepatide weight management. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses the kit.",
     about: [
       { "@type": "MedicalTherapy", name: "Medical Weight Management" },
       { "@type": "MedicalTherapy", name: "GLP-1 Weight Management" },
@@ -199,7 +199,7 @@ export default function WeightLossPage() {
         <PricingCompareNote
           className="mt-8"
           title="Transparent Semaglutide & Tirzepatide pricing"
-          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front and include doctor review. a licensed compounding pharmacy ships the medication after RxAve routes the prescription approved medication. There is no separate membership fee."
+          body="Many cash-pay telehealth ads quote low starter prices that rise at maintenance or add membership fees. Our kits show starter-to-maintenance pricing up front and include doctor review. a compounding pharmacy licensed to dispense in the patient's state ships the medication after RxAve routes the prescription approved medication. There is no separate membership fee."
         />
         <p className="text-xs text-muted-foreground mt-4">
           Prescription required after provider review. Kit price reflects prescribed dose strength (4 weekly injections).
@@ -222,7 +222,7 @@ export default function WeightLossPage() {
           {
             icon: "flask-conical",
             title: "Pharmacy Compounded",
-            description: "Patient-specific Semaglutide and Tirzepatide prepared by a licensed compounding pharmacy",
+            description: "Patient-specific Semaglutide and Tirzepatide prepared by a compounding pharmacy licensed to dispense in the patient's state",
           },
           {
             icon: "activity",
@@ -314,7 +314,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Trust & roles"
           title="Pharmacy vs prescribing clinician"
-          description={`${weightLossHowYouPay()} A licensed doctor decides whether a prescription is appropriate. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved medication.`}
+          description={`${weightLossHowYouPay()} A licensed doctor decides whether a prescription is appropriate. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships approved medication.`}
         />
         <FeatureGrid
           items={[
@@ -326,7 +326,7 @@ export default function WeightLossPage() {
             {
               icon: "flask-conical",
               title: "Partner pharmacy",
-              description: "RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships it. Clear Choice does not compound these vials.",
+              description: "RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships it. Clear Choice does not compound these vials.",
             },
             {
               icon: "shield",
@@ -341,7 +341,7 @@ export default function WeightLossPage() {
         <SectionIntro
           eyebrow="Local care"
           title="Where intakes are available"
-          description={`Weight-loss intake is open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved prescription. ${LIVE_VIDEO_VISIT_NOTE}`}
+          description={`Weight-loss intake is open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews it. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships an approved prescription. ${LIVE_VIDEO_VISIT_NOTE}`}
         />
         <p className="mt-4 text-sm text-muted-foreground max-w-3xl leading-relaxed">
           ED medication and hormone therapy use the same state-licensed review and dispensing. Prescriptions that Clear

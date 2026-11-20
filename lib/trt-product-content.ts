@@ -15,7 +15,7 @@ export type TrtProductContent = {
 
 const SHARED_TRT_KIT_INCLUDES = [
   "Physician-reviewed prescription and protocol",
-  "Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy",
+  "Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state",
   "Step-by-step instructions",
   "Discreet shipping (cold chain when required)",
 ]
@@ -38,7 +38,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Your provider may recommend periodic lab work to monitor testosterone, hematocrit, and related markers during therapy.",
     physicianConsent:
       `Testosterone is a controlled substance. A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} Additional labs or follow-up may be required.`,
-    shipping: "Routed by RxAve and shipped by a licensed compounding pharmacy. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
+    shipping: "Routed by RxAve and shipped by a compounding pharmacy licensed to dispense in the patient's state. Refrigerate upon receipt. Clear Choice Pharmacy does not dispense compounded medication.",
   },
   "testosterone-cream": {
     homeKitTitle: "Testosterone Cream TRT HomeKit",
@@ -62,7 +62,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Topical protocols still require physician oversight and periodic labs to confirm therapeutic levels and safety.",
     physicianConsent:
       `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
-    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a compounding pharmacy licensed to dispense in the patient's state. Clear Choice Pharmacy does not dispense this medication.",
   },
   enclomiphene: {
     homeKitTitle: "Enclomiphene Oral TRT HomeKit",
@@ -85,7 +85,7 @@ export const TRT_PRODUCT_CONTENT: Record<string, TrtProductContent> = {
       "Lab monitoring helps your provider titrate your oral protocol and confirm response over time.",
     physicianConsent:
       `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
-    shipping: "Routed by RxAve and shipped discreetly by a licensed compounding pharmacy. Clear Choice Pharmacy does not dispense this medication.",
+    shipping: "Routed by RxAve and shipped discreetly by a compounding pharmacy licensed to dispense in the patient's state. Clear Choice Pharmacy does not dispense this medication.",
   },
 }
 

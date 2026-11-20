@@ -31,7 +31,7 @@ export type WeightLossProductContent = {
 
 const SHARED_KIT_INCLUDES = [
   "Physician-reviewed prescription and titration plan",
-  "Compounded medication prepared by a licensed compounding pharmacy",
+  "Compounded medication prepared by a compounding pharmacy licensed to dispense in the patient's state",
   "Syringes and alcohol pads",
   "Step-by-step injection instructions",
   "Secure shipping to your door",
@@ -42,7 +42,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Semaglutide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $134/mo per 30-day kit",
     purpose:
-      "Compounded semaglutide is a once-weekly injectable prepared by a licensed compounding pharmacy after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
+      "Compounded semaglutide is a once-weekly injectable prepared by a compounding pharmacy licensed to dispense in the patient's state after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Ozempic or Wegovy.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -70,7 +70,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       { phase: "Maintenance phase", detail: "Ongoing dose tailored to your goals with continued provider oversight." },
     ],
     shipping:
-      "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Your kit includes supplies and instructions for at-home use.",
+      "Shipped by a compounding pharmacy licensed to dispense in the patient's state, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Your kit includes supplies and instructions for at-home use.",
     physicianConsent:
       `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     scienceSummary:
@@ -84,7 +84,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
     homeKitTitle: "Tirzepatide Weight Management HomeKit",
     tagline: "Provider-guided weight management · from $149/mo per 30-day kit",
     purpose:
-      "Compounded tirzepatide is a once-weekly injectable prepared by a licensed compounding pharmacy after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
+      "Compounded tirzepatide is a once-weekly injectable prepared by a compounding pharmacy licensed to dispense in the patient's state after Ola Health approves a patient-specific prescription. It is not FDA-approved and is not a commercially manufactured product. Clear Choice Pharmacy does not compound or dispense it and does not dispense brand-name Zepbound or Mounjaro.",
     procedure:
       "Subcutaneous (Sub-Q) injection, self-administered in the fatty tissue of the abdomen or thigh. Step-by-step instructions are included with your kit.",
     dosageFrequency:
@@ -112,7 +112,7 @@ export const WEIGHT_LOSS_PRODUCT_CONTENT: Record<WeightLossProductSlug, WeightLo
       { phase: "Maintenance phase", detail: "Personalized ongoing dose with pharmacy fulfillment." },
     ],
     shipping:
-      "Shipped by a licensed compounding pharmacy, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Supplies and instructions included.",
+      "Shipped by a compounding pharmacy licensed to dispense in the patient's state, not from Clear Choice Pharmacy. RxAve routes the prescription. Refrigerate upon receipt. Supplies and instructions included.",
     physicianConsent:
       `A licensed physician reviews your intake before prescribing. ${LIVE_VIDEO_VISIT_NOTE} You may be contacted if additional clinical information is needed.`,
     scienceSummary:

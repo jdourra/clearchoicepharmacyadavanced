@@ -27,7 +27,7 @@ export default function RefundPolicyPage() {
         After you submit, pay by Zelle or Venmo at {ZELLE_PAYMENT_EMAIL}. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
         name in the memo. The intake is sent to {TELEHEALTH_PROVIDER} after the payment arrives. If treatment is not
         approved, the medication payment is refunded. If treatment is approved, {FULFILLMENT_PHARMACY} routes the
-        prescription to a licensed compounding pharmacy, which dispenses and ships the medication. Clear Choice Pharmacy
+        prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the medication. Clear Choice Pharmacy
         does not compound or dispense compounded medication. Once that pharmacy has started preparing the prescription,
         the medication charge is not refundable. A
         dispensed compounded prescription cannot be returned.
@@ -37,7 +37,7 @@ export default function RefundPolicyPage() {
         Non-compounded prescriptions filled at our Westland pharmacy are for Michigan patients. ED medication and hormone
         therapy use the same Zelle or Venmo payment as weight loss. The payment shows as {LEGAL_BUSINESS_NAME}. Put your
         name in the memo. {TELEHEALTH_PROVIDER} reviews the intake after the payment arrives. If treatment is approved,{" "}
-        {FULFILLMENT_PHARMACY} routes the prescription to a licensed compounding pharmacy. If treatment is not approved,
+        {FULFILLMENT_PHARMACY} routes the prescription to a compounding pharmacy licensed to dispense in the patient's state. If treatment is not approved,
         the payment is refunded. Once that pharmacy has
         started preparing an approved prescription, that order is not refundable. A dispensed compounded prescription cannot be returned.
       </p>

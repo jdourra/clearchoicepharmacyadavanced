@@ -8,7 +8,7 @@ export const HOME_TITLE =
   "Semaglutide & Tirzepatide Weight Loss | Clear Choice Pharmacy"
 
 export const HOME_DESCRIPTION =
-  "Semaglutide and tirzepatide weight loss. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships an approved kit."
+  "Semaglutide and tirzepatide weight loss. Intakes are open in every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey. Ola Health reviews the intake. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships an approved kit."
 
 /** Primary service pages — used for JSON-LD navigation hints and consistent SEO labels. */
 export const SITE_NAV_LINKS = [
@@ -169,7 +169,7 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you offer Tadalafil and Sildenafil?",
     answer:
-      `Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses it. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.`,
+      `Yes. Sildenafil, tadalafil, and a dual combination are available after Ola Health reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} If approved, RxAve routes the prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Pricing starts from $39/mo for Sildenafil and $49/mo for Tadalafil on quarterly billing.`,
   },
   {
     question: "Is Tadalafil the same as Cialis?",
@@ -194,12 +194,12 @@ export const MENS_HEALTH_FAQS: FaqItem[] = [
   {
     question: "Do you serve patients outside Michigan?",
     answer:
-      `Yes for weight loss, hormone therapy, and ED medication, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake, and RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`,
+      `Yes for weight loss, hormone therapy, and ED medication, except in Alaska, Mississippi, and New Jersey. Ola Health reviews the intake, and RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses it. Prescriptions that Clear Choice Pharmacy dispenses itself remain limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`,
   },
   {
     question: "Is the consultation private?",
     answer:
-      "Yes. The online consultation is confidential. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication discreetly.",
+      "Yes. The online consultation is confidential. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the medication discreetly.",
   },
 ]
 
@@ -207,7 +207,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Do you offer Semaglutide and Tirzepatide for weight management?",
     answer:
-      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
+      `Yes. ${weightLossHowYouPay()} A licensed doctor reviews the intake. If treatment is approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships compounded semaglutide or tirzepatide. Clear Choice Pharmacy does not compound or ship these vials. Individual results may vary.`,
   },
   {
     question: "Is compounded Semaglutide the same as Ozempic or Wegovy?",
@@ -237,45 +237,7 @@ export const WEIGHT_LOSS_FAQS: FaqItem[] = [
   {
     question: "Who is eligible for provider-guided weight management?",
     answer:
-      "Eligibility is determined by a licensed doctor after your online health review. Approval is not guaranteed. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the medication.",
-  },
-]
-
-export const IV_REJUVENATION_FAQS: FaqItem[] = [
-  {
-    question: "What mobile IV drips do you offer?",
-    answer:
-      "Clear Choice IV & Rejuvenation offers Myers' Cocktail, NAD+, hydration, immunity, hangover recovery, and other pharmacy-formulated drips administered by licensed RNs across Metro Detroit.",
-  },
-  {
-    question: "What is the difference between mobile IV and rejuvenation vials?",
-    answer:
-      "Mobile IV therapy is administered by a licensed RN at your home, office, or hotel in Metro Detroit — a $50 travel and dispatch fee applies at checkout. Rejuvenation vials are physician-reviewed injectable homekits for eligible Michigan patients after telehealth approval.",
-  },
-  {
-    question: "Does mobile IV therapy hurt?",
-    answer:
-      "Most patients experience minimal discomfort. Our licensed RNs use a micro-needle technique for a smooth, professional insertion.",
-  },
-  {
-    question: "How long does a mobile IV drip take?",
-    answer:
-      "Most IV drips take 45–60 minutes. NAD+ therapy requires a longer, monitored infusion of approximately 2 hours.",
-  },
-  {
-    question: "Is mobile IV therapy safe?",
-    answer:
-      "Yes. A licensed telehealth provider reviews each request before treatment. IV bags are fulfilled by RxAve pursuant to a patient-specific prescription, then administered by registered nurses.",
-  },
-  {
-    question: "What areas do you serve for mobile IV therapy?",
-    answer:
-      "We dispatch licensed RNs across Metro Detroit, including Westland, Northville, Farmington Hills, Wixom, South Lyon, Livonia, Canton, Plymouth, and nearby communities.",
-  },
-  {
-    question: "Is there a travel fee for mobile IV?",
-    answer:
-      "Yes. IV drip prices are listed separately from a flat $50 mobile travel and dispatch fee, shown at checkout before you complete your intake.",
+      "Eligibility is determined by a licensed doctor after your online health review. Approval is not guaranteed. If treatment is approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the medication.",
   },
 ]
 

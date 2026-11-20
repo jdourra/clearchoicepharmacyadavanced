@@ -176,7 +176,7 @@ export default function RootLayout({
           "@type": "OfferCatalog",
           name: "Semaglutide & Tirzepatide Weight Loss",
           description:
-            "Provider-guided weight management. RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships approved semaglutide and tirzepatide.",
+            "Provider-guided weight management. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships approved semaglutide and tirzepatide.",
           url: `${SITE_URL}/weight-loss`,
         },
         {
@@ -189,7 +189,7 @@ export default function RootLayout({
         {
           "@type": "OfferCatalog",
           name: "Compounding",
-          description: "Patient-specific compounded medications are reviewed by Ola Health and fulfilled by RxAve. Clear Choice Pharmacy does not compound or dispense them.",
+          description: "Patient-specific compounded medications are reviewed by Ola Health. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships it. Clear Choice Pharmacy does not compound or dispense them.",
           url: `${SITE_URL}/compounding`,
         },
         {

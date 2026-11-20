@@ -97,7 +97,7 @@ export const WEIGHT_LOSS_DOCTOR_REVIEW =
   `A licensed doctor reviews your intake. ${LIVE_VIDEO_VISIT_NOTE} Approval depends on that review and is not guaranteed.`
 
 export const WEIGHT_LOSS_PARTNER_FULFILLMENT =
-  "If treatment is approved, RxAve routes the prescription to a licensed compounding pharmacy, which dispenses your prescription and ships it."
+  "If treatment is approved, RxAve routes the prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses your prescription and ships it."
 
 export function weightLossPaymentPatientNote(): string {
   return WEIGHT_LOSS_ONLINE_CARD_HOLD_ENABLED
@@ -542,7 +542,7 @@ export const MIC_B12_WEIGHT_LOSS: RejuvenationVial = {
   route: "Intramuscular self-injection",
   frequency: "Once per week",
   description:
-    "Physician-reviewed lipotropic injection kit for metabolic support and energy — reviewed by Ola Health. RxAve routes an approved prescription to a licensed compounding pharmacy.",
+    "Physician-reviewed lipotropic injection kit for metabolic support and energy — reviewed by Ola Health. RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state.",
   image: {
     src: "/images/mic-b12-vial.png",
     alt: "MIC + B12 lipotropic injection vial for metabolic support",

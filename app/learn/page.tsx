@@ -38,7 +38,6 @@ export const metadata: Metadata = {
 const CATEGORY_ORDER: LearnCategory[] = [
   "weight-loss",
   "mens-health",
-  "iv-therapy",
   "prescriptions",
   "specialty",
 ]

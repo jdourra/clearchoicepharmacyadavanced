@@ -44,7 +44,7 @@ export const PHARMACY_ADDRESS_LINE = `${PHARMACY_STREET}, ${PHARMACY_CITY}, ${PH
 
 /** Telehealth group that reviews weight-loss, hormone, and ED intakes. */
 export const TELEHEALTH_PROVIDER = "Ola Health"
-/** Routes an approved compounded prescription to a licensed compounding pharmacy. */
+/** Routes an approved compounded prescription to a compounding pharmacy licensed to dispense in the patient's state. */
 export const FULFILLMENT_PHARMACY = "RxAve"
 /** Shown wherever a patient can select a dose, strength, or program. */
 export const PHYSICIAN_DECIDES_DOSE =
@@ -55,14 +55,14 @@ export const COMPOUNDED_MEDICATION_DISCLOSURE =
 
 /**
  * Weight loss, hormone therapy, and ED are reviewed by Ola Health. RxAve routes
- * an approved prescription to a licensed compounding pharmacy. Clear Choice is
+ * an approved prescription to a compounding pharmacy licensed to dispense in the patient's state. Clear Choice is
  * licensed only in Michigan and does not compound or dispense compounded medication.
  */
 export const INTAKE_SERVICE_AREA =
   "every U.S. state and the District of Columbia except Alaska, Mississippi, and New Jersey"
 
 export const NATIONAL_PARTNER_CARE_NOTE =
-  `Patients in ${INTAKE_SERVICE_AREA} can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a licensed compounding pharmacy, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`
+  `Patients in ${INTAKE_SERVICE_AREA} can start an intake for weight loss, hormone therapy, and ED medication. Ola Health reviews it through a clinician licensed in the patient's state. If treatment is approved, RxAve routes an approved prescription to a compounding pharmacy licensed to dispense in the patient's state, which dispenses and ships the compounded medication. Clear Choice Pharmacy is licensed in Michigan only and does not compound or dispense compounded medications. Non-compounded prescriptions Clear Choice dispenses itself stay limited to Michigan patients. ${LIVE_VIDEO_VISIT_NOTE}`
 
 export const HORMONE_THERAPY_CONTROLLED_NOTE =
   "Testosterone is a Schedule III controlled medication. It is prescribed only when a clinician licensed in your state decides it is medically appropriate. It is not offered for athletic performance or bodybuilding."

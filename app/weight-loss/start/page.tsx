@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Start Your Intake | GLP Weight Loss | Clear Choice Pharmacy",
     description:
-      `Secure medical intake for Semaglutide and Tirzepatide. ${weightLossHowYouPay()} a licensed compounding pharmacy ships the medication after RxAve routes the prescription approved medication.`,
+      `Secure medical intake for Semaglutide and Tirzepatide. ${weightLossHowYouPay()} a compounding pharmacy licensed to dispense in the patient's state ships the medication after RxAve routes the prescription approved medication.`,
     url: `${SITE_URL}/weight-loss/start`,
     type: "website",
   },
