@@ -3,6 +3,7 @@ import { staffAuth } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { parseGlp1Protocol, protocolQuestionPairs } from "@/lib/glp1-intake-protocol"
 import { handoffWeightLossToOla } from "@/lib/ola/weight-loss-handoff"
+import { emailPaymentReceipt } from "@/lib/payment-receipt"
 import { isAdminRole, isClinicianRole } from "@/lib/staff-roles"
 import { STANDARD_INTAKE_STATUS } from "@/lib/telehealth/intake-status"
 import { getWeightLossDose } from "@/lib/weight-loss-catalog"
@@ -149,6 +150,13 @@ export async function POST(request: Request, { params }: RouteParams) {
       [id, handoff.partnerName, handoff.partnerStatus, handoff.partnerCaseId, handoff.patientGuid, sentAt]
     )
 
+    const receipt = await emailPaymentReceipt({ serviceType: "weight_loss", intakeId: id }).catch((error: unknown) => ({
+      sent: false,
+      alreadySent: false,
+      sentAt: null,
+      error: error instanceof Error ? error.message : "Could not email the receipt.",
+    }))
+
     return NextResponse.json({
       success: true,
       alreadySent: false,
@@ -156,6 +164,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       orderId: handoff.partnerCaseId,
       sentAt,
       detail: handoff.detail,
+      receipt,
     })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Could not send this intake"

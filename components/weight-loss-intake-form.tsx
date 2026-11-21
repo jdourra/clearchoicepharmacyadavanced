@@ -930,7 +930,7 @@ export function WeightLossIntakeForm({
             : [
                 `Pay $${holdQuote?.totalBilled ?? ""} by Zelle or Venmo to ${ZELLE_PAYMENT_EMAIL}. The payment shows as ${LEGAL_BUSINESS_NAME}. Put your name in the memo.`,
                 "Your intake is sent after the payment arrives. If the name on the Zelle or Venmo screen is different, call (248) 987-6182 and do not send the payment.",
-                "A receipt comes from info@clearchoicepharmacy.com. If treatment is not approved, you are refunded.",
+                "A receipt is emailed after the pharmacy confirms the payment. If treatment is not approved, you are refunded.",
                 WEIGHT_LOSS_DOCTOR_REVIEW,
                 WEIGHT_LOSS_PARTNER_FULFILLMENT,
               ]

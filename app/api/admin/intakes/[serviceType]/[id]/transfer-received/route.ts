@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { staffAuth } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { isAdminRole, isClinicianRole } from "@/lib/staff-roles"
+import { emailPaymentReceipt, canEmailPaymentReceipt } from "@/lib/payment-receipt"
 import { notifyClinicianQueue } from "@/lib/telehealth/manual-queue"
 import { isAdminIntakeServiceType, tableForAdminService } from "@/lib/telehealth/intake-registry"
 
@@ -53,6 +54,15 @@ export async function POST(request: Request, { params }: RouteParams) {
       body: `Zelle or Venmo payment was confirmed for ${name} (${String(intake.email || "")}). Review intake ${id} in the admin.`,
     })
 
+    const receipt = canEmailPaymentReceipt(serviceType)
+      ? await emailPaymentReceipt({ serviceType, intakeId: id }).catch((error: unknown) => ({
+          sent: false,
+          alreadySent: false,
+          sentAt: null,
+          error: error instanceof Error ? error.message : "Could not email the receipt.",
+        }))
+      : null
+
     return NextResponse.json({
       success: true,
       alreadySent: false,
@@ -60,6 +70,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       orderId: id,
       sentAt: new Date().toISOString(),
       detail: "Payment confirmed. The intake is ready for review.",
+      receipt,
     })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Could not confirm this payment"

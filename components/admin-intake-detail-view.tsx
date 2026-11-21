@@ -211,6 +211,10 @@ export function AdminIntakeDetailView({
   const [liveVisitRequired, setLiveVisitRequired] = useState(false)
   const [markingPaid, setMarkingPaid] = useState<string | null>(null)
   const [confirmingZelle, setConfirmingZelle] = useState(false)
+  const [sendingReceipt, setSendingReceipt] = useState(false)
+  const [receiptSentAt, setReceiptSentAt] = useState<string | null>(
+    detail.receipt_sent_at ? String(detail.receipt_sent_at) : null
+  )
   const [zelleReceipt, setZelleReceipt] = useState<{
     transactionId: string
     orderId: string
@@ -336,16 +340,48 @@ export function AdminIntakeDetailView({
         orderId: String(result.orderId || ""),
         sentAt: typeof result.sentAt === "string" ? result.sentAt : null,
       })
+      if (result.receipt?.sent && result.receipt.sentAt) {
+        setReceiptSentAt(String(result.receipt.sentAt))
+      }
+      const receiptNote = result.receipt?.sent
+        ? " A payment receipt was emailed to the patient."
+        : result.receipt?.error
+          ? ` The payment was confirmed, but the receipt was not emailed: ${result.receipt.error}`
+          : ""
       setReviewMessage(
-        result.alreadySent
+        (result.alreadySent
           ? "This intake was already sent."
-          : String(result.detail || "Zelle payment confirmed. The intake was sent for clinician review.")
+          : String(result.detail || "Zelle payment confirmed. The intake was sent for clinician review.")) + receiptNote
       )
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send this intake")
     } finally {
       setConfirmingZelle(false)
+    }
+  }
+
+  const sendReceipt = async () => {
+    setSendingReceipt(true)
+    setError("")
+    setReviewMessage("")
+    try {
+      const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${id}/send-receipt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resend: Boolean(receiptSentAt) }),
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        throw new Error(result.error || "Could not email the receipt")
+      }
+      setReceiptSentAt(result.receipt?.sentAt ? String(result.receipt.sentAt) : new Date().toISOString())
+      setReviewMessage("Payment receipt emailed to the patient.")
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not email the receipt")
+    } finally {
+      setSendingReceipt(false)
     }
   }
 
@@ -821,6 +857,21 @@ export function AdminIntakeDetailView({
                         <p className="text-xs text-muted-foreground">
                           Confirms the Zelle or Venmo deposit and sends this intake for review. This does not charge a card.
                         </p>
+                      </div>
+                    ) : null}
+                    {(alreadyPaid || zelleReceipt) && transferService ? (
+                      <div className="mt-3 space-y-2">
+                        {receiptSentAt ? (
+                          <p className="text-sm text-muted-foreground">
+                            Receipt emailed {new Date(receiptSentAt).toLocaleString("en-US", { timeZone: "America/Detroit" })}.
+                          </p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No payment receipt has been emailed yet.</p>
+                        )}
+                        <Button type="button" variant="outline" disabled={sendingReceipt} onClick={sendReceipt}>
+                          {sendingReceipt ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Mail className="h-4 w-4 mr-2" />}
+                          {receiptSentAt ? "Send receipt again" : "Email payment receipt"}
+                        </Button>
                       </div>
                     ) : null}
                     {detail.patient_id != null && String(detail.patient_id).trim() !== "" && (
