@@ -28,6 +28,7 @@ export async function cancelClinicalIntakeForPatientRequest(params: {
   serviceType: string
   id: string
   staffLabel: string
+  notifyPatient?: boolean
 }): Promise<CancelIntakeResult> {
   if (!isAdminIntakeServiceType(params.serviceType)) {
     return { success: false, error: "Invalid service type" }
@@ -85,7 +86,9 @@ export async function cancelClinicalIntakeForPatientRequest(params: {
     }
   }
 
-  const email = await emailPatientCancelled(params.serviceType, params.id, detail, paymentAction === "released")
+  const email = params.notifyPatient
+    ? await emailPatientCancelled(params.serviceType, params.id, detail, paymentAction === "released")
+    : { emailSent: false }
 
   return {
     success: true,
@@ -151,9 +154,12 @@ async function emailPatientCancelled(
 
   const patientName = `${detail.first_name ?? ""} ${detail.last_name ?? ""}`.trim() || "Patient"
   const serviceLabel = SERVICE_LABELS[serviceType]
+  const payment = String(detail.payment_status ?? "")
   const paymentLine = holdReleased
     ? "Any card authorization hold has been released. You will not be charged."
-    : "No payment was collected."
+    : payment === "paid_zelle"
+      ? "If you already sent a Zelle or Venmo payment, call us and we will refund it."
+      : "No payment was collected."
 
   const text = `Hi ${patientName},
 

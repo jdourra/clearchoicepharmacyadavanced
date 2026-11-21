@@ -42,9 +42,12 @@ export function AdminIntakeCancelPanel({
 
   const cancel = async () => {
     const confirmed = window.confirm(
-        "Cancel this intake because the patient changed their mind or did not pay? Any unpaid card hold will be released."
+      "Cancel this intake because the patient changed their mind, did not pay, or submitted it twice? Any unpaid card hold will be released."
     )
     if (!confirmed) return
+    const notifyPatient = window.confirm(
+      "Send the patient an email that this intake was cancelled?\n\nOK sends the email. Cancel skips the email. The intake is still cancelled either way."
+    )
 
     setBusy(true)
     setError("")
@@ -52,6 +55,8 @@ export function AdminIntakeCancelPanel({
     try {
       const res = await staffAuthFetch(`/api/admin/intakes/${serviceType}/${intakeId}/cancel`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notifyPatient }),
       })
       const result = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(result.error || "Could not cancel this intake")
@@ -59,7 +64,7 @@ export function AdminIntakeCancelPanel({
         ? " The patient was emailed."
         : result.emailError
           ? ` Email was not sent: ${result.emailError}`
-          : ""
+          : " The patient was not emailed."
       setMessage(`Intake cancelled.${emailNote}`)
       onUpdated?.()
     } catch (err) {
@@ -74,8 +79,8 @@ export function AdminIntakeCancelPanel({
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">Cancel this intake</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Use this if the patient changed their mind or did not pay. It works while the intake is in review,
-          after clinician approval, and before payment is collected.
+          Use this if the patient changed their mind, did not pay, or submitted twice. You will be asked
+          whether to email them before the intake is cancelled.
         </p>
       </CardHeader>
       <CardContent className="space-y-3">

@@ -14,8 +14,20 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     const { serviceType, id } = await params
+    let notifyPatient = false
+    try {
+      const body = await request.json()
+      notifyPatient = body?.notifyPatient === true
+    } catch {
+      notifyPatient = false
+    }
     const staffLabel = (staff.full_name || staff.email || "admin").replace(/\s+/g, "_").toLowerCase()
-    const result = await cancelClinicalIntakeForPatientRequest({ serviceType, id, staffLabel })
+    const result = await cancelClinicalIntakeForPatientRequest({
+      serviceType,
+      id,
+      staffLabel,
+      notifyPatient,
+    })
     if (!result.success) {
       return NextResponse.json({ error: result.error || "Could not cancel intake" }, { status: 400 })
     }
